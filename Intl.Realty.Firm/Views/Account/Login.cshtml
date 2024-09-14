@@ -49,7 +49,6 @@
     </div>
 </container>
 <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
-@* <script src="~/lib/jquery/jquery.min.js" asp-append-version="true" type="text/javascript"></script> *@
 
 <script>
     $(document).ready(function () {
@@ -66,14 +65,5 @@
                 passwordInput.attr("type", "password");
             }
         });
-
-        var accountMode = $('#AccountMode').val();
-        if (accountMode == 'RESET') {
-            $("#forgotPassword").modal("show");
-        }
-        else if (accountMode == 'RESET_REQUEST') {
-            $("#forgotPassword").modal("hide");
-            $("#successModal").modal("show");
-        }
     });
 </script>

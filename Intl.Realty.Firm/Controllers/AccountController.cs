@@ -1,6 +1,8 @@
 ﻿using Intl.Realty.Firm.DataAccess.Model;
+using Intl.Realty.Firm.Helper;
 using Intl.Realty.Firm.Model.ViewModel;
 using Intl.Realty.Firm.Model.ViewModel.Account;
+using Intl.Realty.Firm.Service.IService;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -12,14 +14,17 @@ namespace Intl.Realty.Firm.Controllers
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
+        private readonly IEmailService _emailService;
         private readonly ILogger<AccountController> _logger;
 
         public AccountController(UserManager<ApplicationUser> userManager,
                                 SignInManager<ApplicationUser> signInManager,
+                                IEmailService emailService,
                                 ILogger<AccountController> logger)
         {
             _userManager = userManager;
             _signInManager = signInManager;
+            _emailService = emailService;
             _logger = logger;
         }
 
@@ -258,6 +263,7 @@ namespace Intl.Realty.Firm.Controllers
         [AllowAnonymous]
         public IActionResult Register()
         {
+
             return View();
         }
         [HttpPost]
@@ -270,9 +276,14 @@ namespace Intl.Realty.Firm.Controllers
                 {
                     UserName = viewModel.Email,
                     Email = viewModel.Email,
-                    DepartmentId = viewModel.DepartmentId,
-                    EmploymentStatusId = viewModel.EmploymentStatusId,
+                    FirstName = viewModel.FirstName,
+                    LastName = viewModel.LastName,
+                    MiddleName = viewModel.MiddleName,
+                    Suffix = viewModel.Suffix,
+                    DepartmentId = (viewModel.DepartmentId == 0) ? viewModel.DepartmentId : 1,
+                    EmploymentStatusId = (viewModel.EmploymentStatusId == 0) ? viewModel.EmploymentStatusId : 1,
                     ProfilePictureId = viewModel.ProfilePictureId ?? 0,
+                    UserAgreement = viewModel.UserAgreement
                 };
 
                 var result = await _userManager.CreateAsync(user, viewModel.Password);
@@ -283,6 +294,9 @@ namespace Intl.Realty.Firm.Controllers
 
                     var confirmationLink = Url.Action("ConfirmEmail", "Account",
                                                                 new { userId = user.Id, token = token }, Request.Scheme);
+
+                    var mailRequest = EmailRequest.CreateRegistrationVerification(viewModel, confirmationLink);
+                    await _emailService.SendEmailAsync(mailRequest);
 
                     _logger.Log(LogLevel.Warning, confirmationLink);
 

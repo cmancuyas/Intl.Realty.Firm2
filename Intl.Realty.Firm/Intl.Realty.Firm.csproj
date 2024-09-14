@@ -7,6 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="MailKit" Version="4.7.1.1" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.8">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -17,11 +18,6 @@
     <ProjectReference Include="..\Intl.Realty.Firm.DataAccess\Intl.Realty.Firm.DataAccess.csproj" />
     <ProjectReference Include="..\Intl.Realty.Firm.Model\Intl.Realty.Firm.Model.csproj" />
     <ProjectReference Include="..\Intl.Realty.Firm.Utility\Intl.Realty.Firm.Utility.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Models\" />
-    <Folder Include="Service\" />
   </ItemGroup>
 
 </Project>
