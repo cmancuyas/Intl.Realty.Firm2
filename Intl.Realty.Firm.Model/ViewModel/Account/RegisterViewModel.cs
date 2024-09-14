@@ -21,5 +21,9 @@ namespace Intl.Realty.Firm.Model.ViewModel.Account
         public string ConfirmPassword { get; set; } = string.Empty;
 
         public string City { get; set; } = string.Empty;
+
+        public int DepartmentId { get; set; }
+        public int EmploymentStatusId { get; set; }
+        public int? ProfilePictureId { get; set; }
     }
 }

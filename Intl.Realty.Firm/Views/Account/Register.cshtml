@@ -1,0 +1,36 @@
+﻿@using Intl.Realty.Firm.Model.ViewModel.Account
+
+@model RegisterViewModel
+
+<h1>User Registration</h1>
+<div>
+    <form asp-action="Register" asp-controller="Account" method="post">
+        <div asp-validation-summary="All" class="text-danger"></div>
+        <div class="mb-3">
+            <label for="Email" class="form-label">Email address</label>
+            <input asp-for="Email" type="text" class="form-control" id="Email" placeholder="Email">
+            <span asp-validation-for="Email" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label for="Password" class="form-label">Password</label>
+            <input asp-for="Password" type="password" class="form-control" id="Password" placeholder="Password">
+            <span asp-validation-for="Password" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label for="ConfirmPassword" class="form-label">Confirm Password</label>
+            <input asp-for="ConfirmPassword" type="password" class="form-control" id="ConfirmPassword" placeholder="ConfirmPassword">
+            <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+        </div>
+        <div class="mb-3">
+            <label for="City" class="form-label">City</label>
+            <input asp-for="City" type="text" class="form-control" id="City" placeholder="City">
+            <span asp-validation-for="City" class="text-danger"></span>
+        </div>
+        <div class="form-group d-flex justify-content-center gap-4">
+            <input type="button" value="Cancel" class="btn btn-secondary w-15" onclick="window.location.href='@Url.Action("Login", "Account")'" />
+            <input type="submit" value="Submit" class="btn btn-primary w-15" />
+        </div>
+    </form>
+</div>
