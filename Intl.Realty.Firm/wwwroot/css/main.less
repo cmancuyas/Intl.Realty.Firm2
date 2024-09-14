@@ -1,0 +1,270 @@
+@import: "variables.less";
+
+html {
+    padding: 0;
+    margin: 0;
+
+    body {
+        font-size: 14px;
+        font-family: @font;
+    }
+
+    h3 {
+        font-family: @font;
+    }
+}
+
+.font {
+    font-family: @font;
+}
+.bg-black {
+    background: @black;
+}
+
+.d-none {
+    display: none;
+}
+
+@media (min-width: 768px) {
+    html {
+        font-size: 16px;
+    }
+}
+
+.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
+    box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+}
+
+html {
+    position: relative;
+    min-height: 100%;
+}
+
+/*body {
+  margin-bottom: 60px;
+}*/
+
+/*custom styling*/
+body {
+    background: url('../files/img/bg-wavy.png') no-repeat;
+    background-size: cover;
+}
+
+.left-part {
+    background: url('../files/img/bg-intlrealty.png') no-repeat;
+    background-size: cover;
+}
+
+.right-part {
+    background: url('../files/img/bg-wavy.png') no-repeat;
+    background-size: cover;
+}
+
+button#password-toggle {
+    border: 1px solid #ced4da;
+    background: white;
+    border-left: 0;
+}
+
+button#password-toggle:focus {
+    box-shadow: none;
+}
+
+.btn:hover {
+    box-shadow: rgba(0, 0, 0, 0.07) 0px 1px 1px, rgba(0, 0, 0, 0.07) 0px 2px 2px, rgba(0, 0, 0, 0.07) 0px 4px 4px, rgba(0, 0, 0, 0.07) 0px 8px 8px, rgba(0, 0, 0, 0.07) 0px 16px 16px;
+    transform: translateY(-2px);
+    transition: all 0.15s ease-in-out;
+}
+
+.btn-primary {
+    background-color: #033da5 !important;
+    border-color: #033da5 !important;
+}
+
+.btn-secondary {
+    color: #033da5 !important;
+    background-color: transparent !important;
+    border-color: #033da5 !important;
+}
+
+/*a {
+    color: #033da5 !important;
+}*/
+
+.border-icon {
+    border: 10px solid #5c83cf !important;
+}
+
+.top-neg-10 {
+    top: -10%;
+}
+
+.top-10 {
+    top: 10%;
+}
+
+.w-15 {
+    width: 15%;
+}
+
+.w-10 {
+    width: 10%;
+}
+
+.w-15px {
+    width: 15px;
+}
+
+.top-bar {
+    position: fixed;
+    width: 100%;
+    height: 80px;
+}
+
+.top-bar-container {
+    background-color: transparent;
+    height: 80px;
+    margin-left: 300px;
+    border-bottom: 1px solid #C3C4C6;
+}
+
+aside {
+    background: rgba(0, 64, 161);
+    position: absolute;
+    top: 0;
+    width: 300px;
+    height: min(100vh, 100%);
+    box-shadow: rgba(0, 0, 0, 0.175) 5px 0px 15px;
+}
+
+.nav-bar-container {
+    position: relative;
+    z-index: 99;
+}
+
+.navbar-nav .nav-item .nav-link {
+    color: #fff;
+}
+
+.navbar-nav .nav-item {
+    transition: all 0.3s ease, box-shadow 0.3s ease;
+}
+
+.navbar-nav .nav-item.selected {
+    background-color: white;
+    box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+}
+
+.navbar-nav .nav-item:hover {
+    background-color: #C3C4C6;
+    box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+    transform: translateY(-5px);
+}
+
+.navbar-nav .nav-item.selected .nav-link,
+.navbar-nav .nav-item:hover .nav-link {
+    color: #0040a1 !important;
+}
+
+.aside-footer {
+    position: absolute;
+    bottom: 0;
+}
+
+.main {
+    position: fixed;
+    margin-top: 80px;
+    padding-left: 300px;
+    background-color: transparent;
+    height: min(100vh, 100%);
+    overflow-y: auto;
+    width: 100%;
+    float: left;
+    overflow-y: scroll;
+}
+
+.footer {
+    position: absolute;
+    bottom: 0;
+    left: 18%;
+}
+
+::-webkit-scrollbar {
+    width: 12px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #FFFFFF;
+    border-radius: 6px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #6C757D;
+}
+
+::-webkit-scrollbar-track {
+    background: #C3C4C6;
+    border-radius: 6px;
+}
+
+::-webkit-scrollbar-thumb:active {
+    background: #6C757D;
+}
+
+.text-blue {
+    color: #004AAB;
+}
+
+.bg-blue {
+    background: #004AAB;
+}
+
+.bg-modal {
+    background: url('../files/img/bg-modal.png') no-repeat;
+    background-size: cover;
+}
+
+/* multi-step sign up form */
+/*#regForm {
+    background-color: #ffffff;
+    margin: 100px auto;
+    padding: 40px;
+    width: 70%;
+    min-width: 300px;
+}*/
+
+.tab {
+    display: none;
+}
+
+.step {
+    height: auto;
+    width: auto;
+    margin: 0 2px;
+    border: none;
+    opacity: 0.5;
+    color: #fff;
+    position: relative;
+}
+
+.step.active {
+    opacity: 1;
+}
+
+.step.finish {
+    color: #fff;
+    opacity: 1;
+}
+
+.step:nth-child(-n+3)::after {
+    content: '';
+    position: absolute;
+    top: 22%;
+    left: 7.3%;
+    transform: translateX(-50%);
+    width: 1px;
+    height: 45px;
+    background-color: #fff;
+    margin: 40px 0;
+}
+/* multi-step sign up form end */
