@@ -1,25 +1,24 @@
-﻿@using Intl.Realty.Firm.Model.ViewModel.DepartmentVM
+﻿@using Intl.Realty.Firm.Model.ViewModel.RoleVM
 
-
-@model PreviewDepartmentViewModel
+@model PreviewRoleViewModel
 @{
     ViewData["Title"] = "Preview";
     Layout = "~/Views/Shared/_LayoutAfterLogin.cshtml";
 }
 <div>
-    <a href="@Url.Action("Index","Department")" class="text-decoration-none text-blue d-flex mb-4">
+    <a href="@Url.Action("Index","Role")" class="text-decoration-none text-blue d-flex mb-4">
         <i data-feather="chevron-left"></i><span>Back</span>
     </a>
     <div class="row">
         <div class="col-md-12 d-flex justify-content-md-between align-items-center">
-            <h1 class="text-blue mb-0">Employment Status</h1>
+            <h1 class="text-blue mb-0">Role</h1>
             <div class="d-flex gap-4">
                 <button type="button" id="btnMultipleDelete"
                         class="btn btn-danger d-none align-items-center"
                         data-toggle="tooltip"
                         data-bs-placement="left"
                         title="Delete"
-                        onclick="OpenMultipleDeleteModal('Department')">
+                        onclick="OpenMultipleDeleteModal('Role')">
                     <i data-feather="trash-2"></i>
                 </button>
                 <a asp-action="Create"
@@ -36,9 +35,9 @@
         <div class="row justify-content-center">
             <div class="col-md-10 card p-5 mx-4 ">
                 <div class="d-flex justify-content-between">
-                    <h2 class="text-blue">@Model.Name</h2>
-                    <button type="button" class="btn btn-secondary w-15" id="EditDepartmentBtn"
-                            onclick="location.href='@Url.Action("Edit", "Department", new { id = Model.Id,})'"
+                    <h2 class="text-blue">@Model.RoleName</h2>
+                    <button type="button" class="btn btn-secondary w-15" id="EditRoleBtn"
+                            onclick="location.href='@Url.Action("Edit", "Role", new { id = Model.Id,})'"
                             '">
                         Edit
                     </button>
@@ -48,19 +47,58 @@
                 <div class="row my-2">
                     <div class="col-md-6">
                         <div class="form-group">
-                            <label class="control-label fw-bolder">Name</label>
-                            <p>@Model.Name</p>
+                            <label class="control-label fw-bolder">Role Name</label>
+                            <p>@Model.RoleName</p>
                         </div>
                     </div>
-
                     <div class="col-md-6">
                         <div class="form-group">
-                            <label class="control-label fw-bolder">Description</label>
-                            <p>@Model.Description</p>
+                            <label class="control-label fw-bolder">Normalized Name</label>
+                            <p>@Model.NormalizedName</p>
                         </div>
                     </div>
                 </div>
 
+                <hr />
+                <h4 class="text-blue mb-1">Users associated with @Model.RoleName Role</h4>
+                <div class="row my-2">
+                    <div class="table-responsive">
+                        <table id="modelTable" class="data-table table w-100">
+                            <thead>
+                                <tr>
+                                    <th class="text-start">FirstName</th>
+                                    <th class="text-start">LastName</th>
+                                    <th class="text-start">Email</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                               @{
+                                    @if (Model.Users.Count > 0)
+                                    {
+                                        @foreach (var item in Model.Users)
+                                        {
+                                            <tr>
+                                                <td>@item.FirstName</td>
+                                                <td>@item.LastName</td>
+                                                <td>@item.Email</td>
+                                            </tr>
+                                        }
+
+                                    }
+                                    else
+                                    {
+                                        <tr>
+                                            <td></td>
+                                            <td>No Users Found</td>
+                                            <td></td>
+                                        </tr>
+                                    }
+                            }
+
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

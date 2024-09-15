@@ -1,9 +1,9 @@
-﻿@using Intl.Realty.Firm.Model.ViewModel.DepartmentVM
+﻿@using Intl.Realty.Firm.Model.ViewModel.RoleVM
 
-@model IEnumerable<DepartmentViewModel>
+@model IEnumerable<RoleViewModel>
 
 @{
-    ViewData["Title"] = "Department";
+    ViewData["Title"] = "Role";
     Layout = "~/Views/Shared/_LayoutAfterLogin.cshtml";
 }
 
@@ -22,10 +22,10 @@
 @section Scripts {
     <script type="text/javascript">
         $(document).ready(function () {
-            $('#ListPartialContainer').load('/Department/ListPartialView');
+            $('#ListPartialContainer').load('/Role/ListPartialView');
         });
         function OpenDeleteModal(id) {
-            $('#DeleteModalContainer').load('/Department/DeleteModal/' + id, function () {
+            $('#DeleteModalContainer').load('/Role/DeleteModal/' + id, function () {
                 $("#deleteConfirmModal").modal("show");
             });
         }

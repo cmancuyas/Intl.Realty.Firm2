@@ -2,26 +2,36 @@
 using Intl.Realty.Firm.Model.ViewModel;
 using Intl.Realty.Firm.Model.ViewModel.AccountVM;
 using Intl.Realty.Firm.Model.ViewModel.RoleVM;
+using Intl.Realty.Firm.Models.DataTable;
+using Intl.Realty.Firm.Models;
 using Intl.Realty.Firm.Utility.MenuData;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using System.Data.Entity.Infrastructure;
+using Newtonsoft.Json;
+using System.Data;
+using Intl.Realty.Firm.Utility.Utilities;
+using Microsoft.EntityFrameworkCore;
+using Intl.Realty.Firm.Service.IService;
+using Intl.Realty.Firm.Utility.Mapper;
 
 namespace Intl.Realty.Firm.Controllers
 {
     public class RoleController : Controller
     {
-        private readonly RoleManager<IdentityRole<Guid>> _roleManager;
+        private readonly RoleManager<ApplicationRole> _roleManager;
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly IExportService<RoleExport> _exportService;
         private readonly ILogger<UserController> _logger;
 
-        public RoleController(RoleManager<IdentityRole<Guid>> roleManager,
+        public RoleController(RoleManager<ApplicationRole> roleManager,
                               UserManager<ApplicationUser> userManager,
+                              IExportService<RoleExport> exportService,
                               ILogger<UserController> logger)
         {
             _roleManager = roleManager;
             _userManager = userManager;
+            _exportService = exportService;
             _logger = logger;
         }
         public IActionResult Index()
@@ -43,7 +53,7 @@ namespace Intl.Realty.Firm.Controllers
                 var roleExist = await _roleManager.RoleExistsAsync(viewModel.RoleName);
                 if (!roleExist)
                 {
-                    var result = await _roleManager.CreateAsync(new IdentityRole<Guid>(viewModel.RoleName));
+                    var result = await _roleManager.CreateAsync(new ApplicationRole(viewModel.RoleName));
 
                     if (result.Succeeded)
                     {
@@ -60,32 +70,32 @@ namespace Intl.Realty.Firm.Controllers
         }
         [HttpGet]
         //[Authorize(Policy = "EditRolePolicy")]
-        public async Task<IActionResult> Edit(string id)
+        public async Task<IActionResult> Edit(Guid id)
         {
-            var role = await _roleManager.FindByIdAsync(id);
+            var roleModel = await _roleManager.FindByIdAsync(id.ToString());
 
-            if (role == null)
+            if (roleModel == null)
             {
-                ViewBag.ErrorMessage = $"Role with Id = {id} cannot be found";
+                ViewBag.ErrorMessage = $"Role with Id = {roleModel.Id} cannot be found";
                 return View("NotFound");
             }
 
-            var model = new EditRoleViewModel
+            var editRoleViewModel = new EditRoleViewModel
             {
-                Id = role.Id,
-                RoleName = role.Name!
+                Id = roleModel.Id,
+                RoleName = roleModel.Name!
             };
 
             foreach (var user in _userManager.Users)
             {
-                if (await _userManager.IsInRoleAsync(user, role.Name!))
+                if (await _userManager.IsInRoleAsync(user, roleModel.Name!))
                 {
                     //user.UserName = role.Name;
-                    model.Users.Add(user.UserName!);
+                    editRoleViewModel.Users.Add(user.UserName!);
                 }
             }
 
-            return View(model);
+            return View(editRoleViewModel);
         }
         [HttpPost]
         //[Authorize(Policy = "EditRolePolicy")]
@@ -114,6 +124,34 @@ namespace Intl.Realty.Firm.Controllers
                 //viewModel.Users = await _userManager.Users.ToList();
                 return View(viewModel);
             }
+        }
+        public async Task<IActionResult> Preview(Guid id)
+        {
+            var roleModel = await _roleManager.FindByIdAsync(id.ToString());
+
+            if (roleModel == null)
+            {
+                ViewBag.ErrorMessage = $"Role with Id = {roleModel!.Id} cannot be found";
+                return View("NotFound");
+            }
+
+            var previewRoleViewModel = new PreviewRoleViewModel
+            {
+                Id = roleModel.Id,
+                RoleName = roleModel.Name!,
+               NormalizedName = roleModel.NormalizedName!
+            };
+
+            foreach (var user in _userManager.Users)
+            {
+                if (await _userManager.IsInRoleAsync(user, roleModel.Name!))
+                {
+                    //user.UserName = role.Name;
+                    previewRoleViewModel.Users.Add(user);
+                }
+            }
+
+            return View(previewRoleViewModel);
         }
         [HttpGet]
         public async Task<IActionResult> EditUsersInRole(string roleId)
@@ -218,7 +256,7 @@ namespace Intl.Realty.Firm.Controllers
                     }
                     return View("ListRoles");
                 }
-                catch (DbUpdateException ex)
+                catch (Microsoft.EntityFrameworkCore.DbUpdateException ex)
                 {
                     _logger.LogError($"Error deleting role");
 
@@ -324,6 +362,201 @@ namespace Intl.Realty.Firm.Controllers
             }
             return RedirectToAction("EditUser", new { Id = userId });
 
+        }
+        public async Task<IActionResult> GetRoleList([FromBody] DtParameters dtParameters)
+        {
+            var searchBy = dtParameters.Search?.Value;
+
+            // Default order criteria
+            var orderCriteria = "Id";
+            var orderAscendingDirection = true;
+
+            // Initialize order criteria
+            (orderCriteria, orderAscendingDirection) = InitializeOrderCriteria(dtParameters, orderCriteria, orderAscendingDirection);
+
+            // Query initialization
+            var result = _roleManager.Roles;
+
+            if (searchBy!.Contains(":") || searchBy.Contains("+"))
+            {
+                result = FilterSearchWithParameters(result, searchBy);
+            }
+            else
+            {
+                result = DefaultFilterSearch(result, searchBy);
+            }
+
+            // Apply ordering
+            result = orderAscendingDirection ? result.OrderByDynamic(orderCriteria!, DtOrderDir.Asc) : result.OrderByDynamic(orderCriteria!, DtOrderDir.Desc);
+
+            // Get the count of filtered and total results
+            var filteredResultsCount = result.Count();
+            var totalResultsCount = _roleManager.Roles.ToList().Count();
+
+            // Prepare the result for DataTables
+            var jsonResult = new DtResult<ApplicationRole>
+            {
+                Draw = dtParameters.Draw,
+                RecordsTotal = totalResultsCount,
+                RecordsFiltered = filteredResultsCount,
+                Data = await result
+                    .Skip(dtParameters.Start)
+                    .Take(dtParameters.Length)
+                    .ToListAsync()
+            };
+
+            return Json(jsonResult);
+        }
+
+        private IQueryable<ApplicationRole> DefaultFilterSearch(IQueryable<ApplicationRole> result, string searchBy)
+        {
+            result = result.Where(r => r.Name != null && r.Name.ToUpper().Contains(searchBy.ToUpper()) ||
+                   r.Name! != null && r.Name.ToUpper().Contains(searchBy.ToUpper())
+                   );
+            return result;
+        }
+        private IQueryable<ApplicationRole> FilterSearchWithParameters(IQueryable<ApplicationRole> query, string searchBy)
+        {
+            var filters = searchBy.Split('+'); // Split the input by '+'
+
+            foreach (var filter in filters)
+            {
+                var keyValue = filter.Split(':'); // Split each filter by ':'
+                if (keyValue.Length != 2) continue;
+
+                var key = keyValue[0].Trim().ToLower();
+                var value = keyValue[1].Trim().ToUpper();
+
+                switch (key)
+                {
+                    case "name":
+                        query = query.Where(r => r.Name != null && r.Name.ToUpper().Contains(value));
+                        break;
+                    default:
+                        // If there's an unrecognized filter key, you can choose to ignore it or handle it as needed
+                        break;
+                }
+            }
+
+            return query;
+        }
+
+        private (string, bool) InitializeOrderCriteria(DtParameters dtParameters, string orderCriteria, bool orderAscendingDirection)
+        {
+            var orderCriteriaTemp = "Id";
+            var orderAscendingDirectionTemp = true;
+
+            if (dtParameters.Order != null)
+            {
+                // in this example we just default sort on the 1st column
+                try
+                {
+                    orderCriteriaTemp = dtParameters.Columns[dtParameters.Order[0].Column].Data;
+                    orderAscendingDirectionTemp = dtParameters.Order[0].Dir.ToString().ToLower() == "asc";
+                }
+                catch (Exception ex)
+                {
+                    try
+                    {
+                        orderCriteriaTemp = dtParameters.Columns[dtParameters.Order[1].Column].Data;
+                        orderAscendingDirectionTemp = dtParameters.Order[1].Dir.ToString().ToLower() == "asc";
+                    }
+                    catch (Exception ex1)
+                    {
+                        orderCriteriaTemp = "Id";
+                        orderAscendingDirectionTemp = true;
+                    }
+                }
+            }
+
+            if (orderCriteriaTemp == null)
+            {
+                orderCriteriaTemp = "Id";
+                orderAscendingDirectionTemp = true;
+            }
+
+            if (orderCriteriaTemp != null)
+            {
+                orderCriteria = orderCriteriaTemp;
+                orderAscendingDirection = orderAscendingDirectionTemp;
+            }
+
+            return (orderCriteria, orderAscendingDirection);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ExportTable([FromQuery] string format, [FromForm] string dtParametersJson)
+        {
+            var dtParameters = new DtParameters();
+            if (!string.IsNullOrEmpty(dtParametersJson))
+            {
+                dtParameters = JsonConvert.DeserializeObject<DtParameters>(dtParametersJson);
+            }
+            if (dtParameters != default)
+            {
+                var searchBy = dtParameters.Search?.Value;
+
+                var orderCriteria = "Id";
+                var orderAscendingDirection = true;
+
+                (orderCriteria, orderAscendingDirection) = InitializeOrderCriteria(dtParameters, orderCriteria, orderAscendingDirection);
+
+                var result = _roleManager.Roles;
+
+                if (!string.IsNullOrEmpty(searchBy))
+                {
+                    if (searchBy.Contains(":") || searchBy.Contains("+"))
+                    {
+                        result = FilterSearchWithParameters(result, searchBy);
+                    }
+                    else
+                    {
+                        result = DefaultFilterSearch(result, searchBy);
+                    };
+
+                }
+
+                result = orderAscendingDirection ? result.OrderByDynamic(orderCriteria, DtOrderDir.Asc) : result.OrderByDynamic(orderCriteria, DtOrderDir.Desc);
+
+                var resultList = await result.ToListAsync();
+
+                var resultListForExport = resultList.ToRoleListExport();
+
+                switch (format)
+                {
+                    case ExportFormat.Excel:
+                        return File(
+                            await _exportService.ExportToExcel(resultListForExport),
+                            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                            "data.xlsx");
+
+                    case ExportFormat.Csv:
+                        return File(_exportService.ExportToCsv(resultListForExport),
+                            "application/csv",
+                            "data.csv");
+
+                    case ExportFormat.Html:
+                        return File(_exportService.ExportToHtml(resultListForExport),
+                            "application/csv",
+                            "data.html");
+
+                    case ExportFormat.Json:
+                        return File(_exportService.ExportToJson(resultListForExport),
+                            "application/json",
+                            "data.json");
+
+                    case ExportFormat.Xml:
+                        return File(_exportService.ExportToXml(resultListForExport),
+                            "application/xml",
+                            "data.xml");
+
+                    case ExportFormat.Yaml:
+                        return File(_exportService.ExportToYaml(resultListForExport),
+                            "application/yaml",
+                            "data.yaml");
+                }
+            }
+            return null!;
         }
     }
 }

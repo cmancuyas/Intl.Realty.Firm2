@@ -1,11 +1,15 @@
-﻿using Intl.Realty.Firm.Model.Model;
-
-namespace Intl.Realty.Firm.Model.ViewModel.RoleVM
+﻿namespace Intl.Realty.Firm.Model.ViewModel.RoleVM
 {
-    public class RoleViewModel : BaseModel
+    public class RoleViewModel 
     {
-        public int Id { get; set; }
-        public string Name { get; set; } = string.Empty;
-        public string Description { get; set; } = string.Empty;
+        public RoleViewModel()
+        {
+            Users = new List<string>();
+        }
+        public Guid Id { get; set; }
+        public string RoleName { get; set; } = string.Empty;
+        public string NormalizedName { get; set; } = string.Empty;
+
+        public List<string> Users { get; set; }
     }
 }

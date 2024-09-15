@@ -15,11 +15,11 @@ namespace Intl.Realty.Firm.Controllers
 {
     public class AdministrationController : Controller
     {
-        private readonly RoleManager<IdentityRole<Guid>> _roleManager;
+        private readonly RoleManager<ApplicationRole> _roleManager;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly ILogger<AdministrationController> _logger;
 
-        public AdministrationController(RoleManager<IdentityRole<Guid>> roleManager,
+        public AdministrationController(RoleManager<ApplicationRole> roleManager,
                                         UserManager<ApplicationUser> userManager,
                                         ILogger<AdministrationController> logger)
         {
@@ -98,7 +98,7 @@ namespace Intl.Realty.Firm.Controllers
         }
 
         [HttpGet]
-        [Authorize(Policy = "EditRolePolicy")]
+        //[Authorize(Policy = "EditRolePolicy")]
         public async Task<IActionResult> ManageUserRoles(string userId)
         {
             ViewBag.UserId = userId;
@@ -136,7 +136,7 @@ namespace Intl.Realty.Firm.Controllers
 
         }
         [HttpPost]
-        [Authorize(Policy = "EditRolePolicy")]
+        //[Authorize(Policy = "EditRolePolicy")]
         public async Task<IActionResult> ManageUserRoles(List<UserRolesViewModel> model, string userId)
         {
             ViewBag.UserId = userId;
@@ -326,7 +326,7 @@ namespace Intl.Realty.Firm.Controllers
                 var roleExist = await _roleManager.RoleExistsAsync(viewModel.RoleName);
                 if (!roleExist)
                 {
-                    var result = await _roleManager.CreateAsync(new IdentityRole<Guid>(viewModel.RoleName));
+                    var result = await _roleManager.CreateAsync(new ApplicationRole(viewModel.RoleName));
 
                     if (result.Succeeded)
                     {

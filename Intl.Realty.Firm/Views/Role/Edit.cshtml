@@ -1,6 +1,6 @@
-﻿@using Intl.Realty.Firm.Model.ViewModel.DepartmentVM
+﻿@using Intl.Realty.Firm.Model.ViewModel.RoleVM
 
-@model EditDepartmentWithTabMenuViewModel
+@model EditRoleViewModel
 
 @{
     ViewData["Title"] = "Edit";
@@ -8,19 +8,19 @@
 }
 
 <div class="mb-5">
-    <a href="@Url.Action("Index","Department")" class="text-decoration-none text-blue d-flex mb-4">
+    <a href="@Url.Action("Index","Role")" class="text-decoration-none text-blue d-flex mb-4">
         <i data-feather="chevron-left"></i><span>Back</span>
     </a>
 
     <div class="row justify-content-center">
         <div class="col-md-8 card p-4">
-            <h1 class="text-blue mb-0">Edit Department</h1>
+            <h1 class="text-blue mb-0">Edit Role</h1>
             <hr class="my-4" />
             <form asp-action="Edit"
-                  asp-controller="Department"
+                  asp-controller="Role"
                   method="post"
                   enctype="multipart/form-data">
-                <input type="hidden" asp-for="EditDepartment.Id" />
+                <input type="hidden" asp-for="Id" />
                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
                 <div class="tab-page">
@@ -51,30 +51,10 @@
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label asp-for="EditDepartment.Name" class="control-label fw-bolder"></label>
-                                    <input asp-for="EditDepartment.Name" class="form-control" />
-                                    <span asp-validation-for="EditDepartment.Name" class="text-danger"></span>
+                                    <label class="control-label fw-bolder">Name</label>
+                                    <input asp-for="RoleName" class="form-control" />
+                                    <span asp-validation-for="RoleName" class="text-danger"></span>
                                 </div>
-                            </div>
-                        </div>
-
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label asp-for="EditDepartment.Description" class="control-label fw-bolder"></label>
-                                    <input asp-for="EditDepartment.Description" class="form-control" />
-                                    <span asp-validation-for="EditDepartment.Description" class="text-danger"></span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="row mb-4">
-                            <div class="col-md-12">
-                                <div class="form-check form-switch d-flex align-items-center gap-2">
-                                    <input id="isActiveCheckbox" class="form-check-input" type="checkbox" asp-for="EditDepartment.IsActive">
-                                    <label id="lblStatus" class="fw-bolder">Active</label>
-                                </div>
-                                <span asp-validation-for="EditDepartment.IsActive" class="text-danger"></span>
                             </div>
                         </div>
 
@@ -92,7 +72,7 @@
                 </div> *@
                 <hr class="my-5" />
                 <div class="form-group d-flex justify-content-center gap-4">
-                    <input type="button" value="Cancel" class="btn btn-secondary w-15" onclick="window.location.href='@Url.Action("Index", "Department")'" />
+                    <input type="button" value="Cancel" class="btn btn-secondary w-15" onclick="window.location.href='@Url.Action("Index", "Role")'" />
                     <button type="reset" class="btn btn-secondary w-15" onclick="$('.text-danger').hide();">Reset</button>
                     <button type="submit" class="btn btn-primary w-15" onclick="$('.text-danger').show();">Submit</button>
                 </div>
@@ -109,28 +89,7 @@
     <script type="text/javascript">
         $(document).ready(function () {
 
-            $('#isActiveCheckbox').on('click', toggleStatusLabels);
-            $('#isDeletedCheckbox').on('click', toggleStatusLabelSoftDelete);
-
-            toggleStatusLabels();
-            toggleStatusLabelSoftDelete();
         });
-
-        function toggleStatusLabels() {
-            if ($('#isActiveCheckbox').is(':checked')) {
-                $('#lblStatus').css('color', '#0d6efd').text("Active");
-            } else {
-                $('#lblStatus').css('color', '#bfbfbf').text("Inactive");
-            }
-        }
-        function toggleStatusLabelSoftDelete() {
-
-            if ($('#isDeletedCheckbox').is(':checked')) {
-                $('#lblStatusSoftDelete').css('color', '#0d6efd').text("IsDeleted");
-            } else {
-                $('#lblStatusSoftDelete').css('color', '#bfbfbf').text("NotDeleted");
-            }
-        }
     </script>
 
 }

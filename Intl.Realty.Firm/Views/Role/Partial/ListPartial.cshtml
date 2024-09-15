@@ -1,20 +1,20 @@
-﻿@using Intl.Realty.Firm.Model.ViewModel.DepartmentVM
+﻿@using Intl.Realty.Firm.Model.ViewModel.RoleVM
 
-@model DepartmentListPartialViewModel
+@model RoleListPartialViewModel
 
 <div>
     <form id="ListFormId" method="POST" enctype="application/x-www-form-urlencoded">
     </form>
     <div class="row">
         <div class="col-md-12 d-flex justify-content-md-between align-items-center">
-            <h1 class="text-blue mb-0">Employment Status</h1>
+            <h1 class="text-blue mb-0">Roles</h1>
             <div class="d-flex gap-4">
                 <button type="button" id="btnMultipleDelete"
                         class="btn btn-danger d-none align-items-center"
                         data-toggle="tooltip"
                         data-bs-placement="left"
                         title="Delete"
-                        onclick="OpenMultipleDeleteModal('Department')">
+                        onclick="OpenMultipleDeleteModal('Role')">
                     <i data-feather="trash-2"></i>
                 </button>
                 <a asp-action="Create"
@@ -56,7 +56,6 @@
                                 <th class="text-center w-5"><input id="select_all" type="checkbox" class="column-checkbox no-sort no-search" data-toggle="tooltip" data-bs-placement="left" title="Select all"></th>
                                 @* <th class="text-start">@Html.DisplayNameFor(model => model.Id)</th> *@
                                 <th class="text-start">Name</th>
-                                <th class="text-start">Description</th>
                                 <th class="text-start">Action</th>
                             </tr>
                         </thead>
@@ -105,8 +104,8 @@
             closeModal();
         });
 
-        handleToastrNotification('addSuccess', 'New Department added successfully!');
-        handleToastrNotification('editSuccess', 'Department updated successfully!');
+        handleToastrNotification('addSuccess', 'New Role added successfully!');
+        handleToastrNotification('editSuccess', 'Role updated successfully!');
         handleToastrNotification('deleteSuccess', 'Selection deleted successfully!');
 
     }); // End of document ready
@@ -154,20 +153,20 @@
                 {
                     text: 'Excel',
                     action: function () {
-                        exportToExcel('Department');
+                        exportToExcel('Role');
                     }
                 },
                 {
                     text: 'CSV',
                     action: function () {
-                        exportToCsv('Department');
+                        exportToCsv('Role');
                     }
                 }
             ],
 
             // Ajax Filter
             ajax: {
-                url: "/Department/GetDepartmentList",
+                url: "/Role/GetRoleList",
                 type: "POST",
                 contentType: "application/json",
                 dataType: "json",
@@ -191,9 +190,6 @@
                     },
                 },
                 { data: "name" },
-                { data: "description", title: "Description" },
-
-                // { data: "email", title: "Email" }
 
                 // {
                 //     data: "createdAt",
@@ -222,7 +218,7 @@
                 { targets: "date-type", type: "date-eu" },
 
                 {
-                    targets: 3,
+                    targets: 2,
                     data: null,
                     defaultContent: "<a class='btn btn-secondary' role='button' href='#' onclick='preview(this)'>Preview</a> <a class='btn btn-secondary' role='button' href='#' onclick='edit(this)'>Edit</a>",
                     orderable: false
@@ -258,12 +254,12 @@
             var id = data["id"];
             let parameters = { id: id };
             $.ajax({
-                url: '/Department/Edit/' + id,
+                url: '/Role/Edit/' + id,
                 type: 'GET',
                 data: parameters,
                 contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
                 success: function (data) {
-                    window.location.href = "@Url.Action("Edit", "Department")" + "/" + id;
+                    window.location.href = "@Url.Action("Edit", "Role")" + "/" + id;
                 }
             });
 
@@ -278,12 +274,12 @@
             var id = data["id"];
             let parameters = { id: id };
             $.ajax({
-                url: '/Department/Preview/' + id,
+                url: '/Role/Preview/' + id,
                 type: 'GET',
                 data: parameters,
                 contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
                 success: function (data) {
-                    window.location.href = "@Url.Action("Preview", "Department")" + "/" + id;
+                    window.location.href = "@Url.Action("Preview", "Role")" + "/" + id;
                 }
             });
 

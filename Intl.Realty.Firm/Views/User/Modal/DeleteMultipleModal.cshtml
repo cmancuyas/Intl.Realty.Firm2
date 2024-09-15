@@ -14,7 +14,7 @@ $("#btnConfirmDelete").click(function () {
     viewModelList = JSON.parse(viewModelList);
     let parameters = { viewModelList: viewModelList};
     $.ajax({
-        url: '/Department/SoftDeleteMultiple/',
+        url: '/Department/DeleteMultiple/',
         type: 'POST',
         data: parameters,
         contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
