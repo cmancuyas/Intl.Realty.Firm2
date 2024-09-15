@@ -1,5 +1,5 @@
-﻿using Intl.Realty.Firm.DataAccess.Model;
-using Intl.Realty.Firm.Model.ViewModel.Account;
+﻿using Intl.Realty.Firm.Model.Model;
+using Intl.Realty.Firm.Model.ViewModel.AccountVM;
 using Intl.Realty.Firm.Models.Auxiliary;
 
 namespace Intl.Realty.Firm.Helper

@@ -1,5 +1,4 @@
-﻿using Intl.Realty.Firm.DataAccess.Model;
-using Intl.Realty.Firm.Model.Model;
+﻿using Intl.Realty.Firm.Model.Model;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;

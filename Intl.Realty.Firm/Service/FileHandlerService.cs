@@ -1,5 +1,5 @@
 ﻿using Intl.Realty.Firm.Service.IService;
-using Intl.Realty.Firm.Utility.Utilities;
+using Intl.Realty.Firm.Utilities;
 using Microsoft.AspNetCore.StaticFiles;
 
 namespace Intl.Realty.Firm.Service

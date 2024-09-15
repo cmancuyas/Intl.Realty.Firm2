@@ -1,0 +1,39 @@
+﻿@using Intl.Realty.Firm.Model.ViewModel.EmploymentStatusVM
+
+@model IEnumerable<EmploymentStatusViewModel>
+
+@{
+    ViewData["Title"] = "EmploymentStatus";
+    Layout = "~/Views/Shared/_LayoutAfterLogin.cshtml";
+}
+
+<div>
+    <div class="c-content" id="ListPartialContainer">
+        <div class="d-flex justify-content-center">
+            @{
+                @await Html.PartialAsync("~/Views/Shared/_Spinner.cshtml");
+            }
+        </div>
+    </div>
+    <div id="DeleteModalContainer"></div>
+    <div id="DeleteMultipleModalContainer"></div>
+</div>
+
+@section Scripts {
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#ListPartialContainer').load('/EmploymentStatus/ListPartialView');
+        });
+        function OpenDeleteModal(id) {
+            $('#DeleteModalContainer').load('/EmploymentStatus/DeleteModal/' + id, function () {
+                $("#deleteConfirmModal").modal("show");
+            });
+        }
+        function ShowDetails(id) {
+            $('#item-' + id).addClass('c-show-hidden');
+        }
+        function HideDetails(id) {
+            $('#item-' + id).removeClass('c-show-hidden');
+        }
+    </script>
+}

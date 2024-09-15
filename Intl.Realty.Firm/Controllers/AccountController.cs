@@ -1,7 +1,7 @@
-﻿using Intl.Realty.Firm.DataAccess.Model;
-using Intl.Realty.Firm.Helper;
+﻿using Intl.Realty.Firm.Helper;
+using Intl.Realty.Firm.Model.Model;
 using Intl.Realty.Firm.Model.ViewModel;
-using Intl.Realty.Firm.Model.ViewModel.Account;
+using Intl.Realty.Firm.Model.ViewModel.AccountVM;
 using Intl.Realty.Firm.Service.IService;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -150,11 +150,11 @@ namespace Intl.Realty.Firm.Controllers
             return View();
         }
 
-        [HttpPost]
+        [AcceptVerbs("Get", "Post")]
         public async Task<IActionResult> Logout()
         {
             await _signInManager.SignOutAsync();
-            return RedirectToAction("Index", "Home");
+            return RedirectToAction("Login", "Account");
         }
         [HttpGet]
         [AllowAnonymous]

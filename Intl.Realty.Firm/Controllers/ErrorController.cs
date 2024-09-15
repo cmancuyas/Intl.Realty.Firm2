@@ -21,7 +21,7 @@ namespace Intl.Realty.Firm.Controllers
             {
                 case 404:
                     ViewBag.ErrorMessage = "Sorry, the resource you requested could not be found";
-                    ViewBag.Path = statusCodeResult.OriginalPath;
+                    ViewBag.Path = statusCodeResult!.OriginalPath;
                     ViewBag.QS = statusCodeResult.OriginalQueryString;
 
                     _logger.LogWarning($"404 Error occurred. Path = {statusCodeResult.OriginalPath}" +
@@ -38,7 +38,7 @@ namespace Intl.Realty.Firm.Controllers
         {
             var exceptionDetails = HttpContext.Features.Get<IExceptionHandlerPathFeature>();
 
-            ViewBag.ExceptionPath = exceptionDetails.Path;
+            ViewBag.ExceptionPath = exceptionDetails!.Path;
             ViewBag.ExceptionMessage = exceptionDetails.Error.Message;
             ViewBag.Stacktrace = exceptionDetails.Error.StackTrace;
 

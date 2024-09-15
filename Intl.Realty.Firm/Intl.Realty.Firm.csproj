@@ -7,16 +7,23 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="EPPlus" Version="7.3.1" />
+    <PackageReference Include="ExcelDataReader" Version="3.7.0" />
     <PackageReference Include="MailKit" Version="4.7.1.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="8.0.8" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.8">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="YamlDotNet" Version="16.1.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Views\Administration\" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Intl.Realty.Firm.DataAccess\Intl.Realty.Firm.DataAccess.csproj" />
-    <ProjectReference Include="..\Intl.Realty.Firm.Model\Intl.Realty.Firm.Model.csproj" />
     <ProjectReference Include="..\Intl.Realty.Firm.Utility\Intl.Realty.Firm.Utility.csproj" />
   </ItemGroup>
 

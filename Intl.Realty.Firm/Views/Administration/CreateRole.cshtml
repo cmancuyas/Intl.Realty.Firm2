@@ -1,0 +1,22 @@
+﻿@using Intl.Realty.Firm.Model.ViewModel.RoleVM
+
+@model CreateRoleViewModel
+@{
+    ViewData["Title"] = "Create Role";
+    Layout = "~/Views/Shared/_LayoutAfterLogin.cshtml";
+}
+<h1>Create Role</h1>
+<div>
+    <form asp-action="CreateRole" asp-controller="Administration" method="post">
+        <div asp-validation-summary="All" class="text-danger"></div>
+        <div class="mb-3">
+            <label for="Role" class="form-label">Role</label>
+            <input asp-for="RoleName" type="text" class="form-control" id="RoleName" placeholder="RoleName">
+            <span asp-validation-for="RoleName" class="text-danger"></span>
+        </div>
+        <div class="form-group d-flex justify-content-center gap-4">
+            <input type="button" value="Cancel" class="btn btn-secondary w-15" onclick="window.location.href='@Url.Action("ListRoles", "Administration")'" />
+            <input type="submit" value="Submit" class="btn btn-primary w-15" />
+        </div>
+    </form>
+</div>

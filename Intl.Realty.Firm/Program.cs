@@ -1,5 +1,4 @@
 using Intl.Realty.Firm.DataAccess;
-using Intl.Realty.Firm.DataAccess.Model;
 using Intl.Realty.Firm.Models.Auxiliary;
 using Intl.Realty.Firm.Repository;
 using Intl.Realty.Firm.Repository.IRepository;
@@ -12,6 +11,10 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.EntityFrameworkCore;
+using Intl.Realty.Firm.Service.Export;
+using Intl.Realty.Firm.Service.IService.IExport;
+using Newtonsoft.Json.Serialization;
+using Intl.Realty.Firm.Model.Model;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -50,6 +53,59 @@ builder.Services.AddMvc(options =>
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.AccessDeniedPath = new PathString("/Administration/AccessDenied");
+});
+
+builder.Services.AddAuthorization(options =>
+{
+    // Claims Policy
+    options.AddPolicy("CreateRolePolicy",
+        policy => policy
+        //.RequireClaim("Create Role", "true"));
+        .AddRequirements(new ManageAdminRolesAndClaimsRequirement())
+
+        );
+
+    options.AddPolicy("DeleteRolePolicy",
+            policy => policy
+            //.RequireClaim("Delete Role", "true"));
+            .AddRequirements(new ManageAdminRolesAndClaimsRequirement())
+
+            );
+
+    options.AddPolicy("EditRolePolicy",
+            policy => policy
+
+            .AddRequirements(new ManageAdminRolesAndClaimsRequirement())
+
+            //.RequireAssertion(context =>
+            //context.User.IsInRole("SuperAdmin") || context.User.IsInRole("Admin") ||
+            //context.User.HasClaim(claim => claim.Type == "Edit Role" && claim.Value == "true" &&
+            //context.User.IsInRole("DealAdmin") 
+            //))
+
+            //.RequireClaim("Edit Role", "true")
+            //.RequireRole("Admin")
+            //.RequireRole("DealAdmin")
+            //.RequireRole("SuperAdmin")
+            );
+    //options.InvokeHandlersAfterFailure = false;
+    //Roles Policy 
+    options.AddPolicy("AdminRolePolicy",
+        policy => policy
+                .RequireRole("Admin", "DealAdmin"));
+});
+
+builder.Services.AddTransient(typeof(IExportService<>), typeof(ExportService<>));
+builder.Services.AddScoped<IExcelService, ExcelService>();
+builder.Services.AddScoped<ICsvService, CsvService>();
+builder.Services.AddScoped<IHtmlService, HtmlService>();
+builder.Services.AddScoped<IJsonService, JsonService>();
+builder.Services.AddScoped<IXmlService, XmlService>();
+builder.Services.AddScoped<IYamlService, YamlService>();
+
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddSingleton<IAuthorizationHandler, SuperAdminHandler>();
 builder.Services.AddSingleton<IAuthorizationHandler, CanEditOnlyOtherAdminRolesAndClaimsHandler>();
@@ -87,6 +143,13 @@ builder.WebHost.ConfigureKestrel(c =>
 });
 builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
 
+builder.Services.AddMvc().AddNewtonsoftJson(options =>
+{
+    options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
+    options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
+    options.SerializerSettings.PreserveReferencesHandling = Newtonsoft.Json.PreserveReferencesHandling.Objects;
+});
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -108,7 +171,8 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
-app.UseAuthorization();
+app.UseAuthentication(); // identifying who the user is
+app.UseAuthorization(); // identifying what the user can do
 
 app.MapControllerRoute(
     name: "default",
