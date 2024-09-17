@@ -1,11 +1,25 @@
 ﻿function TabSelections() {
+    $("#users-tab").on("click", function () {
+        window.location.href = '/User/Index';
+    });
+    $("#roles-tab").on("click", function () {
+        window.location.href = '/Role/Index';
+    });
     $("#employmentStatuses-tab").on("click", function () {
         window.location.href = '/EmploymentStatus/Index';
     });
     $("#departments-tab").on("click", function () {
         window.location.href = '/Department/Index';
     });
-
+    $("#transactionTypes-tab").on("click", function () {
+        window.location.href = '/TransactionType/Index';
+    });
+    $("#documentTypes-tab").on("click", function () {
+        window.location.href = '/DocumentType/Index';
+    });
+    $("#dealStatuses-tab").on("click", function () {
+        window.location.href = '/DealStatus/Index';
+    });
 }
 function SearchBoxSettings() {
     $('[id^=dt-search]').attr('placeholder', 'Search...').addClass('fst-italic');

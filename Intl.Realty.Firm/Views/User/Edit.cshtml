@@ -1,6 +1,6 @@
-﻿@using Intl.Realty.Firm.Model.ViewModel.DepartmentVM
+﻿@using Intl.Realty.Firm.Model.ViewModel.UserVM
 
-@model EditDepartmentWithTabMenuViewModel
+@model EditUserViewModel
 
 @{
     ViewData["Title"] = "Edit";
@@ -8,19 +8,19 @@
 }
 
 <div class="mb-5">
-    <a href="@Url.Action("Index","Department")" class="text-decoration-none text-blue d-flex mb-4">
+    <a href="@Url.Action("Index","User")" class="text-decoration-none text-blue d-flex mb-4">
         <i data-feather="chevron-left"></i><span>Back</span>
     </a>
 
     <div class="row justify-content-center">
         <div class="col-md-8 card p-4">
-            <h1 class="text-blue mb-0">Edit Department</h1>
+            <h1 class="text-blue mb-0">Edit User</h1>
             <hr class="my-4" />
             <form asp-action="Edit"
-                  asp-controller="Department"
+                  asp-controller="User"
                   method="post"
                   enctype="multipart/form-data">
-                <input type="hidden" asp-for="EditDepartment.Id" />
+                <input type="hidden" asp-for="Id" />
                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
                 <div class="tab-page">
@@ -46,38 +46,104 @@
 
                 <div class="tab-content" style="border-bottom:none;background-color:white;">
 
-                    <div class="tab-pane active" id="departmentDetails" aria-labelledby="departmentDetails-tab" style="background-color:white;">
+                    <div class="tab-pane active" id="itemDetails" aria-labelledby="itemDetails-tab" style="background-color:white;">
 
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label asp-for="EditDepartment.Name" class="control-label fw-bolder"></label>
-                                    <input asp-for="EditDepartment.Name" class="form-control" />
-                                    <span asp-validation-for="EditDepartment.Name" class="text-danger"></span>
+                                    <label asp-for="FirstName" class="control-label fw-bolder"></label>
+                                    <input asp-for="FirstName" class="form-control" />
+                                    <span asp-validation-for="FirstName" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label asp-for="LastName" class="control-label fw-bolder"></label>
+                                    <input asp-for="LastName" class="form-control" />
+                                    <span asp-validation-for="LastName" class="text-danger"></span>
                                 </div>
                             </div>
                         </div>
-
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label asp-for="EditDepartment.Description" class="control-label fw-bolder"></label>
-                                    <input asp-for="EditDepartment.Description" class="form-control" />
-                                    <span asp-validation-for="EditDepartment.Description" class="text-danger"></span>
+                                    <label asp-for="MiddleName" class="control-label fw-bolder"></label>
+                                    <input asp-for="MiddleName" class="form-control" />
+                                    <span asp-validation-for="MiddleName" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label asp-for="Suffix" class="control-label fw-bolder"></label>
+                                    <input asp-for="Suffix" class="form-control" />
+                                    <span asp-validation-for="Suffix" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label asp-for="Email" class="control-label fw-bolder"></label>
+                                    <input asp-for="Email" class="form-control" />
+                                    <span asp-validation-for="Email" class="text-danger"></span>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="row mb-4">
-                            <div class="col-md-12">
-                                <div class="form-check form-switch d-flex align-items-center gap-2">
-                                    <input id="isActiveCheckbox" class="form-check-input" type="checkbox" asp-for="EditDepartment.IsActive">
-                                    <label id="lblStatus" class="fw-bolder">Active</label>
-                                </div>
-                                <span asp-validation-for="EditDepartment.IsActive" class="text-danger"></span>
+                        @* Department *@
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="control-label fw-bolder">Department</label>
+                                <select id="DepartmentId" name="DepartmentId" class="form-select">
+                                    @{
+                                        @if (Model.DepartmentList != null)
+                                        {
+                                            @foreach (var item in Model.DepartmentList)
+                                            {
+                                                if (item.Id == Model.DepartmentId)
+                                                {
+                                                    <option value="@item.Id" selected>@item.Description</option>
+                                                }
+                                                else
+                                                {
+                                                    <option value="@item.Id">@item.Description</option>
+                                                }
+                                            }
+                                        }
+                                    }
+                                </select>
+
+                                @Html.ValidationMessageFor(m => m.DepartmentId, "", new { @class = "text-danger" })
+
                             </div>
                         </div>
+                        @* EmploymentStatus *@
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="control-label fw-bolder">EmploymentStatus</label>
+                                <select id="EmploymentStatusId" name="EmploymentStatusId" class="form-select">
+                                    @{
+                                        @if (Model.EmploymentStatusList != null)
+                                        {
+                                            @foreach (var item in Model.EmploymentStatusList)
+                                            {
+                                                if (item.Id == Model.EmploymentStatusId)
+                                                {
+                                                    <option value="@item.Id" selected>@item.Description</option>
+                                                }
+                                                else
+                                                {
+                                                    <option value="@item.Id">@item.Description</option>
+                                                }
+                                            }
+                                        }
+                                    }
+                                </select>
 
+                                @Html.ValidationMessageFor(m => m.EmploymentStatusId, "", new { @class = "text-danger" })
+
+                            </div>
+                        </div>
                     </div>
 
                 </div>
@@ -92,7 +158,7 @@
                 </div> *@
                 <hr class="my-5" />
                 <div class="form-group d-flex justify-content-center gap-4">
-                    <input type="button" value="Cancel" class="btn btn-secondary w-15" onclick="window.location.href='@Url.Action("Index", "Department")'" />
+                    <input type="button" value="Cancel" class="btn btn-secondary w-15" onclick="window.location.href='@Url.Action("Index", "User")'" />
                     <button type="reset" class="btn btn-secondary w-15" onclick="$('.text-danger').hide();">Reset</button>
                     <button type="submit" class="btn btn-primary w-15" onclick="$('.text-danger').show();">Submit</button>
                 </div>

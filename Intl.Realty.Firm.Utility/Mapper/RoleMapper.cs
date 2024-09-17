@@ -1,7 +1,5 @@
 ﻿using Intl.Realty.Firm.Model.Model;
 using Intl.Realty.Firm.Model.ViewModel.RoleVM;
-using Intl.Realty.Firm.Model.ViewModel.RoleVM;
-using Microsoft.AspNetCore.Identity;
 
 namespace Intl.Realty.Firm.Utility.Mapper
 {

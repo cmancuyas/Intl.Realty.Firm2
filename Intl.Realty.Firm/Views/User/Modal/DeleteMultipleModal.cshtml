@@ -1,6 +1,6 @@
-﻿@using Intl.Realty.Firm.Model.ViewModel.DepartmentVM
+﻿@using Intl.Realty.Firm.Model.ViewModel.UserVM
 
-@model IEnumerable<DeleteDepartmentViewModel>
+@model IEnumerable<DeleteUserViewModel>
 
 <partial name="~/Views/Shared/Modal/_DeleteModal.cshtml">
 
@@ -14,7 +14,7 @@ $("#btnConfirmDelete").click(function () {
     viewModelList = JSON.parse(viewModelList);
     let parameters = { viewModelList: viewModelList};
     $.ajax({
-        url: '/Department/DeleteMultiple/',
+        url: '/User/DeleteMultiple/',
         type: 'POST',
         data: parameters,
         contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
@@ -28,7 +28,7 @@ $("#btnConfirmDelete").click(function () {
             //     confirmButtonColor: '#14984a'
             // });
             window.location.reload()
-            // $('#positionListPartialContainer').load('/Department/DepartmentListPartialView');
+            // $('#positionListPartialContainer').load('/User/UserListPartialView');
 
         }
     });

@@ -8,9 +8,11 @@ using Intl.Realty.Firm.Service.IService;
 using Intl.Realty.Firm.Utility.Mapper;
 using Intl.Realty.Firm.Utility.MenuData;
 using Intl.Realty.Firm.Utility.Utilities;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
+using System.Security.Claims;
 
 namespace DENR_FASPIS.Controllers
 {
@@ -20,24 +22,20 @@ namespace DENR_FASPIS.Controllers
         private readonly IExportService<EmploymentStatusExport> _exportService;
         private readonly IConfigurationService _configurationService;
         private readonly IFileHandlerService _fileHandlerService;
-        //private readonly ISessionManagerService _sessionManagerService;
-        private readonly Guid _userId;
+        private readonly UserManager<ApplicationUser> _userManager;
         private readonly string _backupFileDirectory = "\\wwwroot\\Files\\Uploads\\";
 
         public EmploymentStatusController(IUnitOfWork unitOfWork,
                                     IExportService<EmploymentStatusExport> exportService,
                                     IConfigurationService configurationService,
-                                    IFileHandlerService fileHandlerService
-                                    //ISessionManagerService sessionManagerService
-                    )
+                                    IFileHandlerService fileHandlerService,
+                                    UserManager<ApplicationUser> userManager)
         {
             _unitOfWork = unitOfWork;
             _exportService = exportService;
             _configurationService = configurationService;
             _fileHandlerService = fileHandlerService;
-            //_sessionManagerService = sessionManagerService;
-
-            //_userId = new Guid(_sessionManagerService.GetCurrentUser().Id);
+            _userManager = userManager;
         }
         public IActionResult Index()
         {
@@ -69,14 +67,31 @@ namespace DENR_FASPIS.Controllers
         {
             if (ModelState.IsValid)
             {
+                // to get current user ID
+                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+                // to get current user info
+                var user = await _userManager.FindByIdAsync(userId!);
+
+                string controllerName = this.ControllerContext.RouteData.Values["controller"]!.ToString()!;
+
                 viewModel.CreateEmploymentStatus.IsActive = true;
                 viewModel.CreateEmploymentStatus.IsDeleted = false;
-                viewModel.CreateEmploymentStatus.CreatedBy = _userId;
+                viewModel.CreateEmploymentStatus.CreatedBy = user!.Id;
                 viewModel.CreateEmploymentStatus.CreatedAt = DateTime.UtcNow;
 
-                var model = viewModel.CreateEmploymentStatus.ToEmploymentStatusModel();
 
-                await _unitOfWork.EmploymentStatus.AddAsync(model);
+                var checkIfExists = await _unitOfWork.EmploymentStatus.GetAsync(x => x.Name == viewModel.CreateEmploymentStatus.Name);
+                if (checkIfExists == null)
+                {
+                    var model = viewModel.CreateEmploymentStatus.ToEmploymentStatusModel();
+                    await _unitOfWork.EmploymentStatus.AddAsync(model);
+                }
+                else
+                {
+                    ModelState.AddModelError(string.Empty, $"Employment Status already exists");
+                    return View();
+                }
             }
 
             return RedirectToAction(nameof(Index), new { addSuccess = true });
@@ -100,11 +115,17 @@ namespace DENR_FASPIS.Controllers
 
                 return View("NotFound", notFoundViewModel);
             }
+            // to get current user ID
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            // to get current user info
+            var user = await _userManager.FindByIdAsync(userId!);
+
             EditEmploymentStatusWithTabMenuViewModel viewModel = new EditEmploymentStatusWithTabMenuViewModel();
 
             viewModel.EditEmploymentStatus = model.ToEditEmploymentStatusViewModel();
 
-            viewModel.EditEmploymentStatus.UpdatedBy = _userId;
+            viewModel.EditEmploymentStatus.UpdatedBy = user!.Id;
             viewModel.EditEmploymentStatus.UpdatedAt = DateTime.Now;
 
             var menus = AdministrationTabMenuData.GetAdministrationTabMenuData();
@@ -137,7 +158,13 @@ namespace DENR_FASPIS.Controllers
             }
 
             if (ModelState.IsValid)
-            {
+            {   
+                // to get current user ID
+                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+                // to get current user info
+                var user = await _userManager.FindByIdAsync(userId!);
+
                 var modelFromDb = await _unitOfWork.EmploymentStatus.GetAsync(x => x.Id == viewModel.EditEmploymentStatus.Id);
 
                 string controllerName = this.ControllerContext.RouteData.Values["controller"]!.ToString()!;
@@ -148,7 +175,7 @@ namespace DENR_FASPIS.Controllers
                 model.CreatedBy = modelFromDb.CreatedBy;
 
                 model.UpdatedAt = DateTime.Now;
-                model.UpdatedBy = _userId;
+                model.UpdatedBy = user!.Id;
 
                 await _unitOfWork.EmploymentStatus.UpdateAsync(model);
             }
@@ -162,7 +189,14 @@ namespace DENR_FASPIS.Controllers
             var model = await _unitOfWork.EmploymentStatus.GetAsync(x => x.Id == id);
             if (model == null)
             {
-                return NotFound();
+                string controllerName = this.ControllerContext.RouteData.Values["controller"]!.ToString()!;
+                NotFoundViewModel notFoundViewModel = new NotFoundViewModel();
+                notFoundViewModel.ErrorTitle = ($"{controllerName} not found");
+                notFoundViewModel.ErrorMessage = ($"{controllerName} with {id} cannot be found!");
+                notFoundViewModel.ControllerName = controllerName;
+                notFoundViewModel.ControllerAction = "Index";
+
+                return View("NotFound", notFoundViewModel);
             }
 
             var viewModel = model.ToPreviewEmploymentStatusViewModel();
@@ -193,7 +227,14 @@ namespace DENR_FASPIS.Controllers
 
             if (modelIEnum == null)
             {
-                return NotFound();
+                string controllerName = this.ControllerContext.RouteData.Values["controller"]!.ToString()!;
+                NotFoundViewModel notFoundViewModel = new NotFoundViewModel();
+                notFoundViewModel.ErrorTitle = ($"{controllerName} not found");
+                notFoundViewModel.ErrorMessage = ($"{controllerName} cannot be found!");
+                notFoundViewModel.ControllerName = controllerName;
+                notFoundViewModel.ControllerAction = "Index";
+
+                return View("NotFound", notFoundViewModel);
             }
 
             var deleteEmploymentStatusIEnumViewModel = modelIEnum.ToDeleteEmploymentStatusIEnumViewModel();
@@ -239,12 +280,18 @@ namespace DENR_FASPIS.Controllers
 
             if (modelList != null)
             {
+                // to get current user ID
+                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+                // to get current user info
+                var user = await _userManager.FindByIdAsync(userId!);
+
                 try
                 {
                     foreach (var item in modelList)
                     {
                         item.IsDeleted = true;
-                        item.DeletedBy = _userId;
+                        item.DeletedBy = user!.Id;
                         item.DeletedAt = DateTime.Now;
                     }
                     await _unitOfWork.EmploymentStatus.UpdateRangeAsync(modelList);

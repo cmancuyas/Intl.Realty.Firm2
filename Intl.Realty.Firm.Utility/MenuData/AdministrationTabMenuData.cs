@@ -9,43 +9,46 @@ namespace Intl.Realty.Firm.Utility.MenuData
             List<TabMenu> menus = new List<TabMenu>();
             int count = 0;
 
-            // 1st TabMenu
+            // Start
             TabMenu menu = new TabMenu()
             {
                 Id = count + 1,
-                Menu = "ManageUser",
+                Menu = "User",
                 Description = "Manage Users",
-                Tab = "manageUsers-tab",
-                Control = "manageUsers",
+                Tab = "users-tab",
+                Control = "users",
             };
 
             menus.Add(menu);
+            // End
 
-            // Second TabMenu
+            // Start
             menu = new TabMenu()
             {
                 Id = count + 1,
-                Menu = "ManageRole",
+                Menu = "Role",
                 Description = "Manage Roles",
-                Tab = "manageRoles-tab",
-                Control = "manageRoles",
+                Tab = "roles-tab",
+                Control = "roles",
             };
 
             menus.Add(menu);
+            // End
 
-            // Third TabMenu
+            // Start
             menu = new TabMenu()
             {
                 Id = count + 1,
                 Menu = "EmploymentStatus",
                 Description = "Employment Status",
-                Tab = "employmentStatus-tab",
-                Control = "employmentStatus",
+                Tab = "employmentStatuses-tab",
+                Control = "employmentStatuses",
             };
 
             menus.Add(menu);
+            // End
 
-            // Fourth TabMenu
+            // Start
             menu = new TabMenu()
             {
                 Id = count + 1,
@@ -56,6 +59,7 @@ namespace Intl.Realty.Firm.Utility.MenuData
             };
 
             menus.Add(menu);
+            // End
 
             return menus;
         }

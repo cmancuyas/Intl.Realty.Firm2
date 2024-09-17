@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Intl.Realty.Firm.Model.Model;
+using System.ComponentModel.DataAnnotations;
 
 namespace Intl.Realty.Firm.Model.ViewModel.UserVM
 {
@@ -21,5 +22,7 @@ namespace Intl.Realty.Firm.Model.ViewModel.UserVM
         public int? ProfilePictureId { get; set; }
         public List<string> Claims { get; set; } = new List<string>();
         public List<string> Roles { get; set; } = new List<string>();
+        public List<Department>? DepartmentList { get; set; }
+        public List<EmploymentStatus>? EmploymentStatusList { get; set; }
     }
 }

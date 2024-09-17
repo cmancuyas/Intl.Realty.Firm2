@@ -12,5 +12,9 @@ namespace Intl.Realty.Firm.Model.Model
         public int EmploymentStatusId { get; set; }
         public int? ProfilePictureId { get; set; }
         public bool UserAgreement { get; set; }
+
+        public virtual Department? Department { get; set; }
+        public virtual EmploymentStatus? EmploymentStatus { get; set; }
+
     }
 }

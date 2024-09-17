@@ -280,8 +280,8 @@ namespace Intl.Realty.Firm.Controllers
                     LastName = viewModel.LastName,
                     MiddleName = viewModel.MiddleName,
                     Suffix = viewModel.Suffix,
-                    DepartmentId = (viewModel.DepartmentId == 0) ? viewModel.DepartmentId : 1,
-                    EmploymentStatusId = (viewModel.EmploymentStatusId == 0) ? viewModel.EmploymentStatusId : 1,
+                    DepartmentId = (viewModel.DepartmentId == 0) ? 1 : viewModel.DepartmentId,
+                    EmploymentStatusId = 1,
                     ProfilePictureId = viewModel.ProfilePictureId ?? 0,
                     UserAgreement = viewModel.UserAgreement
                 };
@@ -295,7 +295,7 @@ namespace Intl.Realty.Firm.Controllers
                     var confirmationLink = Url.Action("ConfirmEmail", "Account",
                                                                 new { userId = user.Id, token = token }, Request.Scheme);
 
-                    var mailRequest = EmailRequest.CreateRegistrationVerification(viewModel, confirmationLink);
+                    var mailRequest = EmailRequest.CreateRegistrationVerification(viewModel, confirmationLink!);
                     await _emailService.SendEmailAsync(mailRequest);
 
                     _logger.Log(LogLevel.Warning, confirmationLink);

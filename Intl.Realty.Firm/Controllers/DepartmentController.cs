@@ -8,9 +8,11 @@ using Intl.Realty.Firm.Service.IService;
 using Intl.Realty.Firm.Utility.Mapper;
 using Intl.Realty.Firm.Utility.MenuData;
 using Intl.Realty.Firm.Utility.Utilities;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
+using System.Security.Claims;
 
 namespace DENR_FASPIS.Controllers
 {
@@ -20,24 +22,21 @@ namespace DENR_FASPIS.Controllers
         private readonly IExportService<DepartmentExport> _exportService;
         private readonly IConfigurationService _configurationService;
         private readonly IFileHandlerService _fileHandlerService;
-        //private readonly ISessionManagerService _sessionManagerService;
-        private readonly Guid _userId;
+        private readonly UserManager<ApplicationUser> _userManager;
         private readonly string _backupFileDirectory = "\\wwwroot\\Files\\Uploads\\";
 
         public DepartmentController(IUnitOfWork unitOfWork,
                                     IExportService<DepartmentExport> exportService,
                                     IConfigurationService configurationService,
-                                    IFileHandlerService fileHandlerService
-                                    //ISessionManagerService sessionManagerService
-                    )
+                                    IFileHandlerService fileHandlerService,
+                                    UserManager<ApplicationUser> userManager
+                                                                        )
         {
             _unitOfWork = unitOfWork;
             _exportService = exportService;
             _configurationService = configurationService;
             _fileHandlerService = fileHandlerService;
-            //_sessionManagerService = sessionManagerService;
-
-            //_userId = new Guid(_sessionManagerService.GetCurrentUser().Id);
+            _userManager = userManager;
         }
         public IActionResult Index()
         {
@@ -69,14 +68,31 @@ namespace DENR_FASPIS.Controllers
         {
             if (ModelState.IsValid)
             {
+                // to get current user ID
+                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+                // to get current user info
+                var user = await _userManager.FindByIdAsync(userId!);
+
+                string controllerName = this.ControllerContext.RouteData.Values["controller"]!.ToString()!;
+
                 viewModel.CreateDepartment.IsActive = true;
                 viewModel.CreateDepartment.IsDeleted = false;
-                viewModel.CreateDepartment.CreatedBy = _userId;
+                viewModel.CreateDepartment.CreatedBy = user!.Id;
                 viewModel.CreateDepartment.CreatedAt = DateTime.UtcNow;
 
-                var model = viewModel.CreateDepartment.ToDepartmentModel();
+                var checkIfExists = await _unitOfWork.Department.GetAsync(x => x.Name == viewModel.CreateDepartment.Name);
+                if (checkIfExists == null)
+                {
+                    var model = viewModel.CreateDepartment.ToDepartmentModel();
+                    await _unitOfWork.Department.AddAsync(model);
+                }
+                else
+                {
+                    ModelState.AddModelError(string.Empty, $"{controllerName} already exists");
+                    return View();
+                }
 
-                await _unitOfWork.Department.AddAsync(model);
             }
 
             return RedirectToAction(nameof(Index), new { addSuccess = true });
@@ -102,9 +118,15 @@ namespace DENR_FASPIS.Controllers
             }
             EditDepartmentWithTabMenuViewModel viewModel = new EditDepartmentWithTabMenuViewModel();
 
+            // to get current user ID
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            // to get current user info
+            var user = await _userManager.FindByIdAsync(userId!);
+
             viewModel.EditDepartment = model.ToEditDepartmentViewModel();
 
-            viewModel.EditDepartment.UpdatedBy = _userId;
+            viewModel.EditDepartment.UpdatedBy = user!.Id;
             viewModel.EditDepartment.UpdatedAt = DateTime.Now;
 
             var menus = AdministrationTabMenuData.GetAdministrationTabMenuData();
@@ -138,6 +160,12 @@ namespace DENR_FASPIS.Controllers
 
             if (ModelState.IsValid)
             {
+                // to get current user ID
+                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+                // to get current user info
+                var user = await _userManager.FindByIdAsync(userId!);
+
                 var modelFromDb = await _unitOfWork.Department.GetAsync(x => x.Id == viewModel.EditDepartment.Id);
 
                 string controllerName = this.ControllerContext.RouteData.Values["controller"]!.ToString()!;
@@ -148,7 +176,7 @@ namespace DENR_FASPIS.Controllers
                 model.CreatedBy = modelFromDb.CreatedBy;
 
                 model.UpdatedAt = DateTime.Now;
-                model.UpdatedBy = _userId;
+                model.UpdatedBy = user!.Id;
 
                 await _unitOfWork.Department.UpdateAsync(model);
             }
@@ -162,7 +190,14 @@ namespace DENR_FASPIS.Controllers
             var model = await _unitOfWork.Department.GetAsync(x => x.Id == id);
             if (model == null)
             {
-                return NotFound();
+                string controllerName = this.ControllerContext.RouteData.Values["controller"]!.ToString()!;
+                NotFoundViewModel notFoundViewModel = new NotFoundViewModel();
+                notFoundViewModel.ErrorTitle = ($"{controllerName} not found");
+                notFoundViewModel.ErrorMessage = ($"{controllerName} with {id} cannot be found!");
+                notFoundViewModel.ControllerName = controllerName;
+                notFoundViewModel.ControllerAction = "Index";
+
+                return View("NotFound", notFoundViewModel);
             }
 
             var viewModel = model.ToPreviewDepartmentViewModel();
@@ -193,7 +228,14 @@ namespace DENR_FASPIS.Controllers
 
             if (modelIEnum == null)
             {
-                return NotFound();
+                string controllerName = this.ControllerContext.RouteData.Values["controller"]!.ToString()!;
+                NotFoundViewModel notFoundViewModel = new NotFoundViewModel();
+                notFoundViewModel.ErrorTitle = ($"{controllerName} not found");
+                notFoundViewModel.ErrorMessage = ($"{controllerName} cannot be found!");
+                notFoundViewModel.ControllerName = controllerName;
+                notFoundViewModel.ControllerAction = "Index";
+
+                return View("NotFound", notFoundViewModel);
             }
 
             var deleteDepartmentIEnumViewModel = modelIEnum.ToDeleteDepartmentIEnumViewModel();
@@ -239,12 +281,18 @@ namespace DENR_FASPIS.Controllers
 
             if (modelList != null)
             {
+                // to get current user ID
+                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+                // to get current user info
+                var user = await _userManager.FindByIdAsync(userId!);
+
                 try
                 {
                     foreach (var item in modelList)
                     {
                         item.IsDeleted = true;
-                        item.DeletedBy = _userId;
+                        item.DeletedBy = user!.Id;
                         item.DeletedAt = DateTime.Now;
                     }
                     await _unitOfWork.Department.UpdateRangeAsync(modelList);
@@ -273,6 +321,7 @@ namespace DENR_FASPIS.Controllers
 
             // Query initialization
             var result = await _unitOfWork.Department.AsQueryableAsync(x => x.IsDeleted == false);
+            var totalResultsCount = result.Count();
 
             if (searchBy!.Contains(":") || searchBy.Contains("+"))
             {
@@ -288,7 +337,6 @@ namespace DENR_FASPIS.Controllers
 
             // Get the count of filtered and total results
             var filteredResultsCount = result.Count();
-            var totalResultsCount = await _unitOfWork.Department.CountAsync();
 
             // Prepare the result for DataTables
             var jsonResult = new DtResult<Department>

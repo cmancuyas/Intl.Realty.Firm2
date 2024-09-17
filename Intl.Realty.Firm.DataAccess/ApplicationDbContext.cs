@@ -13,6 +13,10 @@ namespace Intl.Realty.Firm.DataAccess
 
         public DbSet<Department> Departments { get; set; }
         public DbSet<EmploymentStatus> EmploymentStatuses { get; set; }
+        public DbSet<TransactionType> TransactionTypes { get; set; }
+        public DbSet<DocumentType> DocumentTypes { get; set; }
+        public DbSet<DealStatus> DealStatuses { get; set; }
+        public DbSet<DocumentTypeAssignment> DocumentTypeAssignments { get; set; }
     }
 
 }

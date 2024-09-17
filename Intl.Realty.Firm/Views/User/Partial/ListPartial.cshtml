@@ -1,26 +1,26 @@
-﻿@using Intl.Realty.Firm.Model.ViewModel.DepartmentVM
+﻿@using Intl.Realty.Firm.Model.ViewModel.UserVM
 
-@model DepartmentListPartialViewModel
+@model UserListPartialWithTabMenuViewModel
 
 <div>
     <form id="ListFormId" method="POST" enctype="application/x-www-form-urlencoded">
     </form>
     <div class="row">
         <div class="col-md-12 d-flex justify-content-md-between align-items-center">
-            <h1 class="text-blue mb-0">Employment Status</h1>
+            <h1 class="text-blue mb-0">Users</h1>
             <div class="d-flex gap-4">
                 <button type="button" id="btnMultipleDelete"
                         class="btn btn-danger d-none align-items-center"
                         data-toggle="tooltip"
                         data-bs-placement="left"
                         title="Delete"
-                        onclick="OpenMultipleDeleteModal('Department')">
+                        onclick="OpenMultipleDeleteModal('User')">
                     <i data-feather="trash-2"></i>
                 </button>
-                <a asp-action="Create"
-                   class="btn btn-primary d-flex align-items-center">
-                    <i data-feather="plus" class="w-15px h-auto me-1"></i>Add New
-                </a>
+                @*                 <a asp-action="Create"
+                class="btn btn-primary d-flex align-items-center">
+                <i data-feather="plus" class="w-15px h-auto me-1"></i>Add New
+                </a> *@
             </div>
         </div>
     </div>
@@ -28,35 +28,36 @@
     <hr class="my-4" />
 
     <div class="tab-page">
-        <ul class="nav nav-tabs" id="locationManagementTab" role="tablist">
-            @*             @foreach (var item in Model.Menus)
+        <ul class="nav nav-tabs" id="usersManagementTab" role="tablist">
+            @foreach (var item in Model.Menus)
             {
-            <li class="nav-item mx-0">
-            <input type="hidden" id="menuId" name="menuId" value="@item.Id" />
-            <button class="nav-link @item.IsActive"
-            id="@item.Tab"
-            data-bs-toggle="tab"
-            data-bs-target="#@item.Control"
-            type="button"
-            role="tab"
-            aria-controls="@item.Control"
-            aria-selected="@item.IsSelected">
-            @item.Description
-            </button>
-            </li>
-            } *@
+                <li class="nav-item mx-0">
+                    <input type="hidden" id="menuId" name="menuId" value="@item.Id" />
+                    <button class="nav-link @item.IsActive"
+                            id="@item.Tab"
+                            data-bs-toggle="tab"
+                            data-bs-target="#@item.Control"
+                            type="button"
+                            role="tab"
+                            aria-controls="@item.Control"
+                            aria-selected="@item.IsSelected">
+                        @item.Description
+                    </button>
+                </li>
+            }
         </ul>
 
         <div class="tab-content">
-            <div class="tab-pane active" id="consultants" aria-labelledby="consultants-tab">
+            <div class="tab-pane active" id="users" aria-labelledby="users-tab">
                 <div class="table-responsive">
                     <table id="modelTable" class="data-table table">
                         <thead>
                             <tr>
                                 <th class="text-center w-5"><input id="select_all" type="checkbox" class="column-checkbox no-sort no-search" data-toggle="tooltip" data-bs-placement="left" title="Select all"></th>
                                 @* <th class="text-start">@Html.DisplayNameFor(model => model.Id)</th> *@
-                                <th class="text-start">Name</th>
-                                <th class="text-start">Description</th>
+                                <th class="text-start">FirstName</th>
+                                <th class="text-start">LastName</th>
+                                <th class="text-start">Email</th>
                                 <th class="text-start">Action</th>
                             </tr>
                         </thead>
@@ -105,8 +106,8 @@
             closeModal();
         });
 
-        handleToastrNotification('addSuccess', 'New Department added successfully!');
-        handleToastrNotification('editSuccess', 'Department updated successfully!');
+        handleToastrNotification('addSuccess', 'New User added successfully!');
+        handleToastrNotification('editSuccess', 'User updated successfully!');
         handleToastrNotification('deleteSuccess', 'Selection deleted successfully!');
 
     }); // End of document ready
@@ -154,20 +155,20 @@
                 {
                     text: 'Excel',
                     action: function () {
-                        exportToExcel('Department');
+                        exportToExcel('User');
                     }
                 },
                 {
                     text: 'CSV',
                     action: function () {
-                        exportToCsv('Department');
+                        exportToCsv('User');
                     }
                 }
             ],
 
             // Ajax Filter
             ajax: {
-                url: "/Department/GetDepartmentList",
+                url: "/User/GetUserList",
                 type: "POST",
                 contentType: "application/json",
                 dataType: "json",
@@ -187,13 +188,13 @@
                     orderable: false,
                     render: function (data, type, full, meta) {
 
-                    return '<input type="checkbox" class="row-checkbox no-sort no-search" name="selectedRows" id="selectedRows" value="' + full.id + '">';
+                        return '<input type="checkbox" class="row-checkbox no-sort no-search" name="selectedRows" id="selectedRows" value="' + full.id + '">';
                     },
                 },
-                { data: "name" },
-                { data: "description", title: "Description" },
+                { data: "firstName" },
+                { data: "lastName" },
 
-                // { data: "email", title: "Email" }
+                { data: "email", title: "Email" }
 
                 // {
                 //     data: "createdAt",
@@ -222,7 +223,7 @@
                 { targets: "date-type", type: "date-eu" },
 
                 {
-                    targets: 3,
+                    targets: 4,
                     data: null,
                     defaultContent: "<a class='btn btn-secondary' role='button' href='#' onclick='preview(this)'>Preview</a> <a class='btn btn-secondary' role='button' href='#' onclick='edit(this)'>Edit</a>",
                     orderable: false
@@ -258,19 +259,19 @@
             var id = data["id"];
             let parameters = { id: id };
             $.ajax({
-                url: '/Department/Edit/' + id,
+                url: '/User/Edit/' + id,
                 type: 'GET',
                 data: parameters,
                 contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
                 success: function (data) {
-                    window.location.href = "@Url.Action("Edit", "Department")" + "/" + id;
+                    window.location.href = "@Url.Action("Edit", "User")" + "/" + id;
                 }
             });
 
         }
     }
 
-     function preview(rowContext) {
+    function preview(rowContext) {
         if (table) {
             var data = table.row($(rowContext).parents("tr")).data();
             // alert("Example showing row edit with id: " + data["id"] + ", name: " + data["name"]);
@@ -278,12 +279,12 @@
             var id = data["id"];
             let parameters = { id: id };
             $.ajax({
-                url: '/Department/Preview/' + id,
+                url: '/User/Preview/' + id,
                 type: 'GET',
                 data: parameters,
                 contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
                 success: function (data) {
-                    window.location.href = "@Url.Action("Preview", "Department")" + "/" + id;
+                    window.location.href = "@Url.Action("Preview", "User")" + "/" + id;
                 }
             });
 
