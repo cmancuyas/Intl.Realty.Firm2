@@ -81,7 +81,7 @@ namespace DENR_FASPIS.Controllers
                 viewModel.CreateEmploymentStatus.CreatedAt = DateTime.UtcNow;
 
 
-                var checkIfExists = await _unitOfWork.EmploymentStatus.GetAsync(x => x.Name == viewModel.CreateEmploymentStatus.Name);
+                var checkIfExists = await _unitOfWork.EmploymentStatus.GetAsync(x => x.Description == viewModel.CreateEmploymentStatus.Description);
                 if (checkIfExists == null)
                 {
                     var model = viewModel.CreateEmploymentStatus.ToEmploymentStatusModel();
@@ -354,7 +354,7 @@ namespace DENR_FASPIS.Controllers
 
         private IQueryable<EmploymentStatus> DefaultFilterSearch(IQueryable<EmploymentStatus> result, string searchBy)
         {
-            result = result.Where(r => r.Name != null && r.Name.ToUpper().Contains(searchBy.ToUpper()) ||
+            result = result.Where(r => r.Description != null && r.Description.ToUpper().Contains(searchBy.ToUpper()) ||
                    r.Description! != null && r.Description.ToUpper().Contains(searchBy.ToUpper())
                    );
             return result;
@@ -373,10 +373,10 @@ namespace DENR_FASPIS.Controllers
 
                 switch (key)
                 {
-                    case "project":
-                        query = query.Where(r => r.Name != null && r.Description.ToUpper().Contains(value));
+                    case "code":
+                        query = query.Where(r => r.Code != null && r.Code.ToUpper().Contains(value));
                         break;
-                    case "consultanttype":
+                    case "description":
                         query = query.Where(r => r.Description != null && r.Description.ToUpper().Contains(value));
                         break;
                     default:

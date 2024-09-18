@@ -11,7 +11,7 @@ namespace Intl.Realty.Firm.Helper
                     @$"<html>
                      <meta charset=""utf-8"">
                     <body>
-                    <p>Good day <strong>{registerViewModel.FirstName}</strong></p>
+                    <p>Good day <strong>{registerViewModel.FirstName},</strong></p>
                     <p><span style=""background-color:transparent;color:#000000;font-family:Arial,sans-serif;font-size:11pt;""><span style=""font-style:normal;font-variant:normal;font-weight:400;text-decoration:none;vertical-align:baseline;white-space:pre-wrap;"">We have received your user <strong>registration request</strong> for the INTL Realty Firm.&nbsp;</span></span></p>
                     <p><span style=""background-color:transparent;color:#000000;font-family:Arial,sans-serif;font-size:11pt;""><span style=""font-style:normal;font-variant:normal;font-weight:400;text-decoration:none;vertical-align:baseline;white-space:pre-wrap;"">Confirm your email by clicking on the link below.&nbsp;</span></span></p>
                     <p><strong>{confirmationLink}</strong>,

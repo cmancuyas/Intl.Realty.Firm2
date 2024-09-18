@@ -21,17 +21,15 @@ namespace Intl.Realty.Firm.Model.ViewModel.AccountVM
 
         [Required(ErrorMessage = "The FirstName field is required")]
         public string FirstName { get; set; } = string.Empty;
-
-        public string? MiddleName { get; set; } = string.Empty;
         [Required(ErrorMessage = "The LastName field is required")]
         public string LastName { get; set; } = string.Empty;
-        public string? Suffix { get; set; }
         [Required(ErrorMessage = "The Phone field is required")]
         public string Phone { get; set; } = string.Empty;
         public int? DepartmentId { get; set; }
         public int EmploymentStatusId { get; set; }
         public int? ProfilePictureId { get; set; }
-        [Required(ErrorMessage = "The UserAgreement field is required")]
+        [Display(Name = "User Agreement")]
+        [Range(typeof(bool), "true", "true", ErrorMessage = "You must agree to terms and conditions.")]
         public bool UserAgreement { get; set; }
     }
 }

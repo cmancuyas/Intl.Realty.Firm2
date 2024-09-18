@@ -188,7 +188,7 @@ namespace Intl.Realty.Firm.Utility.Utilities
                           .Select(x => x.Method)
                           .First();
         }
-        public static IQueryable<T> Like<T>(this IQueryable<T> query, string searchstring, string columnName = null)
+        public static IQueryable<T> Like<T>(this IQueryable<T> query, string searchstring, string columnName = null!)
         {
             var eParam = Expression.Parameter(typeof(T), "e");
             var isLinq = (query.Provider.GetType().IsGenericType && query.Provider.GetType().GetGenericTypeDefinition() == typeof(EnumerableQuery<>));

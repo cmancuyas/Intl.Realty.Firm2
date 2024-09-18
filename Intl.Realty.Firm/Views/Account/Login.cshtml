@@ -19,6 +19,7 @@
             <div class="w-50 mb-md-2">
                 @using (Html.BeginForm("Login", "Account", FormMethod.Post))
                 {
+                    <span asp-validation-summary="All" class="text-danger"></span>
                     <div class="form-group mb-4">
                         <label class="fw-bolder" for="Email">Email Address</label>
                         @Html.TextBoxFor(m => m.Email, new { @class = "form-control", @id = "email", @name = "email", @placeholder = "Please enter email" })

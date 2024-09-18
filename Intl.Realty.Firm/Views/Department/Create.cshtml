@@ -22,23 +22,23 @@
                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
                 <div class="tab-page">
-@*                     <ul class="nav nav-tabs" id="consultantStatusManagementTab" role="tablist">
-                        @foreach (var item in Model.Menus)
-                        {
-                            <li class="nav-item mx-0">
-                                <input type="hidden" id="menuId" name="menuId" value="@item.Id" />
-                                <button class="nav-link @item.IsActive"
-                                        id="@item.Tab"
-                                        data-bs-toggle="tab"
-                                        data-bs-target="#@item.Control"
-                                        type="button"
-                                        role="tab"
-                                        aria-controls="@item.Control"
-                                        aria-selected="@item.IsSelected">
-                                    @item.Description
-                                </button>
-                            </li>
-                        }
+                    @*                     <ul class="nav nav-tabs" id="consultantStatusManagementTab" role="tablist">
+                    @foreach (var item in Model.Menus)
+                    {
+                    <li class="nav-item mx-0">
+                    <input type="hidden" id="menuId" name="menuId" value="@item.Id" />
+                    <button class="nav-link @item.IsActive"
+                    id="@item.Tab"
+                    data-bs-toggle="tab"
+                    data-bs-target="#@item.Control"
+                    type="button"
+                    role="tab"
+                    aria-controls="@item.Control"
+                    aria-selected="@item.IsSelected">
+                    @item.Description
+                    </button>
+                    </li>
+                    }
                     </ul> *@
                 </div>
                 <div class="tab-content" style="background-color:white;">
@@ -47,13 +47,13 @@
                         <div class="row">
                             <div class="col-md-6 mt-4">
                                 <div class="form-group">
-                                    <label asp-for="CreateDepartment.Name" class="control-label fw-bolder">Name</label>
-                                    <input asp-for="CreateDepartment.Name" class="form-control" />
-                                    <span asp-validation-for="CreateDepartment.Name" class="text-danger"></span>
+                                    <label asp-for="CreateDepartment.Code" class="control-label fw-bolder">Code</label>
+                                    <input asp-for="CreateDepartment.Code" class="form-control" />
+                                    <span asp-validation-for="CreateDepartment.Code" class="text-danger"></span>
                                 </div>
                             </div>
 
-                         
+
                         </div>
                         <div class="row">
                             <div class="col-md-6 mt-4">
@@ -64,7 +64,7 @@
                                 </div>
                             </div>
                         </div>
-
+                    </div>
                 </div>
 
                 <hr class="my-5" />

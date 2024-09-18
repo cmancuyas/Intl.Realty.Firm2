@@ -35,7 +35,7 @@
         /// <summary>
         /// Global search value. To be applied to all columns which have searchable as true.
         /// </summary>
-        public DtSearch Search { get; set; }
+        public DtSearch? Search { get; set; }
 
         /// <summary>
         /// Custom column that is used to further sort on the first Order column.

@@ -14,9 +14,7 @@ namespace Intl.Realty.Firm.Model.ViewModel.UserVM
         [EmailAddress]
         public string Email { get; set; } = string.Empty;
         public string FirstName { get; set; } = string.Empty;
-        public string? MiddleName { get; set; } = string.Empty;
         public string LastName { get; set; } = string.Empty;
-        public string? Suffix { get; set; }
         public int? DepartmentId { get; set; }
         public int EmploymentStatusId { get; set; }
         public int? ProfilePictureId { get; set; }

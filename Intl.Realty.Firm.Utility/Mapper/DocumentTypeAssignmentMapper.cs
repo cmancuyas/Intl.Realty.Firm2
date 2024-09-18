@@ -86,7 +86,7 @@ namespace Intl.Realty.Firm.Utility.Mapper
                 UpdatedAt = viewModel.UpdatedAt,
             };
         }
-        public static List<DocumentTypeAssignmentExport> ToDocumentTypeAssignmentListExport(this List<DocumentTypeAssignmentViewModel> modelList)
+        public static List<DocumentTypeAssignmentExport> ToDocumentTypeAssignmentListExport(this List<DocumentTypeAssignment> modelList)
         {
             List<DocumentTypeAssignmentExport> exportList = new List<DocumentTypeAssignmentExport>();
 
@@ -94,8 +94,8 @@ namespace Intl.Realty.Firm.Utility.Mapper
             {
                 exportList = modelList.Select(x => new DocumentTypeAssignmentExport
                 {
-                    DocumentType = x.DocumentType!.Name,
-                    TransactionType= x.TransactionType!.Name,
+                    DocumentType = x.DocumentType!.Description,
+                    TransactionType= x.TransactionType!.Description,
                 }).ToList();
             }
             return exportList;

@@ -57,7 +57,7 @@ namespace Intl.Realty.Firm.Controllers
 
                     if (result.Succeeded)
                     {
-                        return RedirectToAction("ListRoles", "Administration");
+                        return RedirectToAction("Index", "Role");
                     }
                     foreach (IdentityError error in result.Errors)
                     {
@@ -76,7 +76,7 @@ namespace Intl.Realty.Firm.Controllers
 
             if (roleModel == null)
             {
-                ViewBag.ErrorMessage = $"Role with Id = {roleModel.Id} cannot be found";
+                ViewBag.ErrorMessage = $"Role with Id = {roleModel!.Id} cannot be found";
                 return View("NotFound");
             }
 

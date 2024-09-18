@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Intl.Realty.Firm.Model.Model;
+using System.ComponentModel.DataAnnotations;
 
 namespace Intl.Realty.Firm.Model.ViewModel.DocumentTypeAssignmentVM
 {
@@ -9,5 +10,7 @@ namespace Intl.Realty.Firm.Model.ViewModel.DocumentTypeAssignmentVM
         public int DocumentTypeId { get; set; }
         [Required]
         public int TransactionTypeId { get; set; }
+        public TransactionType? TransactionType { get; set; }
+        public DocumentType? DocumentType { get; set; }
     }
 }

@@ -54,8 +54,8 @@
                         <thead>
                             <tr>
                                 <th class="text-center w-5"><input id="select_all" type="checkbox" class="column-checkbox no-sort no-search" data-toggle="tooltip" data-bs-placement="left" title="Select all"></th>
-                                @* <th class="text-start">@Html.DisplayNameFor(model => model.Id)</th> *@
-                                <th class="text-start">Name</th>
+                                @* <th class="text-start">@Html.DisplayCodeFor(model => model.Id)</th> *@
+                                <th class="text-start">Code</th>
                                 <th class="text-start">Description</th>
                                 <th class="text-start">Action</th>
                             </tr>
@@ -190,7 +190,7 @@
                         return '<input type="checkbox" class="row-checkbox no-sort no-search" name="selectedRows" id="selectedRows" value="' + full.id + '">';
                     },
                 },
-                { data: "name" },
+                { data: "code" },
                 { data: "description", title: "Description" },
 
                 // { data: "email", title: "Email" }

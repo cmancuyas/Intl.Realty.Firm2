@@ -59,11 +59,11 @@ namespace Intl.Realty.Firm.Service.Export
                                 break;
 
                             case TypeCode.Boolean:
-                                excelWorksheet.Cells[row, columnIndex].Value = ((bool)value) ? "Yes" : "No";
+                                excelWorksheet.Cells[row, columnIndex].Value = ((bool)value!) ? "Yes" : "No";
                                 break;
 
                             case TypeCode.DateTime:
-                                excelWorksheet.Cells[row, columnIndex].Value = ((DateTime)value).ToString("dd/MM/yyyy HH:mm:ss");
+                                excelWorksheet.Cells[row, columnIndex].Value = ((DateTime)value!).ToString("dd/MM/yyyy HH:mm:ss");
                                 break;
 
                             default:

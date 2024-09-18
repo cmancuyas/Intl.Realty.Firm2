@@ -1,6 +1,6 @@
 @using Intl.Realty.Firm.Model.ViewModel.RoleVM
 
-@model CreateRoleWithTabMenuViewModel
+@model CreateRoleViewModel
 
 @{
     ViewData["Title"] = "Create";
@@ -43,13 +43,13 @@
                 </div>
                 <div class="tab-content" style="background-color:white;">
 
-                    <div class="tab-pane active" id="consultantDetails" aria-labelledby="consultantDetails-tab" style="background-color:white;">
+                    <div class="tab-pane active" id="roleName" aria-labelledby="roleName-tab" style="background-color:white;">
                         <div class="row">
                             <div class="col-md-6 mt-4">
                                 <div class="form-group">
-                                    <label asp-for="CreateRole.RoleName" class="control-label fw-bolder">Name</label>
-                                    <input asp-for="CreateRole.RoleName" class="form-control" />
-                                    <span asp-validation-for="CreateRole.RoleName" class="text-danger"></span>
+                                    <label asp-for="RoleName" class="control-label fw-bolder">Role Name</label>
+                                    <input asp-for="RoleName" class="form-control" />
+                                    <span asp-validation-for="RoleName" class="text-danger"></span>
                                 </div>
                             </div>
                         </div>

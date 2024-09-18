@@ -57,9 +57,7 @@ namespace Intl.Realty.Firm.Controllers
                 Email = user.Email!,
                 UserName = user.UserName!,
                 FirstName = user.FirstName,
-                MiddleName = user.MiddleName,
                 LastName = user.LastName,
-                Suffix = user.Suffix,
                 DepartmentId = user.DepartmentId,
                 EmploymentStatusId = user.EmploymentStatusId,
                 ProfilePictureId = user.ProfilePictureId,
@@ -88,9 +86,7 @@ namespace Intl.Realty.Firm.Controllers
                 user.Email = viewModel.Email;
                 user.UserName = viewModel.UserName;
                 user.FirstName = viewModel.FirstName;
-                user.MiddleName = viewModel.LastName;
                 user.LastName = viewModel.LastName;
-                user.Suffix = viewModel.Suffix;
                 user.DepartmentId = viewModel.DepartmentId;
                 user.EmploymentStatusId = viewModel.EmploymentStatusId;
                 user.ProfilePictureId = viewModel.ProfilePictureId;
@@ -128,7 +124,7 @@ namespace Intl.Realty.Firm.Controllers
             }
             var employmentStatus = await _unitOfWork.EmploymentStatus.GetAsync(x => x.Id == model.EmploymentStatusId);
 
-            viewModel.EmploymentStatusName = employmentStatus.Name;
+            viewModel.EmploymentStatusName = employmentStatus.Description;
 
             var userRoles = await _userManager.GetRolesAsync(model);
             viewModel.Roles = userRoles.ToList();

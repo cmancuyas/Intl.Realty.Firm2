@@ -81,7 +81,7 @@ namespace DENR_FASPIS.Controllers
                 viewModel.CreateDepartment.CreatedBy = user!.Id;
                 viewModel.CreateDepartment.CreatedAt = DateTime.UtcNow;
 
-                var checkIfExists = await _unitOfWork.Department.GetAsync(x => x.Name == viewModel.CreateDepartment.Name);
+                var checkIfExists = await _unitOfWork.Department.GetAsync(x => x.Description == viewModel.CreateDepartment.Description);
                 if (checkIfExists == null)
                 {
                     var model = viewModel.CreateDepartment.ToDepartmentModel();
@@ -355,7 +355,7 @@ namespace DENR_FASPIS.Controllers
 
         private IQueryable<Department> DefaultFilterSearch(IQueryable<Department> result, string searchBy)
         {
-            result = result.Where(r => r.Name != null && r.Name.ToUpper().Contains(searchBy.ToUpper()) ||
+            result = result.Where(r => r.Code != null && r.Code.ToUpper().Contains(searchBy.ToUpper()) ||
                    r.Description! != null && r.Description.ToUpper().Contains(searchBy.ToUpper())
                    );
             return result;
@@ -374,10 +374,10 @@ namespace DENR_FASPIS.Controllers
 
                 switch (key)
                 {
-                    case "project":
-                        query = query.Where(r => r.Name != null && r.Description.ToUpper().Contains(value));
+                    case "code":
+                        query = query.Where(r => r.Code != null && r.Code.ToUpper().Contains(value));
                         break;
-                    case "consultanttype":
+                    case "description":
                         query = query.Where(r => r.Description != null && r.Description.ToUpper().Contains(value));
                         break;
                     default:

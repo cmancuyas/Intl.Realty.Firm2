@@ -20,6 +20,9 @@
     $("#dealStatuses-tab").on("click", function () {
         window.location.href = '/DealStatus/Index';
     });
+    $("#documentTypeAssignments-tab").on("click", function () {
+        window.location.href = '/DocumentTypeAssignment/Index';
+    });
 }
 function SearchBoxSettings() {
     $('[id^=dt-search]').attr('placeholder', 'Search...').addClass('fst-italic');

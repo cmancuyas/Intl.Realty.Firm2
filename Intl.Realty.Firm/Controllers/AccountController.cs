@@ -177,6 +177,12 @@ namespace Intl.Realty.Firm.Controllers
             {
                 var user = await _userManager.FindByEmailAsync(viewModel.Email);
 
+                if(user == null)
+                {
+                    ModelState.AddModelError(string.Empty, "Email not found");
+                    return View(viewModel);
+                }
+
                 if (user != null && !user.EmailConfirmed && (await _userManager.CheckPasswordAsync(user, viewModel.Password)))
                 {
                     ModelState.AddModelError(string.Empty, "Email not confirmed yet");
@@ -272,28 +278,26 @@ namespace Intl.Realty.Firm.Controllers
         {
             if (ModelState.IsValid)
             {
-                var user = new ApplicationUser
+                var applicationUser = new ApplicationUser
                 {
                     UserName = viewModel.Email,
                     Email = viewModel.Email,
                     FirstName = viewModel.FirstName,
                     LastName = viewModel.LastName,
-                    MiddleName = viewModel.MiddleName,
-                    Suffix = viewModel.Suffix,
                     DepartmentId = (viewModel.DepartmentId == 0) ? 1 : viewModel.DepartmentId,
                     EmploymentStatusId = 1,
                     ProfilePictureId = viewModel.ProfilePictureId ?? 0,
                     UserAgreement = viewModel.UserAgreement
                 };
 
-                var result = await _userManager.CreateAsync(user, viewModel.Password);
+                var result = await _userManager.CreateAsync(applicationUser, viewModel.Password);
 
                 if (result.Succeeded)
                 {
-                    var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+                    var token = await _userManager.GenerateEmailConfirmationTokenAsync(applicationUser);
 
                     var confirmationLink = Url.Action("ConfirmEmail", "Account",
-                                                                new { userId = user.Id, token = token }, Request.Scheme);
+                                                                new { userId = applicationUser.Id, token = token }, Request.Scheme);
 
                     var mailRequest = EmailRequest.CreateRegistrationVerification(viewModel, confirmationLink!);
                     await _emailService.SendEmailAsync(mailRequest);
@@ -307,11 +311,7 @@ namespace Intl.Realty.Firm.Controllers
 
                     //await _signInManager.SignInAsync(user, isPersistent: false);
                     //return RedirectToAction("Index", "Home");
-                    ErrorViewModel errorViewModel = new ErrorViewModel();
-                    errorViewModel.ErrorTitle = "Registration successful";
-                    errorViewModel.ErrorMessage = "Before you can login, please confirm your " +
-                                           "email, by clicking on the confirmation link we have emailed you";
-                    return View("Error", errorViewModel);
+                    return View("ConfirmEmailSent");
 
                 }
                 foreach (var error in result.Errors)

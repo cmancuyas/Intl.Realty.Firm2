@@ -25,7 +25,7 @@ namespace Intl.Realty.Firm.Utility.Mapper
             {
                 Id = model.Id,
 
-                Name = model.Name,
+                Code = model.Code,
                 Description = model.Description,
 
                 IsActive = model.IsActive,
@@ -43,7 +43,7 @@ namespace Intl.Realty.Firm.Utility.Mapper
                 {
                     Id = x.Id,
 
-                    Name = x.Name,
+                    Code = x.Code,
                     Description= x.Description,
 
                     IsActive = x.IsActive,
@@ -62,7 +62,7 @@ namespace Intl.Realty.Firm.Utility.Mapper
         {
             return new EmploymentStatus
             {
-                Name = viewModel.Name,
+                Code = viewModel.Code,
                 Description = viewModel.Description,
 
                 IsActive = viewModel.IsActive,
@@ -77,7 +77,7 @@ namespace Intl.Realty.Firm.Utility.Mapper
             {
                 Id = viewModel.Id,
 
-                Name = viewModel.Name,
+                Code = viewModel.Code,
                 Description = viewModel.Description,
 
                 IsActive = viewModel.IsActive,
@@ -94,7 +94,7 @@ namespace Intl.Realty.Firm.Utility.Mapper
             {
                 exportList = modelList.Select(x => new EmploymentStatusExport
                 {
-                    Name = x.Name,
+                    Code = x.Code,
                     Description= x.Description,
                 }).ToList();
             }
@@ -107,7 +107,7 @@ namespace Intl.Realty.Firm.Utility.Mapper
             {
                 Id = model.Id,
 
-                Name = model.Name,
+                Code = model.Code,
                 Description = model.Description,
             };
 

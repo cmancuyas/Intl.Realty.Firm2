@@ -25,9 +25,7 @@ namespace Intl.Realty.Firm.Utility.Mapper
             {
                 Id = model.Id,
                 FirstName = model.FirstName,
-                MiddleName = model.MiddleName,
                 LastName = model.LastName,
-                Suffix = model.Suffix,
                 Email = model.Email!,
                 ProfilePictureId = model.ProfilePictureId,
             };

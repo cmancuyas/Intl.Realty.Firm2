@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc.Rendering;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using System.ComponentModel.DataAnnotations;
 
 namespace Intl.Realty.Firm.Model.ViewModel.DocumentTypeAssignmentVM
@@ -7,9 +8,9 @@ namespace Intl.Realty.Firm.Model.ViewModel.DocumentTypeAssignmentVM
     {
         [Required(ErrorMessage = "The DocumentType field is required.")]
         public int DocumentTypeId { get; set; }
+        
         [Required(ErrorMessage = "The TransactionType field is required.")]
         public int TransactionTypeId { get; set; }
-
         [Required]
         public bool IsActive { get; set; }
         [Required]

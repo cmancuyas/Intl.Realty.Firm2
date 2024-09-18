@@ -54,8 +54,8 @@ namespace Intl.Realty.Firm.Utility.MenuData
                 Id = count + 1,
                 Menu = "DocumentTypeAssignment",
                 Description = "Document Type Assignment",
-                Tab = "documentTypeAssignment-tab",
-                Control = "documentTypeAssignment",
+                Tab = "documentTypeAssignments-tab",
+                Control = "documentTypeAssignments",
             };
 
             menus.Add(menu);
