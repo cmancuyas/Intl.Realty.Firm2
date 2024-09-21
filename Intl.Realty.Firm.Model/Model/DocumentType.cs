@@ -12,5 +12,6 @@ namespace Intl.Realty.Firm.Model.Model
         public string Code { get; set; } = string.Empty;
         [Required]
         public string Description { get; set; } = string.Empty;
+        public bool IsRequired { get; set; }
     }
 }

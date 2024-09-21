@@ -57,6 +57,7 @@
                                 @* <th class="text-start">@Html.DisplayNameFor(model => model.Id)</th> *@
                                 <th class="text-start">Code</th>
                                 <th class="text-start">Description</th>
+                                <th class="text-start">Is Required?</th>
                                 <th class="text-start">Action</th>
                             </tr>
                         </thead>
@@ -186,13 +187,26 @@
                     searchable: false,
                     orderable: false,
                     render: function (data, type, full, meta) {
-
                         return '<input type="checkbox" class="row-checkbox no-sort no-search" name="selectedRows" id="selectedRows" value="' + full.id + '">';
                     },
                 },
                 { data: "code" },
                 { data: "description", title: "Description" },
 
+                {
+                    data: "isRequired", title: "Is Required",
+                    render: function (data, type, row, meta) {
+                        var html = "";
+                        if(data == true){
+                            html = '<label class="status-active">Required</label>';
+                        }
+                        else
+                        {
+                            html = '<label class="status-inactive pe-cursor">Not Required</label>';
+                        }
+                        return html;
+                    }
+                },
                 // { data: "email", title: "Email" }
 
                 // {
@@ -222,7 +236,7 @@
                 { targets: "date-type", type: "date-eu" },
 
                 {
-                    targets: 3,
+                    targets: 4,
                     data: null,
                     defaultContent: "<a class='btn btn-secondary' role='button' href='#' onclick='preview(this)'>Preview</a> <a class='btn btn-secondary' role='button' href='#' onclick='edit(this)'>Edit</a>",
                     orderable: false

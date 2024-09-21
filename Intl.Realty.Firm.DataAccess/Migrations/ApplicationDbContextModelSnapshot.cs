@@ -266,6 +266,9 @@ namespace Intl.Realty.Firm.DataAccess.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
+                    b.Property<bool>("IsRequired")
+                        .HasColumnType("bit");
+
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
 
@@ -317,6 +320,10 @@ namespace Intl.Realty.Firm.DataAccess.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("DocumentTypeId");
+
+                    b.HasIndex("TransactionTypeId");
+
                     b.ToTable("DocumentTypeAssignments");
                 });
 
@@ -364,6 +371,420 @@ namespace Intl.Realty.Firm.DataAccess.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("EmploymentStatuses");
+                });
+
+            modelBuilder.Entity("Intl.Realty.Firm.Model.Model.FileUpload", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("CreatedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("DeletedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Directory")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("DocumentTypeId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("FileExtension")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FileName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FileSize")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FullPath")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<int?>("LeaseCoopId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("LeaseListingId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("OriginalFileName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("SaleCoopId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("SaleListingId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TransactionTypeId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("UpdatedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DocumentTypeId");
+
+                    b.HasIndex("LeaseCoopId");
+
+                    b.HasIndex("LeaseListingId");
+
+                    b.HasIndex("SaleCoopId");
+
+                    b.HasIndex("SaleListingId");
+
+                    b.HasIndex("TransactionTypeId");
+
+                    b.ToTable("FileUploads");
+                });
+
+            modelBuilder.Entity("Intl.Realty.Firm.Model.Model.IRFDeal", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("BuyerAgentName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("BuyerBrokerage")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("BuyerBrokerageFax")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("BuyerName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("BuyersLawyer")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("BuyersLawyerAddress")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("BuyersPhoneNumber")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("BuyingCommissionPercentage")
+                        .HasColumnType("decimal(18,4)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("CreatedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("DeletedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<decimal>("DepositAmount")
+                        .HasColumnType("decimal(18,4)");
+
+                    b.Property<DateTime>("DepositDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("FinalClosingDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<decimal>("FinalSalePrice")
+                        .HasColumnType("decimal(18,4)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("LandLordName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ListingAgentName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ListingBrokerage")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ListingBrokerageFax")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("ListingCommissionPercentage")
+                        .HasColumnType("decimal(18,4)");
+
+                    b.Property<string>("PropertyAddress")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SellersLawyer")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SellersLawyerAddress")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SellersPhoneNumber")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("UpdatedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("IRFDeals");
+                });
+
+            modelBuilder.Entity("Intl.Realty.Firm.Model.Model.LeaseCoop", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("CreatedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("DealStatusId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("DeletedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("IRFDealId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("TransactionTypeId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("UpdatedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DealStatusId");
+
+                    b.HasIndex("IRFDealId");
+
+                    b.HasIndex("TransactionTypeId");
+
+                    b.ToTable("LeaseCoops");
+                });
+
+            modelBuilder.Entity("Intl.Realty.Firm.Model.Model.LeaseListing", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("CreatedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("DealStatusId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("DeletedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("IRFDealId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("TransactionTypeId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("UpdatedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DealStatusId");
+
+                    b.HasIndex("IRFDealId");
+
+                    b.HasIndex("TransactionTypeId");
+
+                    b.ToTable("LeaseListings");
+                });
+
+            modelBuilder.Entity("Intl.Realty.Firm.Model.Model.SaleCoop", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("CreatedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("DealStatusId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("DeletedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("IRFDealId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("TransactionTypeId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("UpdatedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DealStatusId");
+
+                    b.HasIndex("IRFDealId");
+
+                    b.HasIndex("TransactionTypeId");
+
+                    b.ToTable("SaleCoops");
+                });
+
+            modelBuilder.Entity("Intl.Realty.Firm.Model.Model.SaleListing", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("CreatedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("DealStatusId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("DeletedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("IRFDealId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("TransactionTypeId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("UpdatedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DealStatusId");
+
+                    b.HasIndex("IRFDealId");
+
+                    b.HasIndex("TransactionTypeId");
+
+                    b.ToTable("SaleListings");
                 });
 
             modelBuilder.Entity("Intl.Realty.Firm.Model.Model.TransactionType", b =>
@@ -531,6 +952,176 @@ namespace Intl.Realty.Firm.DataAccess.Migrations
                     b.Navigation("EmploymentStatus");
                 });
 
+            modelBuilder.Entity("Intl.Realty.Firm.Model.Model.DocumentTypeAssignment", b =>
+                {
+                    b.HasOne("Intl.Realty.Firm.Model.Model.DocumentType", "DocumentType")
+                        .WithMany()
+                        .HasForeignKey("DocumentTypeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Intl.Realty.Firm.Model.Model.TransactionType", "TransactionType")
+                        .WithMany()
+                        .HasForeignKey("TransactionTypeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("DocumentType");
+
+                    b.Navigation("TransactionType");
+                });
+
+            modelBuilder.Entity("Intl.Realty.Firm.Model.Model.FileUpload", b =>
+                {
+                    b.HasOne("Intl.Realty.Firm.Model.Model.DocumentType", "DocumentType")
+                        .WithMany()
+                        .HasForeignKey("DocumentTypeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Intl.Realty.Firm.Model.Model.LeaseCoop", "LeaseCoop")
+                        .WithMany("FileUploads")
+                        .HasForeignKey("LeaseCoopId");
+
+                    b.HasOne("Intl.Realty.Firm.Model.Model.LeaseListing", "LeaseListing")
+                        .WithMany("FileUploads")
+                        .HasForeignKey("LeaseListingId");
+
+                    b.HasOne("Intl.Realty.Firm.Model.Model.SaleCoop", "SaleCoop")
+                        .WithMany("FileUploads")
+                        .HasForeignKey("SaleCoopId");
+
+                    b.HasOne("Intl.Realty.Firm.Model.Model.SaleListing", "SaleListing")
+                        .WithMany("FileUploads")
+                        .HasForeignKey("SaleListingId");
+
+                    b.HasOne("Intl.Realty.Firm.Model.Model.TransactionType", "TransactionType")
+                        .WithMany()
+                        .HasForeignKey("TransactionTypeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("DocumentType");
+
+                    b.Navigation("LeaseCoop");
+
+                    b.Navigation("LeaseListing");
+
+                    b.Navigation("SaleCoop");
+
+                    b.Navigation("SaleListing");
+
+                    b.Navigation("TransactionType");
+                });
+
+            modelBuilder.Entity("Intl.Realty.Firm.Model.Model.LeaseCoop", b =>
+                {
+                    b.HasOne("Intl.Realty.Firm.Model.Model.DealStatus", "DealStatus")
+                        .WithMany()
+                        .HasForeignKey("DealStatusId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Intl.Realty.Firm.Model.Model.IRFDeal", "IRFDeal")
+                        .WithMany()
+                        .HasForeignKey("IRFDealId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Intl.Realty.Firm.Model.Model.TransactionType", "TransactionType")
+                        .WithMany()
+                        .HasForeignKey("TransactionTypeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("DealStatus");
+
+                    b.Navigation("IRFDeal");
+
+                    b.Navigation("TransactionType");
+                });
+
+            modelBuilder.Entity("Intl.Realty.Firm.Model.Model.LeaseListing", b =>
+                {
+                    b.HasOne("Intl.Realty.Firm.Model.Model.DealStatus", "DealStatus")
+                        .WithMany()
+                        .HasForeignKey("DealStatusId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Intl.Realty.Firm.Model.Model.IRFDeal", "IRFDeal")
+                        .WithMany()
+                        .HasForeignKey("IRFDealId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Intl.Realty.Firm.Model.Model.TransactionType", "TransactionType")
+                        .WithMany()
+                        .HasForeignKey("TransactionTypeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("DealStatus");
+
+                    b.Navigation("IRFDeal");
+
+                    b.Navigation("TransactionType");
+                });
+
+            modelBuilder.Entity("Intl.Realty.Firm.Model.Model.SaleCoop", b =>
+                {
+                    b.HasOne("Intl.Realty.Firm.Model.Model.DealStatus", "DealStatus")
+                        .WithMany()
+                        .HasForeignKey("DealStatusId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Intl.Realty.Firm.Model.Model.IRFDeal", "IRFDeal")
+                        .WithMany()
+                        .HasForeignKey("IRFDealId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Intl.Realty.Firm.Model.Model.TransactionType", "TransactionType")
+                        .WithMany()
+                        .HasForeignKey("TransactionTypeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("DealStatus");
+
+                    b.Navigation("IRFDeal");
+
+                    b.Navigation("TransactionType");
+                });
+
+            modelBuilder.Entity("Intl.Realty.Firm.Model.Model.SaleListing", b =>
+                {
+                    b.HasOne("Intl.Realty.Firm.Model.Model.DealStatus", "DealStatus")
+                        .WithMany()
+                        .HasForeignKey("DealStatusId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Intl.Realty.Firm.Model.Model.IRFDeal", "IRFDeal")
+                        .WithMany()
+                        .HasForeignKey("IRFDealId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Intl.Realty.Firm.Model.Model.TransactionType", "TransactionType")
+                        .WithMany()
+                        .HasForeignKey("TransactionTypeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("DealStatus");
+
+                    b.Navigation("IRFDeal");
+
+                    b.Navigation("TransactionType");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
                 {
                     b.HasOne("Intl.Realty.Firm.Model.Model.ApplicationRole", null)
@@ -580,6 +1171,26 @@ namespace Intl.Realty.Firm.DataAccess.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("Intl.Realty.Firm.Model.Model.LeaseCoop", b =>
+                {
+                    b.Navigation("FileUploads");
+                });
+
+            modelBuilder.Entity("Intl.Realty.Firm.Model.Model.LeaseListing", b =>
+                {
+                    b.Navigation("FileUploads");
+                });
+
+            modelBuilder.Entity("Intl.Realty.Firm.Model.Model.SaleCoop", b =>
+                {
+                    b.Navigation("FileUploads");
+                });
+
+            modelBuilder.Entity("Intl.Realty.Firm.Model.Model.SaleListing", b =>
+                {
+                    b.Navigation("FileUploads");
                 });
 #pragma warning restore 612, 618
         }

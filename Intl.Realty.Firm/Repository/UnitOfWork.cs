@@ -12,6 +12,9 @@ namespace Intl.Realty.Firm.Repository
         public IDocumentTypeRepository DocumentType { get; private set; }
         public IDealStatusRepository DealStatus { get; private set; }
         public IDocumentTypeAssignmentRepository DocumentTypeAssignment { get; private set; }
+        public IIRFDealRepository IRFDeal { get; private set; }
+        public IFileUploadRepository FileUpload { get; private set; }
+        public ISaleListingRepository SaleListing { get; private set; }
 
         public UnitOfWork(ApplicationDbContext db)
         {
@@ -22,6 +25,9 @@ namespace Intl.Realty.Firm.Repository
             DocumentType = new DocumentTypeRepository(_db);
             DealStatus = new DealStatusRepository(_db);
             DocumentTypeAssignment = new DocumentTypeAssignmentRepository(_db);
+            IRFDeal = new IRFDealRepository(_db);
+            FileUpload = new FileUploadRepository(_db);
+            SaleListing = new SaleListingRepository(_db);
         }
         public void SaveAsync()
         {

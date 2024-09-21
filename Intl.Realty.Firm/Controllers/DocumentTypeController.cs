@@ -77,6 +77,7 @@ namespace DENR_FASPIS.Controllers
                 string controllerName = this.ControllerContext.RouteData.Values["controller"]!.ToString()!;
 
                 viewModel.CreateDocumentType.IsActive = true;
+                viewModel.CreateDocumentType.IsRequired = viewModel.CreateDocumentType.IsRequired;
                 viewModel.CreateDocumentType.IsDeleted = false;
                 viewModel.CreateDocumentType.CreatedBy = user!.Id;
                 viewModel.CreateDocumentType.CreatedAt = DateTime.UtcNow;

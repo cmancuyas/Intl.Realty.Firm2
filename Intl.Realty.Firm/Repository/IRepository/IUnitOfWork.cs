@@ -8,6 +8,9 @@
         IDocumentTypeRepository DocumentType { get; }
         IDealStatusRepository DealStatus { get; }
         IDocumentTypeAssignmentRepository DocumentTypeAssignment { get; }
+        IIRFDealRepository IRFDeal { get; }
+        IFileUploadRepository FileUpload { get; }
+        ISaleListingRepository SaleListing { get; }
         void SaveAsync();
         void Save();
     }

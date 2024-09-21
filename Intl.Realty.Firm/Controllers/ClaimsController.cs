@@ -3,7 +3,6 @@ using Intl.Realty.Firm.Model.Model.Identity;
 using Intl.Realty.Firm.Model.ViewModel.AccountVM;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
 using System.Security.Claims;
 
 namespace Intl.Realty.Firm.Controllers

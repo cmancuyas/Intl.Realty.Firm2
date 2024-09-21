@@ -8,6 +8,7 @@ namespace Intl.Realty.Firm.Model.ViewModel.DocumentTypeVM
         public string Code { get; set; } = string.Empty;
         [Required(ErrorMessage = "The Description field is required.")]
         public string Description { get; set; } = string.Empty;
+        public bool IsRequired { get; set; } = true;
 
         [Required]
         public bool IsActive { get; set; }

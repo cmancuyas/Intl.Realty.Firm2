@@ -29,6 +29,7 @@ namespace Intl.Realty.Firm.Utility.Mapper
                 Description = model.Description,
 
                 IsActive = model.IsActive,
+                IsRequired = model.IsRequired,
                 IsDeleted = model.IsDeleted,
                 UpdatedBy = model.UpdatedBy,
                 UpdatedAt = model.UpdatedAt
@@ -47,6 +48,7 @@ namespace Intl.Realty.Firm.Utility.Mapper
                     Description= x.Description,
 
                     IsActive = x.IsActive,
+                    IsRequired= x.IsRequired,
                     IsDeleted = x.IsDeleted,
                     CreatedBy = x.CreatedBy,
                     CreatedAt = x.CreatedAt,
@@ -66,6 +68,7 @@ namespace Intl.Realty.Firm.Utility.Mapper
                 Description = viewModel.Description,
 
                 IsActive = viewModel.IsActive,
+                IsRequired = viewModel.IsRequired,
                 IsDeleted = viewModel.IsDeleted,
                 CreatedAt = viewModel.CreatedAt,
                 CreatedBy = viewModel.CreatedBy,
@@ -81,6 +84,7 @@ namespace Intl.Realty.Firm.Utility.Mapper
                 Description = viewModel.Description,
 
                 IsActive = viewModel.IsActive,
+                IsRequired = viewModel.IsRequired,
                 IsDeleted = viewModel.IsDeleted,
                 UpdatedBy = viewModel.UpdatedBy,
                 UpdatedAt = viewModel.UpdatedAt,
@@ -96,6 +100,7 @@ namespace Intl.Realty.Firm.Utility.Mapper
                 {
                     Code = x.Code,
                     Description= x.Description,
+                    IsRequired= x.IsRequired,
                 }).ToList();
             }
             return exportList;
@@ -109,6 +114,7 @@ namespace Intl.Realty.Firm.Utility.Mapper
 
                 Code = model.Code,
                 Description = model.Description,
+                IsRequired = model.IsRequired,
             };
 
         }
