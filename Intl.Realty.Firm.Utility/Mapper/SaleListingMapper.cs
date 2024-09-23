@@ -29,6 +29,12 @@ namespace Intl.Realty.Firm.Utility.Mapper
                 TransactionTypeId = model.TransactionTypeId,
                 IRFDealId = model.IRFDealId,
                 DealStatusId = model.DealStatusId,
+                DateSubmitted = model.DateSubmitted,
+
+                TransactionType = model.TransactionType,
+                EditIRFDealViewModel = model.IRFDeal!.ToEditIRFDealViewModel(),
+                DealStatus = model.DealStatus,  
+
                 IsActive = model.IsActive,
                 IsDeleted = model.IsDeleted,
                 UpdatedBy = model.UpdatedBy,
@@ -47,6 +53,7 @@ namespace Intl.Realty.Firm.Utility.Mapper
                     TransactionTypeId = x.TransactionTypeId,
                     IRFDealId = x.IRFDealId,
                     DealStatusId = x.DealStatusId,
+                    DateSubmitted = x.DateSubmitted,
 
                     IsActive = x.IsActive,
                     IsDeleted = x.IsDeleted,
@@ -67,6 +74,7 @@ namespace Intl.Realty.Firm.Utility.Mapper
                 TransactionTypeId = viewModel.TransactionTypeId,
                 IRFDealId = viewModel.IRFDealId,
                 DealStatusId = viewModel.DealStatusId,
+                DateSubmitted = viewModel.DateSubmitted,
 
                 IsActive = viewModel.IsActive,
                 IsDeleted = viewModel.IsDeleted,
@@ -83,6 +91,7 @@ namespace Intl.Realty.Firm.Utility.Mapper
                 TransactionTypeId = viewModel.TransactionTypeId,
                 IRFDealId = viewModel.IRFDealId,
                 DealStatusId = viewModel.DealStatusId,
+                DateSubmitted = viewModel.DateSubmitted,
 
                 IsActive = viewModel.IsActive,
                 IsDeleted = viewModel.IsDeleted,
@@ -99,6 +108,8 @@ namespace Intl.Realty.Firm.Utility.Mapper
                 exportList = modelList.Select(x => new SaleListingExport
                 {
                     TransactionType = x.TransactionType!.Description,
+                    DateCreated = x.CreatedAt,
+                    DateSubmitted = x.DateSubmitted??DateTime.MinValue,
                     PropertyAddress = x.IRFDeal!.PropertyAddress,
                     FinalSalePrice = x.IRFDeal!.FinalSalePrice,
                     FinalClosingDate = x.IRFDeal.FinalClosingDate,
@@ -135,6 +146,11 @@ namespace Intl.Realty.Firm.Utility.Mapper
                 TransactionTypeId = model.TransactionTypeId,
                 IRFDealId = model.IRFDealId,
                 DealStatusId = model.DealStatusId,
+                DateSubmitted = model.DateSubmitted,
+                TransactionType = model.TransactionType!,
+                IRFDeal = model.IRFDeal!,
+                DealStatus = model.DealStatus!,
+                FileUploads = model.FileUploads!,
 
                 IsActive = model.IsActive,
                 IsDeleted = model.IsDeleted,
@@ -165,6 +181,7 @@ namespace Intl.Realty.Firm.Utility.Mapper
                     TransactionType = x.TransactionType,
                     IRFDeal = x.IRFDeal,
                     DealStatus = x.DealStatus,
+                    FileUploads = x.FileUploads,
                     
                     IsActive = x.IsActive,
                     IsDeleted = x.IsDeleted,

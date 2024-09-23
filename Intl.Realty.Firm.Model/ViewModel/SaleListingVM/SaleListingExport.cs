@@ -8,7 +8,9 @@ namespace Intl.Realty.Firm.Model.ViewModel.SaleListingVM
     {
 
         public string TransactionType { get; set; } = string.Empty;
-        public string DocumentType { get; set; } = string.Empty;    
+        public string DocumentType { get; set; } = string.Empty;
+        public DateTime DateCreated { get; set; }
+        public DateTime DateSubmitted { get; set; }
         public string PropertyAddress { get; set; } = string.Empty;
         [Column(TypeName = "decimal(18,4)")]
         public decimal FinalSalePrice { get; set; }
@@ -39,5 +41,6 @@ namespace Intl.Realty.Firm.Model.ViewModel.SaleListingVM
         public string DealStatus { get; set; } = string.Empty;
         public string CreatedByFullName { get; set; } = string.Empty;
         public string? UpdatedByFullName { get; set; }
+        
     }
 }

@@ -1,12 +1,14 @@
 ﻿using Intl.Realty.Firm.Model.Model;
 using Intl.Realty.Firm.Model.Model.Identity;
 using Intl.Realty.Firm.Model.ViewModel.AccountVM;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 
 namespace Intl.Realty.Firm.Controllers
 {
+    [Authorize]
     public class ClaimsController : Controller
     {
         private readonly RoleManager<IdentityRole<Guid>> _roleManager;

@@ -4,5 +4,6 @@ namespace Intl.Realty.Firm.Model.ViewModel.IRFDealVM
 {
     public class IRFDealExport : TransactionTypeDetailsBase
     {
+        //public string SaleListing { get; set; } = string.Empty;
     }
 }

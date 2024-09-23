@@ -17,6 +17,7 @@ using Intl.Realty.Firm.Utility.Mapper;
 
 namespace Intl.Realty.Firm.Controllers
 {
+    [Authorize]
     public class RoleController : Controller
     {
         private readonly RoleManager<ApplicationRole> _roleManager;

@@ -11,6 +11,7 @@ namespace Intl.Realty.Firm.Model.Model
         public int TransactionTypeId { get; set; }
         public int IRFDealId { get; set; }
         public int DealStatusId { get; set; }
+        public DateTime? DateSubmitted { get; set; }
         public List<FileUpload>? FileUploads { get; set; }
         
         public IRFDeal? IRFDeal { get; set; }

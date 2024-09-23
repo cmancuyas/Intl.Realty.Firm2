@@ -9,6 +9,7 @@ using Intl.Realty.Firm.Service.IService;
 using Intl.Realty.Firm.Utility.Mapper;
 using Intl.Realty.Firm.Utility.MenuData;
 using Intl.Realty.Firm.Utility.Utilities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -17,6 +18,7 @@ using System.Security.Claims;
 
 namespace DENR_FASPIS.Controllers
 {
+    [Authorize]
     public class SaleListingController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;
@@ -24,13 +26,15 @@ namespace DENR_FASPIS.Controllers
         private readonly IConfigurationService _configurationService;
         private readonly IFileHandlerService _fileHandlerService;
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly IDocumentTransactionService _documentTransactionService;
         private readonly string _backupFileDirectory = "\\wwwroot\\Files\\Uploads\\";
         private readonly string _transactionTypeName = "SaleListing";
         public SaleListingController(IUnitOfWork unitOfWork,
                                     IExportService<SaleListingExport> exportService,
                                     IConfigurationService configurationService,
                                     IFileHandlerService fileHandlerService,
-                                    UserManager<ApplicationUser> userManager
+                                    UserManager<ApplicationUser> userManager,
+                                    IDocumentTransactionService documentTransactionService
                                                                         )
         {
             _unitOfWork = unitOfWork;
@@ -38,6 +42,7 @@ namespace DENR_FASPIS.Controllers
             _configurationService = configurationService;
             _fileHandlerService = fileHandlerService;
             _userManager = userManager;
+            _documentTransactionService = documentTransactionService;
         }
         public IActionResult Index()
         {
@@ -61,7 +66,15 @@ namespace DENR_FASPIS.Controllers
             var transactionType = await _unitOfWork.TransactionType.GetAsync(x => x.Description == transactionTypeName);
             viewModel.CreateSaleListing.TransactionType = transactionType;
             viewModel.CreateSaleListing.TransactionTypeId = transactionType.Id;
-            viewModel.CreateSaleListing.DocumentTypeList = await GetDocumentTypesFromDocumentTypeAssignment(transactionTypeName);
+
+            var documentTypeAssignmentIEnum = await _unitOfWork.DocumentTypeAssignment.GetAllAsync(x => x.IsDeleted == false, includeProperties: "TransactionType,DocumentType");
+            var documentTypeIEnum = await _unitOfWork.DocumentType.GetAllAsync(x => x.IsDeleted == false);
+            var documentTypeAssignmentList = documentTypeAssignmentIEnum.ToList();
+            var documentTypeList = documentTypeIEnum.ToList();
+            viewModel.CreateSaleListing.DocumentTypeList = _documentTransactionService
+                                                            .GetDocumentTypesFromDocumentTypeAssignment(transactionTypeName,
+                                                                                                        documentTypeAssignmentList,
+                                                                                                        documentTypeList);
 
             var menus = CreateSaleListingTabMenuData.GetCreateSaleListingTabMenuData();
 
@@ -82,20 +95,41 @@ namespace DENR_FASPIS.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(CreateSaleListingWithTabMenuViewModel viewModel)
         {
+            // to get current user ID
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            // to get current user info
+            var user = await _userManager.FindByIdAsync(userId!);
+
+            string transactionTypeName = _transactionTypeName; // 1 = Sale Listing
+            var transactionType = await _unitOfWork.TransactionType.GetAsync(x => x.Description == _transactionTypeName); //Sale Listing
+            viewModel.CreateSaleListing.TransactionType = await _unitOfWork.TransactionType.GetByNameAsync(transactionType.Description);
+            viewModel.CreateSaleListing.TransactionTypeId = transactionType.Id;
+
+            var documentTypeAssignmentIEnum = await _unitOfWork.DocumentTypeAssignment.GetAllAsync(x => x.IsDeleted == false, includeProperties: "TransactionType,DocumentType");
+            var documentTypeIEnum = await _unitOfWork.DocumentType.GetAllAsync(x => x.IsDeleted == false);
+            var documentTypeAssignmentList = documentTypeAssignmentIEnum.ToList();
+            var documentTypeList = documentTypeIEnum.ToList();
+            viewModel.CreateSaleListing.DocumentTypeList = _documentTransactionService
+                                                            .GetDocumentTypesFromDocumentTypeAssignment(transactionTypeName,
+                                                                                                        documentTypeAssignmentList,
+                                                                                                        documentTypeList);
+            viewModel.CreateSaleListing.CreatedByFullName = user!.FirstName + " " + user.LastName;
+
+            var menus = CreateSaleListingTabMenuData.GetCreateSaleListingTabMenuData();
+
+            string controllerName = "IRFDetails1";
+
+            foreach (var menu in menus.Where(x => x.Menu == controllerName))
+            {
+                menu.IsActive = "active";
+                menu.IsSelected = "true";
+            }
+
+            viewModel.Menus = menus;
+
             if (ModelState.IsValid)
             {
-                // to get current user ID
-                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-                // to get current user info
-                var user = await _userManager.FindByIdAsync(userId!);
-
-                string transactionTypeName = _transactionTypeName; // 1 = Sale Listing
-                var transactionType = await _unitOfWork.TransactionType.GetAsync(x => x.Description == _transactionTypeName); //Sale Listing
-                viewModel.CreateSaleListing.TransactionType = await _unitOfWork.TransactionType.GetByNameAsync(transactionType.Description);
-                viewModel.CreateSaleListing.TransactionTypeId = transactionType.Id;
-                viewModel.CreateSaleListing.DocumentTypeList = await GetDocumentTypesFromDocumentTypeAssignment(transactionType.Description);
-
                 // Create IRF Deal Data
                 viewModel.CreateSaleListing.TransactionType = transactionType;
 
@@ -103,6 +137,7 @@ namespace DENR_FASPIS.Controllers
                 createIRFDealModel!.CreatedAt = DateTime.UtcNow;
                 createIRFDealModel.CreatedBy = user!.Id;
                 createIRFDealModel.IsActive = true;
+                createIRFDealModel.IsDeleted = false;
                 await _unitOfWork.IRFDeal.AddAsync(createIRFDealModel);
 
                 var NewIRFDeal = await _unitOfWork.IRFDeal.GetAsync(x => x.Id == createIRFDealModel.Id);
@@ -149,7 +184,7 @@ namespace DENR_FASPIS.Controllers
                 return RedirectToAction(nameof(Index), new { addSuccess = true });
             }
 
-            return View(viewModel);
+            return View("Index");
         }
         private string CreateFilePath(int saleListingId)
         {
@@ -229,42 +264,11 @@ namespace DENR_FASPIS.Controllers
             }
             return true;
         }
-        public async Task<List<DocumentType>> GetDocumentTypesFromDocumentTypeAssignment(string transactionTypeName)
-        {
-            List<DocumentType> documentTypeList = new List<DocumentType>();
-
-            var transactionType = await _unitOfWork.TransactionType.GetAsync(x => x.Description == transactionTypeName);
-
-            var documentTypeAssignmentListViewModel = await _unitOfWork.DocumentTypeAssignment.GetAllAsync(x => x.TransactionTypeId == transactionType.Id,
-                                                            includeProperties: "TransactionType,DocumentType") as List<DocumentTypeAssignment>;
-
-            var documentTypeIds = documentTypeAssignmentListViewModel?
-                                    .GroupBy(x => x.DocumentType)
-                                    .Select(grp => new DocumentType
-                                    {
-                                        Id = grp.Key!.Id,
-                                        Code = grp.Key.Code,
-                                        Description = grp.Key.Description,
-                                        IsActive = grp.Key.IsActive,
-                                        CreatedAt = grp.Key.CreatedAt,
-                                        CreatedBy = grp.Key.CreatedBy,
-                                        UpdatedAt = grp.Key.UpdatedAt,
-                                        UpdatedBy = grp.Key.UpdatedBy
-                                    }).ToList();
-            if (documentTypeIds != null)
-            {
-                var documentTypeIEnum = await _unitOfWork.DocumentType.GetAllAsync(x => documentTypeIds.Contains(x));
-                documentTypeList = documentTypeIEnum.ToList();
-            }
-            return documentTypeList;
-        }
-
-
 
         [HttpGet]
         public async Task<IActionResult> Edit(int? id)
         {
-            var model = await _unitOfWork.SaleListing.GetAsync(x => x.Id == id);
+            var model = await _unitOfWork.SaleListing.GetAsync(x => x.Id == id, includeProperties: "TransactionType,IRFDeal,DealStatus");
 
             string controllerName = this.ControllerContext.RouteData.Values["controller"]!.ToString()!;
 
@@ -288,12 +292,32 @@ namespace DENR_FASPIS.Controllers
 
             viewModel.EditSaleListing = model.ToEditSaleListingViewModel();
 
+            viewModel.EditSaleListing.UpdatedByFullName = user!.FirstName + " " + user.LastName;
             viewModel.EditSaleListing.UpdatedBy = user!.Id;
             viewModel.EditSaleListing.UpdatedAt = DateTime.Now;
 
-            var menus = AdministrationTabMenuData.GetAdministrationTabMenuData();
+            var fileUploads = await _unitOfWork.FileUpload.GetAllAsync(x => x.SaleListingId == model.Id, includeProperties: "SaleListing,TransactionType,DocumentType");
 
-            foreach (var menu in menus.Where(x => x.Menu == controllerName))
+            var fileUploadsWithFiles = FilterFileUploadsWithFilesOnly(fileUploads.ToList());
+
+            viewModel.EditSaleListing.FileUploads = fileUploadsWithFiles;
+
+            var documentTypeAssignmentIEnum = await _unitOfWork.DocumentTypeAssignment.GetAllAsync(x => x.IsDeleted == false, includeProperties: "TransactionType,DocumentType");
+            var documentTypeIEnum = await _unitOfWork.DocumentType.GetAllAsync(x => x.IsDeleted == false);
+            var documentTypeAssignmentList = documentTypeAssignmentIEnum.ToList();
+            var documentTypeList = documentTypeIEnum.ToList();
+            viewModel.EditSaleListing.DocumentTypeList = _documentTransactionService
+                                                            .GetDocumentTypesFromDocumentTypeAssignment(model.TransactionType!.Description,
+                                                                                                        documentTypeAssignmentList,
+                                                                                                        documentTypeList);
+            var dealStatusIEnum = await _unitOfWork.DealStatus.GetAllAsync();
+            viewModel.EditSaleListing.DealStatusList = dealStatusIEnum.ToList();
+
+            var menus = EditSaleListingTabMenuData.GetEditSaleListingTabMenuData();
+
+            string menuName = "IRFDetails1";
+
+            foreach (var menu in menus.Where(x => x.Menu == menuName))
             {
                 menu.IsActive = "active";
                 menu.IsSelected = "true";
@@ -306,7 +330,7 @@ namespace DENR_FASPIS.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, EditSaleListingWithTabMenuViewModel viewModel)
+        public async Task<IActionResult> Edit(int id, int dealStatusId, EditSaleListingWithTabMenuViewModel viewModel)
         {
             if (id == 0)
             {
@@ -328,28 +352,107 @@ namespace DENR_FASPIS.Controllers
                 // to get current user info
                 var user = await _userManager.FindByIdAsync(userId!);
 
-                var modelFromDb = await _unitOfWork.SaleListing.GetAsync(x => x.Id == viewModel.EditSaleListing.Id);
+                var modelFromDb = await _unitOfWork.SaleListing.GetAsync(x => x.Id == viewModel.EditSaleListing.Id, includeProperties: "IRFDeal,TransactionType,DealStatus");
 
                 string controllerName = this.ControllerContext.RouteData.Values["controller"]!.ToString()!;
 
-                var model = viewModel.EditSaleListing.ToSaleListingModel();
+                var transactionType = await _unitOfWork.TransactionType.GetAsync(x => x.Id == modelFromDb.TransactionTypeId); //Sale Listing
+                viewModel.EditSaleListing.TransactionType = transactionType;
 
-                model.CreatedAt = modelFromDb.CreatedAt;
-                model.CreatedBy = modelFromDb.CreatedBy;
+                viewModel.EditSaleListing.TransactionTypeId = viewModel.EditSaleListing.TransactionType.Id;
 
-                model.UpdatedAt = DateTime.Now;
-                model.UpdatedBy = user!.Id;
+                var documentTypeAssignmentIEnum = await _unitOfWork.DocumentTypeAssignment.GetAllAsync(x => x.IsDeleted == false, includeProperties: "TransactionType,DocumentType");
+                var documentTypeIEnum = await _unitOfWork.DocumentType.GetAllAsync(x => x.IsDeleted == false);
+                var documentTypeAssignmentList = documentTypeAssignmentIEnum.ToList();
+                var documentTypeList = documentTypeIEnum.ToList();
+                viewModel.EditSaleListing.DocumentTypeList = _documentTransactionService
+                                                                .GetDocumentTypesFromDocumentTypeAssignment(modelFromDb.TransactionType!.Description,
+                                                                                                            documentTypeAssignmentList,
+                                                                                                            documentTypeList);
 
-                await _unitOfWork.SaleListing.UpdateAsync(model);
+                var saleListingModel = await _unitOfWork.SaleListing.GetAsync(x => x.Id == id, includeProperties: "IRFDeal");
+                if (saleListingModel == null)
+                {
+                    NotFoundViewModel notFoundViewModel = new NotFoundViewModel();
+                    notFoundViewModel.ErrorTitle = ($"{controllerName} not found");
+                    notFoundViewModel.ErrorMessage = ($"{controllerName} with {id} cannot be found!");
+                    notFoundViewModel.ControllerName = controllerName;
+                    notFoundViewModel.ControllerAction = "Index";
+
+                    return View("NotFound", notFoundViewModel);
+                }
+                var fileUploadsWithFiles = FilterFileUploadsWithFilesOnly(saleListingModel.FileUploads);
+                saleListingModel.FileUploads = fileUploadsWithFiles;
+
+                var irfDealModel = await _unitOfWork.IRFDeal.GetAsync(x => x.Id == saleListingModel.IRFDealId, tracked: true);
+
+                saleListingModel.IRFDeal = viewModel.EditSaleListing.EditIRFDealViewModel?.ToIRFDealModel();
+                saleListingModel.IRFDeal!.CreatedAt = irfDealModel.CreatedAt;
+                saleListingModel.IRFDeal.CreatedBy = irfDealModel.CreatedBy;
+                saleListingModel.IRFDeal.UpdatedAt = DateTime.Now;
+                saleListingModel.IRFDeal.UpdatedBy = user!.Id;
+
+                if (saleListingModel.IRFDeal != null)
+                {
+                    //saleListingModel.IRFDeal.SaleListingId = saleListingModel.Id;
+                    await _unitOfWork.IRFDeal.UpdateAsync(saleListingModel.IRFDeal);
+                }
+
+                //if(user.isAdmin)
+                //saleListingModel.DealStatusId = viewModel.EditSaleListing.DealStatusId;
+                saleListingModel.DealStatusId = dealStatusId;
+                saleListingModel.DateSubmitted = DateTime.Now;
+                // Update IRF Deal
+
+                saleListingModel.IsActive = true;
+                saleListingModel.UpdatedBy = user!.Id;
+                saleListingModel.UpdatedAt = DateTime.Now;
+
+                // Update other properties as needed
+
+                await _unitOfWork.SaleListing.UpdateAsync(saleListingModel);
+
+
+                // Create FileUploadData
+
+                var uploadPath = CreateFilePath(saleListingModel.Id);
+
+                if (viewModel.EditSaleListing.CreateFileUploadListViewModel?.CreateFileUploadsViewModel != null)
+                {
+                    await CreateFileUploadData(viewModel.EditSaleListing.CreateFileUploadListViewModel.CreateFileUploadsViewModel,
+                                                 saleListingModel.Id,
+                                                 transactionType.Id,
+                                                 viewModel.EditSaleListing.DocumentTypeList,
+                                                 uploadPath);
+                }
+
+                return RedirectToAction(nameof(Index), new { addSuccess = true });
+
+            }
+            return View(viewModel);
+        }
+        private List<FileUpload>? FilterFileUploadsWithFilesOnly(List<FileUpload>? fileUploads)
+        {
+            List<FileUpload> fileUploadsWithFiles = new List<FileUpload>();
+            if (fileUploads != null)
+            {
+                foreach (var fileUpload in fileUploads)
+                {
+                    var isExists = _fileHandlerService.CheckIfFileExists(fileUpload.FullPath);
+                    if (isExists.Result == true)
+                    {
+                        fileUploadsWithFiles.Add(fileUpload);
+                    }
+                }
             }
 
-            return RedirectToAction(nameof(Index), new { editSuccess = true });
+            return fileUploadsWithFiles;
 
         }
         [HttpGet]
         public async Task<IActionResult> Preview(int id)
         {
-            var model = await _unitOfWork.SaleListing.GetAsync(x => x.Id == id);
+            var model = await _unitOfWork.SaleListing.GetAsync(x => x.Id == id, includeProperties: "IRFDeal,TransactionType,DealStatus");
             if (model == null)
             {
                 string controllerName = this.ControllerContext.RouteData.Values["controller"]!.ToString()!;
@@ -363,6 +466,15 @@ namespace DENR_FASPIS.Controllers
             }
 
             var viewModel = model.ToPreviewSaleListingViewModel();
+            var fileUploadIEnum = await _unitOfWork.FileUpload.GetAllAsync(x => x.SaleListingId == model.Id);
+            viewModel.FileUploads = fileUploadIEnum.ToList();
+            var users = _userManager.Users;
+
+            var user = users.Where(x => x.Id == viewModel.CreatedBy).FirstOrDefault();
+            if (user != null)
+            {
+                viewModel.CreatedByFullName = user!.FirstName + " " + user.LastName;
+            }
 
             return View(viewModel);
         }
@@ -374,13 +486,6 @@ namespace DENR_FASPIS.Controllers
 
             string controllerName = this.ControllerContext.RouteData.Values["controller"]!.ToString()!;
 
-            var modelIEnum = await _unitOfWork.SaleListing
-                            .GetAllAsync(includeProperties:"IRFDeal,TransactionType,DealStatus");
-
-            var modelList = modelIEnum.ToSaleListingListViewModel();
-
-            listViewModel.SaleListingListViewModel = modelList;
-
             foreach (var menu in menus.Where(x => x.Menu == controllerName))
             {
                 menu.IsActive = "active";
@@ -388,6 +493,11 @@ namespace DENR_FASPIS.Controllers
             }
 
             listViewModel.Menus = menus;
+
+            var modelIEnum = await _unitOfWork.SaleListing
+                            .GetAllAsync(includeProperties: "IRFDeal,TransactionType,DealStatus");
+
+            var modelList = modelIEnum.ToSaleListingListViewModel();
 
             return PartialView("~/Views/SaleListing/Partial/ListPartial.cshtml", listViewModel);
         }
@@ -476,6 +586,58 @@ namespace DENR_FASPIS.Controllers
 
             return RedirectToAction(nameof(Index));
         }
+        [HttpGet]
+        public async Task<IActionResult> Download(int id)
+        {
+            var fileUpload = await _unitOfWork.FileUpload.GetAsync(x => x.Id == id);
+            if (fileUpload != null)
+            {
+                var result = await _fileHandlerService.DownloadFile(fileUpload.Directory, fileUpload.FileName, fileUpload.FileExtension);
+                return File(result.Item1, result.Item2, result.Item3);
+            }
+
+            return NotFound();
+        }
+        [HttpGet]
+        public async Task<IActionResult> DeleteFile(int id)
+        {
+            var fileUpload = await _unitOfWork.FileUpload.GetAsync(x => x.Id == id);
+            if (fileUpload != null)
+            {
+                await _unitOfWork.FileUpload.RemoveAsync(fileUpload);
+
+                var isSuccess = await _fileHandlerService.DeleteFile(fileUpload.FullPath);
+
+                return RedirectToAction(nameof(Edit), new { id = fileUpload.SaleListingId });
+            }
+
+            return NotFound();
+        }
+        public async Task<IActionResult> PreviewFile(int id)
+        {
+            var fileUpload = await _unitOfWork.FileUpload.GetAsync(x => x.Id == id);
+
+            if (fileUpload != null)
+            {
+                FileStream fs = new FileStream(fileUpload.FullPath, FileMode.Open, FileAccess.Read);
+                return File(fs, "application/pdf");
+
+            }
+            return NotFound();
+        }
+        public async Task<JsonResult> GetFileDetails(int id)
+        {
+            var record = JsonConvert.SerializeObject(await _unitOfWork.FileUpload.GetAsync(x => x.Id == id));
+            return Json(record);
+        }
+
+        public async Task<JsonResult> GetDocumentTypesThatHasFileUploads(int saleListingId)
+        {
+            var fileUploads = await _unitOfWork.FileUpload.GetAllAsync(x => x.SaleListingId == saleListingId);
+            var documentTypeIds = fileUploads.Select(x => x.DocumentTypeId).ToArray();
+
+            return Json(documentTypeIds);
+        }
         [HttpPost]
         public async Task<IActionResult> GetSaleListingList([FromBody] DtParameters dtParameters)
         {
@@ -489,7 +651,8 @@ namespace DENR_FASPIS.Controllers
             (orderCriteria, orderAscendingDirection) = InitializeOrderCriteria(dtParameters, orderCriteria, orderAscendingDirection);
 
             // Query initialization
-            var result = await _unitOfWork.SaleListing.AsQueryableAsync(x => x.IsDeleted == false);
+            var result = await _unitOfWork.SaleListing.AsQueryableAsync(x => x.IsDeleted == false, includeProperties: "IRFDeal,TransactionType,DealStatus");
+
             var totalResultsCount = result.Count();
 
             if (searchBy!.Contains(":") || searchBy.Contains("+"))
@@ -507,16 +670,26 @@ namespace DENR_FASPIS.Controllers
             // Get the count of filtered and total results
             var filteredResultsCount = result.Count();
 
+            var resultList = result.ToSaleListingListViewModel();
+
+            var users = _userManager.Users;
+
+            foreach (var item in resultList)
+            {
+                var user = users.Where(x => x.Id == item.CreatedBy).FirstOrDefault();
+                item.CreatedByFullName = user!.FirstName + " " + user.LastName;
+            }
+
             // Prepare the result for DataTables
-            var jsonResult = new DtResult<SaleListing>
+            var jsonResult = new DtResult<SaleListingViewModel>
             {
                 Draw = dtParameters.Draw,
                 RecordsTotal = totalResultsCount,
                 RecordsFiltered = filteredResultsCount,
-                Data = await result
+                Data = resultList
                     .Skip(dtParameters.Start)
                     .Take(dtParameters.Length)
-                    .ToListAsync()
+                    .ToList()
             };
 
             return Json(jsonResult);

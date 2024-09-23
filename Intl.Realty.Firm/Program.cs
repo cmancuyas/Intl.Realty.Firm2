@@ -114,6 +114,7 @@ builder.Services.AddSingleton<DataProtectionPurposeStrings>();
 builder.Services.AddTransient<IConfigurationService, ConfigurationService>();
 builder.Services.AddTransient<IFileHandlerService, FileHandlerService>();
 builder.Services.AddTransient<IEmailService, EmailService>();
+builder.Services.AddTransient<IDocumentTransactionService, DocumentTransactionService>();
 
 builder.Services.Configure<FormOptions>(o =>
 {

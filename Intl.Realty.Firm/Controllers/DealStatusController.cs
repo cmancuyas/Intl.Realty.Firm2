@@ -8,6 +8,7 @@ using Intl.Realty.Firm.Service.IService;
 using Intl.Realty.Firm.Utility.Mapper;
 using Intl.Realty.Firm.Utility.MenuData;
 using Intl.Realty.Firm.Utility.Utilities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -16,6 +17,7 @@ using System.Security.Claims;
 
 namespace DENR_FASPIS.Controllers
 {
+    [Authorize]
     public class DealStatusController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;

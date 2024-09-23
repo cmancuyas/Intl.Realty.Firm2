@@ -202,7 +202,7 @@ namespace Intl.Realty.Firm.Controllers
                     }
                     else
                     {
-                        return RedirectToAction("Index", "Home");
+                        return RedirectToAction("Dashboard", "Home");
                     }
 
                 }

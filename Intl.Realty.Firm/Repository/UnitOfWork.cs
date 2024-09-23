@@ -15,6 +15,9 @@ namespace Intl.Realty.Firm.Repository
         public IIRFDealRepository IRFDeal { get; private set; }
         public IFileUploadRepository FileUpload { get; private set; }
         public ISaleListingRepository SaleListing { get; private set; }
+        public ISaleCoopRepository SaleCoop { get; private set; }
+        public ILeaseListingRepository LeaseListing { get; private set; }
+        public ILeaseCoopRepository LeaseCoop { get; private set; }
 
         public UnitOfWork(ApplicationDbContext db)
         {
@@ -28,6 +31,9 @@ namespace Intl.Realty.Firm.Repository
             IRFDeal = new IRFDealRepository(_db);
             FileUpload = new FileUploadRepository(_db);
             SaleListing = new SaleListingRepository(_db);
+            SaleCoop = new SaleCoopRepository(_db);
+            LeaseListing = new LeaseListingRepository(_db);
+            LeaseCoop = new LeaseCoopRepository(_db);
         }
         public void SaveAsync()
         {

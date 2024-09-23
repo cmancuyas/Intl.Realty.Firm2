@@ -1,8 +1,9 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using Intl.Realty.Firm.Model.Model;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Intl.Realty.Firm.Model.ViewModel.TransactionTypeDetailsBaseVM
 {
-    public class EditTransactionTypeDetailsBaseViewModel
+    public class EditTransactionTypeDetailsBaseViewModel : BaseModel
     {
         public string PropertyAddress { get; set; } = string.Empty;
         [Column(TypeName = "decimal(18,4)")]
@@ -29,9 +30,5 @@ namespace Intl.Realty.Firm.Model.ViewModel.TransactionTypeDetailsBaseVM
         public string BuyersLawyer { get; set; } = string.Empty;
         public string BuyersLawyerAddress { get; set; } = string.Empty;
         public string BuyersPhoneNumber { get; set; } = string.Empty;
-        public bool IsActive { get; set; }
-        public bool IsDeleted { get; set; }
-        public Guid? UpdatedBy { get; set; }
-        public DateTime? UpdatedAt { get; set; }
     }
 }

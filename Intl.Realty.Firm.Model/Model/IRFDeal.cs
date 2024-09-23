@@ -8,6 +8,7 @@ namespace Intl.Realty.Firm.Model.Model
         [Key]
         [DatabaseGeneratedAttribute(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
-
+        //public int SaleListingId { get; set; }
+        //public SaleListing? SaleListing { get; set; }
     }
 }

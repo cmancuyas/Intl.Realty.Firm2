@@ -8,6 +8,7 @@ using Intl.Realty.Firm.Service.IService;
 using Intl.Realty.Firm.Utility.Mapper;
 using Intl.Realty.Firm.Utility.MenuData;
 using Intl.Realty.Firm.Utility.Utilities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -16,6 +17,7 @@ using System.Security.Claims;
 
 namespace DENR_FASPIS.Controllers
 {
+    [Authorize]
     public class DocumentTypeController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;
@@ -23,13 +25,15 @@ namespace DENR_FASPIS.Controllers
         private readonly IConfigurationService _configurationService;
         private readonly IFileHandlerService _fileHandlerService;
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly IDocumentTransactionService _documentTransactionService;
         private readonly string _backupFileDirectory = "\\wwwroot\\Files\\Uploads\\";
 
         public DocumentTypeController(IUnitOfWork unitOfWork,
                                     IExportService<DocumentTypeExport> exportService,
                                     IConfigurationService configurationService,
                                     IFileHandlerService fileHandlerService,
-                                    UserManager<ApplicationUser> userManager
+                                    UserManager<ApplicationUser> userManager,
+                                    IDocumentTransactionService documentTransactionService
                                                                         )
         {
             _unitOfWork = unitOfWork;
@@ -37,6 +41,7 @@ namespace DENR_FASPIS.Controllers
             _configurationService = configurationService;
             _fileHandlerService = fileHandlerService;
             _userManager = userManager;
+            _documentTransactionService = documentTransactionService;
         }
         public IActionResult Index()
         {
@@ -202,6 +207,15 @@ namespace DENR_FASPIS.Controllers
             }
 
             var viewModel = model.ToPreviewDocumentTypeViewModel();
+
+            var documentTypeAssignmentIEnum = await _unitOfWork.DocumentTypeAssignment.GetAllAsync(x => x.IsDeleted == false, includeProperties: "TransactionType,DocumentType");
+            var transactionTypeIEnum = await _unitOfWork.TransactionType.GetAllAsync(x => x.IsDeleted == false);
+            var transactionTypeAssignmentList = documentTypeAssignmentIEnum.ToList();
+            var transactionTypeList = transactionTypeIEnum.ToList();
+            viewModel.TransactionTypes = _documentTransactionService
+                                                    .GetTransactionTypesFromDocumentTypeAssignment(model.Description,
+                                                                                                transactionTypeAssignmentList,
+                                                                                                transactionTypeList);
 
             return View(viewModel);
         }

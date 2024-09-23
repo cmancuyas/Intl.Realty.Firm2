@@ -59,7 +59,41 @@
                         </div>
                     </div>
                 </div>
+                <hr />
+                
+                <h4 class="text-blue mb-1">List of Document Types associated with this Transaction Type</h4>
+                <div class="row my-2">
+                    <div class="table-responsive">
+                        <table id="modelTable" class="data-table table w-100">
+                            <thead>
+                                <tr>
+                                    <th class="text-start">Transaction Type Name</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @{
+                                    @if (Model.DocumentTypes!.Count > 0)
+                                    {
+                                        @foreach (var item in Model.DocumentTypes)
+                                        {
+                                        <tr>
+                                           <td>@item.Description</td>
+                                        </tr>
+                                        }
 
+                                    }
+                                    else
+                                    {
+                                        <tr>
+                                            <td>No Associated Document Types Found</td>
+                                        </tr>
+                                    }
+                                }
+
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

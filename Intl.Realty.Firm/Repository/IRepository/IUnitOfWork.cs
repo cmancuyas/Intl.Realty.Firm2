@@ -11,6 +11,9 @@
         IIRFDealRepository IRFDeal { get; }
         IFileUploadRepository FileUpload { get; }
         ISaleListingRepository SaleListing { get; }
+        ISaleCoopRepository SaleCoop { get; }
+        ILeaseListingRepository LeaseListing { get; }
+        ILeaseCoopRepository LeaseCoop { get; }
         void SaveAsync();
         void Save();
     }

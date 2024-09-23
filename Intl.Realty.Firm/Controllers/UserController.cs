@@ -11,9 +11,11 @@ using Intl.Realty.Firm.Utility.Utilities;
 using Intl.Realty.Firm.Service.IService;
 using Intl.Realty.Firm.Utility.Mapper;
 using Intl.Realty.Firm.Repository.IRepository;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Intl.Realty.Firm.Controllers
 {
+    [Authorize]
     public class UserController : Controller
     {
         private readonly RoleManager<ApplicationRole> _roleManager;

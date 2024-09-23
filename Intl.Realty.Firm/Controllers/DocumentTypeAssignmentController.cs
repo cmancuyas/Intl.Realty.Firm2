@@ -18,6 +18,7 @@ using System.Security.Claims;
 
 namespace DENR_FASPIS.Controllers
 {
+    [Authorize]
     public class DocumentTypeAssignmentController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;

@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Intl.Realty.Firm.Controllers
 {
+    [Authorize]
     public class ErrorController : Controller
     {
         private readonly ILogger<ErrorController> _logger;

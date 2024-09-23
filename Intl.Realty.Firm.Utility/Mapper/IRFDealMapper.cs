@@ -24,6 +24,7 @@ namespace Intl.Realty.Firm.Utility.Mapper
             return new EditIRFDealViewModel
             {
                 Id = model.Id,
+                //SaleListingId = model.SaleListingId,
 
                 PropertyAddress = model.PropertyAddress,
                 FinalSalePrice = model.FinalSalePrice,
@@ -62,6 +63,7 @@ namespace Intl.Realty.Firm.Utility.Mapper
                 viewModelIEnum = modelIEnum.Select(x => new IRFDealViewModel()
                 {
                     Id = x.Id,
+                    //SaleListingId = x.SaleListingId,
 
                     PropertyAddress = x.PropertyAddress,
                     FinalSalePrice = x.FinalSalePrice,
@@ -101,6 +103,8 @@ namespace Intl.Realty.Firm.Utility.Mapper
         {
             return new IRFDeal
             {
+                //SaleListingId = viewModel.SaleListingId,
+
                 PropertyAddress = viewModel.PropertyAddress,
                 FinalSalePrice = viewModel.FinalSalePrice,
                 FinalClosingDate = viewModel.FinalClosingDate,
@@ -134,6 +138,7 @@ namespace Intl.Realty.Firm.Utility.Mapper
             return new IRFDeal
             {
                 Id = viewModel.Id,
+                //SaleListingId = viewModel.SaleListingId,
 
                 PropertyAddress = viewModel.PropertyAddress,
                 FinalSalePrice = viewModel.FinalSalePrice,
@@ -159,8 +164,12 @@ namespace Intl.Realty.Firm.Utility.Mapper
 
                 IsActive = viewModel.IsActive,
                 IsDeleted = viewModel.IsDeleted,
+                CreatedAt = viewModel.CreatedAt,
+                CreatedBy = viewModel.CreatedBy,
                 UpdatedBy = viewModel.UpdatedBy,
                 UpdatedAt = viewModel.UpdatedAt,
+                DeletedBy = viewModel.DeletedBy,
+                DeletedAt = viewModel.DeletedAt,
             };
         }
         public static List<IRFDealExport> ToIRFDealListExport(this List<IRFDealViewModel> modelList)
@@ -203,6 +212,7 @@ namespace Intl.Realty.Firm.Utility.Mapper
             return new PreviewIRFDealViewModel
             {
                 Id = model.Id,
+                //SaleListingId = model.SaleListingId,
 
                 PropertyAddress = model.PropertyAddress,
                 FinalSalePrice = model.FinalSalePrice,
@@ -247,6 +257,7 @@ namespace Intl.Realty.Firm.Utility.Mapper
                 listViewModel = modelList.Select(x => new IRFDealViewModel
                 {
                     Id = x.Id,
+                    //SaleListingId = x.SaleListingId,
 
                     PropertyAddress = x.PropertyAddress,
                     FinalSalePrice = x.FinalSalePrice,

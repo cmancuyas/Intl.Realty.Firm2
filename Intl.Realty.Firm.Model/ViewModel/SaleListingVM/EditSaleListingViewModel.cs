@@ -11,6 +11,7 @@ namespace Intl.Realty.Firm.Model.ViewModel.SaleListingVM
         public int Id { get; set; }
         public int TransactionTypeId { get; set; }
         public int IRFDealId { get; set; }
+        public DateTime? DateSubmitted { get; set; }
         public EditIRFDealViewModel EditIRFDealViewModel { get; set; } = new EditIRFDealViewModel();
         public CreateFileUploadListViewModel? CreateFileUploadListViewModel { get; set; }
         public List<FileUpload>? FileUploads { get; set; }
@@ -23,5 +24,6 @@ namespace Intl.Realty.Firm.Model.ViewModel.SaleListingVM
         public DealStatus? DealStatus { get; set; }
         public IEnumerable<DocumentType>? DocumentTypeList { get; set; }
         public IEnumerable<DealStatus>? DealStatusList { get; set; }
+        public string UpdatedByFullName { get; set; } = string.Empty;
     }
 }
