@@ -30,11 +30,24 @@
                     <div class="progress" style="height: 8px;">
                         <div class="progress-bar w-75" role="progressbar" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"></div>
                     </div>
-                    <a asp-action="Create"
-                       asp-controller="SaleListing"
-                       class="btn btn-link d-flex align-items-center">
-                       Create Sale Listing
-                    </a>
+                    <div class="d-flex">
+                        <div>
+                            <a asp-action="Index"
+                               asp-controller="SaleListing"
+                               class="btn btn-link d-flex align-items-center">
+                                View Sale Listing
+                            </a>
+                        </div>
+                        <div class="ml-auto">
+                            <a asp-action="Create"
+                               asp-controller="SaleListing"
+                               class="btn btn-link d-flex align-items-center">
+                                Create Sale Listing
+                            </a>
+                        </div>
+
+                    </div>
+
                 </div>
             </div>
         </div>
@@ -48,11 +61,23 @@
                     <div class="progress" style="height: 8px;">
                         <div class="progress-bar w-75" role="progressbar" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"></div>
                     </div>
-                    <a asp-action="Create"
-                       asp-controller="SaleCoop"
-                       class="btn btn-link d-flex align-items-center">
-                        Create Sale Coop
-                    </a>
+                    <div class="d-flex">
+                        <div>
+                            <a asp-action="Index"
+                               asp-controller="SaleCoop"
+                               class="btn btn-link d-flex align-items-center">
+                                View Sale Coop
+                            </a>
+                        </div>
+                        <div class="ml-auto">
+                            <a asp-action="Create"
+                               asp-controller="SaleCoop"
+                               class="btn btn-link d-flex align-items-center">
+                                Create Sale Coop
+                            </a>
+                        </div>
+
+                    </div>
                 </div>
             </div>
         </div>
@@ -66,11 +91,23 @@
                     <div class="progress" style="height: 8px;">
                         <div class="progress-bar w-75" role="progressbar" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"></div>
                     </div>
-                    <a asp-action="Create"
-                       asp-controller="LeaseListing"
-                       class="btn btn-link d-flex align-items-center">
-                        Create Lease Listing
-                    </a>
+                    <div class="d-flex">
+                        <div>
+                            <a asp-action="Index"
+                               asp-controller="LeaseListing"
+                               class="btn btn-link d-flex align-items-center">
+                                View Lease Listing
+                            </a>
+                        </div>
+                        <div class="ml-auto">
+                            <a asp-action="Create"
+                               asp-controller="LeaseListing"
+                               class="btn btn-link d-flex align-items-center">
+                                Create Lease Listing
+                            </a>
+                        </div>
+
+                    </div>
                 </div>
             </div>
         </div>
@@ -84,11 +121,23 @@
                     <div class="progress" style="height: 8px;">
                         <div class="progress-bar w-75" role="progressbar" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"></div>
                     </div>
-                    <a asp-action="Create"
-                       asp-controller="LeaseCoop"
-                       class="btn btn-link d-flex align-items-center">
-                        Create Lease Coop
-                    </a>
+                    <div class="d-flex">
+                        <div>
+                            <a asp-action="Index"
+                               asp-controller="LeaseCoop"
+                               class="btn btn-link d-flex align-items-center">
+                                View Lease Coop
+                            </a>
+                        </div>
+                        <div class="ml-auto">
+                            <a asp-action="Create"
+                               asp-controller="LeastCoop"
+                               class="btn btn-link d-flex align-items-center">
+                                Create Lease Coop
+                            </a>
+                        </div>
+
+                    </div>
                 </div>
             </div>
         </div>
@@ -100,78 +149,29 @@
         <div class="col-6">
             <div class="card card-custom">
                 <div class="card-body">
-                    <h5 class="card-title">Monthly Invoices</h5>
+                    <h5 class="card-title">My Daily Transactions</h5>
                     <ul class="list-group">
-                        <li class="list-group-item">
-                            <div class="d-flex align-items-center">
-                                <div class="icon-circle" style="background-color: #f9e79f;">
-                                    <i class="bi bi-check-circle-fill text-warning"></i>
+
+                        @foreach (var item in Model.SaleListingListToday)
+                        {
+                            <li class="list-group-item">
+                                <div class="d-flex align-items-center">
+                                    <div class="icon-circle" style="background-color: #f9e79f;">
+                                        <i class="bi bi-check-circle-fill text-warning"></i>
+
+                                    </div>
+                                    <div>
+                                        <div>@item.IRFDeal!.PropertyAddress - @item.Id</div>
+                                        <div class="text-small">@item.CreatedAt</div>
+                                    </div>
                                 </div>
-                                <div>
-                                    <div>Deposit PayPal</div>
-                                    <div class="text-small">5 march, 18:33</div>
+                                <div class="text-right">
+                                    <div class="text-eur">@item.DealStatus!.Description</div>
                                 </div>
-                            </div>
-                            <div class="text-right">
-                                <div class="text-eur">+2000 EUR</div>
-                            </div>
-                        </li>
-                        <li class="list-group-item">
-                            <div class="d-flex align-items-center">
-                                <div class="icon-circle" style="background-color: #f5b7b1;">
-                                    <i class="bi bi-check-circle-fill text-danger"></i>
-                                </div>
-                                <div>
-                                    <div>Deposit PayPal</div>
-                                    <div class="text-small">5 march, 18:33</div>
-                                </div>
-                            </div>
-                            <div class="text-right">
-                                <div class="text-eur">+2000 EUR</div>
-                            </div>
-                        </li>
-                        <li class="list-group-item">
-                            <div class="d-flex align-items-center">
-                                <div class="icon-circle" style="background-color: #f5c7f7;">
-                                    <i class="bi bi-check-circle-fill text-primary"></i>
-                                </div>
-                                <div>
-                                    <div>Deposit from Bank</div>
-                                    <div class="text-small">5 march, 18:33</div>
-                                </div>
-                            </div>
-                            <div class="text-right">
-                                <div class="text-eur">+2000 EUR</div>
-                            </div>
-                        </li>
-                        <li class="list-group-item">
-                            <div class="d-flex align-items-center">
-                                <div class="icon-circle" style="background-color: #d4efdf;">
-                                    <i class="bi bi-check-circle-fill text-success"></i>
-                                </div>
-                                <div>
-                                    <div>Cancelled</div>
-                                    <div class="text-small">5 march, 18:33</div>
-                                </div>
-                            </div>
-                            <div class="text-right">
-                                <div class="text-eur">+2000 EUR</div>
-                            </div>
-                        </li>
-                        <li class="list-group-item">
-                            <div class="d-flex align-items-center">
-                                <div class="icon-circle" style="background-color: #a2d9ce;">
-                                    <i class="bi bi-check-circle-fill text-success"></i>
-                                </div>
-                                <div>
-                                    <div>Deposit from Bank</div>
-                                    <div class="text-small">5 march, 18:33</div>
-                                </div>
-                            </div>
-                            <div class="text-right">
-                                <div class="text-eur">+2000 EUR</div>
-                            </div>
-                        </li>
+                            </li>
+                        }
+
+
                     </ul>
                 </div>
             </div>
@@ -183,7 +183,7 @@
                     <h5 class="card-title">Recent Activity</h5>
                     <div class="activity-timeline">
 
-                        @foreach(var item in Model.SaleListingListPastHour)
+                        @foreach (var item in Model.SaleListingListPastHour)
                         {
                             <div class="activity-timeline-item">
                                 <div class="timeline-dot"></div>
@@ -204,7 +204,7 @@
     <div class="row">
         <div class="card card-custom">
             <div class="card-body">
-                <h5 class="card-title">Monthly Transactions</h5>
+                <h5 class="card-title">Monthly Transactions - @DateTime.Now.ToString("MMMM") @DateTime.Now.ToString("yyyy")</h5>
                 <div class="table-responsive">
                     <table class="table table-custom">
                         <thead>
@@ -215,11 +215,12 @@
                                 <th>Deal Status</th>
                                 <th>Created By</th>
                                 <th>Created At</th>
+                                <th>Final Closing Date</th>
                                 <th>Attachment</th>
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach(var item in Model.SaleListingListAll)
+                            @foreach (var item in Model.SaleListingListAll)
                             {
                                 var user = await _userManager.FindByIdAsync(item.CreatedBy.ToString());
                                 <tr>
@@ -229,6 +230,7 @@
                                     <td>@item.DealStatus!.Description</td>
                                     <td>@user!.FirstName @user.LastName</td>
                                     <td>@item.CreatedAt</td>
+                                    <td>@item.IRFDeal.FinalClosingDate</td>
                                     <td><div class="attachment-icon">PDF</div></td>
                                 </tr>
                             }

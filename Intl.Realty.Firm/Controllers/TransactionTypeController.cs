@@ -84,7 +84,7 @@ namespace DENR_FASPIS.Controllers
                 viewModel.CreateTransactionType.IsActive = true;
                 viewModel.CreateTransactionType.IsDeleted = false;
                 viewModel.CreateTransactionType.CreatedBy = user!.Id;
-                viewModel.CreateTransactionType.CreatedAt = DateTime.UtcNow;
+                viewModel.CreateTransactionType.CreatedAt = DateTime.Now;
 
                 var checkIfExists = await _unitOfWork.TransactionType.GetAsync(x => x.Description == viewModel.CreateTransactionType.Description);
                 if (checkIfExists == null)

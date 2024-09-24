@@ -81,7 +81,7 @@ namespace DENR_FASPIS.Controllers
                 viewModel.CreateDealStatus.IsActive = true;
                 viewModel.CreateDealStatus.IsDeleted = false;
                 viewModel.CreateDealStatus.CreatedBy = user!.Id;
-                viewModel.CreateDealStatus.CreatedAt = DateTime.UtcNow;
+                viewModel.CreateDealStatus.CreatedAt = DateTime.Now;
 
                 var checkIfExists = await _unitOfWork.DealStatus.GetAsync(x => x.Description == viewModel.CreateDealStatus.Description);
                 if (checkIfExists == null)

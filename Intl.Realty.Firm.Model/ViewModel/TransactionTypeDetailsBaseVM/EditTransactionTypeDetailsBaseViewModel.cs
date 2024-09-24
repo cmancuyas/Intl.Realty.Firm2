@@ -8,10 +8,10 @@ namespace Intl.Realty.Firm.Model.ViewModel.TransactionTypeDetailsBaseVM
         public string PropertyAddress { get; set; } = string.Empty;
         [Column(TypeName = "decimal(18,4)")]
         public Decimal FinalSalePrice { get; set; }
-        public DateTime FinalClosingDate { get; set; } = DateTime.UtcNow;
+        public DateTime FinalClosingDate { get; set; } = DateTime.Now;
         [Column(TypeName = "decimal(18,4)")]
         public Decimal DepositAmount { get; set; }
-        public DateTime DepositDate { get; set; } = DateTime.UtcNow;
+        public DateTime DepositDate { get; set; } = DateTime.Now;
         public string BuyerName { get; set; } = string.Empty;
         public string LandLordName { get; set; } = string.Empty;
         [Column(TypeName = "decimal(18,4)")]

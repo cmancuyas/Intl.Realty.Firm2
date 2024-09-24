@@ -81,7 +81,7 @@ namespace DENR_FASPIS.Controllers
                 viewModel.CreateDepartment.IsActive = true;
                 viewModel.CreateDepartment.IsDeleted = false;
                 viewModel.CreateDepartment.CreatedBy = user!.Id;
-                viewModel.CreateDepartment.CreatedAt = DateTime.UtcNow;
+                viewModel.CreateDepartment.CreatedAt = DateTime.Now;
 
                 var checkIfExists = await _unitOfWork.Department.GetAsync(x => x.Description == viewModel.CreateDepartment.Description);
                 if (checkIfExists == null)

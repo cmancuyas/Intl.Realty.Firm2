@@ -91,7 +91,7 @@ namespace DENR_FASPIS.Controllers
                 viewModel.CreateDocumentTypeAssignment.IsActive = true;
                 viewModel.CreateDocumentTypeAssignment.IsDeleted = false;
                 viewModel.CreateDocumentTypeAssignment.CreatedBy = user!.Id;
-                viewModel.CreateDocumentTypeAssignment.CreatedAt = DateTime.UtcNow;
+                viewModel.CreateDocumentTypeAssignment.CreatedAt = DateTime.Now;
 
                 var combinedExp = LinqExtensions.AndAlso<DocumentTypeAssignment>(x => x.TransactionTypeId == viewModel.CreateDocumentTypeAssignment.TransactionTypeId,
                                                                                   x => x.DocumentTypeId == viewModel.CreateDocumentTypeAssignment.DocumentTypeId);

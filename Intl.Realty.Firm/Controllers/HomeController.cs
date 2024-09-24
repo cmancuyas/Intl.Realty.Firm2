@@ -4,7 +4,11 @@ using Intl.Realty.Firm.Repository.IRepository;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Org.BouncyCastle.Asn1.X509;
+using System.Data.Entity.Core.Common.CommandTrees.ExpressionBuilder;
+using System;
 using System.Diagnostics;
+using Microsoft.AspNetCore.Identity;
+using Intl.Realty.Firm.Model.Model;
 
 namespace Intl.Realty.Firm.Controllers
 {
@@ -13,13 +17,16 @@ namespace Intl.Realty.Firm.Controllers
     {
         private readonly ILogger<HomeController> _logger;
         private readonly IUnitOfWork _unitOfWork;
+        private readonly UserManager<ApplicationUser> _userManager;
 
         public HomeController(ILogger<HomeController> logger,
-                              IUnitOfWork unitOfWork
+                              IUnitOfWork unitOfWork,
+                              UserManager<ApplicationUser> userManager
                                 )
         {
             _logger = logger;
             _unitOfWork = unitOfWork;
+            _userManager = userManager;
         }
 
         public IActionResult Index()
@@ -34,21 +41,30 @@ namespace Intl.Realty.Firm.Controllers
             var leaseListingIEnum = await _unitOfWork.LeaseListing.AsQueryableAsync(x => x.IsDeleted == false, includeProperties: "IRFDeal,TransactionType,DealStatus");
             var leaseCoopIEnum = await _unitOfWork.LeaseCoop.AsQueryableAsync(x => x.IsDeleted == false, includeProperties: "IRFDeal,TransactionType,DealStatus");
 
-            viewModel.SaleListingCountToday = saleListingIEnum.Count();
-            viewModel.SaleCoopCountToday = saleCoopIEnum.Count();
-            viewModel.LeaseListingCountToday = leaseListingIEnum.Count();
-            viewModel.LeaseCoopCountToday = leaseCoopIEnum.Count();
+            var user = await _userManager.GetUserAsync(User);
+
+            saleListingIEnum = saleListingIEnum.Where(x => x.CreatedBy == user!.Id);
+            saleCoopIEnum = saleCoopIEnum.Where(x => x.CreatedBy == user!.Id);
+            leaseListingIEnum = leaseListingIEnum.Where(x => x.CreatedBy == user!.Id);
+            leaseCoopIEnum = leaseCoopIEnum.Where(x => x.CreatedBy == user!.Id);
 
             // SaleListing
             saleListingIEnum = saleListingIEnum.OrderByDescending(x => x.CreatedAt);
             viewModel.SaleListingListAll = saleListingIEnum.ToList();
-            viewModel.SaleListingListPastHour = saleListingIEnum.Where(x=>x.CreatedAt <= DateTime.Now.AddHours(-1)).ToList();
 
-
-            viewModel.SaleListingListToday = saleListingIEnum.Where(x=>x.CreatedAt == DateTime.Today).ToList();
-            
             foreach (var item in saleListingIEnum)
             {
+                var timeNow = DateTime.Now;
+                var pastHour = DateTime.Now.AddHours(-1);
+                if (item.CreatedAt > DateTime.Now.AddHours(-24) && item.CreatedAt <= DateTime.Now)
+                {
+                    viewModel.SaleListingListToday.Add(item);
+                }
+                if (pastHour <= timeNow && item.CreatedAt >= pastHour)
+                {
+                    viewModel.SaleListingListPastHour.Add(item);
+                }
+
                 bool isCurrentMonth = DateTime.Now.Month == item.CreatedAt.Month
                                     && DateTime.Now.Year == item.CreatedAt.Year;
                 if (isCurrentMonth)
@@ -57,16 +73,25 @@ namespace Intl.Realty.Firm.Controllers
                 }
             }
 
+
+
             // SaleCoop
             saleCoopIEnum = saleCoopIEnum.OrderByDescending(x => x.CreatedAt);
             viewModel.SaleCoopListAll = saleCoopIEnum.ToList();
-            viewModel.SaleCoopListPastHour = saleCoopIEnum.Where(x => x.CreatedAt <= DateTime.Now.AddHours(-1)).ToList();
-
-
-            viewModel.SaleCoopListToday = saleCoopIEnum.Where(x => x.CreatedAt == DateTime.Today).ToList();
 
             foreach (var item in saleCoopIEnum)
             {
+                var timeNow = DateTime.Now;
+                var pastHour = DateTime.Now.AddHours(-1);
+                if (item.CreatedAt > DateTime.Now.AddHours(-24) && item.CreatedAt <= DateTime.Now)
+                {
+                    viewModel.SaleCoopListToday.Add(item);
+                }
+                if (pastHour <= timeNow && item.CreatedAt >= pastHour)
+                {
+                    viewModel.SaleCoopListPastHour.Add(item);
+                }
+
                 bool isCurrentMonth = DateTime.Now.Month == item.CreatedAt.Month
                                     && DateTime.Now.Year == item.CreatedAt.Year;
                 if (isCurrentMonth)
@@ -78,13 +103,20 @@ namespace Intl.Realty.Firm.Controllers
             //Lease Listing
             leaseListingIEnum = leaseListingIEnum.OrderByDescending(x => x.CreatedAt);
             viewModel.LeaseListingListAll = leaseListingIEnum.ToList();
-            viewModel.LeaseListingListPastHour = leaseListingIEnum.Where(x => x.CreatedAt <= DateTime.Now.AddHours(-1)).ToList();
-
-
-            viewModel.LeaseListingListToday = leaseListingIEnum.Where(x => x.CreatedAt == DateTime.Today).ToList();
 
             foreach (var item in leaseListingIEnum)
             {
+                var timeNow = DateTime.Now;
+                var pastHour = DateTime.Now.AddHours(-1);
+                if (item.CreatedAt > DateTime.Now.AddHours(-24) && item.CreatedAt <= DateTime.Now)
+                {
+                    viewModel.LeaseListingListToday.Add(item);
+                }
+                if (pastHour <= timeNow && item.CreatedAt >= pastHour)
+                {
+                    viewModel.LeaseListingListPastHour.Add(item);
+                }
+
                 bool isCurrentMonth = DateTime.Now.Month == item.CreatedAt.Month
                                     && DateTime.Now.Year == item.CreatedAt.Year;
                 if (isCurrentMonth)
@@ -96,13 +128,20 @@ namespace Intl.Realty.Firm.Controllers
             //Lease Coop
             leaseCoopIEnum = leaseCoopIEnum.OrderByDescending(x => x.CreatedAt);
             viewModel.LeaseCoopListAll = leaseCoopIEnum.ToList();
-            viewModel.LeaseCoopListPastHour = leaseCoopIEnum.Where(x => x.CreatedAt <= DateTime.Now.AddHours(-1)).ToList();
-
-
-            viewModel.LeaseCoopListToday = leaseCoopIEnum.Where(x => x.CreatedAt == DateTime.Today).ToList();
 
             foreach (var item in leaseCoopIEnum)
             {
+                var timeNow = DateTime.Now;
+                var pastHour = DateTime.Now.AddHours(-1);
+                if (item.CreatedAt > DateTime.Now.AddHours(-24) && item.CreatedAt <= DateTime.Now)
+                {
+                    viewModel.LeaseCoopListToday.Add(item);
+                }
+                if (pastHour <= timeNow && item.CreatedAt >= pastHour)
+                {
+                    viewModel.LeaseCoopListPastHour.Add(item);
+                }
+
                 bool isCurrentMonth = DateTime.Now.Month == item.CreatedAt.Month
                                     && DateTime.Now.Year == item.CreatedAt.Year;
                 if (isCurrentMonth)
@@ -110,6 +149,11 @@ namespace Intl.Realty.Firm.Controllers
                     viewModel.LeaseCoopListMonth.Add(item);
                 }
             }
+
+            viewModel.SaleListingCountToday = viewModel.SaleListingListToday.Count();
+            viewModel.SaleCoopCountToday = viewModel.SaleCoopListToday.Count();
+            viewModel.LeaseListingCountToday = viewModel.LeaseListingListToday.Count();
+            viewModel.LeaseCoopCountToday = viewModel.LeaseCoopListToday.Count();
 
             return View(viewModel);
         }
@@ -121,21 +165,30 @@ namespace Intl.Realty.Firm.Controllers
             var leaseListingIEnum = await _unitOfWork.LeaseListing.AsQueryableAsync(x => x.IsDeleted == false, includeProperties: "IRFDeal,TransactionType,DealStatus");
             var leaseCoopIEnum = await _unitOfWork.LeaseCoop.AsQueryableAsync(x => x.IsDeleted == false, includeProperties: "IRFDeal,TransactionType,DealStatus");
 
-            viewModel.SaleListingCountToday = saleListingIEnum.Count();
-            viewModel.SaleCoopCountToday = saleCoopIEnum.Count();
-            viewModel.LeaseListingCountToday = leaseListingIEnum.Count();
-            viewModel.LeaseCoopCountToday = leaseCoopIEnum.Count();
+            var user = await _userManager.GetUserAsync(User);
+
+            saleListingIEnum = saleListingIEnum.Where(x => x.CreatedBy == user!.Id);
+            saleCoopIEnum = saleCoopIEnum.Where(x => x.CreatedBy == user!.Id);
+            leaseListingIEnum = leaseListingIEnum.Where(x => x.CreatedBy == user!.Id);
+            leaseCoopIEnum = leaseCoopIEnum.Where(x => x.CreatedBy == user!.Id);
 
             // SaleListing
             saleListingIEnum = saleListingIEnum.OrderByDescending(x => x.CreatedAt);
             viewModel.SaleListingListAll = saleListingIEnum.ToList();
-            viewModel.SaleListingListPastHour = saleListingIEnum.Where(x => x.CreatedAt <= DateTime.Now.AddHours(-1)).ToList();
-
-
-            viewModel.SaleListingListToday = saleListingIEnum.Where(x => x.CreatedAt == DateTime.Today).ToList();
 
             foreach (var item in saleListingIEnum)
             {
+                var timeNow = DateTime.Now;
+                var pastHour = DateTime.Now.AddHours(-1);
+                if (item.CreatedAt > DateTime.Now.AddHours(-24) && item.CreatedAt <= DateTime.Now)
+                {
+                    viewModel.SaleListingListToday.Add(item);
+                }
+                if (pastHour <= timeNow && item.CreatedAt >= pastHour)
+                {
+                    viewModel.SaleListingListPastHour.Add(item);
+                }
+
                 bool isCurrentMonth = DateTime.Now.Month == item.CreatedAt.Month
                                     && DateTime.Now.Year == item.CreatedAt.Year;
                 if (isCurrentMonth)
@@ -144,16 +197,25 @@ namespace Intl.Realty.Firm.Controllers
                 }
             }
 
+
+
             // SaleCoop
             saleCoopIEnum = saleCoopIEnum.OrderByDescending(x => x.CreatedAt);
             viewModel.SaleCoopListAll = saleCoopIEnum.ToList();
-            viewModel.SaleCoopListPastHour = saleCoopIEnum.Where(x => x.CreatedAt <= DateTime.Now.AddHours(-1)).ToList();
-
-
-            viewModel.SaleCoopListToday = saleCoopIEnum.Where(x => x.CreatedAt == DateTime.Today).ToList();
 
             foreach (var item in saleCoopIEnum)
             {
+                var timeNow = DateTime.Now;
+                var pastHour = DateTime.Now.AddHours(-1);
+                if (item.CreatedAt > DateTime.Now.AddHours(-24) && item.CreatedAt <= DateTime.Now)
+                {
+                    viewModel.SaleCoopListToday.Add(item);
+                }
+                if (pastHour <= timeNow && item.CreatedAt >= pastHour)
+                {
+                    viewModel.SaleCoopListPastHour.Add(item);
+                }
+
                 bool isCurrentMonth = DateTime.Now.Month == item.CreatedAt.Month
                                     && DateTime.Now.Year == item.CreatedAt.Year;
                 if (isCurrentMonth)
@@ -165,13 +227,20 @@ namespace Intl.Realty.Firm.Controllers
             //Lease Listing
             leaseListingIEnum = leaseListingIEnum.OrderByDescending(x => x.CreatedAt);
             viewModel.LeaseListingListAll = leaseListingIEnum.ToList();
-            viewModel.LeaseListingListPastHour = leaseListingIEnum.Where(x => x.CreatedAt <= DateTime.Now.AddHours(-1)).ToList();
-
-
-            viewModel.LeaseListingListToday = leaseListingIEnum.Where(x => x.CreatedAt == DateTime.Today).ToList();
 
             foreach (var item in leaseListingIEnum)
             {
+                var timeNow = DateTime.Now;
+                var pastHour = DateTime.Now.AddHours(-1);
+                if (item.CreatedAt > DateTime.Now.AddHours(-24) && item.CreatedAt <= DateTime.Now)
+                {
+                    viewModel.LeaseListingListToday.Add(item);
+                }
+                if (pastHour <= timeNow && item.CreatedAt >= pastHour)
+                {
+                    viewModel.LeaseListingListPastHour.Add(item);
+                }
+
                 bool isCurrentMonth = DateTime.Now.Month == item.CreatedAt.Month
                                     && DateTime.Now.Year == item.CreatedAt.Year;
                 if (isCurrentMonth)
@@ -183,13 +252,20 @@ namespace Intl.Realty.Firm.Controllers
             //Lease Coop
             leaseCoopIEnum = leaseCoopIEnum.OrderByDescending(x => x.CreatedAt);
             viewModel.LeaseCoopListAll = leaseCoopIEnum.ToList();
-            viewModel.LeaseCoopListPastHour = leaseCoopIEnum.Where(x => x.CreatedAt <= DateTime.Now.AddHours(-1)).ToList();
-
-
-            viewModel.LeaseCoopListToday = leaseCoopIEnum.Where(x => x.CreatedAt == DateTime.Today).ToList();
 
             foreach (var item in leaseCoopIEnum)
             {
+                var timeNow = DateTime.Now;
+                var pastHour = DateTime.Now.AddHours(-1);
+                if (item.CreatedAt > DateTime.Now.AddHours(-24) && item.CreatedAt <= DateTime.Now)
+                {
+                    viewModel.LeaseCoopListToday.Add(item);
+                }
+                if (pastHour <= timeNow && item.CreatedAt >= pastHour)
+                {
+                    viewModel.LeaseCoopListPastHour.Add(item);
+                }
+
                 bool isCurrentMonth = DateTime.Now.Month == item.CreatedAt.Month
                                     && DateTime.Now.Year == item.CreatedAt.Year;
                 if (isCurrentMonth)
@@ -198,8 +274,13 @@ namespace Intl.Realty.Firm.Controllers
                 }
             }
 
+            viewModel.SaleListingCountToday = viewModel.SaleListingListToday.Count();
+            viewModel.SaleCoopCountToday = viewModel.SaleCoopListToday.Count();
+            viewModel.LeaseListingCountToday = viewModel.LeaseListingListToday.Count();
+            viewModel.LeaseCoopCountToday = viewModel.LeaseCoopListToday.Count();
 
             return View(viewModel);
+
         }
         public IActionResult Privacy()
         {

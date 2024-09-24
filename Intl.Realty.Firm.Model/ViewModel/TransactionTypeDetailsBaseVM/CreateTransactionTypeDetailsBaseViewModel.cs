@@ -11,12 +11,12 @@ namespace Intl.Realty.Firm.Model.ViewModel.TransactionTypeDetailsBaseVM
         [Column(TypeName = "decimal(18,4)")]
         public decimal FinalSalePrice { get; set; }
         [Required(ErrorMessage = "Final Closing Date field is required")]
-        public DateTime FinalClosingDate { get; set; } = DateTime.UtcNow;
+        public DateTime FinalClosingDate { get; set; } = DateTime.Now;
         [Required(ErrorMessage = "Deposit Amount field is required")]
         [Column(TypeName = "decimal(18,4)")]
         public decimal DepositAmount { get; set; }
         [Required(ErrorMessage = "Deposit Date field is required")]
-        public DateTime DepositDate { get; set; } = DateTime.UtcNow;
+        public DateTime DepositDate { get; set; } = DateTime.Now;
         [Required(ErrorMessage = "Buyers Name field is required")]
         public string BuyerName { get; set; } = string.Empty;
         [Required(ErrorMessage = "Land Lords field is required")]

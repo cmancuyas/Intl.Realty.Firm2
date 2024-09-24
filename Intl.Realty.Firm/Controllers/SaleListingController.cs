@@ -134,7 +134,7 @@ namespace DENR_FASPIS.Controllers
                 viewModel.CreateSaleListing.TransactionType = transactionType;
 
                 var createIRFDealModel = viewModel.CreateSaleListing.CreateIRFDealViewModel?.ToIRFDealModel();
-                createIRFDealModel!.CreatedAt = DateTime.UtcNow;
+                createIRFDealModel!.CreatedAt = DateTime.Now;
                 createIRFDealModel.CreatedBy = user!.Id;
                 createIRFDealModel.IsActive = true;
                 createIRFDealModel.IsDeleted = false;
@@ -164,7 +164,7 @@ namespace DENR_FASPIS.Controllers
                 viewModel.CreateSaleListing.IsActive = true;
                 viewModel.CreateSaleListing.IsDeleted = false;
                 viewModel.CreateSaleListing.CreatedBy = user!.Id;
-                viewModel.CreateSaleListing.CreatedAt = DateTime.UtcNow;
+                viewModel.CreateSaleListing.CreatedAt = DateTime.Now;
 
                 var saleListingModel = viewModel.CreateSaleListing.ToSaleListingModel();
                 await _unitOfWork.SaleListing.AddAsync(saleListingModel);
@@ -666,6 +666,8 @@ namespace DENR_FASPIS.Controllers
             // Query initialization
             var isAdmin = await _userManager.IsInRoleAsync(user!, "Admin");
             var isSuperAdmin = await _userManager.IsInRoleAsync(user!, "SuperAdmin");
+            var isAgent = await _userManager.IsInRoleAsync(user!, "Agent");
+            var isDealAdmin = await _userManager.IsInRoleAsync(user!, "DealAdmin");
             var result = await _unitOfWork.SaleListing.AsQueryableAsync(x => x.IsDeleted == false, includeProperties: "IRFDeal,TransactionType,DealStatus");
             if (isAdmin || isSuperAdmin)
             {
@@ -674,7 +676,18 @@ namespace DENR_FASPIS.Controllers
             else
             {
                 // Filter by current user
-                result = result.Where(x => x.CreatedBy == user!.Id);
+                
+                
+                if(isAgent)
+                {
+                    result = result.Where(x => x.CreatedBy == user!.Id);
+                    result = result.Where(x => x.DealStatus!.Id == 2); // Saved
+                }
+
+                if(isDealAdmin)
+                {
+                    result = result.Where(x => x.DealStatus!.Id == 1); // Submitted
+                }
             }
 
             var totalResultsCount = result.Count();

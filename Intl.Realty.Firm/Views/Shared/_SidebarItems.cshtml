@@ -7,22 +7,26 @@
     </div>
     <div class="nav-bar-container">
         <ul id="navItems" class="navbar-nav mt-5">
-            <li id="dashboardNavItem" class="nav-item mx-2 mt-2 mb-1 rounded">
-                <a class="nav-link text-decoration-none d-flex align-items-center gap-3 ms-2 me-2 fw-bolder" asp-controller="Home" asp-action="Dashboard">
-                    <i data-feather="grid" data-toggle="tooltip" data-bs-placement="right" title="Dashboard"></i>
-                    <span>Dashboard</span>
-                </a>
-            </li>
-            @* Customers *@
-            <li id="dashboardNavItem" class="nav-item mx-2 mt-2 mb-1 rounded">
-                <a class="nav-link text-decoration-none d-flex align-items-center gap-3 ms-2 me-2 fw-bolder" asp-controller="Customer" asp-action="Index">
-                    <i data-feather="user" data-toggle="tooltip" data-bs-placement="right" title="Customer"></i>
-                    <span>My Customers</span>
-                </a>
-            </li>
+
+
             @if (signInManager.IsSignedIn(User) && (User.IsInRole("SuperAdmin") ||
                                  User.IsInRole("Admin")))
             {
+                <li id="dashboardNavItem" class="nav-item mx-2 mt-2 mb-1 rounded">
+                    <a class="nav-link text-decoration-none d-flex align-items-center gap-3 ms-2 me-2 fw-bolder" asp-controller="Home" asp-action="AdminDashboard">
+                        <i data-feather="grid" data-toggle="tooltip" data-bs-placement="right" title="Dashboard"></i>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+
+                @* Customers *@
+                <li id="dashboardNavItem" class="nav-item mx-2 mt-2 mb-1 rounded">
+                    <a class="nav-link text-decoration-none d-flex align-items-center gap-3 ms-2 me-2 fw-bolder" asp-controller="Customer" asp-action="Index">
+                        <i data-feather="user" data-toggle="tooltip" data-bs-placement="right" title="Customer"></i>
+                        <span>My Customers</span>
+                    </a>
+                </li>
+
                 @* Administrator *@
                 <li id="administratorNavItem" class="nav-item mx-2 mt-2 mb-1 rounded pe-cursor">
                     <a id="administratorNavLink" class="nav-link text-decoration-none d-flex align-items-center gap-3 ms-2 me-2 fw-bolder">
@@ -30,7 +34,16 @@
                     <span class="flex-grow-1">Administrator</span>
                     <i data-feather="chevron-right" class="caret w-15px"></i>
                 </a>
-            </li>
+                </li>
+            }
+            else
+            {
+                <li id="dashboardNavItem" class="nav-item mx-2 mt-2 mb-1 rounded">
+                    <a class="nav-link text-decoration-none d-flex align-items-center gap-3 ms-2 me-2 fw-bolder" asp-controller="Home" asp-action="Dashboard">
+                        <i data-feather="grid" data-toggle="tooltip" data-bs-placement="right" title="Dashboard"></i>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
             }
             <li class="administratorSubNavItem sub-nav-item">
                 <ul class="list-unstyled">
