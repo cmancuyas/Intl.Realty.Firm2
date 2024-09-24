@@ -1,6 +1,7 @@
 ﻿@using Intl.Realty.Firm.Model.Model
 @using Microsoft.AspNetCore.Identity
-@inject SignInManager<ApplicationUser> signInManager;
+@inject SignInManager<ApplicationUser> _signInManager;
+@inject UserManager<ApplicationUser> _userManager;
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -87,8 +88,19 @@
                         </svg>
                     </a>
                     <div class="d-flex flex-column justify-content-end">
-                        <span id="DisplayName" class="fw-bolder text-end"><!--John Wick--></span>
-                        <span id="DisplayRole" class="small text-end"><!--Project Manager--></span>
+                        @{
+                            var user = await _userManager.GetUserAsync(User);
+                            var roles = await _userManager.GetRolesAsync(user!);
+                            <span id="DisplayName" class="fw-bolder text-end">@user!.Email</span>
+                            <span id="DisplayFullName" class="small text-end">@user.FirstName @user.LastName</span>
+                            <span id="DisplayRole" class="small text-end">
+                                @foreach(var item in roles)
+                                {
+                                    @item
+                                }
+                            </span>
+                        }
+
                     </div>
                     <div class="d-fex">
                         <img src="~/files/img/avatar-blank.png" class="avatar" id="avatar" width="40" height="40" />

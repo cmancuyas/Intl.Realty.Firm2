@@ -14,7 +14,7 @@ namespace Intl.Realty.Firm.Utility.MenuData
             {
                 Id = count + 1,
                 Menu = "User",
-                Description = "Manage Users",
+                Description = "Users",
                 Tab = "users-tab",
                 Control = "users",
             };
@@ -27,7 +27,7 @@ namespace Intl.Realty.Firm.Utility.MenuData
             {
                 Id = count + 1,
                 Menu = "Role",
-                Description = "Manage Roles",
+                Description = "Roles",
                 Tab = "roles-tab",
                 Control = "roles",
             };
@@ -56,6 +56,39 @@ namespace Intl.Realty.Firm.Utility.MenuData
                 Description = "Departments",
                 Tab = "departments-tab",
                 Control = "departments",
+            };
+
+            menus.Add(menu);
+            // End
+
+            return menus;
+        }
+
+        public static List<TabMenu> GetEditUserTabMenuData()
+        {
+            List<TabMenu> menus = new List<TabMenu>();
+            int count = 0;
+            // Start
+            TabMenu menu = new TabMenu()
+            {
+                Id = count + 1,
+                Menu = "EditUser",
+                Description = "Edit User",
+                Tab = "editUsers-tab",
+                Control = "editUsers",
+            };
+
+            menus.Add(menu);
+            // End
+
+            // Start
+            menu = new TabMenu()
+            {
+                Id = count + 1,
+                Menu = "EditRole",
+                Description = "EditRole",
+                Tab = "editRoles-tab",
+                Control = "editRoles",
             };
 
             menus.Add(menu);

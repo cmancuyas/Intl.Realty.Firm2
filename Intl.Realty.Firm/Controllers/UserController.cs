@@ -12,10 +12,13 @@ using Intl.Realty.Firm.Service.IService;
 using Intl.Realty.Firm.Utility.Mapper;
 using Intl.Realty.Firm.Repository.IRepository;
 using Microsoft.AspNetCore.Authorization;
+using Intl.Realty.Firm.Model.ViewModel.AccountVM;
+using Intl.Realty.Firm.Model.Model.Identity;
+using System.Security.Claims;
 
 namespace Intl.Realty.Firm.Controllers
 {
-    [Authorize]
+    [Authorize(Roles = "Admin,SuperAdmin")]
     public class UserController : Controller
     {
         private readonly RoleManager<ApplicationRole> _roleManager;
@@ -49,15 +52,16 @@ namespace Intl.Realty.Firm.Controllers
                 ViewBag.ErrorMessage = $"User with Id = {id} cannot be found";
                 return View("NotFound");
             }
+            EditUserWithTabMenuViewModel viewModel = new EditUserWithTabMenuViewModel();
 
             var userClaims = await _userManager.GetClaimsAsync(user);
             var userRoles = await _userManager.GetRolesAsync(user);
 
-            var viewModel = new EditUserViewModel
+            var editUser = new EditUserViewModel
             {
                 Id = user.Id,
                 Email = user.Email!,
-                UserName = user.UserName!,
+                UserName = user.Email!,
                 FirstName = user.FirstName,
                 LastName = user.LastName,
                 DepartmentId = user.DepartmentId,
@@ -66,11 +70,25 @@ namespace Intl.Realty.Firm.Controllers
                 Claims = userClaims.Select(x => x.Type + " : " + x.Value).ToList(),
                 Roles = userRoles.ToList()
             };
+
+            viewModel.EditUser = editUser;
             var departmentIEnum = await _unitOfWork.Department.GetAllAsync(x => x.IsDeleted == false);
-            viewModel.DepartmentList = departmentIEnum.ToList();
+            viewModel.EditUser.DepartmentList = departmentIEnum.ToList();
 
             var employmentStatusIEnum = await _unitOfWork.EmploymentStatus.GetAllAsync(x => x.IsDeleted == false);
-            viewModel.EmploymentStatusList = employmentStatusIEnum.ToList();
+            viewModel.EditUser.EmploymentStatusList = employmentStatusIEnum.ToList();
+
+            var menus = AdministrationTabMenuData.GetEditUserTabMenuData();
+
+            string controllerName = "EditUser";
+
+            foreach (var menu in menus.Where(x => x.Menu == controllerName))
+            {
+                menu.IsActive = "active";
+                menu.IsSelected = "true";
+            }
+
+            viewModel.Menus = menus;
 
             return View(viewModel);
         }
@@ -78,6 +96,13 @@ namespace Intl.Realty.Firm.Controllers
         public async Task<IActionResult> Edit(EditUserViewModel viewModel)
         {
             var user = await _userManager.FindByIdAsync(viewModel.Id.ToString());
+
+            var departmentIEnum = await _unitOfWork.Department.GetAllAsync(x => x.IsDeleted == false);
+            viewModel.DepartmentList = departmentIEnum.ToList();
+
+            var employmentStatusIEnum = await _unitOfWork.EmploymentStatus.GetAllAsync(x => x.IsDeleted == false);
+            viewModel.EmploymentStatusList = employmentStatusIEnum.ToList();
+
             if (user == null)
             {
                 ViewBag.ErrorMessage = $"User with Id = {viewModel.Id} cannot be found";
@@ -86,7 +111,7 @@ namespace Intl.Realty.Firm.Controllers
             else
             {
                 user.Email = viewModel.Email;
-                user.UserName = viewModel.UserName;
+                user.UserName = viewModel.Email;
                 user.FirstName = viewModel.FirstName;
                 user.LastName = viewModel.LastName;
                 user.DepartmentId = viewModel.DepartmentId;
@@ -97,7 +122,7 @@ namespace Intl.Realty.Firm.Controllers
 
                 if (result.Succeeded)
                 {
-                    return RedirectToAction("ListUsers");
+                    return RedirectToAction("Index");
                 }
                 foreach (var error in result.Errors)
                 {
@@ -110,27 +135,171 @@ namespace Intl.Realty.Firm.Controllers
         [HttpGet]
         public async Task<IActionResult> Preview(Guid id)
         {
-            var model = await _userManager.FindByIdAsync(id.ToString());
+            var userModel = await _userManager.FindByIdAsync(id.ToString());
 
-            if (model == null)
+            if (userModel == null)
             {
                 return NotFound();
             }
 
-            var viewModel = model.ToPreviewUserViewModel();
+            var viewModel = userModel.ToPreviewUserViewModel();
 
-            var department = await _unitOfWork.Department.GetAsync(x => x.Id == model.DepartmentId);
+            var department = await _unitOfWork.Department.GetAsync(x => x.Id == userModel.DepartmentId);
             if (department == null)
             {
                 viewModel.DepartmentName = "No Department Assigned";
             }
-            var employmentStatus = await _unitOfWork.EmploymentStatus.GetAsync(x => x.Id == model.EmploymentStatusId);
+            var employmentStatus = await _unitOfWork.EmploymentStatus.GetAsync(x => x.Id == userModel.EmploymentStatusId);
 
             viewModel.EmploymentStatusName = employmentStatus.Description;
 
-            var userRoles = await _userManager.GetRolesAsync(model);
+            var userRoles = await _userManager.GetRolesAsync(userModel);
+            var userClaims = await _userManager.GetClaimsAsync(userModel);
             viewModel.Roles = userRoles.ToList();
+            viewModel.Claims = userClaims.Select(x => x.Type + " : " + x.Value).ToList();
+
             return View(viewModel);
+        }
+        [HttpGet]
+        //[Authorize(Policy = "EditRolePolicy")]
+        public async Task<IActionResult> ManageUserRoles(Guid id)
+        {
+            var user = await _userManager.FindByIdAsync(id.ToString());
+
+            if (user == null)
+            {
+                ViewBag.ErrorMessage = $"(User with Id = {id} cannot be found";
+                return View("NotFound");
+            }
+
+            ManageUserRolesViewModel viewModel = new ManageUserRolesViewModel();
+
+            viewModel.UserId = user.Id;
+
+            foreach (var role in _roleManager.Roles)
+            {
+                var userRolesViewModel = new UserRolesViewModel
+                {
+                    RoleId = role.Id,
+                    RoleName = role.Name!
+                };
+
+                if (await _userManager.IsInRoleAsync(user, role.Name!))
+                {
+                    userRolesViewModel.IsSelected = true;
+                }
+                else
+                {
+                    userRolesViewModel.IsSelected = false;
+                }
+
+                viewModel.Roles.Add(userRolesViewModel);
+            }
+            return View(viewModel);
+
+        }
+        [HttpPost]
+        //[Authorize(Policy = "EditRolePolicy")]
+        public async Task<IActionResult> ManageUserRoles(ManageUserRolesViewModel model)
+        {
+            var user = await _userManager.FindByIdAsync(model.UserId.ToString());
+
+            if (user == null)
+            {
+                ViewBag.ErrorMessage = $"(User with Id = {model.UserId.ToString()} cannot be found";
+                return View("NotFound");
+            }
+
+            var roles = await _userManager.GetRolesAsync(user);
+
+            var result = await _userManager.RemoveFromRolesAsync(user, roles);
+
+            if (!result.Succeeded)
+            {
+                ModelState.AddModelError("", "Cannot remove user existing roles");
+                return View(model);
+            }
+
+            result = await _userManager.AddToRolesAsync(
+                        user,
+                        model.Roles.Where(x => x.IsSelected)
+                            .Select(y => y.RoleName)
+                        );
+            if (!result.Succeeded)
+            {
+                ModelState.AddModelError("", "Cannot add selected roles to user");
+                return View(model);
+            }
+            return RedirectToAction("Index", new { Id = model.UserId.ToString() });
+
+        }
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult AccessDenied()
+        {
+            return View();
+        }
+        [HttpGet]
+        public async Task<IActionResult> ManageUserClaims(string id)
+        {
+            var user = await _userManager.FindByIdAsync(id.ToString());
+            if (user == null)
+            {
+                ViewBag.ErrorMessage = ($"User with Id = {id.ToString()} cannot be found");
+                return View("NotFound");
+            }
+
+            var existingUserClaims = await _userManager.GetClaimsAsync(user);
+
+            ManageUserClaimsViewModel viewModel = new ManageUserClaimsViewModel();
+
+            viewModel.UserId = user.Id.ToString();
+
+            foreach (Claim claim in ClaimsStore.AllClaims)
+            {
+                UserClaim userClaim = new UserClaim
+                {
+                    ClaimType = claim.Type,
+                };
+
+                if (existingUserClaims.Any(x => x.Type == claim.Type && x.Value == "true"))
+                {
+                    userClaim.IsSelected = true;
+                };
+
+                viewModel.Claims.Add(userClaim);
+            }
+
+            return View(viewModel);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ManageUserClaims(ManageUserClaimsViewModel model)
+        {
+            var user = await _userManager.FindByIdAsync(model.UserId);
+
+            if (user == null)
+            {
+                ViewBag.ErrorMessage = $"User with Id = {model.UserId} cannot be found";
+                return View("NotFound");
+            }
+
+            var claims = await _userManager.GetClaimsAsync(user);
+            var result = await _userManager.RemoveClaimsAsync(user, claims);
+
+            if (!result.Succeeded)
+            {
+                ModelState.AddModelError("", "Cannot remove user existing claims");
+                return View(model);
+            }
+
+            result = await _userManager.AddClaimsAsync(user,
+                        model.Claims
+                            //.Where(c => c.IsSelected)
+                            .Select(c => new Claim(c.ClaimType, c.IsSelected ? "true" : "false"))
+                            .ToArray());
+
+            return RedirectToAction("Index", new { Id = model.UserId });
         }
         [HttpGet]
         public IActionResult ListPartialView(UserListPartialWithTabMenuViewModel listViewModel)

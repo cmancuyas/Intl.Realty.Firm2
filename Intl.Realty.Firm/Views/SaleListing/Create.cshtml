@@ -308,6 +308,16 @@
                         </div>
 
                     </div>
+                    <div class="tab-pane" id="notes" aria-labelledby="notes-tab" style="background-color:white;">
+                        <div class="col-md-12 mt-4">
+                            <div class="form-group">
+                                <label asp-for="CreateSaleListing.Notes" class="control-label fw-bolder">Notes</label>
+                                @Html.TextAreaFor(model => model.CreateSaleListing.Notes, 10, 100, new { @class = "form-control" })
+
+                            </div>
+                        </div>
+                    </div>
+                
                 </div>
 
                 <hr class="my-5" />

@@ -8,7 +8,7 @@ using System.Security.Claims;
 
 namespace Intl.Realty.Firm.Controllers
 {
-    [Authorize]
+    [Authorize(Roles = "Admin,SuperAdmin")]
     public class ClaimsController : Controller
     {
         private readonly RoleManager<IdentityRole<Guid>> _roleManager;

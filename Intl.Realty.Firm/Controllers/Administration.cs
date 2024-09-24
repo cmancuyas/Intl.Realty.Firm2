@@ -13,6 +13,7 @@ using System.Security.Claims;
 
 namespace Intl.Realty.Firm.Controllers
 {
+    [Authorize(Roles = "Admin,SuperAdmin")]
     public class AdministrationController : Controller
     {
         private readonly RoleManager<ApplicationRole> _roleManager;

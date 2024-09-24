@@ -48,6 +48,19 @@ namespace Intl.Realty.Firm.Utility.MenuData
             menus.Add(menu);
             // End
 
+            // Start
+            menu = new TabMenu()
+            {
+                Id = count + 1,
+                Menu = "Notes",
+                Description = "Notes",
+                Tab = "notes-tab",
+                Control = "notes",
+            };
+
+            menus.Add(menu);
+            // End
+
             return menus;
         }
     }

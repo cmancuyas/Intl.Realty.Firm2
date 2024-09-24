@@ -10,7 +10,7 @@ namespace Intl.Realty.Firm.Model.ViewModel.SaleListingVM
         public int DealStatusId { get; set; }
         public DateTime? DateSubmitted { get; set; }
         public List<FileUpload>? FileUploads { get; set; }
-
+        public string? Notes { get; set; }
         public IRFDeal? IRFDeal { get; set; }
         public TransactionType? TransactionType { get; set; }
         public DealStatus? DealStatus { get; set; }

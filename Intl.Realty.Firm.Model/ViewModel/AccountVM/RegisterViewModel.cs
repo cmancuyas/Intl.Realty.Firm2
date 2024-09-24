@@ -29,7 +29,8 @@ namespace Intl.Realty.Firm.Model.ViewModel.AccountVM
         public int EmploymentStatusId { get; set; }
         public int? ProfilePictureId { get; set; }
         [Display(Name = "User Agreement")]
-        [Range(typeof(bool), "true", "true", ErrorMessage = "You must agree to terms and conditions.")]
-        public bool UserAgreement { get; set; }
+        //[Range(typeof(bool), "false", "true", ErrorMessage = "You must accept the terms and conditions.")]
+        [Required(ErrorMessage = "You must accept the terms and conditions.")]
+        public bool UserAgreement { get; set; } = false;
     }
 }

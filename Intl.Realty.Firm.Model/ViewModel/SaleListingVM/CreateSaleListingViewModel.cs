@@ -13,6 +13,7 @@ namespace Intl.Realty.Firm.Model.ViewModel.SaleListingVM
         public CreateFileUploadListViewModel CreateFileUploadListViewModel { get; set; } = new CreateFileUploadListViewModel();
         public int DealStatusId { get; set; }
         public DateTime? DateSubmitted { get; set; }
+        public string? Notes { get; set; }
         public bool IsActive { get; set; }
         public bool IsDeleted { get; set; }
         public Guid CreatedBy { get; set; }

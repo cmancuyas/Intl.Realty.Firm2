@@ -391,16 +391,23 @@ namespace DENR_FASPIS.Controllers
                 saleListingModel.IRFDeal.CreatedBy = irfDealModel.CreatedBy;
                 saleListingModel.IRFDeal.UpdatedAt = DateTime.Now;
                 saleListingModel.IRFDeal.UpdatedBy = user!.Id;
-
+                saleListingModel.Notes = viewModel.EditSaleListing.Notes;
                 if (saleListingModel.IRFDeal != null)
                 {
                     //saleListingModel.IRFDeal.SaleListingId = saleListingModel.Id;
                     await _unitOfWork.IRFDeal.UpdateAsync(saleListingModel.IRFDeal);
                 }
 
-                //if(user.isAdmin)
-                //saleListingModel.DealStatusId = viewModel.EditSaleListing.DealStatusId;
-                saleListingModel.DealStatusId = dealStatusId;
+                var isAgent = await _userManager.IsInRoleAsync(user, "Agent");
+                if (isAgent)
+                {
+                    saleListingModel.DealStatusId = dealStatusId;
+                }
+                else
+                {
+                    saleListingModel.DealStatusId = viewModel.EditSaleListing.DealStatusId;
+                }
+
                 saleListingModel.DateSubmitted = DateTime.Now;
                 // Update IRF Deal
 
@@ -650,8 +657,25 @@ namespace DENR_FASPIS.Controllers
             // Initialize order criteria
             (orderCriteria, orderAscendingDirection) = InitializeOrderCriteria(dtParameters, orderCriteria, orderAscendingDirection);
 
+            // to get current user ID
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            // to get current user info
+            var user = await _userManager.FindByIdAsync(userId!);
+
             // Query initialization
+            var isAdmin = await _userManager.IsInRoleAsync(user!, "Admin");
+            var isSuperAdmin = await _userManager.IsInRoleAsync(user!, "SuperAdmin");
             var result = await _unitOfWork.SaleListing.AsQueryableAsync(x => x.IsDeleted == false, includeProperties: "IRFDeal,TransactionType,DealStatus");
+            if (isAdmin || isSuperAdmin)
+            {
+                // Do nothing
+            }
+            else
+            {
+                // Filter by current user
+                result = result.Where(x => x.CreatedBy == user!.Id);
+            }
 
             var totalResultsCount = result.Count();
 
@@ -676,7 +700,7 @@ namespace DENR_FASPIS.Controllers
 
             foreach (var item in resultList)
             {
-                var user = users.Where(x => x.Id == item.CreatedBy).FirstOrDefault();
+                user = users.Where(x => x.Id == item.CreatedBy).FirstOrDefault();
                 item.CreatedByFullName = user!.FirstName + " " + user.LastName;
             }
 

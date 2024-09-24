@@ -1,0 +1,63 @@
+﻿@using Intl.Realty.Firm.Model.ViewModel.UserVM
+
+@model ManageUserRolesViewModel
+@{
+    ViewData["Title"] = "Manage User Roles";
+    Layout = "~/Views/Shared/_LayoutAfterLogin.cshtml";
+}
+@{
+    var userId = ViewBag.UserId;
+}
+
+<div class="mb-5">
+    <a href="@Url.Action("Index","User")" class="text-decoration-none text-blue d-flex mb-4">
+        <i data-feather="chevron-left"></i><span>Back</span>
+    </a>
+
+    <div class="row justify-content-center">
+        <div class="col-md-8 card p-4">
+            <h1 class="text-blue mb-0">Manage User Roles</h1>
+            <hr class="my-4" />
+            <form method="post">
+                <input type="hidden" asp-for="@Model.UserId" />
+
+                <div class="card">
+               @*      <div class="card-header">
+                        <h2>Manage User Roles</h2>
+                    </div> *@
+                    <div class="card-body">
+                        @for (int i = 0; i < Model.Roles.Count; i++)
+                        {
+                            <div class="form-check m-1">
+                                <input type="hidden" asp-for="@Model.Roles[i].RoleId" />
+                                <input type="hidden" asp-for="@Model.Roles[i].RoleName" />
+                                <input asp-for="@Model.Roles[i].IsSelected" class="form-check-input" />
+                                <label class="form-check-label" asp-for="@Model.Roles[i].IsSelected">
+                                    @Model.Roles[i].RoleName
+                                </label>
+                            </div>
+                        }
+                        @*      @foreach(var role in Model)
+                        {
+                        <div class="form-check m-1">
+                        <input type="hidden" asp-for="@role.RoleId" />
+                        <input type="hidden" asp-for="@role.RoleName" />
+                        <input asp-for="@role.IsSelected" class="form-check-input" />
+                        <label class="form-check-label" asp-for="@role.IsSelected">
+                        @role.RoleName
+                        </label>
+                        </div>
+                        } *@
+                        <div asp-validation-summary="All" class="text-danger"></div>
+                    </div>
+
+                    <div class="card-footer">
+                        <input type="submit" value="Update" class="btn btn-primary" style="width:auto" />
+                        <a asp-action="Index" asp-route-id="@userId"
+                           class="btn btn-primary" style="width:auto">Cancel</a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

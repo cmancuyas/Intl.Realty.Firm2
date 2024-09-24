@@ -1,4 +1,7 @@
-﻿<aside>
+﻿@using Intl.Realty.Firm.Model.Model
+@using Microsoft.AspNetCore.Identity
+@inject SignInManager<ApplicationUser> signInManager;
+<aside>
     <div class="h-auto d-flex align-items-center justify-content-center me-1 mt-4 logo-container">
         <img src="~/files/img/logo-irf-white.png" alt="INTLRealtyFirm Logo" class="img-fluid w-75" />
     </div>
@@ -17,15 +20,18 @@
                     <span>My Customers</span>
                 </a>
             </li>
-            @* Administrator *@
-            <li id="administratorNavItem" class="nav-item mx-2 mt-2 mb-1 rounded pe-cursor">
-                <a id="administratorNavLink" class="nav-link text-decoration-none d-flex align-items-center gap-3 ms-2 me-2 fw-bolder">
+            @if (signInManager.IsSignedIn(User) && (User.IsInRole("SuperAdmin") ||
+                                 User.IsInRole("Admin")))
+            {
+                @* Administrator *@
+                <li id="administratorNavItem" class="nav-item mx-2 mt-2 mb-1 rounded pe-cursor">
+                    <a id="administratorNavLink" class="nav-link text-decoration-none d-flex align-items-center gap-3 ms-2 me-2 fw-bolder">
                     <i data-feather="key" data-toggle="tooltip" data-bs-placement="right" title="Administrator"></i>
                     <span class="flex-grow-1">Administrator</span>
                     <i data-feather="chevron-right" class="caret w-15px"></i>
                 </a>
             </li>
-
+            }
             <li class="administratorSubNavItem sub-nav-item">
                 <ul class="list-unstyled">
                     <li>
@@ -46,7 +52,7 @@
                 </ul>
             </li>
 
-            <li class="administratorSubNavItem sub-nav-item">
+@*             <li class="administratorSubNavItem sub-nav-item">
                 <ul class="list-unstyled">
                     <li>
                         <a class="sub-nav-link" asp-controller="Administration" asp-action="ListUsers">
@@ -64,7 +70,7 @@
                         </a>
                     </li>
                 </ul>
-            </li>
+            </li> *@
 
             <li class="administratorSubNavItem sub-nav-item">
                 <ul class="list-unstyled">

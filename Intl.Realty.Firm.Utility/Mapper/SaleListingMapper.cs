@@ -31,6 +31,8 @@ namespace Intl.Realty.Firm.Utility.Mapper
                 DealStatusId = model.DealStatusId,
                 DateSubmitted = model.DateSubmitted,
 
+                Notes = model.Notes,
+
                 TransactionType = model.TransactionType,
                 EditIRFDealViewModel = model.IRFDeal!.ToEditIRFDealViewModel(),
                 DealStatus = model.DealStatus,  
@@ -55,6 +57,8 @@ namespace Intl.Realty.Firm.Utility.Mapper
                     DealStatusId = x.DealStatusId,
                     DateSubmitted = x.DateSubmitted,
 
+                    Notes = x.Notes,
+
                     IsActive = x.IsActive,
                     IsDeleted = x.IsDeleted,
                     CreatedBy = x.CreatedBy,
@@ -76,6 +80,8 @@ namespace Intl.Realty.Firm.Utility.Mapper
                 DealStatusId = viewModel.DealStatusId,
                 DateSubmitted = viewModel.DateSubmitted,
 
+                Notes = viewModel.Notes,
+
                 IsActive = viewModel.IsActive,
                 IsDeleted = viewModel.IsDeleted,
                 CreatedAt = viewModel.CreatedAt,
@@ -92,6 +98,8 @@ namespace Intl.Realty.Firm.Utility.Mapper
                 IRFDealId = viewModel.IRFDealId,
                 DealStatusId = viewModel.DealStatusId,
                 DateSubmitted = viewModel.DateSubmitted,
+
+                Notes = viewModel.Notes,
 
                 IsActive = viewModel.IsActive,
                 IsDeleted = viewModel.IsDeleted,
@@ -151,6 +159,8 @@ namespace Intl.Realty.Firm.Utility.Mapper
                 IRFDeal = model.IRFDeal!,
                 DealStatus = model.DealStatus!,
                 FileUploads = model.FileUploads!,
+
+                Notes = model.Notes!,
 
                 IsActive = model.IsActive,
                 IsDeleted = model.IsDeleted,

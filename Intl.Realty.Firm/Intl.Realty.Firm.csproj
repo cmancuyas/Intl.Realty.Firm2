@@ -27,4 +27,11 @@
     <ProjectReference Include="..\Intl.Realty.Firm.Utility\Intl.Realty.Firm.Utility.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Content Update="Views\User\AccessDenied.cshtml">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+  </ItemGroup>
+
 </Project>

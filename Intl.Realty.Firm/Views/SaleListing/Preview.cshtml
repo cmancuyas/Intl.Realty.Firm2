@@ -257,6 +257,15 @@
                         </table>
                     </div>
                 </div>
+
+                <hr />
+                <div class="row my-2">
+                    <div class="form-group">
+                        <label asp-for="EditSaleListing.Notes" class="control-label fw-bolder">Notes</label>
+                    @Html.TextAreaFor(model => model.Notes, 10, 100, new { @class = "form-control", disabled = "disabled" })
+
+                    </div>
+                </div>
             </div>
         </div>
     </div>

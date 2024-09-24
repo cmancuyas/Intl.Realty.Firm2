@@ -1,11 +1,21 @@
 ﻿@using Intl.Realty.Firm.Model.Model
 @using Intl.Realty.Firm.Model.ViewModel.SaleListingVM
+@using Microsoft.AspNetCore.Identity
+@using System.Security.Claims
+
+@inject UserManager<ApplicationUser> _userManager;
 
 @model EditSaleListingWithTabMenuViewModel
 
 @{
     ViewData["Title"] = "Edit";
     Layout = "~/Views/Shared/_LayoutAfterLogin.cshtml";
+
+    var user = await _userManager.GetUserAsync(User);
+    var isAgent = await _userManager.IsInRoleAsync(user!, "Agent");
+    var isDealAdmin = await _userManager.IsInRoleAsync(user!, "DealAdmin");
+    var isAdmin = await _userManager.IsInRoleAsync(user!, "Admin");
+    var isSuperAdmin = await _userManager.IsInRoleAsync(user!, "SuperAdmin");
 }
 
 <partial name="~/Views/Shared/Modal/_ConfirmSubmitModal.cshtml" />
@@ -57,34 +67,41 @@
 
                     <div class="tab-pane active" id="irfDetails1" aria-labelledby="irfDetails1-tab" style="background-color:white;">
 
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label class="control-label fw-bolder">Deal Status</label>
-                                    <select id="EditSaleListing.DealStatusId" name="EditSaleListing.DealStatusId" class="form-select">
-                                        @{
-                                            @if (Model.EditSaleListing.DealStatusList != null)
-                                            {
-                                                @foreach (var dealStatus in Model.EditSaleListing.DealStatusList)
-                                                {
-                                                    if (dealStatus.Id == Model.EditSaleListing.DealStatusId)
+                        @{
+                            if (isAdmin || isSuperAdmin || isDealAdmin)
+                            {
+                                @* Deal Status *@
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="control-label fw-bolder">Deal Status</label>
+                                            <select id="EditSaleListing.DealStatusId" name="EditSaleListing.DealStatusId" class="form-select">
+                                                @{
+                                                    @if (Model.EditSaleListing.DealStatusList != null)
                                                     {
-                                                        <option value="@dealStatus.Id" selected>@dealStatus.Description</option>
-                                                    }
-                                                    else
-                                                    {
-                                                        <option value="@dealStatus.Id">@dealStatus.Description</option>
+                                                        @foreach (var dealStatus in Model.EditSaleListing.DealStatusList)
+                                                        {
+                                                            if (dealStatus.Id == Model.EditSaleListing.DealStatusId)
+                                                            {
+                                                                <option value="@dealStatus.Id" selected>@dealStatus.Description</option>
+                                                            }
+                                                            else
+                                                            {
+                                                                <option value="@dealStatus.Id">@dealStatus.Description</option>
+                                                            }
+                                                        }
                                                     }
                                                 }
-                                            }
-                                        }
-                                    </select>
+                                            </select>
 
-                                    @Html.ValidationMessageFor(m => m.EditSaleListing.DealStatusId, "", new { @class = "text-danger" })
+                                            @Html.ValidationMessageFor(m => m.EditSaleListing.DealStatusId, "", new { @class = "text-danger" })
 
+                                        </div>
+                                    </div>
                                 </div>
-                            </div>
-                        </div>
+                            }
+                        }
+
 
                         <div class="row">
                             <div class="col-md-6 mt-4">
@@ -269,7 +286,7 @@
 
                         </div>
                         <div class="row">
-                             <div class="col-md-6 mt-4">
+                            <div class="col-md-6 mt-4">
                                 <div class="form-group">
                                     <label asp-for="EditSaleListing.EditIRFDealViewModel.BuyersLawyerAddress" class="control-label fw-bolder">Buyers Lawyer Address</label>
                                     <input asp-for="EditSaleListing.EditIRFDealViewModel.BuyersLawyerAddress" class="form-control" />
@@ -406,6 +423,16 @@
                         </div>
 
                     </div>
+
+                    <div class="tab-pane" id="notes" aria-labelledby="notes-tab" style="background-color:white;">
+                        <div class="col-md-12 mt-4">
+                            <div class="form-group">
+                                <label asp-for="EditSaleListing.Notes" class="control-label fw-bolder">Notes</label>
+                                @Html.TextAreaFor(model => model.EditSaleListing.Notes, 10, 100, new { @class = "form-control" })
+
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 @*               <div class="row mb-4">
                 <div class="col-md-12">
@@ -420,8 +447,21 @@
                 <div class="form-group d-flex justify-content-center gap-4">
                     <input type="button" value="Cancel" class="btn btn-secondary w-15" onclick="window.location.href='@Url.Action("Index", "SaleListing")'" />
                     <button type="reset" class="btn btn-secondary w-15" onclick="$('.text-danger').hide();">Reset</button>
-                    <button type="button" id="btnSave" class="btn btn-primary w-15" onclick="$('.text-danger').show();">Save</button>
-                    <button type="button" id="btnSubmit" class="btn btn-primary w-15" onclick="$('.text-danger').show();">Submit</button>
+                    @{
+                        @if (isAdmin || isSuperAdmin || isDealAdmin || isAgent && Model.EditSaleListing.DealStatus!.Id == 2) //Submitted
+                                {
+                            <button type="button" id="btnSave" class="btn btn-primary w-15" onclick="$('.text-danger').show();">Save</button>
+                        }
+                    }
+
+                    @{
+                        @if (isAdmin || isSuperAdmin || isAgent && Model.EditSaleListing.DealStatus!.Id == 2) //Saved
+                        {
+
+                            <button type="button" id="btnSubmit" class="btn btn-primary w-15" onclick="$('.text-danger').show();">Submit</button>
+                        }
+                    }
+
                 </div>
             </form>
         </div>
@@ -435,8 +475,8 @@
 
     <script type="text/javascript">
         $(document).ready(function () {
-            
-            initializeSubmitButton();
+
+            // initializeSubmitButton();
 
             onBtnSubmit();
             onBtnSave();
@@ -478,7 +518,6 @@
             const saleListingForm = document.getElementById('SaleListingForm');
 
             $("#btnConfirmSave").click(function () {
-                var elements = document.querySelectorAll( 'body *' );
 
                 $("#confirmSaveModal").modal("hide");
                 $('input[name=DealStatusId]').val('2'); // Saved

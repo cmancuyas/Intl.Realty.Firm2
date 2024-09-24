@@ -17,7 +17,7 @@ using Intl.Realty.Firm.Utility.Mapper;
 
 namespace Intl.Realty.Firm.Controllers
 {
-    [Authorize]
+    [Authorize(Roles = "Admin,SuperAdmin")]
     public class RoleController : Controller
     {
         private readonly RoleManager<ApplicationRole> _roleManager;
@@ -39,6 +39,7 @@ namespace Intl.Realty.Firm.Controllers
         {
             return View();
         }
+        [HttpGet]
         public IActionResult Create()
         {
             return View();

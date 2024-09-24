@@ -1,6 +1,4 @@
-﻿using Intl.Realty.Firm.Model.Model;
-
-namespace Intl.Realty.Firm.Model.ViewModel.UserVM
+﻿namespace Intl.Realty.Firm.Model.ViewModel.UserVM
 {
     public class PreviewUserViewModel
     {
@@ -11,7 +9,8 @@ namespace Intl.Realty.Firm.Model.ViewModel.UserVM
         public string DepartmentName { get; set; } = string.Empty;
         public string EmploymentStatusName { get; set; } = string.Empty;
         public int? ProfilePictureId { get; set; }
-        public List<string>? Roles { get; set; }
+        public List<string> Claims { get; set; } = new List<string>();
+        public List<string> Roles { get; set; } = new List<string>();
     }
 
 }

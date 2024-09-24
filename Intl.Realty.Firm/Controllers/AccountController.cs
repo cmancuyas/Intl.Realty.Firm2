@@ -10,6 +10,7 @@ using System.Security.Claims;
 
 namespace Intl.Realty.Firm.Controllers
 {
+    [Authorize]
     public class AccountController : Controller
     {
         private readonly UserManager<ApplicationUser> _userManager;
@@ -202,7 +203,18 @@ namespace Intl.Realty.Firm.Controllers
                     }
                     else
                     {
-                        return RedirectToAction("Dashboard", "Home");
+                        var isAdmin = await _userManager.IsInRoleAsync(user!, "Admin");
+
+                        var isSuperAdmin = await _userManager.IsInRoleAsync(user!, "SuperAdmin");
+                        if(isAdmin == true || isSuperAdmin == true)
+                        {
+                            return RedirectToAction("AdminDashboard", "Home");
+                        }
+                        else
+                        {
+                            return RedirectToAction("Dashboard", "Home");
+                        }
+                        
                     }
 
                 }

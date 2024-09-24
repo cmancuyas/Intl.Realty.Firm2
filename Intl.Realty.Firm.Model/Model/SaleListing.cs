@@ -17,5 +17,6 @@ namespace Intl.Realty.Firm.Model.Model
         public IRFDeal? IRFDeal { get; set; }
         public TransactionType? TransactionType { get; set; }
         public DealStatus? DealStatus { get; set; }
+        public string? Notes { get; set; }
     }
 }
