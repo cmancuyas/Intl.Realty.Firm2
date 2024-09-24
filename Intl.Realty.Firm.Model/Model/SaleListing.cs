@@ -12,7 +12,7 @@ namespace Intl.Realty.Firm.Model.Model
         public int IRFDealId { get; set; }
         public int DealStatusId { get; set; }
         public DateTime? DateSubmitted { get; set; }
-        public List<FileUpload>? FileUploads { get; set; }
+        public List<FileUpload>? FileUploads { get; set; } = new List<FileUpload>();
         
         public IRFDeal? IRFDeal { get; set; }
         public TransactionType? TransactionType { get; set; }

@@ -23,10 +23,12 @@
 <partial name="~/Views/Shared/Modal/_ConfirmSaveModal.cshtml" />
 
 <div class="mb-5">
-    <a href="@Url.Action("Index","SaleListing")" class="text-decoration-none text-blue d-flex mb-4">
+ @*    <a href="@Url.Action("Index","SaleListing")" class="text-decoration-none text-blue d-flex mb-4">
+        <i data-feather="chevron-left"></i><span>Back</span>
+    </a> *@
+    <a href="##" onClick="history.go(-1); return false;">
         <i data-feather="chevron-left"></i><span>Back</span>
     </a>
-
     <div class="row justify-content-center">
         <div class="col-md-8 card p-4">
             <h1 class="text-blue mb-0">Edit SaleListing - Deal Id: @Model.EditSaleListing.Id</h1>

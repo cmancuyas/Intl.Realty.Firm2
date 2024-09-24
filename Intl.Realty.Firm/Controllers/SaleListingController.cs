@@ -692,6 +692,8 @@ namespace DENR_FASPIS.Controllers
 
             var totalResultsCount = result.Count();
 
+            var resultList = result.ToSaleListingListViewModel();
+
             if (searchBy!.Contains(":") || searchBy.Contains("+"))
             {
                 result = FilterSearchWithParameters(result, searchBy);
@@ -707,7 +709,7 @@ namespace DENR_FASPIS.Controllers
             // Get the count of filtered and total results
             var filteredResultsCount = result.Count();
 
-            var resultList = result.ToSaleListingListViewModel();
+            
 
             var users = _userManager.Users;
 

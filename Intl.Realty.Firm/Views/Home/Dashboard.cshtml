@@ -181,6 +181,21 @@
             <div class="card card-custom">
                 <div class="card-body">
                     <h5 class="card-title">Recent Activity</h5>
+
+                    <div class="activity-timeline">
+
+                        @foreach (var item in Model.SaleListingListPast5Mins)
+                        {
+                            <div class="activity-timeline-item">
+                                <div class="timeline-dot"></div>
+                                <div class="activity-time">5 mins ago</div>
+                                <div class="activity-desc">@item.TransactionType!.Description was created - Deal Id: @item.Id - @item.DealStatus!.Description</div>
+                            </div>
+                        }
+
+
+                    </div>
+
                     <div class="activity-timeline">
 
                         @foreach (var item in Model.SaleListingListPastHour)
@@ -217,6 +232,7 @@
                                 <th>Created At</th>
                                 <th>Final Closing Date</th>
                                 <th>Attachment</th>
+                                <th>Action</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -231,7 +247,29 @@
                                     <td>@user!.FirstName @user.LastName</td>
                                     <td>@item.CreatedAt</td>
                                     <td>@item.IRFDeal.FinalClosingDate</td>
-                                    <td><div class="attachment-icon">PDF</div></td>
+                                    <td>
+                                        @{
+                                            var fileUploads = item.FileUploads!.Where(x => x.SaleListingId == item.Id);
+                                            if (fileUploads.Any())
+                                            {
+                                                var str = fileUploads.Select(x => x.FileExtension).FirstOrDefault();
+                                                string[] split = str!.Split('.');
+                                                var fileExtension = split[1];
+                                                <div class="attachment-icon">@fileExtension</div>
+                                            }
+                                            else
+                                            {
+                                                <div class="attachment-icon">PDF</div>
+                                            }
+                                        }
+                                        
+
+                                    </td>
+                                    <td>
+                                        <a asp-action="Preview" asp-controller="SaleListing" asp-route-id="@item.Id">
+                                            Preview
+                                        </a>
+                                    </td>
                                 </tr>
                             }
                         </tbody>

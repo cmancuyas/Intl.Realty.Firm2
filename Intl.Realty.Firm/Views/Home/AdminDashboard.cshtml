@@ -231,7 +231,22 @@
                                     <td>@user!.FirstName @user.LastName</td>
                                     <td>@item.CreatedAt</td>
                                     <td>@item.IRFDeal.FinalClosingDate</td>
-                                    <td><div class="attachment-icon">PDF</div></td>
+                                    <td>
+                                        @{
+                                            var fileUploads = item.FileUploads!.Where(x => x.SaleListingId == item.Id);
+                                            if (fileUploads.Any())
+                                            {
+                                                var str = fileUploads.Select(x => x.FileExtension).FirstOrDefault();
+                                                string[] split = str!.Split('.');
+                                                var fileExtension = split[1];
+                                                <div class="attachment-icon">@fileExtension</div>
+                                            }
+                                            else
+                                            {
+                                                <div class="attachment-icon">PDF</div>
+                                            }
+                                        }
+                                    </td>
                                 </tr>
                             }
                         </tbody>

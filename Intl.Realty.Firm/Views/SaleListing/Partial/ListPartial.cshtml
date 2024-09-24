@@ -1,7 +1,24 @@
-﻿@using Intl.Realty.Firm.Model.ViewModel.SaleListingVM
+﻿@using Intl.Realty.Firm.Model.Model
+@using Intl.Realty.Firm.Model.ViewModel.SaleListingVM
+@using Microsoft.AspNetCore.Identity
+
+@inject UserManager<ApplicationUser> _userManager;
 
 @model SaleListingListPartialViewModel
+
+@{
+    var user = await _userManager.GetUserAsync(User);
+
+    // Query initialization
+    var isAdmin = await _userManager.IsInRoleAsync(user!, "Admin");
+    var isSuperAdmin = await _userManager.IsInRoleAsync(user!, "SuperAdmin");
+    var isAgent = await _userManager.IsInRoleAsync(user!, "Agent");
+    var isDealAdmin = await _userManager.IsInRoleAsync(user!, "DealAdmin");
+}
 <div>
+    <a href="##" onClick="history.go(-1); return false;">
+        <i data-feather="chevron-left"></i><span>Back</span>
+    </a>
     <form id="ListFormId" method="POST" enctype="application/x-www-form-urlencoded">
     </form>
     <div class="row">
