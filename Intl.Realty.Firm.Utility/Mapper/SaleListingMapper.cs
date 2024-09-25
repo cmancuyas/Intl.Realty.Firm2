@@ -1,6 +1,5 @@
 ﻿using Intl.Realty.Firm.Model.Model;
 using Intl.Realty.Firm.Model.ViewModel.SaleListingVM;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Intl.Realty.Firm.Utility.Mapper
 {
@@ -16,6 +15,7 @@ namespace Intl.Realty.Firm.Utility.Mapper
                     Id = x.Id,
                     DeletedAt = x.DeletedAt,
                     DeletedBy = x.DeletedBy,
+                    DeletedByFullName = x.DeletedByFullName,
                 });
             }
             return viewModelIEnum;
@@ -57,6 +57,10 @@ namespace Intl.Realty.Firm.Utility.Mapper
                     DealStatusId = x.DealStatusId,
                     DateSubmitted = x.DateSubmitted,
 
+                    CreatedByFullName = x.CreatedByFullName,
+                    UpdatedByFullName = x.UpdatedByFullName,
+                    DeletedByFullName = x.DeletedByFullName,
+
                     Notes = x.Notes,
 
                     IsActive = x.IsActive,
@@ -80,6 +84,7 @@ namespace Intl.Realty.Firm.Utility.Mapper
                 DealStatusId = viewModel.DealStatusId,
                 DateSubmitted = viewModel.DateSubmitted,
 
+                CreatedByFullName = viewModel.CreatedByFullName,
                 Notes = viewModel.Notes,
 
                 IsActive = viewModel.IsActive,
@@ -99,6 +104,7 @@ namespace Intl.Realty.Firm.Utility.Mapper
                 DealStatusId = viewModel.DealStatusId,
                 DateSubmitted = viewModel.DateSubmitted,
 
+                UpdatedByFullName = viewModel.UpdatedByFullName,
                 Notes = viewModel.Notes,
 
                 IsActive = viewModel.IsActive,
@@ -159,6 +165,10 @@ namespace Intl.Realty.Firm.Utility.Mapper
                 IRFDeal = model.IRFDeal!,
                 DealStatus = model.DealStatus!,
                 FileUploads = model.FileUploads!,
+
+                CreatedByFullName = model.CreatedByFullName,
+                UpdatedByFullName = model.UpdatedByFullName,
+                DeletedByFullName = model.DeletedByFullName,
 
                 Notes = model.Notes!,
 

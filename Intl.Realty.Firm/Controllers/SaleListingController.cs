@@ -692,8 +692,6 @@ namespace DENR_FASPIS.Controllers
 
             var totalResultsCount = result.Count();
 
-            var resultList = result.ToSaleListingListViewModel();
-
             if (searchBy!.Contains(":") || searchBy.Contains("+"))
             {
                 result = FilterSearchWithParameters(result, searchBy);
@@ -709,7 +707,7 @@ namespace DENR_FASPIS.Controllers
             // Get the count of filtered and total results
             var filteredResultsCount = result.Count();
 
-            
+            var resultList = result.ToSaleListingListViewModel();
 
             var users = _userManager.Users;
 
@@ -720,15 +718,15 @@ namespace DENR_FASPIS.Controllers
             }
 
             // Prepare the result for DataTables
-            var jsonResult = new DtResult<SaleListingViewModel>
+            var jsonResult = new DtResult<SaleListing>
             {
                 Draw = dtParameters.Draw,
                 RecordsTotal = totalResultsCount,
                 RecordsFiltered = filteredResultsCount,
-                Data = resultList
+                Data = await result
                     .Skip(dtParameters.Start)
                     .Take(dtParameters.Length)
-                    .ToList()
+                    .ToListAsync()
             };
 
             return Json(jsonResult);
@@ -736,7 +734,10 @@ namespace DENR_FASPIS.Controllers
 
         private IQueryable<SaleListing> DefaultFilterSearch(IQueryable<SaleListing> result, string searchBy)
         {
-            result = result.Where(r => r.TransactionType != null && r.TransactionType.Description.ToUpper().Contains(searchBy.ToUpper()) ||
+            result = result.Where(r => r.CreatedByFullName != null && r.CreatedByFullName.ToUpper().Contains(searchBy.ToUpper()) ||
+                   r.UpdatedByFullName != null && r.UpdatedByFullName.ToUpper().Contains(searchBy.ToUpper()) ||
+                   r.DeletedByFullName != null && r.DeletedByFullName.ToUpper().Contains(searchBy.ToUpper()) ||
+                   r.TransactionType != null && r.TransactionType.Description.ToUpper().Contains(searchBy.ToUpper()) ||
                    r.IRFDeal!.PropertyAddress! != null && r.IRFDeal.PropertyAddress.ToUpper().Contains(searchBy.ToUpper()) ||
                    r.IRFDeal!.BuyerName! != null && r.IRFDeal.BuyerName.ToUpper().Contains(searchBy.ToUpper()) ||
                    r.IRFDeal!.LandLordName! != null && r.IRFDeal.LandLordName.ToUpper().Contains(searchBy.ToUpper()) ||
@@ -769,6 +770,15 @@ namespace DENR_FASPIS.Controllers
 
                 switch (key)
                 {
+                    case "createdby":
+                        query = query.Where(r => r.CreatedByFullName != null && r.CreatedByFullName.ToUpper().Contains(value));
+                        break;
+                    case "updatedby":
+                        query = query.Where(r => r.UpdatedByFullName != null && r.UpdatedByFullName.ToUpper().Contains(value));
+                        break;
+                    case "deletedby":
+                        query = query.Where(r => r.DeletedByFullName != null && r.DeletedByFullName.ToUpper().Contains(value));
+                        break;
                     case "transactiontype":
                         query = query.Where(r => r.TransactionType != null && r.TransactionType.Description.ToUpper().Contains(value));
                         break;

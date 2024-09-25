@@ -7,6 +7,7 @@ using System.Data.Entity.Core.Common.CommandTrees.ExpressionBuilder;
 using System.Diagnostics;
 using Microsoft.AspNetCore.Identity;
 using Intl.Realty.Firm.Model.Model;
+using Intl.Realty.Firm.Models;
 
 namespace Intl.Realty.Firm.Controllers
 {
@@ -34,7 +35,12 @@ namespace Intl.Realty.Firm.Controllers
         public async Task<IActionResult> Dashboard()
         {
             DashboardViewModel viewModel = new DashboardViewModel();
-            var saleListingIEnum = await _unitOfWork.SaleListing.GetAllAsync(x => x.IsDeleted == false, includeProperties: "IRFDeal,TransactionType,DealStatus");
+            var saleListingIEnum = await _unitOfWork.SaleListing
+                                        .GetAllAsync(
+                                            x => x.IsDeleted == false, 
+                                            includeProperties: "IRFDeal,TransactionType,DealStatus"
+                                            );
+
             foreach (var item in saleListingIEnum)
             {
                 var fileUploads = await _unitOfWork.FileUpload.GetAllAsync(x => x.SaleListingId == item.Id);
@@ -92,26 +98,24 @@ namespace Intl.Realty.Firm.Controllers
 
                 if (past5Mins <= timeNow && item.CreatedAt >= past5Mins)
                 {
-                    viewModel.SaleListingListPast5Mins.Add(item);
+                    viewModel.SaleListingListPast5Mins!.Add(item);
                 }
 
                 else if (pastHour <= timeNow && item.CreatedAt >= pastHour)
                 {
-                    viewModel.SaleListingListPastHour.Add(item);
+                    viewModel.SaleListingListPastHour!.Add(item);
                 }
                 if (item.CreatedAt > DateTime.Now.AddHours(-24) && item.CreatedAt <= DateTime.Now)
                 {
-                    viewModel.SaleListingListToday.Add(item);
+                    viewModel.SaleListingListToday!.Add(item);
                 }
                 bool isCurrentMonth = DateTime.Now.Month == item.CreatedAt.Month
                                     && DateTime.Now.Year == item.CreatedAt.Year;
                 if (isCurrentMonth)
                 {
-                    viewModel.SaleListingListMonth.Add(item);
+                    viewModel.SaleListingListMonth!.Add(item);
                 }
             }
-
-
 
             // SaleCoop
             saleCoopIEnum = saleCoopIEnum.OrderByDescending(x => x.CreatedAt);
@@ -208,17 +212,23 @@ namespace Intl.Realty.Firm.Controllers
                 }
             }
 
-            viewModel.SaleListingCountToday = viewModel.SaleListingListToday.Count();
+            viewModel.SaleListingCountToday = viewModel.SaleListingListToday!.Count();
             viewModel.SaleCoopCountToday = viewModel.SaleCoopListToday.Count();
             viewModel.LeaseListingCountToday = viewModel.LeaseListingListToday.Count();
             viewModel.LeaseCoopCountToday = viewModel.LeaseCoopListToday.Count();
 
             return View(viewModel);
         }
-        public async Task<IActionResult> AdminDashboard()
+        public async Task<IActionResult> AdminDashboard(string searchString, string sortOrder, int pageNumber, string currentFilter)
         {
             DashboardViewModel viewModel = new DashboardViewModel();
-            var saleListingIEnum = await _unitOfWork.SaleListing.GetAllAsync(x => x.IsDeleted == false, includeProperties: "IRFDeal,TransactionType,DealStatus");
+            // Get Data
+            var saleListingIEnum = await _unitOfWork.SaleListing
+                .GetAllAsync(
+                    x => x.IsDeleted == false,
+                    includeProperties: "IRFDeal,TransactionType,DealStatus"
+                    );
+
             foreach (var item in saleListingIEnum)
             {
                 var fileUploads = await _unitOfWork.FileUpload.GetAllAsync(x => x.SaleListingId == item.Id);
@@ -269,26 +279,36 @@ namespace Intl.Realty.Firm.Controllers
 
                 if (past5Mins <= timeNow && item.CreatedAt >= past5Mins)
                 {
-                    viewModel.SaleListingListPast5Mins.Add(item);
+                    viewModel.SaleListingListPast5Mins!.Add(item);
                 }
 
                 else if (pastHour <= timeNow && item.CreatedAt >= pastHour)
                 {
-                    viewModel.SaleListingListPastHour.Add(item);
+                    viewModel.SaleListingListPastHour!.Add(item);
                 }
                 if (item.CreatedAt > DateTime.Now.AddHours(-24) && item.CreatedAt <= DateTime.Now)
                 {
-                    viewModel.SaleListingListToday.Add(item);
+                    viewModel.SaleListingListToday!.Add(item);
                 }
                 bool isCurrentMonth = DateTime.Now.Month == item.CreatedAt.Month
                                     && DateTime.Now.Year == item.CreatedAt.Year;
                 if (isCurrentMonth)
                 {
-                    viewModel.SaleListingListMonth.Add(item);
+                    viewModel.SaleListingListMonth!.Add(item);
                 }
             }
+            // Add Pagination in SaleListingListPerMonth
+            if(searchString != null)
+            {
+                pageNumber = 1;
+            }
+            else
+            {
+                searchString = currentFilter;
+            }
 
-
+            viewModel.MonthlyCurrentFilter = searchString;
+            var saleListingListMonth = viewModel.SaleListingListMonth;
 
             // SaleCoop
             saleCoopIEnum = saleCoopIEnum.OrderByDescending(x => x.CreatedAt);
@@ -390,6 +410,7 @@ namespace Intl.Realty.Firm.Controllers
             viewModel.SaleCoopCountToday = viewModel.SaleCoopListToday.Count();
             viewModel.LeaseListingCountToday = viewModel.LeaseListingListToday.Count();
             viewModel.LeaseCoopCountToday = viewModel.LeaseCoopListToday.Count();
+
 
             return View(viewModel);
 

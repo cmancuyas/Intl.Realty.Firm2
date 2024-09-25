@@ -221,11 +221,21 @@
             <div class="card-body">
                 <h5 class="card-title">Monthly Transactions - @DateTime.Now.ToString("MMMM") @DateTime.Now.ToString("yyyy")</h5>
                 <div class="table-responsive">
+                    <form asp-action="DashboardSaleListingForm">
+                        <div class="row">
+                            <div class="col-md-8">
+                                <input name="searchBy" class="form-control" placeholder="Search" />
+                            </div>
+                            <div class="col-md-4">
+                                <button type="submit" class="btn btn-info">Search</button>
+                            </div>
+                        </div>
+                    </form>
                     <table class="table table-custom">
                         <thead>
                             <tr>
                                 <th>Deal #</th>
-                                <th>Transaction Type</th>
+                                <th>Transaction</th>
                                 <th>Property Address</th>
                                 <th>Deal Status</th>
                                 <th>Created By</th>
@@ -262,18 +272,23 @@
                                                 <div class="attachment-icon">PDF</div>
                                             }
                                         }
-                                        
+
 
                                     </td>
                                     <td>
-                                        <a asp-action="Preview" asp-controller="SaleListing" asp-route-id="@item.Id">
+                                        <a class="btn btn-link" type="button" asp-action="Preview" asp-controller="SaleListing" asp-route-id="@item.Id">
                                             Preview
+                                        </a>
+                                        <a class="btn btn-link" type="button" asp-action="Edit" asp-controller="SaleListing" asp-route-id="@item.Id">
+                                            Edit
                                         </a>
                                     </td>
                                 </tr>
                             }
                         </tbody>
                     </table>
+
+
                 </div>
             </div>
         </div>

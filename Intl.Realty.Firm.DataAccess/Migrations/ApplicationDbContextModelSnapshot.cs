@@ -717,6 +717,10 @@ namespace Intl.Realty.Firm.DataAccess.Migrations
                     b.Property<Guid>("CreatedBy")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<string>("CreatedByFullName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTime?>("DateSubmitted")
                         .HasColumnType("datetime2");
 
@@ -728,6 +732,9 @@ namespace Intl.Realty.Firm.DataAccess.Migrations
 
                     b.Property<Guid?>("DeletedBy")
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("DeletedByFullName")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("IRFDealId")
                         .HasColumnType("int");
@@ -749,6 +756,9 @@ namespace Intl.Realty.Firm.DataAccess.Migrations
 
                     b.Property<Guid?>("UpdatedBy")
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("UpdatedByFullName")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -775,6 +785,10 @@ namespace Intl.Realty.Firm.DataAccess.Migrations
                     b.Property<Guid>("CreatedBy")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<string>("CreatedByFullName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTime?>("DateSubmitted")
                         .HasColumnType("datetime2");
 
@@ -786,6 +800,9 @@ namespace Intl.Realty.Firm.DataAccess.Migrations
 
                     b.Property<Guid?>("DeletedBy")
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("DeletedByFullName")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("IRFDealId")
                         .HasColumnType("int");
@@ -807,6 +824,9 @@ namespace Intl.Realty.Firm.DataAccess.Migrations
 
                     b.Property<Guid?>("UpdatedBy")
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("UpdatedByFullName")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -833,6 +853,10 @@ namespace Intl.Realty.Firm.DataAccess.Migrations
                     b.Property<Guid>("CreatedBy")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<string>("CreatedByFullName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTime?>("DateSubmitted")
                         .HasColumnType("datetime2");
 
@@ -844,6 +868,9 @@ namespace Intl.Realty.Firm.DataAccess.Migrations
 
                     b.Property<Guid?>("DeletedBy")
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("DeletedByFullName")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("IRFDealId")
                         .HasColumnType("int");
@@ -865,6 +892,9 @@ namespace Intl.Realty.Firm.DataAccess.Migrations
 
                     b.Property<Guid?>("UpdatedBy")
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("UpdatedByFullName")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -891,6 +921,10 @@ namespace Intl.Realty.Firm.DataAccess.Migrations
                     b.Property<Guid>("CreatedBy")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<string>("CreatedByFullName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTime?>("DateSubmitted")
                         .HasColumnType("datetime2");
 
@@ -902,6 +936,9 @@ namespace Intl.Realty.Firm.DataAccess.Migrations
 
                     b.Property<Guid?>("DeletedBy")
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("DeletedByFullName")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("IRFDealId")
                         .HasColumnType("int");
@@ -923,6 +960,9 @@ namespace Intl.Realty.Firm.DataAccess.Migrations
 
                     b.Property<Guid?>("UpdatedBy")
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("UpdatedByFullName")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 

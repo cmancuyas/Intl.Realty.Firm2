@@ -19,5 +19,8 @@ namespace Intl.Realty.Firm.Model.Model
         public DealStatus? DealStatus { get; set; }
 
         public string? Notes { get; set; }
+        public string CreatedByFullName { get; set; } = string.Empty;
+        public string? UpdatedByFullName { get; set; } = string.Empty;
+        public string? DeletedByFullName { get; set; } = string.Empty;
     }
 }

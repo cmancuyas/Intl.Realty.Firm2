@@ -1,4 +1,5 @@
 ﻿using Intl.Realty.Firm.Model.Model;
+using System.Collections.Generic;
 
 namespace Intl.Realty.Firm.Model.ViewModel.Home
 {
@@ -10,6 +11,14 @@ namespace Intl.Realty.Firm.Model.ViewModel.Home
         public int LeaseCoopCountToday { get; set; }
 
         public List<SaleListing> SaleListingListAll { get; set; } = new List<SaleListing>();
+        public string MonthlyTransactionTypeSortOrder { get; set; } = string.Empty;
+        public string MonthlyFullNameSortOrder { get; set; } = string.Empty;
+        public string MonthlyCurrentFilter { get; set; } = string.Empty;
+        public int MonthlyTotalPages { get; set; } = 0;
+        public int MonthlyCurrentPage { get; set; } = 0;
+        public int MonthlyPageSize { get; set; } = 0;
+        public string MonthlyCurrentSort { get; set; } = string.Empty;
+
         public List<SaleListing> SaleListingListPast5Mins{ get; set; } = new List<SaleListing>();
         public List<SaleListing> SaleListingListPastHour{ get; set; } = new List<SaleListing>();
         public List<SaleListing> SaleListingListToday { get; set; } = new List<SaleListing>();

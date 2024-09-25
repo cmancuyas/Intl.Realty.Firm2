@@ -316,10 +316,12 @@ namespace Intl.Realty.Firm.Controllers
 
                     _logger.Log(LogLevel.Warning, confirmationLink);
 
-                    if (_signInManager.IsSignedIn(User) && User.IsInRole("Admin"))
+                    if (_signInManager.IsSignedIn(User) && User.IsInRole("Admin") || User.IsInRole("SuperAdmin"))
                     {
-                        return RedirectToAction("ListUsers", "Administration");
+                        return RedirectToAction("AdminDashboard", "Home");
                     }
+
+                    await _userManager.AddToRoleAsync(applicationUser, "Agent");
 
                     //await _signInManager.SignInAsync(user, isPersistent: false);
                     //return RedirectToAction("Index", "Home");
