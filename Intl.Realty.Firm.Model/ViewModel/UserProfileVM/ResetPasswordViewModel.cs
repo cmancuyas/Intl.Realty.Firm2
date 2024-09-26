@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Intl.Realty.Firm.Model.ViewModel.AccountVM
+namespace Intl.Realty.Firm.Model.ViewModel.UserProfileVM
 {
     public class ResetPasswordViewModel
     {

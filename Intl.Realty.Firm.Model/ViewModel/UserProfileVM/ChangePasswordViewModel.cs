@@ -1,12 +1,12 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Intl.Realty.Firm.Model.ViewModel.AccountVM
+namespace Intl.Realty.Firm.Model.ViewModel.UserProfileVM
 {
     public class ChangePasswordViewModel
     {
         [Required]
         [DataType(DataType.Password)]
-        [Display(Name ="Current Password")]
+        [Display(Name = "Current Password")]
         public string CurrentPassword { get; set; } = string.Empty;
         [Required]
         [DataType(DataType.Password)]

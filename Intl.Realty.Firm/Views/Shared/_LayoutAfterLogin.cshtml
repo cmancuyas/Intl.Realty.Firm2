@@ -109,7 +109,7 @@
                                 <i data-feather="chevron-down" class="text-secondary"></i>
                             </button>
                             <div class="dropdown-menu text-center text-secondary py-0">
-                                <a class="dropdown-item py-1" href="@Url.Action("Index","UserProfile")">View Profile</a>
+                                <a class="dropdown-item py-1" asp-action="Index" asp-controller="UserProfile" asp-route-id="@user.Id">View Profile</a>
                                 <a class="dropdown-item py-1" asp-action="Logout" asp-controller="Account">Sign Out</a>
                             </div>
                         </div>
