@@ -81,7 +81,7 @@ namespace DENR_FASPIS.Controllers
                                                                                                         documentTypeAssignmentList,
                                                                                                         documentTypeList);
 
-            var menus = CreateSaleListingTabMenuData.GetCreateSaleListingTabMenuData();
+            var menus = CreateEditDealTabMenuData.GetCreateEditDealTabMenuData();
 
             string controllerName = "IRFDetails1";
 
@@ -121,7 +121,7 @@ namespace DENR_FASPIS.Controllers
                                                                                                         documentTypeList);
             viewModel.CreateSaleListing.CreatedByFullName = user!.FirstName + " " + user.LastName;
 
-            var menus = CreateSaleListingTabMenuData.GetCreateSaleListingTabMenuData();
+            var menus = CreateEditDealTabMenuData.GetCreateEditDealTabMenuData();
 
             string controllerName = "IRFDetails1";
 
@@ -198,7 +198,12 @@ namespace DENR_FASPIS.Controllers
 
                     var userRoles = await _userManager.GetRolesAsync(user);
 
-                    var mailRequest = EmailRequest.SendNotificationWhenDealIsSubmitted(user, userRoles, dealAdminEmails, saleListingModel.Id, dealLink!);
+                    var mailRequest = EmailRequest.SendNotificationWhenDealIsSubmitted(user,
+                                                                                   userRoles,
+                                                                                   viewModel.CreateSaleListing.TransactionType.Description,
+                                                                                   dealAdminEmails,
+                                                                                   saleListingModel.Id,
+                                                                                   dealLink!);
 
                     await _emailService.SendEmailAsync(mailRequest);
                 }
@@ -230,7 +235,10 @@ namespace DENR_FASPIS.Controllers
 
             var userRoles = await _userManager.GetRolesAsync(user!);
 
-            var mailRequest = EmailRequest.SendRequestToEditTheDeal(user!, userRoles, dealAdminEmails, dealId, dealLink!);
+            var saleListing = await _unitOfWork.SaleListing.GetAsync(x=>x.Id == dealId,includeProperties:"IRFDeal,TransactionType,DealStatus");
+            var transactionType = saleListing.TransactionType;
+
+            var mailRequest = EmailRequest.SendRequestToEditTheDeal(user!, userRoles, transactionType!.Description, dealAdminEmails, dealId, dealLink!);
 
             await _emailService.SendEmailAsync(mailRequest);
 

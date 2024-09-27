@@ -81,7 +81,7 @@ namespace DENR_FASPIS.Controllers
                                                                                                         documentTypeAssignmentList,
                                                                                                         documentTypeList);
 
-            var menus = CreateSaleListingTabMenuData.GetCreateSaleListingTabMenuData();
+            var menus = CreateEditDealTabMenuData.GetCreateEditDealTabMenuData();
 
             string controllerName = "IRFDetails1";
 
@@ -121,7 +121,7 @@ namespace DENR_FASPIS.Controllers
                                                                                                         documentTypeList);
             viewModel.CreateSaleCoop.CreatedByFullName = user!.FirstName + " " + user.LastName;
 
-            var menus = CreateSaleListingTabMenuData.GetCreateSaleListingTabMenuData();
+            var menus = CreateEditDealTabMenuData.GetCreateEditDealTabMenuData();
 
             string controllerName = "IRFDetails1";
 
@@ -171,16 +171,16 @@ namespace DENR_FASPIS.Controllers
                 viewModel.CreateSaleCoop.CreatedBy = user!.Id;
                 viewModel.CreateSaleCoop.CreatedAt = DateTime.Now;
 
-                var SaleCoopModel = viewModel.CreateSaleCoop.ToSaleCoopModel();
-                await _unitOfWork.SaleCoop.AddAsync(SaleCoopModel);
+                var saleCoopModel = viewModel.CreateSaleCoop.ToSaleCoopModel();
+                await _unitOfWork.SaleCoop.AddAsync(saleCoopModel);
 
                 // Create FileUploadData
                 if (viewModel.CreateSaleCoop.CreateFileUploadListViewModel?.CreateFileUploadsViewModel != null)
                 {
-                    var uploadPath = CreateFilePath(SaleCoopModel.Id);
+                    var uploadPath = CreateFilePath(saleCoopModel.Id);
 
                     await CreateFileUploadData(viewModel.CreateSaleCoop.CreateFileUploadListViewModel.CreateFileUploadsViewModel,
-                                                SaleCoopModel.Id,
+                                                saleCoopModel.Id,
                                                 transactionType.Id,
                                                 viewModel.CreateSaleCoop.DocumentTypeList,
                                                 uploadPath);
@@ -192,13 +192,18 @@ namespace DENR_FASPIS.Controllers
                     var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
 
                     var dealLink = Url.Action("Login", "Account",
-                                                                new { id = SaleCoopModel.Id, token = token }, Request.Scheme);
+                                                                new { id = saleCoopModel.Id, token = token }, Request.Scheme);
 
                     var dealAdminEmails = await GetDealAdminEmails();
 
                     var userRoles = await _userManager.GetRolesAsync(user);
 
-                    var mailRequest = EmailRequest.SendNotificationWhenDealIsSubmitted(user, userRoles, dealAdminEmails, SaleCoopModel.Id, dealLink!);
+                    var mailRequest = EmailRequest.SendNotificationWhenDealIsSubmitted(user,
+                                                               userRoles,
+                                                               viewModel.CreateSaleCoop.TransactionType.Description,
+                                                               dealAdminEmails,
+                                                               saleCoopModel.Id,
+                                                               dealLink!);
 
                     await _emailService.SendEmailAsync(mailRequest);
                 }
@@ -230,7 +235,10 @@ namespace DENR_FASPIS.Controllers
 
             var userRoles = await _userManager.GetRolesAsync(user!);
 
-            var mailRequest = EmailRequest.SendRequestToEditTheDeal(user!, userRoles, dealAdminEmails, dealId, dealLink!);
+            var saleCoop = await _unitOfWork.SaleCoop.GetAsync(x => x.Id == dealId, includeProperties: "IRFDeal,TransactionType,DealStatus");
+            var transactionType = saleCoop.TransactionType;
+
+            var mailRequest = EmailRequest.SendRequestToEditTheDeal(user!, userRoles, transactionType!.Description, dealAdminEmails, dealId, dealLink!);
 
             await _emailService.SendEmailAsync(mailRequest);
 
@@ -363,7 +371,7 @@ namespace DENR_FASPIS.Controllers
             var dealStatusIEnum = await _unitOfWork.DealStatus.GetAllAsync();
             viewModel.EditSaleCoop.DealStatusList = dealStatusIEnum.ToList();
 
-            var menus = CreateSaleListingTabMenuData.GetCreateSaleListingTabMenuData();
+            var menus = CreateEditDealTabMenuData.GetCreateEditDealTabMenuData();
 
             string menuName = "IRFDetails1";
 

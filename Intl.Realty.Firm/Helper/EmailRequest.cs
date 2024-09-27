@@ -32,7 +32,9 @@ namespace Intl.Realty.Firm.Helper
             return mailRequest;
         }
 
-        public static MailRequest SendNotificationWhenDealIsSubmitted(ApplicationUser user, IList<string> userRoles, List<InternalEmail> emails, int dealId, string dealLink)
+        public static MailRequest SendNotificationWhenDealIsSubmitted(ApplicationUser user, 
+                                                                     IList<string> userRoles, string transactionTypeName, 
+                                                                     List<InternalEmail> emails, int dealId, string dealLink)
         {
             var emailString = string.Empty;
             foreach (var email in emails)
@@ -44,7 +46,7 @@ namespace Intl.Realty.Firm.Helper
 
             emailString = emailString.Remove(emailString.Length - 1,1);
 
-            var template = EmailTemplate.SendNotificationWhenDealIsSubmitted(user, userRole!, emails, dealId, dealLink);
+            var template = EmailTemplate.SendNotificationWhenDealIsSubmitted(user, userRole!, transactionTypeName, emails, dealId, dealLink);
 
             var mailRequest = new MailRequest
             {
@@ -55,7 +57,12 @@ namespace Intl.Realty.Firm.Helper
             return mailRequest;
         }
 
-        public static MailRequest SendRequestToEditTheDeal(ApplicationUser user, IList<string> userRoles, List<InternalEmail> emails, int dealId, string dealLink)
+        public static MailRequest SendRequestToEditTheDeal(ApplicationUser user, 
+                                                           IList<string> userRoles, 
+                                                           string transactionTypeName,
+                                                           List<InternalEmail> emails, 
+                                                           int dealId, 
+                                                           string dealLink)
         {
             var emailString = string.Empty;
             foreach (var email in emails)
@@ -67,7 +74,7 @@ namespace Intl.Realty.Firm.Helper
 
             var userRole = userRoles.FirstOrDefault();    
 
-            var template = EmailTemplate.SendRequestToEditTheDeal(user, userRole, emails, dealId, dealLink);
+            var template = EmailTemplate.SendRequestToEditTheDeal(user, userRole!, transactionTypeName, emails, dealId, dealLink);
 
             var mailRequest = new MailRequest
             {

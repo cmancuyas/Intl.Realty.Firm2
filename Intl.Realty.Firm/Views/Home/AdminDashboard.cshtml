@@ -181,6 +181,36 @@
             <div class="card card-custom">
                 <div class="card-body">
                     <h5 class="card-title">Recent Activity</h5>
+
+                    @* SaleListing *@
+                    <div class="activity-timeline">
+
+                        @foreach (var item in Model.SaleListingListPast1Min)
+                        {
+                            <div class="activity-timeline-item">
+                                <div class="timeline-dot"></div>
+                                <div class="activity-time">Few seconds ago</div>
+                                <div class="activity-desc">@item.TransactionType!.Description was created - Deal Id: @item.Id - @item.DealStatus!.Description</div>
+                            </div>
+                        }
+
+
+                    </div>
+
+                    <div class="activity-timeline">
+
+                        @foreach (var item in Model.SaleListingListPast5Mins)
+                        {
+                            <div class="activity-timeline-item">
+                                <div class="timeline-dot"></div>
+                                <div class="activity-time">5 mins ago</div>
+                                <div class="activity-desc">@item.TransactionType!.Description was created - Deal Id: @item.Id - @item.DealStatus!.Description</div>
+                            </div>
+                        }
+
+
+                    </div>
+
                     <div class="activity-timeline">
 
                         @foreach (var item in Model.SaleListingListPastHour)
@@ -194,6 +224,136 @@
 
 
                     </div>
+
+                    @* SaleCoop *@
+                    <div class="activity-timeline">
+
+                        @foreach (var item in Model.SaleCoopListPast1Min)
+                        {
+                            <div class="activity-timeline-item">
+                                <div class="timeline-dot"></div>
+                                <div class="activity-time">Few seconds ago</div>
+                                <div class="activity-desc">@item.TransactionType!.Description was created - Deal Id: @item.Id - @item.DealStatus!.Description</div>
+                            </div>
+                        }
+
+
+                    </div>
+
+                    <div class="activity-timeline">
+
+                        @foreach (var item in Model.SaleCoopListPast5Mins)
+                        {
+                            <div class="activity-timeline-item">
+                                <div class="timeline-dot"></div>
+                                <div class="activity-time">5 mins ago</div>
+                                <div class="activity-desc">@item.TransactionType!.Description was created - Deal Id: @item.Id - @item.DealStatus!.Description</div>
+                            </div>
+                        }
+
+
+                    </div>
+
+                    <div class="activity-timeline">
+
+                        @foreach (var item in Model.SaleCoopListPastHour)
+                        {
+                            <div class="activity-timeline-item">
+                                <div class="timeline-dot"></div>
+                                <div class="activity-time">1 hour ago</div>
+                                <div class="activity-desc">@item.TransactionType!.Description was created - Deal Id: @item.Id - @item.DealStatus!.Description</div>
+                            </div>
+                        }
+
+
+                    </div>
+
+                    @* LeaseListing *@
+                    <div class="activity-timeline">
+
+                        @foreach (var item in Model.LeaseListingListPast1Min)
+                        {
+                            <div class="activity-timeline-item">
+                                <div class="timeline-dot"></div>
+                                <div class="activity-time">Few seconds ago</div>
+                                <div class="activity-desc">@item.TransactionType!.Description was created - Deal Id: @item.Id - @item.DealStatus!.Description</div>
+                            </div>
+                        }
+
+
+                    </div>
+
+                    <div class="activity-timeline">
+
+                        @foreach (var item in Model.LeaseListingListPast5Mins)
+                        {
+                            <div class="activity-timeline-item">
+                                <div class="timeline-dot"></div>
+                                <div class="activity-time">5 mins ago</div>
+                                <div class="activity-desc">@item.TransactionType!.Description was created - Deal Id: @item.Id - @item.DealStatus!.Description</div>
+                            </div>
+                        }
+
+
+                    </div>
+
+                    <div class="activity-timeline">
+
+                        @foreach (var item in Model.LeaseListingListPastHour)
+                        {
+                            <div class="activity-timeline-item">
+                                <div class="timeline-dot"></div>
+                                <div class="activity-time">1 hour ago</div>
+                                <div class="activity-desc">@item.TransactionType!.Description was created - Deal Id: @item.Id - @item.DealStatus!.Description</div>
+                            </div>
+                        }
+
+
+                    </div>
+
+                    @* LeaseCoop *@
+                    <div class="activity-timeline">
+
+                        @foreach (var item in Model.LeaseCoopListPast1Min)
+                        {
+                            <div class="activity-timeline-item">
+                                <div class="timeline-dot"></div>
+                                <div class="activity-time">Few seconds ago</div>
+                                <div class="activity-desc">@item.TransactionType!.Description was created - Deal Id: @item.Id - @item.DealStatus!.Description</div>
+                            </div>
+                        }
+
+
+                    </div>
+
+                    <div class="activity-timeline">
+
+                        @foreach (var item in Model.LeaseCoopListPast5Mins)
+                        {
+                            <div class="activity-timeline-item">
+                                <div class="timeline-dot"></div>
+                                <div class="activity-time">5 mins ago</div>
+                                <div class="activity-desc">@item.TransactionType!.Description was created - Deal Id: @item.Id - @item.DealStatus!.Description</div>
+                            </div>
+                        }
+
+
+                    </div>
+
+                    <div class="activity-timeline">
+
+                        @foreach (var item in Model.LeaseCoopListPastHour)
+                        {
+                            <div class="activity-timeline-item">
+                                <div class="timeline-dot"></div>
+                                <div class="activity-time">1 hour ago</div>
+                                <div class="activity-desc">@item.TransactionType!.Description was created - Deal Id: @item.Id - @item.DealStatus!.Description</div>
+                            </div>
+                        }
+
+
+                    </div>
+
                 </div>
             </div>
         </div>
@@ -206,17 +366,28 @@
             <div class="card-body">
                 <h5 class="card-title">Monthly Transactions - @DateTime.Now.ToString("MMMM") @DateTime.Now.ToString("yyyy")</h5>
                 <div class="table-responsive">
+                    <form asp-action="DashboardSaleListingForm">
+                        <div class="row">
+                            <div class="col-md-8">
+                                <input name="searchBy" class="form-control" placeholder="Search" />
+                            </div>
+                            <div class="col-md-4">
+                                <button type="submit" class="btn btn-info">Search</button>
+                            </div>
+                        </div>
+                    </form>
                     <table class="table table-custom">
                         <thead>
                             <tr>
                                 <th>Deal #</th>
-                                <th>Transaction Type</th>
+                                <th>Transaction</th>
                                 <th>Property Address</th>
                                 <th>Deal Status</th>
                                 <th>Created By</th>
                                 <th>Created At</th>
                                 <th>Final Closing Date</th>
                                 <th>Attachment</th>
+                                <th>Action</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -246,42 +417,23 @@
                                                 <div class="attachment-icon">PDF</div>
                                             }
                                         }
+
+
+                                    </td>
+                                    <td>
+                                        <a class="btn btn-link" type="button" asp-action="Preview" asp-controller="SaleListing" asp-route-id="@item.Id">
+                                            Preview
+                                        </a>
+                                        <a class="btn btn-link" type="button" asp-action="Edit" asp-controller="SaleListing" asp-route-id="@item.Id">
+                                            Edit
+                                        </a>
                                     </td>
                                 </tr>
                             }
                         </tbody>
                     </table>
-                    <nav aria-label="Page navigation">
 
-                        <ul class="pagination">
 
-                            <li class="page-item">
-
-                                <a class="page-link" href="?page=@(Model.MonthlyCurrentPage - 1)">Previous</a>
-
-                            </li>
-
-                            @for (int i = 1; i <= Model.MonthlyTotalPages; i++)
-
-                            {
-
-                                <li class="page-item">
-
-                                    <a class="page-link" href="?page=@i">@i</a>
-
-                                </li>
-
-                            }
-
-                            <li class="page-item">
-
-                                <a class="page-link" href="?page=@(Model.MonthlyCurrentPage + 1)">Next</a>
-
-                            </li>
-
-                        </ul>
-
-                    </nav>
                 </div>
             </div>
         </div>
