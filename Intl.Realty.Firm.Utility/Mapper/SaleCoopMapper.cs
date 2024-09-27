@@ -1,4 +1,5 @@
 ﻿using Intl.Realty.Firm.Model.Model;
+using Intl.Realty.Firm.Model.ViewModel.AllDealsVM;
 using Intl.Realty.Firm.Model.ViewModel.SaleCoopVM;
 
 namespace Intl.Realty.Firm.Utility.Mapper
@@ -214,6 +215,31 @@ namespace Intl.Realty.Firm.Utility.Mapper
                 }).ToList();
             }
             return listViewModel; ;
+        }
+
+        public static AllDealsViewModel ToAllDealsViewModel(this SaleCoop model,
+                                                    ApplicationUser createdByUser,
+                                                    ApplicationUser updatedByUser,
+                                                    ApplicationUser deletedByUser
+                                                    )
+        {
+            AllDealsViewModel viewModel = new AllDealsViewModel();
+
+            viewModel.Id = model.Id;
+            viewModel.BridgeId = model.Id;
+            viewModel.TransactionTypeId = model.TransactionTypeId;
+            viewModel.TransactionTypeName = model.TransactionType!.Description;
+            viewModel.BridgeId = model.Id;
+            viewModel.PropertyAddress = model.IRFDeal!.PropertyAddress;
+            viewModel.DealStatusName = model.DealStatus!.Description;
+            viewModel.FinalClosingDate = model.IRFDeal.FinalClosingDate;
+            viewModel.CreatedAt = model.CreatedAt;
+            viewModel.FileExtensions = model.FileUploads.Select(x => x.FileExtension).ToList();
+            viewModel.CreatedByFullName = createdByUser.FirstName + " " + createdByUser.LastName;
+            viewModel.UpdatedByFullName = updatedByUser.FirstName + " " + updatedByUser.LastName;
+            viewModel.DeletedByFullName = deletedByUser.FirstName + " " + deletedByUser.LastName;
+
+            return viewModel;
         }
     }
 }

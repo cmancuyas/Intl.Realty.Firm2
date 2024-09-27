@@ -152,7 +152,7 @@
                     <h5 class="card-title">My Daily Transactions</h5>
                     <ul class="list-group">
 
-                        @foreach (var item in Model.SaleListingListToday)
+                        @foreach (var item in Model.AllDealsToday!)
                         {
                             <li class="list-group-item">
                                 <div class="d-flex align-items-center">
@@ -161,68 +161,12 @@
 
                                     </div>
                                     <div>
-                                        <div>@item.IRFDeal!.PropertyAddress - @item.Id</div>
-                                        <div class="text-small">@item.CreatedAt - @item.TransactionType!.Description</div>
+                                        <div>@item.PropertyAddress - @item.Id</div>
+                                        <div class="text-small">@item.CreatedAt - @item.TransactionTypeName</div>
                                     </div>
                                 </div>
                                 <div class="text-right">
-                                    <div class="text-eur">@item.DealStatus!.Description</div>
-                                </div>
-                            </li>
-                        }
-
-                        @foreach (var item in Model.SaleCoopListToday)
-                        {
-                            <li class="list-group-item">
-                                <div class="d-flex align-items-center">
-                                    <div class="icon-circle" style="background-color: #f9e79f;">
-                                        <i class="bi bi-check-circle-fill text-warning"></i>
-
-                                    </div>
-                                    <div>
-                                        <div>@item.IRFDeal!.PropertyAddress - @item.Id</div>
-                                        <div class="text-small">@item.CreatedAt - @item.TransactionType!.Description</div>
-                                    </div>
-                                </div>
-                                <div class="text-right">
-                                    <div class="text-eur">@item.DealStatus!.Description</div>
-                                </div>
-                            </li>
-                        }
-
-                        @foreach (var item in Model.LeaseListingListToday)
-                        {
-                            <li class="list-group-item">
-                                <div class="d-flex align-items-center">
-                                    <div class="icon-circle" style="background-color: #f9e79f;">
-                                        <i class="bi bi-check-circle-fill text-warning"></i>
-
-                                    </div>
-                                    <div>
-                                        <div>@item.IRFDeal!.PropertyAddress - @item.Id</div>
-                                        <div class="text-small">@item.CreatedAt - @item.TransactionType!.Description</div>
-                                    </div>
-                                </div>
-                                <div class="text-right">
-                                    <div class="text-eur">@item.DealStatus!.Description</div>
-                                </div>
-                            </li>
-                        }
-                        @foreach (var item in Model.LeaseCoopListToday)
-                        {
-                            <li class="list-group-item">
-                                <div class="d-flex align-items-center">
-                                    <div class="icon-circle" style="background-color: #f9e79f;">
-                                        <i class="bi bi-check-circle-fill text-warning"></i>
-
-                                    </div>
-                                    <div>
-                                        <div>@item.IRFDeal!.PropertyAddress - @item.Id</div>
-                                        <div class="text-small">@item.CreatedAt - @item.TransactionType!.Description</div>
-                                    </div>
-                                </div>
-                                <div class="text-right">
-                                    <div class="text-eur">@item.DealStatus!.Description</div>
+                                    <div class="text-eur">@item.DealStatusName!</div>
                                 </div>
                             </li>
                         }
@@ -239,169 +183,12 @@
                     @* SaleListing *@
                     <div class="activity-timeline">
 
-                        @foreach (var item in Model.SaleListingListPast1Min)
+                        @foreach (var item in Model.AllDealsPast1Min)
                         {
                             <div class="activity-timeline-item">
                                 <div class="timeline-dot"></div>
-                                <div class="activity-time">Few seconds ago</div>
-                                <div class="activity-desc">@item.TransactionType!.Description was created - Deal Id: @item.Id - @item.DealStatus!.Description</div>
-                            </div>
-                        }
-
-
-                    </div>
-
-                    <div class="activity-timeline">
-
-                        @foreach (var item in Model.SaleListingListPast5Mins)
-                        {
-                            <div class="activity-timeline-item">
-                                <div class="timeline-dot"></div>
-                                <div class="activity-time">5 mins ago</div>
-                                <div class="activity-desc">@item.TransactionType!.Description was created - Deal Id: @item.Id - @item.DealStatus!.Description</div>
-                            </div>
-                        }
-
-
-                    </div>
-
-                    <div class="activity-timeline">
-
-                        @foreach (var item in Model.SaleListingListPastHour)
-                        {
-                            <div class="activity-timeline-item">
-                                <div class="timeline-dot"></div>
-                                <div class="activity-time">1 hour ago</div>
-                                <div class="activity-desc">@item.TransactionType!.Description was created - Deal Id: @item.Id - @item.DealStatus!.Description</div>
-                            </div>
-                        }
-
-
-                    </div>
-                
-                    @* SaleCoop *@
-                    <div class="activity-timeline">
-
-                        @foreach (var item in Model.SaleCoopListPast1Min)
-                        {
-                            <div class="activity-timeline-item">
-                                <div class="timeline-dot"></div>
-                                <div class="activity-time">Few seconds ago</div>
-                                <div class="activity-desc">@item.TransactionType!.Description was created - Deal Id: @item.Id - @item.DealStatus!.Description</div>
-                            </div>
-                        }
-
-
-                    </div>
-
-                    <div class="activity-timeline">
-
-                        @foreach (var item in Model.SaleCoopListPast5Mins)
-                        {
-                            <div class="activity-timeline-item">
-                                <div class="timeline-dot"></div>
-                                <div class="activity-time">5 mins ago</div>
-                                <div class="activity-desc">@item.TransactionType!.Description was created - Deal Id: @item.Id - @item.DealStatus!.Description</div>
-                            </div>
-                        }
-
-
-                    </div>
-
-                    <div class="activity-timeline">
-
-                        @foreach (var item in Model.SaleCoopListPastHour)
-                        {
-                            <div class="activity-timeline-item">
-                                <div class="timeline-dot"></div>
-                                <div class="activity-time">1 hour ago</div>
-                                <div class="activity-desc">@item.TransactionType!.Description was created - Deal Id: @item.Id - @item.DealStatus!.Description</div>
-                            </div>
-                        }
-
-
-                    </div>
-                    
-                    @* LeaseListing *@
-                    <div class="activity-timeline">
-
-                        @foreach (var item in Model.LeaseListingListPast1Min)
-                        {
-                            <div class="activity-timeline-item">
-                                <div class="timeline-dot"></div>
-                                <div class="activity-time">Few seconds ago</div>
-                                <div class="activity-desc">@item.TransactionType!.Description was created - Deal Id: @item.Id - @item.DealStatus!.Description</div>
-                            </div>
-                        }
-
-
-                    </div>
-
-                    <div class="activity-timeline">
-
-                        @foreach (var item in Model.LeaseListingListPast5Mins)
-                        {
-                            <div class="activity-timeline-item">
-                                <div class="timeline-dot"></div>
-                                <div class="activity-time">5 mins ago</div>
-                                <div class="activity-desc">@item.TransactionType!.Description was created - Deal Id: @item.Id - @item.DealStatus!.Description</div>
-                            </div>
-                        }
-
-
-                    </div>
-
-                    <div class="activity-timeline">
-
-                        @foreach (var item in Model.LeaseListingListPastHour)
-                        {
-                            <div class="activity-timeline-item">
-                                <div class="timeline-dot"></div>
-                                <div class="activity-time">1 hour ago</div>
-                                <div class="activity-desc">@item.TransactionType!.Description was created - Deal Id: @item.Id - @item.DealStatus!.Description</div>
-                            </div>
-                        }
-
-
-                    </div>
-                
-                    @* LeaseCoop *@
-                    <div class="activity-timeline">
-
-                        @foreach (var item in Model.LeaseCoopListPast1Min)
-                        {
-                            <div class="activity-timeline-item">
-                                <div class="timeline-dot"></div>
-                                <div class="activity-time">Few seconds ago</div>
-                                <div class="activity-desc">@item.TransactionType!.Description was created - Deal Id: @item.Id - @item.DealStatus!.Description</div>
-                            </div>
-                        }
-
-
-                    </div>
-
-                    <div class="activity-timeline">
-
-                        @foreach (var item in Model.LeaseCoopListPast5Mins)
-                        {
-                            <div class="activity-timeline-item">
-                                <div class="timeline-dot"></div>
-                                <div class="activity-time">5 mins ago</div>
-                                <div class="activity-desc">@item.TransactionType!.Description was created - Deal Id: @item.Id - @item.DealStatus!.Description</div>
-                            </div>
-                        }
-
-
-                    </div>
-
-                    <div class="activity-timeline">
-
-                        @foreach (var item in Model.LeaseCoopListPastHour)
-                        {
-                            <div class="activity-timeline-item">
-                                <div class="timeline-dot"></div>
-                                <div class="activity-time">1 hour ago</div>
-                                <div class="activity-desc">@item.TransactionType!.Description was created - Deal Id: @item.Id - @item.DealStatus!.Description</div>
+                                <div class="activity-time">a few seconds ago</div>
+                                <div class="activity-desc">@item.TransactionTypeName was created - Deal Id: @item.Id - @item.DealStatusName</div>
                             </div>
                         }
 
@@ -445,23 +232,21 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach (var item in Model.SaleListingListAll)
+                            @foreach (var item in Model.AllDealsForCurrentMonth)
                             {
-                                var user = await _userManager.FindByIdAsync(item.CreatedBy.ToString());
                                 <tr>
                                     <td>@item.Id</td>
-                                    <td>@item.TransactionType!.Description</td>
-                                    <td>@item.IRFDeal!.PropertyAddress</td>
-                                    <td>@item.DealStatus!.Description</td>
-                                    <td>@user!.FirstName @user.LastName</td>
+                                    <td>@item.TransactionTypeName</td>
+                                    <td>@item.PropertyAddress</td>
+                                    <td>@item.DealStatusName</td>
+                                    <td>@item.CreatedByFullName</td>
                                     <td>@item.CreatedAt</td>
-                                    <td>@item.IRFDeal.FinalClosingDate</td>
+                                    <td>@item.FinalClosingDate</td>
                                     <td>
                                         @{
-                                            var fileUploads = item.FileUploads!.Where(x => x.SaleListingId == item.Id);
-                                            if (fileUploads.Any())
+                                            if (item.FileExtensions.Any())
                                             {
-                                                var str = fileUploads.Select(x => x.FileExtension).FirstOrDefault();
+                                                var str = item.FileExtensions.FirstOrDefault();
                                                 string[] split = str!.Split('.');
                                                 var fileExtension = split[1];
                                                 <div class="attachment-icon">@fileExtension</div>

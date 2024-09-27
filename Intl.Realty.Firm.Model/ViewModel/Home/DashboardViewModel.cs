@@ -1,5 +1,5 @@
 ﻿using Intl.Realty.Firm.Model.Model;
-using System.Collections.Generic;
+using Intl.Realty.Firm.Model.ViewModel.AllDealsVM;
 
 namespace Intl.Realty.Firm.Model.ViewModel.Home
 {
@@ -45,5 +45,12 @@ namespace Intl.Realty.Firm.Model.ViewModel.Home
         public List<LeaseCoop> LeaseCoopListPastHour{ get; set; } = new List<LeaseCoop>();
         public List<LeaseCoop> LeaseCoopListToday { get; set; } = new List<LeaseCoop>();
         public List<LeaseCoop> LeaseCoopListMonth { get; set; } = new List<LeaseCoop>();
+
+        public List<AllDealsViewModel>? AllDealsPast1Min { get; set; }
+        public List<AllDealsViewModel>? AllDealsPast5Mins { get; set; }
+        public List<AllDealsViewModel>? AllDealsPastHour { get; set; }
+        public List<AllDealsViewModel>? AllDealsToday { get; set; }
+        public List<AllDealsViewModel>? AllDealsForCurrentMonth { get; set; }
+        public List<AllDealsViewModel>? AllDealsForAll { get; set; }
     }
 }

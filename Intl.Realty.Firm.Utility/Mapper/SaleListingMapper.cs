@@ -1,4 +1,5 @@
 ﻿using Intl.Realty.Firm.Model.Model;
+using Intl.Realty.Firm.Model.ViewModel.AllDealsVM;
 using Intl.Realty.Firm.Model.ViewModel.SaleListingVM;
 
 namespace Intl.Realty.Firm.Utility.Mapper
@@ -35,7 +36,7 @@ namespace Intl.Realty.Firm.Utility.Mapper
 
                 TransactionType = model.TransactionType,
                 EditIRFDealViewModel = model.IRFDeal!.ToEditIRFDealViewModel(),
-                DealStatus = model.DealStatus,  
+                DealStatus = model.DealStatus,
 
                 IsActive = model.IsActive,
                 IsDeleted = model.IsDeleted,
@@ -123,7 +124,7 @@ namespace Intl.Realty.Firm.Utility.Mapper
                 {
                     TransactionType = x.TransactionType!.Description,
                     DateCreated = x.CreatedAt,
-                    DateSubmitted = x.DateSubmitted??DateTime.MinValue,
+                    DateSubmitted = x.DateSubmitted ?? DateTime.MinValue,
                     PropertyAddress = x.IRFDeal!.PropertyAddress,
                     FinalSalePrice = x.IRFDeal!.FinalSalePrice,
                     FinalClosingDate = x.IRFDeal.FinalClosingDate,
@@ -202,7 +203,7 @@ namespace Intl.Realty.Firm.Utility.Mapper
                     IRFDeal = x.IRFDeal,
                     DealStatus = x.DealStatus,
                     FileUploads = x.FileUploads,
-                    
+
                     IsActive = x.IsActive,
                     IsDeleted = x.IsDeleted,
                     CreatedAt = x.CreatedAt,
@@ -213,7 +214,32 @@ namespace Intl.Realty.Firm.Utility.Mapper
                     DeletedAt = x.DeletedAt,
                 }).ToList();
             }
-            return listViewModel; ;
+            return listViewModel;
+        }
+
+        public static AllDealsViewModel ToAllDealsViewModel(this SaleListing model,
+                                                            ApplicationUser createdByUser,
+                                                            ApplicationUser? updatedByUser,
+                                                            ApplicationUser? deletedByUser
+                                                            )
+        {
+            AllDealsViewModel viewModel = new AllDealsViewModel();
+
+            viewModel.Id = model.Id;
+            viewModel.BridgeId = model.Id;
+            viewModel.TransactionTypeId = model.TransactionTypeId;
+            viewModel.TransactionTypeName = model.TransactionType!.Description;
+            viewModel.BridgeId = model.Id;
+            viewModel.PropertyAddress = model.IRFDeal!.PropertyAddress;
+            viewModel.DealStatusName = model.DealStatus!.Description;
+            viewModel.FinalClosingDate = model.IRFDeal.FinalClosingDate;
+            viewModel.FileExtensions = model.FileUploads.Select(x => x.FileExtension).ToList();
+            viewModel.CreatedAt = model.CreatedAt;
+            viewModel.CreatedByFullName = createdByUser.FirstName + " " + createdByUser.LastName;
+            viewModel.UpdatedByFullName = updatedByUser!.FirstName + " " + updatedByUser!.LastName;
+            viewModel.DeletedByFullName = deletedByUser!.FirstName + " " + deletedByUser!.LastName;
+
+            return viewModel;
         }
     }
 }
