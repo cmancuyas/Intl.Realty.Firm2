@@ -57,7 +57,7 @@
                                                  @class = "form-select",
                                                  @required = "required",
                                              })
-
+                                    @Html.ValidationMessageFor(x => x.CreateDocumentTypeAssignment.TransactionTypeId, "", new { @class = "text-danger" })
                                 </div>
                             </div>
                             @* Transaction Type *@
@@ -71,7 +71,7 @@
                                                  @class = "form-select",
                                                  @required = "required",
                                              })
-
+                                    @Html.ValidationMessageFor(x => x.CreateDocumentTypeAssignment.DocumentTypeId, "", new { @class = "text-danger" })
                                 </div>
                             </div>
 

@@ -48,18 +48,6 @@
 
         $('.nav-link span').toggle();
     });
-
-
-    $.get("/Profile/CurrentUserInfos", function (data) {
-        console.log(data);
-        // if (data.success) {
-        //     $('#DisplayName').text(data.displayName);
-        //     $('#DisplayRole').text(data.role);
-        // }
-        $('#DisplayName').text(data.displayName);
-        $('#DisplayRole').text(data.role);
-        $('#avatar').attr('src', data.profilePictureSource);
-    });
 }
 
 function toggleNavItems($,clickedNavItem, clickedSubNavItem, clickedCaret) {

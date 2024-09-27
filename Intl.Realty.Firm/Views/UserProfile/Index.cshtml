@@ -6,7 +6,10 @@
     Layout = "~/Views/Shared/_LayoutAfterLogin.cshtml";
 }
 <div>
-    <a href="@Url.Action("Index","User")" class="text-decoration-none text-blue d-flex mb-4">
+@*     <a href="@Url.Action("Index","User")" class="text-decoration-none text-blue d-flex mb-4">
+        <i data-feather="chevron-left"></i><span>Back</span>
+    </a> *@
+    <a href="##" onClick="history.go(-1); return false;">
         <i data-feather="chevron-left"></i><span>Back</span>
     </a>
     <div class="row">

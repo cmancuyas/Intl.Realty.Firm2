@@ -1,6 +1,7 @@
 ﻿using Intl.Realty.Firm.Model.Model;
 using Intl.Realty.Firm.Model.ViewModel.AccountVM;
 using Intl.Realty.Firm.Models.Auxiliary;
+using System.Collections.Generic;
 
 namespace Intl.Realty.Firm.Helper
 {
@@ -24,7 +25,53 @@ namespace Intl.Realty.Firm.Helper
             var template = EmailTemplate.UserResetPasswordTemplate(user, resetLink);
             var mailRequest = new MailRequest
             {
-                ToEmail = user.Email,
+                ToEmail = user.Email!,
+                Subject = "do not reply",
+                Body = template
+            };
+            return mailRequest;
+        }
+
+        public static MailRequest SendNotificationWhenDealIsSubmitted(ApplicationUser user, IList<string> userRoles, List<InternalEmail> emails, int dealId, string dealLink)
+        {
+            var emailString = string.Empty;
+            foreach (var email in emails)
+            {
+                emailString += email.Email + ",";
+            }
+
+            var userRole = userRoles.FirstOrDefault();
+
+            emailString = emailString.Remove(emailString.Length - 1,1);
+
+            var template = EmailTemplate.SendNotificationWhenDealIsSubmitted(user, userRole!, emails, dealId, dealLink);
+
+            var mailRequest = new MailRequest
+            {
+                ToEmail = emailString,
+                Subject = "do not reply",
+                Body = template
+            };
+            return mailRequest;
+        }
+
+        public static MailRequest SendRequestToEditTheDeal(ApplicationUser user, IList<string> userRoles, List<InternalEmail> emails, int dealId, string dealLink)
+        {
+            var emailString = string.Empty;
+            foreach (var email in emails)
+            {
+                emailString += email.Email + ",";
+            }
+
+            emailString = emailString.Remove(emailString.Length - 1, 1);
+
+            var userRole = userRoles.FirstOrDefault();    
+
+            var template = EmailTemplate.SendRequestToEditTheDeal(user, userRole, emails, dealId, dealLink);
+
+            var mailRequest = new MailRequest
+            {
+                ToEmail = emailString,
                 Subject = "do not reply",
                 Body = template
             };

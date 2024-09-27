@@ -46,12 +46,12 @@
 
                 <div class="tab-content" style="border-bottom:none;background-color:white;">
 
-                    <div class="tab-pane active" id="departmentDetails" aria-labelledby="departmentDetails-tab" style="background-color:white;">
+                    <div class="tab-pane active" id="documentTypeAssignmentDetails" aria-labelledby="documentTypeAssignmentDetails-tab" style="background-color:white;">
 
-                        @* Region *@
+                        @* Transaction Type *@
                         <div class="col-md-6">
                             <div class="form-group">
-                                <label class="control-label fw-bolder">Region</label>
+                                <label class="control-label fw-bolder">Transaction Type</label>
                                 <select id="TransactionTypeId" name="TransactionTypeId" class="form-select">
                                     @{
                                         @if (Model.EditDocumentTypeAssignment.TransactionTypeList != null)
@@ -75,10 +75,10 @@
 
                             </div>
                         </div>
-                        @* Region *@
+                        @* Document Type *@
                         <div class="col-md-6">
                             <div class="form-group">
-                                <label class="control-label fw-bolder">Region</label>
+                                <label class="control-label fw-bolder">Document Type</label>
                                 <select id="DocumentTypeId" name="DocumentTypeId" class="form-select">
                                     @{
                                         @if (Model.EditDocumentTypeAssignment.DocumentTypeList != null)

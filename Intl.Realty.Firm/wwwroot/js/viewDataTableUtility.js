@@ -23,6 +23,9 @@
     $("#documentTypeAssignments-tab").on("click", function () {
         window.location.href = '/DocumentTypeAssignment/Index';
     });
+    $("#internalEmails-tab").on("click", function () {
+        window.location.href = '/InternalEmail/Index';
+    });
 }
 function SearchBoxSettings() {
     $('[id^=dt-search]').attr('placeholder', 'Search...').addClass('fst-italic');
@@ -186,4 +189,93 @@ function exportToYaml(controllerName) {
     renderDownloadForm("yaml", controllerName);
 
     $("#ListFormId").submit();
+}
+function onBtnSubmitCreate() {
+    $("#btnSubmit").click(function () {
+
+        $("#confirmSubmitModal").modal("show");
+        sendEmail();
+    });
+}
+function onBtnSubmit() {
+    $("#btnSubmit").click(function () {
+
+        var openModalDialog = filesValidation();
+
+        if (openModalDialog == true) {
+            $("#confirmSubmitModal").modal("show");
+            sendEmail();
+        }
+    });
+}
+function onBtnSave() {
+    $("#btnSave").click(function () {
+
+        $("#confirmSaveModal").modal("show");
+    });
+}
+
+function confirmSaveModal() {
+
+    const ListFormId = document.getElementById('ListFormId');
+
+    $("#btnConfirmSave").click(function () {
+
+        $("#confirmSaveModal").modal("hide");
+        $('input[name=DealStatusId]').val('2'); // Saved
+
+        ListFormId.submit();
+    });
+}
+function confirmSubmitModal() {
+    const ListFormId = document.getElementById('ListFormId');
+    $("#btnConfirmSubmit").click(function () {
+
+        $("#confirmSubmitModal").modal("hide");
+        $('input[name=DealStatusId]').val('1'); // Submitted
+        ListFormId.submit();
+    });
+}
+function getFileUploads(saleListingId) {
+
+    let parameters = { saleListingId: saleListingId };
+    var documentTypes = [];
+    $.ajax({
+        url: '/SaleListing/GetDocumentTypesThatHasFileUploads/',
+        type: 'GET',
+        data: parameters,
+        contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+        async: false,
+        success: function (data) {
+            documentTypes = data;
+        }
+    });
+    return documentTypes;
+}
+
+
+function fileSelected(that) {
+    var curval = that.dataset.curval;
+    var id = that.id;
+    document.getElementById(that.id).setAttribute("data-prevVal", curval);
+    document.getElementById(that.id).setAttribute("data-curVal", that.value);
+}
+function sendEmail() {
+
+}
+
+function toggleStatusLabels() {
+    if ($('#isActiveCheckbox').is(':checked')) {
+        $('#lblStatus').css('color', '#0d6efd').text("Active");
+    } else {
+        $('#lblStatus').css('color', '#bfbfbf').text("Inactive");
+    }
+}
+function toggleStatusLabelSoftDelete() {
+
+    if ($('#isDeletedCheckbox').is(':checked')) {
+        $('#lblStatusSoftDelete').css('color', '#0d6efd').text("IsDeleted");
+    } else {
+        $('#lblStatusSoftDelete').css('color', '#bfbfbf').text("NotDeleted");
+    }
 }

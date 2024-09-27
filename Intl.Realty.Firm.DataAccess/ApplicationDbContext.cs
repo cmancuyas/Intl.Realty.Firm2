@@ -11,7 +11,7 @@ namespace Intl.Realty.Firm.DataAccess
         {
 
         }
-
+        public DbSet<InternalEmail> InternalEmails { get; set; }
         public DbSet<Department> Departments { get; set; }
         public DbSet<EmploymentStatus> EmploymentStatuses { get; set; }
         public DbSet<TransactionType> TransactionTypes { get; set; }
@@ -34,7 +34,6 @@ namespace Intl.Realty.Firm.DataAccess
             modelBuilder.ApplyConfiguration(new LeaseListingConfig());
             modelBuilder.ApplyConfiguration(new LeaseCoopConfig());
             modelBuilder.ApplyConfiguration(new IRFDealConfig());
-
 
             modelBuilder.Entity<EmploymentStatus>().HasData(
             new EmploymentStatus { Id = 1, Code = "1", Description = "Active" },

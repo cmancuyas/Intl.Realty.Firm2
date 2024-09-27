@@ -7,10 +7,12 @@
     ViewData["Title"] = "Create";
     Layout = "~/Views/Shared/_LayoutAfterLogin.cshtml";
 }
-
+<partial name="~/Views/Shared/Modal/_ConfirmSubmitModal.cshtml" />
+<partial name="~/Views/Shared/Modal/_ConfirmSuccessModal.cshtml" />
+<partial name="~/Views/Shared/Modal/_ConfirmSaveModal.cshtml" />
 <div class="mb-5">
-@*     <a href="@Url.Action("Index","SaleListing")" class="text-decoration-none text-blue d-flex mb-4">
-        <i data-feather="chevron-left"></i><span>Back</span>
+    @*     <a href="@Url.Action("Index","SaleListing")" class="text-decoration-none text-blue d-flex mb-4">
+    <i data-feather="chevron-left"></i><span>Back</span>
     </a> *@
     <a href="##" onClick="history.go(-1); return false;">
         <i data-feather="chevron-left"></i><span>Back</span>
@@ -23,7 +25,7 @@
                   asp-controller="SaleListing"
                   method="post"
                   enctype="multipart/form-data">
-                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <div asp-validation-summary="All" class="text-danger"></div>
 
                 <div class="tab-page">
                     <ul class="nav nav-tabs" id="consultantStatusManagementTab" role="tablist">
@@ -221,7 +223,7 @@
                         </div>
                         <div class="row">
 
-      
+
                             <div class="col-md-6 mt-4">
                                 <div class="form-group">
                                     <label asp-for="CreateSaleListing.CreateIRFDealViewModel.SellersPhoneNumber" class="control-label fw-bolder">Sellers Phone Number</label>
@@ -231,18 +233,18 @@
                             </div>
                             <div class="col-md-6 mt-4">
                                 <div class="form-group">
-                                    <label asp-for="CreateSaleListing.CreateIRFDealViewModel.BuyersLawyerAddress" class="control-label fw-bolder">BuyersLawyerAddress</label>
+                                    <label asp-for="CreateSaleListing.CreateIRFDealViewModel.BuyersLawyerAddress" class="control-label fw-bolder">Buyers Lawyer Address</label>
                                     <input asp-for="CreateSaleListing.CreateIRFDealViewModel.BuyersLawyerAddress" class="form-control" />
                                     <span asp-validation-for="CreateSaleListing.CreateIRFDealViewModel.BuyersLawyerAddress" class="text-danger"></span>
                                 </div>
                             </div>
                         </div>
                         <div class="row">
-  
+
 
                             <div class="col-md-6 mt-4">
                                 <div class="form-group">
-                                    <label asp-for="CreateSaleListing.CreateIRFDealViewModel.BuyersPhoneNumber" class="control-label fw-bolder">BuyersPhoneNumber</label>
+                                    <label asp-for="CreateSaleListing.CreateIRFDealViewModel.BuyersPhoneNumber" class="control-label fw-bolder">Buyers PhoneNumber</label>
                                     <input asp-for="CreateSaleListing.CreateIRFDealViewModel.BuyersPhoneNumber" class="form-control" />
                                     <span asp-validation-for="CreateSaleListing.CreateIRFDealViewModel.BuyersPhoneNumber" class="text-danger"></span>
                                 </div>
@@ -320,14 +322,18 @@
                             </div>
                         </div>
                     </div>
-                
+
                 </div>
 
                 <hr class="my-5" />
                 <div class="form-group d-flex justify-content-center gap-4">
                     <input type="button" value="Cancel" class="btn btn-secondary w-15" onclick="window.location.href='@Url.Action("Index", "SaleListing")'" />
                     <button type="reset" class="btn btn-secondary w-15" onclick="$('.text-danger').hide();">Reset</button>
-                    <button type="submit" class="btn btn-primary w-15" onclick="$('.text-danger').show();">Submit</button>
+                    <button type="submit"
+                            id="btnSubmit"
+                            class="btn btn-primary w-15" onclick="$('.text-danger').show();">
+                        Submit
+                    </button>
                 </div>
             </form>
         </div>
@@ -340,12 +346,15 @@
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
-    <script src="~/js/viewDataTableUtility.js"></script>
+    <script src="~/js/viewDataTableUtility.js" asp-append-version="true"></script>
     <script type="text/javascript">
         $(document).ready(function () {
 
-        })
+            onBtnSubmitCreate();
 
+            confirmSubmitModal();
+
+        })
 
 
     </script>

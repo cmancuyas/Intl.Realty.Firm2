@@ -60,7 +60,18 @@ namespace Intl.Realty.Firm.Utility.MenuData
 
             menus.Add(menu);
             // End
+            // Start
+            menu = new TabMenu()
+            {
+                Id = count + 1,
+                Menu = "InternalEmail",
+                Description = "Internal Emails",
+                Tab = "internalEmails-tab",
+                Control = "internalEmails",
+            };
 
+            menus.Add(menu);
+            // End
             return menus;
         }
 

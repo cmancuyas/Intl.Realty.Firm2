@@ -95,8 +95,13 @@ namespace Intl.Realty.Firm.Controllers
                 var timeNow = DateTime.Now;
                 var pastHour = DateTime.Now.AddHours(-1);
                 var past5Mins = DateTime.Now.AddMinutes(-5);
+                var past1Min = DateTime.Now.AddMinutes(-1);
 
-                if (past5Mins <= timeNow && item.CreatedAt >= past5Mins)
+                if(past1Min <= timeNow && item.CreatedAt >= past1Min)
+                {
+                    viewModel.SaleListingListPast1Min!.Add(item);
+                }
+                else if (past5Mins <= timeNow && item.CreatedAt >= past5Mins)
                 {
                     viewModel.SaleListingListPast5Mins!.Add(item);
                 }
@@ -126,8 +131,13 @@ namespace Intl.Realty.Firm.Controllers
                 var timeNow = DateTime.Now;
                 var pastHour = DateTime.Now.AddHours(-1);
                 var past5Mins = DateTime.Now.AddMinutes(-5);
+                var past1Min = DateTime.Now.AddMinutes(-1);
 
-                if (past5Mins <= timeNow && item.CreatedAt >= past5Mins)
+                if (past1Min <= timeNow && item.CreatedAt >= past1Min)
+                {
+                    viewModel.SaleCoopListPast1Min!.Add(item);
+                }
+                else if (past5Mins <= timeNow && item.CreatedAt >= past5Mins)
                 {
                     viewModel.SaleCoopListPast5Mins.Add(item);
                 }
@@ -159,7 +169,13 @@ namespace Intl.Realty.Firm.Controllers
                 var pastHour = DateTime.Now.AddHours(-1);
                 var past5Mins = DateTime.Now.AddMinutes(-5);
 
-                if (past5Mins <= timeNow && item.CreatedAt >= past5Mins)
+                var past1Min = DateTime.Now.AddMinutes(-1);
+
+                if (past1Min <= timeNow && item.CreatedAt >= past1Min)
+                {
+                    viewModel.LeaseListingListPast1Min!.Add(item);
+                }
+                else if (past5Mins <= timeNow && item.CreatedAt >= past5Mins)
                 {
                     viewModel.LeaseListingListPast5Mins.Add(item);
                 }
@@ -190,8 +206,13 @@ namespace Intl.Realty.Firm.Controllers
                 var timeNow = DateTime.Now;
                 var pastHour = DateTime.Now.AddHours(-1);
                 var past5Mins = DateTime.Now.AddMinutes(-5);
+                var past1Min = DateTime.Now.AddMinutes(-1);
 
-                if (past5Mins <= timeNow && item.CreatedAt >= past5Mins)
+                if (past1Min <= timeNow && item.CreatedAt >= past1Min)
+                {
+                    viewModel.LeaseCoopListPast1Min!.Add(item);
+                }
+                else if (past5Mins <= timeNow && item.CreatedAt >= past5Mins)
                 {
                     viewModel.LeaseCoopListPast5Mins.Add(item);
                 }

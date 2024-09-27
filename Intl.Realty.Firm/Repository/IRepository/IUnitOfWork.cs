@@ -2,6 +2,7 @@
 {
     public interface IUnitOfWork
     {
+        IInternalEmailRepository InternalEmail { get; }
         IDepartmentRepository Department { get; }
         IEmploymentStatusRepository EmploymentStatus { get; }
         ITransactionTypeRepository TransactionType { get; }

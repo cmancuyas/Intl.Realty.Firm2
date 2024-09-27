@@ -186,7 +186,7 @@ namespace Intl.Realty.Firm.DataAccess.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("DealStatuses");
+                    b.ToTable("DealStatuses", (string)null);
 
                     b.HasData(
                         new
@@ -254,7 +254,7 @@ namespace Intl.Realty.Firm.DataAccess.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Departments");
+                    b.ToTable("Departments", (string)null);
                 });
 
             modelBuilder.Entity("Intl.Realty.Firm.Model.Model.DocumentType", b =>
@@ -302,7 +302,7 @@ namespace Intl.Realty.Firm.DataAccess.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("DocumentTypes");
+                    b.ToTable("DocumentTypes", (string)null);
 
                     b.HasData(
                         new
@@ -384,7 +384,7 @@ namespace Intl.Realty.Firm.DataAccess.Migrations
 
                     b.HasIndex("TransactionTypeId");
 
-                    b.ToTable("DocumentTypeAssignments");
+                    b.ToTable("DocumentTypeAssignments", (string)null);
 
                     b.HasData(
                         new
@@ -462,7 +462,7 @@ namespace Intl.Realty.Firm.DataAccess.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("EmploymentStatuses");
+                    b.ToTable("EmploymentStatuses", (string)null);
 
                     b.HasData(
                         new
@@ -585,7 +585,7 @@ namespace Intl.Realty.Firm.DataAccess.Migrations
 
                     b.HasIndex("TransactionTypeId");
 
-                    b.ToTable("FileUploads");
+                    b.ToTable("FileUploads", (string)null);
                 });
 
             modelBuilder.Entity("Intl.Realty.Firm.Model.Model.IRFDeal", b =>
@@ -701,6 +701,54 @@ namespace Intl.Realty.Firm.DataAccess.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("IRFDeals", (string)null);
+                });
+
+            modelBuilder.Entity("Intl.Realty.Firm.Model.Model.InternalEmail", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("CreatedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("DeletedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<Guid>("RoleId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("RoleName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("UpdatedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("InternalEmails", (string)null);
                 });
 
             modelBuilder.Entity("Intl.Realty.Firm.Model.Model.LeaseCoop", b =>
@@ -1022,7 +1070,7 @@ namespace Intl.Realty.Firm.DataAccess.Migrations
 
                     b.HasIndex("IRFDealId");
 
-                    b.ToTable("TransactionTypes");
+                    b.ToTable("TransactionTypes", (string)null);
 
                     b.HasData(
                         new

@@ -1,4 +1,5 @@
-﻿using Intl.Realty.Firm.Model.Model;
+﻿using Intl.Realty.Firm.Helper;
+using Intl.Realty.Firm.Model.Model;
 using Intl.Realty.Firm.Model.ViewModel;
 using Intl.Realty.Firm.Model.ViewModel.FileUploadVM;
 using Intl.Realty.Firm.Model.ViewModel.SaleListingVM;
@@ -27,6 +28,7 @@ namespace DENR_FASPIS.Controllers
         private readonly IFileHandlerService _fileHandlerService;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IDocumentTransactionService _documentTransactionService;
+        private readonly IEmailService _emailService;
         private readonly string _backupFileDirectory = "\\wwwroot\\Files\\Uploads\\";
         private readonly string _transactionTypeName = "SaleListing";
         public SaleListingController(IUnitOfWork unitOfWork,
@@ -34,7 +36,8 @@ namespace DENR_FASPIS.Controllers
                                     IConfigurationService configurationService,
                                     IFileHandlerService fileHandlerService,
                                     UserManager<ApplicationUser> userManager,
-                                    IDocumentTransactionService documentTransactionService
+                                    IDocumentTransactionService documentTransactionService,
+                                    IEmailService emailService
                                                                         )
         {
             _unitOfWork = unitOfWork;
@@ -43,11 +46,13 @@ namespace DENR_FASPIS.Controllers
             _fileHandlerService = fileHandlerService;
             _userManager = userManager;
             _documentTransactionService = documentTransactionService;
+            _emailService = emailService;
         }
         public IActionResult Index()
         {
             return View();
         }
+
         [HttpGet]
         public async Task<IActionResult> Create()
         {
@@ -158,7 +163,7 @@ namespace DENR_FASPIS.Controllers
                 viewModel.CreateSaleListing.IRFDealId = NewIRFDeal!.Id;
                 if (viewModel.CreateSaleListing.DealStatusId == 0)
                 {
-                    viewModel.CreateSaleListing.DealStatusId = 1;
+                    viewModel.CreateSaleListing.DealStatusId = 1; // Submitted
 
                 }
                 viewModel.CreateSaleListing.IsActive = true;
@@ -181,10 +186,55 @@ namespace DENR_FASPIS.Controllers
                                                 uploadPath);
 
                 }
+
+                if (viewModel.CreateSaleListing.DealStatusId == 1) // If Submitted, send email to DealAdmin
+                {
+                    var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+
+                    var dealLink = Url.Action("Login", "Account",
+                                                                new { id = saleListingModel.Id, token = token }, Request.Scheme);
+
+                    var dealAdminEmails = await GetDealAdminEmails();
+
+                    var userRoles = await _userManager.GetRolesAsync(user);
+
+                    var mailRequest = EmailRequest.SendNotificationWhenDealIsSubmitted(user, userRoles, dealAdminEmails, saleListingModel.Id, dealLink!);
+
+                    await _emailService.SendEmailAsync(mailRequest);
+                }
+
                 return RedirectToAction(nameof(Index), new { addSuccess = true });
             }
 
             return View("Index");
+        }
+        private async Task<List<InternalEmail>> GetDealAdminEmails()
+        {
+            List<InternalEmail> internalEmails = new List<InternalEmail>();
+            var combinedQuery = LinqExtensions.AndAlso<InternalEmail>(x => x.IsDeleted == false, x => x.RoleName == "DealAdmin");
+            var emails = await _unitOfWork.InternalEmail.GetAllAsync(combinedQuery);
+
+            return emails.ToList();
+        }
+        public async Task<IActionResult> SendRequestToDealAdmin(int dealId)
+        {
+            // to get current user info
+            var user = await _userManager.GetUserAsync(User);
+
+            var token = await _userManager.GenerateEmailConfirmationTokenAsync(user!);
+
+            var dealLink = Url.Action("Login", "Account",
+                                                        new { token = token }, Request.Scheme);
+
+            var dealAdminEmails = await GetDealAdminEmails();
+
+            var userRoles = await _userManager.GetRolesAsync(user!);
+
+            var mailRequest = EmailRequest.SendRequestToEditTheDeal(user!, userRoles, dealAdminEmails, dealId, dealLink!);
+
+            await _emailService.SendEmailAsync(mailRequest);
+
+            return RedirectToAction("Edit", new { id = dealId });
         }
         private string CreateFilePath(int saleListingId)
         {
@@ -676,15 +726,15 @@ namespace DENR_FASPIS.Controllers
             else
             {
                 // Filter by current user
-                
-                
-                if(isAgent)
+
+
+                if (isAgent)
                 {
                     result = result.Where(x => x.CreatedBy == user!.Id);
                     result = result.Where(x => x.DealStatus!.Id == 2); // Saved
                 }
 
-                if(isDealAdmin)
+                if (isDealAdmin)
                 {
                     result = result.Where(x => x.DealStatus!.Id == 1); // Submitted
                 }

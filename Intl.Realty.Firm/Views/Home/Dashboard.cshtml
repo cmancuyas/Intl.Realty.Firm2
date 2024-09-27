@@ -184,6 +184,20 @@
 
                     <div class="activity-timeline">
 
+                        @foreach (var item in Model.SaleListingListPast1Min)
+                        {
+                            <div class="activity-timeline-item">
+                                <div class="timeline-dot"></div>
+                                <div class="activity-time">Few seconds ago</div>
+                                <div class="activity-desc">@item.TransactionType!.Description was created - Deal Id: @item.Id - @item.DealStatus!.Description</div>
+                            </div>
+                        }
+
+
+                    </div>
+
+                    <div class="activity-timeline">
+
                         @foreach (var item in Model.SaleListingListPast5Mins)
                         {
                             <div class="activity-timeline-item">

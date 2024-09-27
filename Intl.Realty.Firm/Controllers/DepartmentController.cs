@@ -25,7 +25,6 @@ namespace DENR_FASPIS.Controllers
         private readonly IConfigurationService _configurationService;
         private readonly IFileHandlerService _fileHandlerService;
         private readonly UserManager<ApplicationUser> _userManager;
-        private readonly string _backupFileDirectory = "\\wwwroot\\Files\\Uploads\\";
 
         public DepartmentController(IUnitOfWork unitOfWork,
                                     IExportService<DepartmentExport> exportService,

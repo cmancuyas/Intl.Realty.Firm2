@@ -1,0 +1,293 @@
+﻿@using Intl.Realty.Firm.Model.ViewModel.InternalEmailVM
+
+@model InternalEmailListPartialViewModel
+
+<div>
+    <form id="ListFormId" method="POST" enctype="application/x-www-form-urlencoded">
+    </form>
+    <div class="row">
+        <div class="col-md-12 d-flex justify-content-md-between align-items-center">
+            <h1 class="text-blue mb-0">Internal Email</h1>
+            <div class="d-flex gap-4">
+                <button type="button" id="btnMultipleDelete"
+                        class="btn btn-danger d-none align-items-center"
+                        data-toggle="tooltip"
+                        data-bs-placement="left"
+                        title="Delete"
+                        onclick="OpenMultipleDeleteModal('InternalEmail')">
+                    <i data-feather="trash-2"></i>
+                </button>
+                <a asp-action="Create"
+                   class="btn btn-primary d-flex align-items-center">
+                    <i data-feather="plus" class="w-15px h-auto me-1"></i>Add New
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <hr class="my-4" />
+
+    <div class="tab-page">
+        <ul class="nav nav-tabs" id="usersManagementTab" role="tablist">
+            @foreach (var item in Model.Menus)
+            {
+                <li class="nav-item mx-0">
+                    <input type="hidden" id="menuId" name="menuId" value="@item.Id" />
+                    <button class="nav-link @item.IsActive"
+                            id="@item.Tab"
+                            data-bs-toggle="tab"
+                            data-bs-target="#@item.Control"
+                            type="button"
+                            role="tab"
+                            aria-controls="@item.Control"
+                            aria-selected="@item.IsSelected">
+                        @item.Description
+                    </button>
+                </li>
+            }
+        </ul>
+
+        <div class="tab-content">
+            <div class="tab-pane active" id="InternalEmails" aria-labelledby="InternalEmails-tab">
+                <div class="table-responsive">
+                    <table id="modelTable" class="data-table table">
+                        <thead>
+                            <tr>
+                                <th class="text-center w-5"><input id="select_all" type="checkbox" class="column-checkbox no-sort no-search" data-toggle="tooltip" data-bs-placement="left" title="Select all"></th>
+                                @* <th class="text-start">@Html.DisplayCodeFor(model => model.Id)</th> *@
+                                <th class="text-start">Role Name</th>
+                                <th class="text-start">Email</th>
+                                <th class="text-start">Action</th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+<style>
+    .blurry {
+        filter: blur(3px);
+    }
+
+    tfoot {
+        display: table-header-group;
+    }
+
+</style>
+<script src="~/js/viewDataTableUtility.js" asp-append-version="true"></script>
+<script>
+    $(document).ready(function () {
+
+        feather.replace();
+        $('[data-toggle="tooltip"]').tooltip();
+
+        BindDataTable();
+
+        // AddSearchBoxPerColumn();
+
+        TabSelections();
+
+        MultipleDelete();
+
+        SearchBoxSettings();
+
+        CheckboxSelect();
+
+        $('#btnConfirmDelete').click(function () {
+            $('#deleteConfirmModal').modal('hide');
+            window.location.href = window.location.href.split('?')[0] + '?deleteSuccess=true';
+        });
+
+        $("#cancelBtn").click(function () {
+            closeModal();
+        });
+
+        handleToastrNotification('addSuccess', 'New InternalEmail added successfully!');
+        handleToastrNotification('editSuccess', 'InternalEmail updated successfully!');
+        handleToastrNotification('deleteSuccess', 'Selection deleted successfully!');
+
+    }); // End of document ready
+
+
+    function BindDataTable() {
+        let debounceTimer;
+
+        // Destroy previous DataTable if exists
+        if ($.fn.DataTable.isDataTable('#modelTable')) {
+            $('#modelTable').DataTable().destroy();
+        }
+
+        table = $("#modelTable").DataTable({
+            "preDrawCallback": function (settings) {
+                $('#modelTable tbody').hide();
+            },
+
+            "drawCallback": function () {
+                $('#modelTable tbody td').addClass("blurry");
+                $('#modelTable tbody').fadeIn(800);
+                setTimeout(function () {
+                    $('#modelTable tbody td').removeClass("blurry");
+                }, 400);
+            },
+
+            // Design Assets
+            stateSave: true,
+            autoWidth: true,
+            // ServerSide Setups
+            processing: true,
+            serverSide: true,
+            lengthMenu: [[5, 10, 25, 50, 100, -1], [5, 10, 25, 50, 100, "All"]],
+            pageLength: 10,
+            pagingType: "full_numbers",
+            // Searching Setups
+            searching: { regex: true },
+            "language": {
+                "infoFiltered": "",
+                "processing": '<div class="lds-ellipsis"><div></div><div></div><div></div><div></div></div>'
+            },
+            // Custom Export Buttons
+            dom: 'lBfrtip',
+            buttons: [
+                {
+                    text: 'Excel',
+                    action: function () {
+                        exportToExcel('InternalEmail');
+                    }
+                },
+                {
+                    text: 'CSV',
+                    action: function () {
+                        exportToCsv('InternalEmail');
+                    }
+                }
+            ],
+
+            // Ajax Filter
+            ajax: {
+                url: "/InternalEmail/GetInternalEmailList",
+                type: "POST",
+                contentType: "application/json",
+                dataType: "json",
+                data: function (data) {
+                    return JSON.stringify(data);
+                }
+            },
+
+            // Columns Setups
+            columns: [
+                {
+                    targets: 0,
+                    data: null,
+                    className: 'text-center',
+                    sortable: false,
+                    searchable: false,
+                    orderable: false,
+                    render: function (data, type, full, meta) {
+
+                        return '<input type="checkbox" class="row-checkbox no-sort no-search" name="selectedRows" id="selectedRows" value="' + full.id + '">';
+                    },
+                },
+                { data: "roleName"},
+                { data: "email"},
+
+                // { data: "email", title: "Email" }
+
+                // {
+                //     data: "createdAt",
+                //     render: function (data, type, row) {
+                //         if (type === "display" || type === "filter") {
+                //             return moment(data).format("ddd MM/DD/YYYY HH:mm:ss");
+                //         }
+                //         return data;
+                //     }
+                // }
+            ],
+
+            // Column Definitions
+            columnDefs: [
+                { targets: "no-sort", orderable: false },
+                { targets: "no-search", searchable: false },
+                {
+                    targets: "trim",
+                    render: function (data, type, full, meta) {
+                        if (type === "display") {
+                            data = strtrunc(data, 10);
+                        }
+                        return data;
+                    }
+                },
+                { targets: "date-type", type: "date-eu" },
+
+                {
+                    targets: 3,
+                    data: null,
+                    defaultContent: "<a class='btn btn-secondary' role='button' href='#' onclick='preview(this)'>Preview</a> <a class='btn btn-secondary' role='button' href='#' onclick='edit(this)'>Edit</a>",
+                    orderable: false
+                },
+            ]
+        });
+
+        // Apply debounced search
+        $('#search-input').on('input', function () {
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(function () {
+                table.search($('#search-input').val()).draw();
+            }, 300); // 300ms debounce delay
+        });
+    }
+
+
+
+    function strtrunc(str, num) {
+        if (str.length > num) {
+            return str.slice(0, num) + "...";
+        }
+        else {
+            return str;
+        }
+    }
+
+    function edit(rowContext) {
+        if (table) {
+            var data = table.row($(rowContext).parents("tr")).data();
+            // alert("Example showing row edit with id: " + data["id"] + ", name: " + data["name"]);
+
+            var id = data["id"];
+            let parameters = { id: id };
+            $.ajax({
+                url: '/InternalEmail/Edit/' + id,
+                type: 'GET',
+                data: parameters,
+                contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+                success: function (data) {
+                    window.location.href = "@Url.Action("Edit", "InternalEmail")" + "/" + id;
+                }
+            });
+
+        }
+    }
+
+    function preview(rowContext) {
+        if (table) {
+            var data = table.row($(rowContext).parents("tr")).data();
+            // alert("Example showing row edit with id: " + data["id"] + ", name: " + data["name"]);
+
+            var id = data["id"];
+            let parameters = { id: id };
+            $.ajax({
+                url: '/InternalEmail/Preview/' + id,
+                type: 'GET',
+                data: parameters,
+                contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+                success: function (data) {
+                    window.location.href = "@Url.Action("Preview", "InternalEmail")" + "/" + id;
+                }
+            });
+
+        }
+    }
+
+</script>
