@@ -1097,9 +1097,6 @@ namespace Intl.Realty.Firm.DataAccess.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("IRFDealId")
-                        .HasColumnType("int");
-
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
@@ -1113,8 +1110,6 @@ namespace Intl.Realty.Firm.DataAccess.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("IRFDealId");
 
                     b.ToTable("TransactionTypes");
 
@@ -1449,15 +1444,6 @@ namespace Intl.Realty.Firm.DataAccess.Migrations
                     b.Navigation("IRFDeal");
 
                     b.Navigation("TransactionType");
-                });
-
-            modelBuilder.Entity("Intl.Realty.Firm.Model.Model.TransactionType", b =>
-                {
-                    b.HasOne("Intl.Realty.Firm.Model.Model.IRFDeal", "IRFDeal")
-                        .WithMany()
-                        .HasForeignKey("IRFDealId");
-
-                    b.Navigation("IRFDeal");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>

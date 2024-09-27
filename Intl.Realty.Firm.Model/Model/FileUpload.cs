@@ -14,17 +14,23 @@ namespace Intl.Realty.Firm.Model.Model
         public string Directory { get; set; } = string.Empty;
         public string FileExtension { get; set; } = string.Empty;
         public string FileSize { get; set; } = string.Empty;
+        [ForeignKey("SaleListing")]
         public int? SaleListingId { get; set; }
+        [ForeignKey("SaleCoop")]
         public int? SaleCoopId { get; set; }
+        [ForeignKey("LeaseListing")]
         public int? LeaseListingId { get; set; }
+        [ForeignKey("LeaseCoop")]
         public int? LeaseCoopId { get; set; }
+        [ForeignKey("DocumentType")]
         public int DocumentTypeId { get; set; }
+        [ForeignKey("TransactionType")]
         public int TransactionTypeId { get; set; }
-        public SaleListing? SaleListing { get; set; }
-        public SaleCoop? SaleCoop { get; set; }
-        public LeaseCoop? LeaseCoop { get; set; }
-        public LeaseListing? LeaseListing { get; set; }
-        public DocumentType? DocumentType { get; set; }
-        public TransactionType? TransactionType { get; set; }
+        public virtual SaleListing? SaleListing { get; set; }
+        public virtual SaleCoop? SaleCoop { get; set; }
+        public virtual LeaseCoop? LeaseCoop { get; set; }
+        public virtual LeaseListing? LeaseListing { get; set; }
+        public virtual DocumentType? DocumentType { get; set; }
+        public virtual TransactionType? TransactionType { get; set; }
     }
 }

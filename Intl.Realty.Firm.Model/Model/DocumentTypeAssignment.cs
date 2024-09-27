@@ -9,10 +9,12 @@ namespace Intl.Realty.Firm.Model.Model
         [DatabaseGeneratedAttribute(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
         [Required]
+        [ForeignKey("DocumentType")]
         public int DocumentTypeId { get; set; }
         [Required]
+        [ForeignKey("TransactionType")]
         public int TransactionTypeId { get; set; }
-        public DocumentType? DocumentType { get; set; }
-        public TransactionType? TransactionType { get; set; }
+        public virtual DocumentType? DocumentType { get; set; }
+        public virtual TransactionType? TransactionType { get; set; }
     }
 }
