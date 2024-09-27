@@ -4,6 +4,7 @@
     {
         IInternalEmailRepository InternalEmail { get; }
         IDepartmentRepository Department { get; }
+        IProvinceRepository Province { get; }
         IEmploymentStatusRepository EmploymentStatus { get; }
         ITransactionTypeRepository TransactionType { get; }
         IDocumentTypeRepository DocumentType { get; }

@@ -60,6 +60,20 @@ namespace Intl.Realty.Firm.Utility.MenuData
 
             menus.Add(menu);
             // End
+
+            // Start
+            menu = new TabMenu()
+            {
+                Id = count + 1,
+                Menu = "Province",
+                Description = "Provinces",
+                Tab = "provinces-tab",
+                Control = "provinces",
+            };
+
+            menus.Add(menu);
+            // End
+
             // Start
             menu = new TabMenu()
             {

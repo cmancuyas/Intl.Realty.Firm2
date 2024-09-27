@@ -186,7 +186,7 @@ namespace Intl.Realty.Firm.DataAccess.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("DealStatuses", (string)null);
+                    b.ToTable("DealStatuses");
 
                     b.HasData(
                         new
@@ -254,7 +254,7 @@ namespace Intl.Realty.Firm.DataAccess.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Departments", (string)null);
+                    b.ToTable("Departments");
                 });
 
             modelBuilder.Entity("Intl.Realty.Firm.Model.Model.DocumentType", b =>
@@ -302,7 +302,7 @@ namespace Intl.Realty.Firm.DataAccess.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("DocumentTypes", (string)null);
+                    b.ToTable("DocumentTypes");
 
                     b.HasData(
                         new
@@ -384,7 +384,7 @@ namespace Intl.Realty.Firm.DataAccess.Migrations
 
                     b.HasIndex("TransactionTypeId");
 
-                    b.ToTable("DocumentTypeAssignments", (string)null);
+                    b.ToTable("DocumentTypeAssignments");
 
                     b.HasData(
                         new
@@ -462,7 +462,7 @@ namespace Intl.Realty.Firm.DataAccess.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("EmploymentStatuses", (string)null);
+                    b.ToTable("EmploymentStatuses");
 
                     b.HasData(
                         new
@@ -585,7 +585,7 @@ namespace Intl.Realty.Firm.DataAccess.Migrations
 
                     b.HasIndex("TransactionTypeId");
 
-                    b.ToTable("FileUploads", (string)null);
+                    b.ToTable("FileUploads");
                 });
 
             modelBuilder.Entity("Intl.Realty.Firm.Model.Model.IRFDeal", b =>
@@ -748,7 +748,7 @@ namespace Intl.Realty.Firm.DataAccess.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("InternalEmails", (string)null);
+                    b.ToTable("InternalEmails");
                 });
 
             modelBuilder.Entity("Intl.Realty.Firm.Model.Model.LeaseCoop", b =>
@@ -885,6 +885,52 @@ namespace Intl.Realty.Firm.DataAccess.Migrations
                     b.HasIndex("TransactionTypeId");
 
                     b.ToTable("LeaseListings", (string)null);
+                });
+
+            modelBuilder.Entity("Intl.Realty.Firm.Model.Model.Province", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("CreatedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("DeletedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("UpdatedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Provinces");
                 });
 
             modelBuilder.Entity("Intl.Realty.Firm.Model.Model.SaleCoop", b =>
@@ -1070,7 +1116,7 @@ namespace Intl.Realty.Firm.DataAccess.Migrations
 
                     b.HasIndex("IRFDealId");
 
-                    b.ToTable("TransactionTypes", (string)null);
+                    b.ToTable("TransactionTypes");
 
                     b.HasData(
                         new

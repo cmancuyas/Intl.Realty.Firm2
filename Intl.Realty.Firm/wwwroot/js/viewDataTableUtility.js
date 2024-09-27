@@ -26,6 +26,9 @@
     $("#internalEmails-tab").on("click", function () {
         window.location.href = '/InternalEmail/Index';
     });
+    $("#provinces-tab").on("click", function () {
+        window.location.href = '/Province/Index';
+    });
 }
 function SearchBoxSettings() {
     $('[id^=dt-search]').attr('placeholder', 'Search...').addClass('fst-italic');

@@ -8,6 +8,7 @@ namespace Intl.Realty.Firm.Repository
         private ApplicationDbContext _db;
         public IInternalEmailRepository InternalEmail { get; private set; }
         public IDepartmentRepository Department { get; private set; }
+        public IProvinceRepository Province { get; private set; }
         public IEmploymentStatusRepository EmploymentStatus { get; private set; }
         public ITransactionTypeRepository TransactionType { get; private set; }
         public IDocumentTypeRepository DocumentType { get; private set; }
@@ -25,6 +26,7 @@ namespace Intl.Realty.Firm.Repository
             _db = db;
             InternalEmail = new InternalEmailRepository(_db);
             Department = new DepartmentRepository(_db);
+            Province = new ProvinceRepository(_db);
             EmploymentStatus = new EmploymentStatusRepository(_db);
             TransactionType = new TransactionTypeRepository(_db);
             DocumentType = new DocumentTypeRepository(_db);
