@@ -191,8 +191,22 @@
                                 <div class="activity-desc">@item.TransactionTypeName was created - Deal Id: @item.Id - @item.DealStatusName</div>
                             </div>
                         }
-
-
+                        @foreach (var item in Model.AllDealsPast5Mins)
+                        {
+                            <div class="activity-timeline-item">
+                                <div class="timeline-dot"></div>
+                                <div class="activity-time">5 few seconds ago</div>
+                                <div class="activity-desc">@item.TransactionTypeName was created - Deal Id: @item.Id - @item.DealStatusName</div>
+                            </div>
+                        }
+                        @foreach (var item in Model.AllDealsPastHour)
+                        {
+                            <div class="activity-timeline-item">
+                                <div class="timeline-dot"></div>
+                                <div class="activity-time">an hour ago</div>
+                                <div class="activity-desc">@item.TransactionTypeName was created - Deal Id: @item.Id - @item.DealStatusName</div>
+                            </div>
+                        }
                     </div>
 
                 </div>
