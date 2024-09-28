@@ -121,7 +121,7 @@ namespace Intl.Realty.Firm.Repository
             await _context.SaveChangesAsync();
         }
 
-        public async Task<IQueryable<T>> AsQueryableAsync(Expression<Func<T, bool>>? filter = null, string?
+        public Task<IQueryable<T>> AsQueryableAsync(Expression<Func<T, bool>>? filter = null, string?
                                                     includeProperties = null,
                                                     Func<IQueryable<T>, IOrderedQueryable<T>> orderBy = null!,
                                                     bool tracked = false,
@@ -159,7 +159,7 @@ namespace Intl.Realty.Firm.Repository
             {
                 query = orderBy(query).AsQueryable();
             }
-            return query;
+            return Task.FromResult(query);
         }
 
         public IQueryable<T> AsQueryable(Expression<Func<T, bool>>? filter = null, string?
