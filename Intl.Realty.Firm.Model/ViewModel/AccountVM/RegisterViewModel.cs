@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Intl.Realty.Firm.Model.Helper;
+using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
 
 namespace Intl.Realty.Firm.Model.ViewModel.AccountVM
@@ -30,7 +31,7 @@ namespace Intl.Realty.Firm.Model.ViewModel.AccountVM
         public int? ProfilePictureId { get; set; }
         [Display(Name = "User Agreement")]
         //[Range(typeof(bool), "false", "true", ErrorMessage = "You must accept the terms and conditions.")]
-        [Required(ErrorMessage = "You must accept the terms and conditions.")]
+        [MustBeTrueAttribute(ErrorMessage = "You must accept the terms and conditions")]
         public bool UserAgreement { get; set; } = false;
     }
 }
