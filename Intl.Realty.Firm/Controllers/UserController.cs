@@ -66,6 +66,7 @@ namespace Intl.Realty.Firm.Controllers
                 LastName = user.LastName,
                 DepartmentId = user.DepartmentId,
                 EmploymentStatusId = user.EmploymentStatusId,
+                EmailConfirmed = user.EmailConfirmed,
                 ProfilePictureId = user.ProfilePictureId,
                 Claims = userClaims.Select(x => x.Type + " : " + x.Value).ToList(),
                 Roles = userRoles.ToList()
@@ -93,31 +94,31 @@ namespace Intl.Realty.Firm.Controllers
             return View(viewModel);
         }
         [HttpPost]
-        public async Task<IActionResult> Edit(EditUserViewModel viewModel)
+        public async Task<IActionResult> Edit(EditUserWithTabMenuViewModel viewModel)
         {
-            var user = await _userManager.FindByIdAsync(viewModel.Id.ToString());
+            var user = await _userManager.FindByIdAsync(viewModel.EditUser.Id.ToString());
 
             var departmentIEnum = await _unitOfWork.Department.GetAllAsync(x => x.IsDeleted == false);
-            viewModel.DepartmentList = departmentIEnum.ToList();
+            viewModel.EditUser.DepartmentList = departmentIEnum.ToList();
 
             var employmentStatusIEnum = await _unitOfWork.EmploymentStatus.GetAllAsync(x => x.IsDeleted == false);
-            viewModel.EmploymentStatusList = employmentStatusIEnum.ToList();
+            viewModel.EditUser.EmploymentStatusList = employmentStatusIEnum.ToList();
 
             if (user == null)
             {
-                ViewBag.ErrorMessage = $"User with Id = {viewModel.Id} cannot be found";
+                ViewBag.ErrorMessage = $"User with Id = {viewModel.EditUser.Id} cannot be found";
                 return View("NotFound");
             }
             else
             {
-                user.Email = viewModel.Email;
-                user.UserName = viewModel.Email;
-                user.FirstName = viewModel.FirstName;
-                user.LastName = viewModel.LastName;
-                user.DepartmentId = viewModel.DepartmentId;
-                user.EmploymentStatusId = viewModel.EmploymentStatusId;
-                user.ProfilePictureId = viewModel.ProfilePictureId;
-
+                user.Email = viewModel.EditUser.Email;
+                user.UserName = viewModel.EditUser.Email;
+                user.FirstName = viewModel.EditUser.FirstName;
+                user.LastName = viewModel.EditUser.LastName;
+                user.DepartmentId = viewModel.EditUser.DepartmentId;
+                user.EmploymentStatusId = viewModel.EditUser.EmploymentStatusId;
+                user.ProfilePictureId = viewModel.EditUser.ProfilePictureId;
+                user.EmailConfirmed = viewModel.EditUser.EmailConfirmed;
                 var result = await _userManager.UpdateAsync(user);
 
                 if (result.Succeeded)

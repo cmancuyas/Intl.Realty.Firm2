@@ -18,8 +18,18 @@ namespace Intl.Realty.Firm.Repository.IRepository
         Task UpdateAsync(T entity);
         Task UpdateRangeAsync(IEnumerable<T> entity);
         Task SaveChangesAsync();
-        Task<IQueryable<T>> AsQueryableAsync(Expression<Func<T, bool>>? filter = null, string? includeProperties = null, bool tracked = false);
-        IQueryable<T> AsQueryable(Expression<Func<T, bool>>? filter = null, string? includeProperties = null, bool tracked = false);
+        Task<IQueryable<T>> AsQueryableAsync(Expression<Func<T, bool>>? filter = null,
+                                            string? includeProperties = null,
+                                            Func<IQueryable<T>, IOrderedQueryable<T>> orderBy = null!,
+                                            bool tracked = false,
+                                            int pageSize = 0,
+                                            int pageNumber = 1);
+        IQueryable<T> AsQueryable(Expression<Func<T, bool>>? filter = null,
+                                    string? includeProperties = null,
+                                    Func<IQueryable<T>, IOrderedQueryable<T>> orderBy = null!,
+                                    bool tracked = false,
+                                    int pageSize = 0,
+                                    int pageNumber = 1);
         Task<int> CountAsync();
         int Count();
     }

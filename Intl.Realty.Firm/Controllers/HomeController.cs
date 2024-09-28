@@ -112,7 +112,7 @@ namespace Intl.Realty.Firm.Controllers
             viewModel.AllDealsForCurrentMonth = allDealsForCurrentMonth;
             viewModel.AllDealsForAll = allDealsForAll;
 
-            if (allDealsToday.Count > 0)
+            if (allDealsToday.Count > 10)
             {
                 allDealsToday.RemoveRange(10, allDealsToday.Count - 10);
             }
@@ -197,7 +197,7 @@ namespace Intl.Realty.Firm.Controllers
             viewModel.AllDealsForCurrentMonth = allDealsForCurrentMonth;
             viewModel.AllDealsForAll = allDealsForAll;
 
-            if (allDealsToday.Count > 0)
+            if (allDealsToday.Count > 10)
             {
                 allDealsToday.RemoveRange(10, allDealsToday.Count - 10);
             }

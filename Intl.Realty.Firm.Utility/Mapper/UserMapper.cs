@@ -27,6 +27,7 @@ namespace Intl.Realty.Firm.Utility.Mapper
                 FirstName = model.FirstName,
                 LastName = model.LastName,
                 Email = model.Email!,
+                EmailConfirmed = model.EmailConfirmed,
                 ProfilePictureId = model.ProfilePictureId,
             };
         }

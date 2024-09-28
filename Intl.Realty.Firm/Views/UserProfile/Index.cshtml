@@ -81,9 +81,37 @@
                     <div class="col-md-6">
                         <div class="form-group">
                             <label class="control-label fw-bolder">Department</label>
-                            <p>@Model.DepartmentName</p>
+
+                            @{
+                                if (Model.DepartmentName != null)
+                                {
+                                   <p> @Model.DepartmentName</p>
+                                }
+                                else
+                                {
+                                  <p>No Department Assigned yet</p>
+                                }
+                            }
                         </div>
                     </div>
+
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="control-label fw-bolder">Email Confirmation</label>
+
+                            @{
+                                if (Model.EmailConfirmed == true)
+                                {
+                                  <p><label class="status-ongoing pe-cursor">Confirmed</label></p>
+                                }
+                                else
+                                {
+                                 <p><label class="status-pending pe-cursor">Not yet confirmed</label></p>
+                                }
+                    }
+                        </div>
+                    </div>
+
                 </div>
 
                 <hr />

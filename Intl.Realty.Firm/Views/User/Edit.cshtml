@@ -25,21 +25,21 @@
 
                 <div class="tab-page">
                     <ul class="nav nav-tabs" id="administrationManagementTab" role="tablist">
-                @*         @foreach (var item in Model.Menus)
+                        @*         @foreach (var item in Model.Menus)
                         {
-                            <li class="nav-item mx-0">
-                                <input type="hidden" id="menuId" name="menuId" value="@item.Id" />
-                                <button class="nav-link @item.IsActive"
-                                        id="@item.Tab"
-                                        data-bs-toggle="tab"
-                                        data-bs-target="#@item.Control"
-                                        type="button"
-                                        role="tab"
-                                        aria-controls="@item.Control"
-                                        aria-selected="@item.IsSelected">
-                                    @item.Description
-                                </button>
-                            </li>
+                        <li class="nav-item mx-0">
+                        <input type="hidden" id="menuId" name="menuId" value="@item.Id" />
+                        <button class="nav-link @item.IsActive"
+                        id="@item.Tab"
+                        data-bs-toggle="tab"
+                        data-bs-target="#@item.Control"
+                        type="button"
+                        role="tab"
+                        aria-controls="@item.Control"
+                        aria-selected="@item.IsSelected">
+                        @item.Description
+                        </button>
+                        </li>
                         } *@
                     </ul>
                 </div>
@@ -78,7 +78,7 @@
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label class="control-label fw-bolder">Department</label>
-                                <select id="DepartmentId" name="DepartmentId" class="form-select">
+                                <select id="EditUser.DepartmentId" name="EditUser.DepartmentId" class="form-select">
                                     @{
                                         @if (Model.EditUser.DepartmentList != null)
                                         {
@@ -105,7 +105,7 @@
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label class="control-label fw-bolder">EmploymentStatus</label>
-                                <select id="EmploymentStatusId" name="EmploymentStatusId" class="form-select">
+                                <select id="EditUser.EmploymentStatusId" name="EditUser.EmploymentStatusId" class="form-select">
                                     @{
                                         @if (Model.EditUser.EmploymentStatusList != null)
                                         {
@@ -130,18 +130,17 @@
                         </div>
                     </div>
                     <div class="tab-pane active" id="editRoles" aria-labelledby="editRoles-tab" style="background-color:white;">
- 
                     </div>
                 </div>
-                @*               <div class="row mb-4">
-                <div class="col-md-12">
-                <div class="form-check form-switch d-flex align-items-center gap-2">
-                <input id="isDeletedCheckbox" class="form-check-input" type="checkbox" asp-for="IsDeleted">
-                <label id="lblStatusSoftDelete" class="fw-bolder">Not Deleted</label>
+                <div class="row mb-4">
+                    <div class="col-md-12">
+                        <div class="form-check form-switch d-flex align-items-center gap-2">
+                            <input id="isEmailConfirmedCheckbox" class="form-check-input" type="checkbox" asp-for="EditUser.EmailConfirmed">
+                            <label id="lblStatusEmailConfirmed" class="fw-bolder">Confirmed</label>
+                        </div>
+                        <span asp-validation-for="EditUser.EmailConfirmed" class="text-danger"></span>
+                    </div>
                 </div>
-                <span asp-validation-for="IsDeleted" class="text-danger"></span>
-                </div>
-                </div> *@
                 <hr class="my-5" />
                 <div class="form-group d-flex justify-content-center gap-4">
                     <input type="button" value="Cancel" class="btn btn-secondary w-15" onclick="window.location.href='@Url.Action("Index", "User")'" />
@@ -163,9 +162,11 @@
 
             $('#isActiveCheckbox').on('click', toggleStatusLabels);
             $('#isDeletedCheckbox').on('click', toggleStatusLabelSoftDelete);
+            $('#isEmailConfirmedCheckbox').on('click', toggleStatusLabelEmailConfirmed);
 
             toggleStatusLabels();
             toggleStatusLabelSoftDelete();
+            toggleStatusLabelEmailConfirmed();
         });
 
         function toggleStatusLabels() {
@@ -181,6 +182,14 @@
                 $('#lblStatusSoftDelete').css('color', '#0d6efd').text("IsDeleted");
             } else {
                 $('#lblStatusSoftDelete').css('color', '#bfbfbf').text("NotDeleted");
+            }
+        }
+        function toggleStatusLabelEmailConfirmed() {
+
+            if ($('#isEmailConfirmedCheckbox').is(':checked')) {
+                $('#lblStatusEmailConfirmed').css('color', '#0d6efd').text("Confirmed");
+            } else {
+                $('#lblStatusEmailConfirmed').css('color', '#bfbfbf').text("Not yet Confirmed");
             }
         }
     </script>

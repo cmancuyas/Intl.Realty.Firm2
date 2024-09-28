@@ -121,9 +121,11 @@ namespace Intl.Realty.Firm.Repository
             await _context.SaveChangesAsync();
         }
 
-        public Task<IQueryable<T>> AsQueryableAsync(Expression<Func<T, bool>>? filter = null,
-                                                    string? includeProperties = null,
-                                                    bool tracked = false)
+        public async Task<IQueryable<T>> AsQueryableAsync(Expression<Func<T, bool>>? filter = null, string?
+                                                    includeProperties = null,
+                                                    Func<IQueryable<T>, IOrderedQueryable<T>> orderBy = null!,
+                                                    bool tracked = false,
+                                                    int pageSize = 0, int pageNumber = 1)
         {
             IQueryable<T> query = dbSet;
             if (tracked)
@@ -145,13 +147,26 @@ namespace Intl.Realty.Firm.Repository
                     query = query.Include(includeProp);
                 }
             }
-
-            return Task.FromResult(query);
+            if (pageSize > 0)
+            {
+                if (pageSize > 100)
+                {
+                    pageSize = 100;
+                }
+                query = query.Skip(pageSize * (pageNumber - 1)).Take(pageSize);
+            }
+            if (orderBy != null)
+            {
+                query = orderBy(query).AsQueryable();
+            }
+            return query;
         }
 
-        public IQueryable<T> AsQueryable(Expression<Func<T, bool>>? filter = null,
-                                        string? includeProperties = null,
-                                        bool tracked = false)
+        public IQueryable<T> AsQueryable(Expression<Func<T, bool>>? filter = null, string?
+                                            includeProperties = null,
+                                            Func<IQueryable<T>, IOrderedQueryable<T>> orderBy = null!,
+                                            bool tracked = false,
+                                            int pageSize = 0, int pageNumber = 1)
         {
             IQueryable<T> query = dbSet;
 
@@ -174,7 +189,18 @@ namespace Intl.Realty.Firm.Repository
                     query = query.Include(includeProp);
                 }
             }
-
+            if (pageSize > 0)
+            {
+                if (pageSize > 100)
+                {
+                    pageSize = 100;
+                }
+                query = query.Skip(pageSize * (pageNumber - 1)).Take(pageSize);
+            }
+            if (orderBy != null)
+            {
+                query = orderBy(query).AsQueryable();
+            }
             return query;
         }
 
