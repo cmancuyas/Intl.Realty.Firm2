@@ -71,6 +71,15 @@ namespace DENR_FASPIS.Controllers
 
             string transactionTypeName = _transactionTypeName; // 1 = Sale Listing
 
+            var dealAdminEmails = await GetDealAdminEmails();
+
+            if (dealAdminEmails == null || dealAdminEmails.Count() == 0)
+            {
+                var notification = _notificationService.Notify("Email for DealAdmin not found. Contact administrator to fix this issue", "Internal Email for DealAdmin not found", NotificationType.error);
+                TempData["Message"] = JsonConvert.SerializeObject(notification);
+                return RedirectToAction(nameof(Index));
+            }
+
             var yearValidation = LinqExtensions.AndAlso<DealTransactionNumberRange>(x => x.IsDeleted == false, x => x.Year == DateTime.Now.Year);
 
             var numberRange = await _unitOfWork.DealTransactionNumberRange.GetAsync(yearValidation);

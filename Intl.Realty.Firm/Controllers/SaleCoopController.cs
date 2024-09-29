@@ -71,6 +71,15 @@ namespace DENR_FASPIS.Controllers
 
             string transactionTypeName = _transactionTypeName; // 1 = Sale Listing
 
+            var dealAdminEmails = await GetDealAdminEmails();
+
+            if (dealAdminEmails == null || dealAdminEmails.Count() == 0)
+            {
+                var notification = _notificationService.Notify("Email for DealAdmin not found. Contact administrator to fix this issue", "Internal Email for DealAdmin not found", NotificationType.error);
+                TempData["Message"] = JsonConvert.SerializeObject(notification);
+                return RedirectToAction(nameof(Index));
+            }
+
             var yearValidation = LinqExtensions.AndAlso<DealTransactionNumberRange>(x => x.IsDeleted == false, x => x.Year == DateTime.Now.Year);
 
             var numberRange = await _unitOfWork.DealTransactionNumberRange.GetAsync(yearValidation);
@@ -121,6 +130,7 @@ namespace DENR_FASPIS.Controllers
             var user = await _userManager.FindByIdAsync(userId!);
 
             string transactionTypeName = _transactionTypeName; // 1 = Sale Listing
+
             var transactionType = await _unitOfWork.TransactionType.GetAsync(x => x.Description == _transactionTypeName); //Sale Listing
             viewModel.CreateSaleCoop.TransactionType = await _unitOfWork.TransactionType.GetByNameAsync(transactionType.Description);
             viewModel.CreateSaleCoop.TransactionTypeId = transactionType.Id;
@@ -134,6 +144,7 @@ namespace DENR_FASPIS.Controllers
                 await _unitOfWork.DealTransactionNumberRange.UpdateAsync(numberRange);
                 _unitOfWork.SaveAsync();
             }
+
 
             var documentTypeAssignmentIEnum = await _unitOfWork.DocumentTypeAssignment.GetAllAsync(x => x.IsDeleted == false, includeProperties: "TransactionType,DocumentType");
             var documentTypeIEnum = await _unitOfWork.DocumentType.GetAllAsync(x => x.IsDeleted == false);
@@ -223,11 +234,11 @@ namespace DENR_FASPIS.Controllers
                     var userRoles = await _userManager.GetRolesAsync(user);
 
                     var mailRequest = EmailRequest.SendNotificationWhenDealIsSubmitted(user,
-                                                               userRoles,
-                                                               viewModel.CreateSaleCoop.TransactionType.Description,
-                                                               dealAdminEmails,
-                                                               saleCoopModel.DealTransactionNumber,
-                                                               dealLink!);
+                                                                                   userRoles,
+                                                                                   viewModel.CreateSaleCoop.TransactionType.Description,
+                                                                                   dealAdminEmails,
+                                                                                   saleCoopModel.DealTransactionNumber,
+                                                                                   dealLink!);
 
                     await _emailService.SendEmailAsync(mailRequest);
                 }
@@ -268,7 +279,7 @@ namespace DENR_FASPIS.Controllers
 
             return RedirectToAction("Edit", new { id = dealId });
         }
-        private string CreateFilePath(int SaleCoopId)
+        private string CreateFilePath(int saleCoopId)
         {
             // to get current user ID
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -288,12 +299,12 @@ namespace DENR_FASPIS.Controllers
             }
             var userIdPath = user!.Id.ToString() + "\\";
 
-            uploadPath = Path.Combine(uploadPath, userIdPath + SaleCoopId + "\\");
+            uploadPath = Path.Combine(uploadPath, userIdPath + saleCoopId + "\\");
 
             return uploadPath;
         }
         private async Task<bool> CreateFileUploadData(List<CreateFileUploadViewModel> createFileUploadsViewModel,
-                                              int SaleCoopModelId,
+                                              int saleCoopModelId,
                                               int transactionTypeId,
                                               IEnumerable<DocumentType> documentTypeList,
                                               string uploadPath)
@@ -334,7 +345,7 @@ namespace DENR_FASPIS.Controllers
                             IsActive = true,
                             CreatedAt = DateTime.Now,
                             CreatedBy = user!.Id,
-                            SaleCoopId = SaleCoopModelId,
+                            SaleCoopId = saleCoopModelId,
                             TransactionTypeId = transactionTypeId,
                             DocumentTypeId = createFileUploadDocumentType!.Id
 
@@ -452,8 +463,8 @@ namespace DENR_FASPIS.Controllers
                                                                                                             documentTypeAssignmentList,
                                                                                                             documentTypeList);
 
-                var SaleCoopModel = await _unitOfWork.SaleCoop.GetAsync(x => x.Id == id, includeProperties: "IRFDeal");
-                if (SaleCoopModel == null)
+                var saleCoopModel = await _unitOfWork.SaleCoop.GetAsync(x => x.Id == id, includeProperties: "IRFDeal");
+                if (saleCoopModel == null)
                 {
                     NotFoundViewModel notFoundViewModel = new NotFoundViewModel();
                     notFoundViewModel.ErrorTitle = ($"{controllerName} not found");
@@ -463,53 +474,53 @@ namespace DENR_FASPIS.Controllers
 
                     return View("NotFound", notFoundViewModel);
                 }
-                var fileUploadsWithFiles = FilterFileUploadsWithFilesOnly(SaleCoopModel.FileUploads);
-                SaleCoopModel.FileUploads = fileUploadsWithFiles;
+                var fileUploadsWithFiles = FilterFileUploadsWithFilesOnly(saleCoopModel.FileUploads);
+                saleCoopModel.FileUploads = fileUploadsWithFiles;
 
-                var irfDealModel = await _unitOfWork.IRFDeal.GetAsync(x => x.Id == SaleCoopModel.IRFDealId, tracked: true);
+                var irfDealModel = await _unitOfWork.IRFDeal.GetAsync(x => x.Id == saleCoopModel.IRFDealId, tracked: true);
 
-                SaleCoopModel.IRFDeal = viewModel.EditSaleCoop.EditIRFDealViewModel?.ToIRFDealModel();
-                SaleCoopModel.IRFDeal!.CreatedAt = irfDealModel.CreatedAt;
-                SaleCoopModel.IRFDeal.CreatedBy = irfDealModel.CreatedBy;
-                SaleCoopModel.IRFDeal.UpdatedAt = DateTime.Now;
-                SaleCoopModel.IRFDeal.UpdatedBy = user!.Id;
-                SaleCoopModel.Notes = viewModel.EditSaleCoop.Notes;
-                if (SaleCoopModel.IRFDeal != null)
+                saleCoopModel.IRFDeal = viewModel.EditSaleCoop.EditIRFDealViewModel?.ToIRFDealModel();
+                saleCoopModel.IRFDeal!.CreatedAt = irfDealModel.CreatedAt;
+                saleCoopModel.IRFDeal.CreatedBy = irfDealModel.CreatedBy;
+                saleCoopModel.IRFDeal.UpdatedAt = DateTime.Now;
+                saleCoopModel.IRFDeal.UpdatedBy = user!.Id;
+                saleCoopModel.Notes = viewModel.EditSaleCoop.Notes;
+                if (saleCoopModel.IRFDeal != null)
                 {
-                    //SaleCoopModel.IRFDeal.SaleCoopId = SaleCoopModel.Id;
-                    await _unitOfWork.IRFDeal.UpdateAsync(SaleCoopModel.IRFDeal);
+                    //saleCoopModel.IRFDeal.SaleCoopId = saleCoopModel.Id;
+                    await _unitOfWork.IRFDeal.UpdateAsync(saleCoopModel.IRFDeal);
                 }
 
                 var isAgent = await _userManager.IsInRoleAsync(user, "Agent");
                 if (isAgent)
                 {
-                    SaleCoopModel.DealStatusId = dealStatusId;
+                    saleCoopModel.DealStatusId = dealStatusId;
                 }
                 else
                 {
-                    SaleCoopModel.DealStatusId = viewModel.EditSaleCoop.DealStatusId;
+                    saleCoopModel.DealStatusId = viewModel.EditSaleCoop.DealStatusId;
                 }
 
-                SaleCoopModel.DateSubmitted = DateTime.Now;
+                saleCoopModel.DateSubmitted = DateTime.Now;
                 // Update IRF Deal
 
-                SaleCoopModel.IsActive = true;
-                SaleCoopModel.UpdatedBy = user!.Id;
-                SaleCoopModel.UpdatedAt = DateTime.Now;
+                saleCoopModel.IsActive = true;
+                saleCoopModel.UpdatedBy = user!.Id;
+                saleCoopModel.UpdatedAt = DateTime.Now;
 
                 // Update other properties as needed
 
-                await _unitOfWork.SaleCoop.UpdateAsync(SaleCoopModel);
+                await _unitOfWork.SaleCoop.UpdateAsync(saleCoopModel);
 
 
                 // Create FileUploadData
 
-                var uploadPath = CreateFilePath(SaleCoopModel.Id);
+                var uploadPath = CreateFilePath(saleCoopModel.Id);
 
                 if (viewModel.EditSaleCoop.CreateFileUploadListViewModel?.CreateFileUploadsViewModel != null)
                 {
                     await CreateFileUploadData(viewModel.EditSaleCoop.CreateFileUploadListViewModel.CreateFileUploadsViewModel,
-                                                 SaleCoopModel.Id,
+                                                 saleCoopModel.Id,
                                                  transactionType.Id,
                                                  viewModel.EditSaleCoop.DocumentTypeList,
                                                  uploadPath);
@@ -720,9 +731,9 @@ namespace DENR_FASPIS.Controllers
             return Json(record);
         }
 
-        public async Task<JsonResult> GetDocumentTypesThatHasFileUploads(int SaleCoopId)
+        public async Task<JsonResult> GetDocumentTypesThatHasFileUploads(int saleCoopId)
         {
-            var fileUploads = await _unitOfWork.FileUpload.GetAllAsync(x => x.SaleCoopId == SaleCoopId);
+            var fileUploads = await _unitOfWork.FileUpload.GetAllAsync(x => x.SaleCoopId == saleCoopId);
             var documentTypeIds = fileUploads.Select(x => x.DocumentTypeId).ToArray();
 
             return Json(documentTypeIds);
@@ -997,9 +1008,9 @@ namespace DENR_FASPIS.Controllers
 
                 var resultList = await result.ToListAsync();
 
-                var SaleCoopViewModel = resultList.ToSaleCoopListViewModel();
+                var saleCoopViewModel = resultList.ToSaleCoopListViewModel();
 
-                var resultListForExport = SaleCoopViewModel.ToSaleCoopListExport();
+                var resultListForExport = saleCoopViewModel.ToSaleCoopListExport();
 
                 switch (format)
                 {

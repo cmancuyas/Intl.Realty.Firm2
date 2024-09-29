@@ -71,6 +71,15 @@ namespace DENR_FASPIS.Controllers
 
             string transactionTypeName = _transactionTypeName; // 1 = Sale Listing
 
+            var dealAdminEmails = await GetDealAdminEmails();
+
+            if (dealAdminEmails == null || dealAdminEmails.Count() == 0)
+            {
+                var notification = _notificationService.Notify("Email for DealAdmin not found. Contact administrator to fix this issue", "Internal Email for DealAdmin not found", NotificationType.error);
+                TempData["Message"] = JsonConvert.SerializeObject(notification);
+                return RedirectToAction(nameof(Index));
+            }
+
             var yearValidation = LinqExtensions.AndAlso<DealTransactionNumberRange>(x => x.IsDeleted == false, x => x.Year == DateTime.Now.Year);
 
             var numberRange = await _unitOfWork.DealTransactionNumberRange.GetAsync(yearValidation);
@@ -82,7 +91,6 @@ namespace DENR_FASPIS.Controllers
                 return RedirectToAction(nameof(Index));
             }
             viewModel.CreateLeaseListing.DealTransactionNumber = numberRange.CurrentNumber + 1;
-
             var transactionType = await _unitOfWork.TransactionType.GetAsync(x => x.Description == transactionTypeName);
             viewModel.CreateLeaseListing.TransactionType = transactionType;
             viewModel.CreateLeaseListing.TransactionTypeId = transactionType.Id;
@@ -136,6 +144,7 @@ namespace DENR_FASPIS.Controllers
                 await _unitOfWork.DealTransactionNumberRange.UpdateAsync(numberRange);
                 _unitOfWork.SaveAsync();
             }
+
 
             var documentTypeAssignmentIEnum = await _unitOfWork.DocumentTypeAssignment.GetAllAsync(x => x.IsDeleted == false, includeProperties: "TransactionType,DocumentType");
             var documentTypeIEnum = await _unitOfWork.DocumentType.GetAllAsync(x => x.IsDeleted == false);
@@ -270,7 +279,7 @@ namespace DENR_FASPIS.Controllers
 
             return RedirectToAction("Edit", new { id = dealId });
         }
-        private string CreateFilePath(int LeaseListingId)
+        private string CreateFilePath(int leaseListingId)
         {
             // to get current user ID
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -290,12 +299,12 @@ namespace DENR_FASPIS.Controllers
             }
             var userIdPath = user!.Id.ToString() + "\\";
 
-            uploadPath = Path.Combine(uploadPath, userIdPath + LeaseListingId + "\\");
+            uploadPath = Path.Combine(uploadPath, userIdPath + leaseListingId + "\\");
 
             return uploadPath;
         }
         private async Task<bool> CreateFileUploadData(List<CreateFileUploadViewModel> createFileUploadsViewModel,
-                                              int LeaseListingModelId,
+                                              int leaseListingModelId,
                                               int transactionTypeId,
                                               IEnumerable<DocumentType> documentTypeList,
                                               string uploadPath)
@@ -336,7 +345,7 @@ namespace DENR_FASPIS.Controllers
                             IsActive = true,
                             CreatedAt = DateTime.Now,
                             CreatedBy = user!.Id,
-                            LeaseListingId = LeaseListingModelId,
+                            LeaseListingId = leaseListingModelId,
                             TransactionTypeId = transactionTypeId,
                             DocumentTypeId = createFileUploadDocumentType!.Id
 
@@ -454,8 +463,8 @@ namespace DENR_FASPIS.Controllers
                                                                                                             documentTypeAssignmentList,
                                                                                                             documentTypeList);
 
-                var LeaseListingModel = await _unitOfWork.LeaseListing.GetAsync(x => x.Id == id, includeProperties: "IRFDeal");
-                if (LeaseListingModel == null)
+                var leaseListingModel = await _unitOfWork.LeaseListing.GetAsync(x => x.Id == id, includeProperties: "IRFDeal");
+                if (leaseListingModel == null)
                 {
                     NotFoundViewModel notFoundViewModel = new NotFoundViewModel();
                     notFoundViewModel.ErrorTitle = ($"{controllerName} not found");
@@ -465,53 +474,53 @@ namespace DENR_FASPIS.Controllers
 
                     return View("NotFound", notFoundViewModel);
                 }
-                var fileUploadsWithFiles = FilterFileUploadsWithFilesOnly(LeaseListingModel.FileUploads);
-                LeaseListingModel.FileUploads = fileUploadsWithFiles;
+                var fileUploadsWithFiles = FilterFileUploadsWithFilesOnly(leaseListingModel.FileUploads);
+                leaseListingModel.FileUploads = fileUploadsWithFiles;
 
-                var irfDealModel = await _unitOfWork.IRFDeal.GetAsync(x => x.Id == LeaseListingModel.IRFDealId, tracked: true);
+                var irfDealModel = await _unitOfWork.IRFDeal.GetAsync(x => x.Id == leaseListingModel.IRFDealId, tracked: true);
 
-                LeaseListingModel.IRFDeal = viewModel.EditLeaseListing.EditIRFDealViewModel?.ToIRFDealModel();
-                LeaseListingModel.IRFDeal!.CreatedAt = irfDealModel.CreatedAt;
-                LeaseListingModel.IRFDeal.CreatedBy = irfDealModel.CreatedBy;
-                LeaseListingModel.IRFDeal.UpdatedAt = DateTime.Now;
-                LeaseListingModel.IRFDeal.UpdatedBy = user!.Id;
-                LeaseListingModel.Notes = viewModel.EditLeaseListing.Notes;
-                if (LeaseListingModel.IRFDeal != null)
+                leaseListingModel.IRFDeal = viewModel.EditLeaseListing.EditIRFDealViewModel?.ToIRFDealModel();
+                leaseListingModel.IRFDeal!.CreatedAt = irfDealModel.CreatedAt;
+                leaseListingModel.IRFDeal.CreatedBy = irfDealModel.CreatedBy;
+                leaseListingModel.IRFDeal.UpdatedAt = DateTime.Now;
+                leaseListingModel.IRFDeal.UpdatedBy = user!.Id;
+                leaseListingModel.Notes = viewModel.EditLeaseListing.Notes;
+                if (leaseListingModel.IRFDeal != null)
                 {
-                    //LeaseListingModel.IRFDeal.LeaseListingId = LeaseListingModel.Id;
-                    await _unitOfWork.IRFDeal.UpdateAsync(LeaseListingModel.IRFDeal);
+                    //leaseListingModel.IRFDeal.LeaseListingId = leaseListingModel.Id;
+                    await _unitOfWork.IRFDeal.UpdateAsync(leaseListingModel.IRFDeal);
                 }
 
                 var isAgent = await _userManager.IsInRoleAsync(user, "Agent");
                 if (isAgent)
                 {
-                    LeaseListingModel.DealStatusId = dealStatusId;
+                    leaseListingModel.DealStatusId = dealStatusId;
                 }
                 else
                 {
-                    LeaseListingModel.DealStatusId = viewModel.EditLeaseListing.DealStatusId;
+                    leaseListingModel.DealStatusId = viewModel.EditLeaseListing.DealStatusId;
                 }
 
-                LeaseListingModel.DateSubmitted = DateTime.Now;
+                leaseListingModel.DateSubmitted = DateTime.Now;
                 // Update IRF Deal
 
-                LeaseListingModel.IsActive = true;
-                LeaseListingModel.UpdatedBy = user!.Id;
-                LeaseListingModel.UpdatedAt = DateTime.Now;
+                leaseListingModel.IsActive = true;
+                leaseListingModel.UpdatedBy = user!.Id;
+                leaseListingModel.UpdatedAt = DateTime.Now;
 
                 // Update other properties as needed
 
-                await _unitOfWork.LeaseListing.UpdateAsync(LeaseListingModel);
+                await _unitOfWork.LeaseListing.UpdateAsync(leaseListingModel);
 
 
                 // Create FileUploadData
 
-                var uploadPath = CreateFilePath(LeaseListingModel.Id);
+                var uploadPath = CreateFilePath(leaseListingModel.Id);
 
                 if (viewModel.EditLeaseListing.CreateFileUploadListViewModel?.CreateFileUploadsViewModel != null)
                 {
                     await CreateFileUploadData(viewModel.EditLeaseListing.CreateFileUploadListViewModel.CreateFileUploadsViewModel,
-                                                 LeaseListingModel.Id,
+                                                 leaseListingModel.Id,
                                                  transactionType.Id,
                                                  viewModel.EditLeaseListing.DocumentTypeList,
                                                  uploadPath);
@@ -722,9 +731,9 @@ namespace DENR_FASPIS.Controllers
             return Json(record);
         }
 
-        public async Task<JsonResult> GetDocumentTypesThatHasFileUploads(int LeaseListingId)
+        public async Task<JsonResult> GetDocumentTypesThatHasFileUploads(int leaseListingId)
         {
-            var fileUploads = await _unitOfWork.FileUpload.GetAllAsync(x => x.LeaseListingId == LeaseListingId);
+            var fileUploads = await _unitOfWork.FileUpload.GetAllAsync(x => x.LeaseListingId == leaseListingId);
             var documentTypeIds = fileUploads.Select(x => x.DocumentTypeId).ToArray();
 
             return Json(documentTypeIds);
@@ -999,9 +1008,9 @@ namespace DENR_FASPIS.Controllers
 
                 var resultList = await result.ToListAsync();
 
-                var LeaseListingViewModel = resultList.ToLeaseListingListViewModel();
+                var leaseListingViewModel = resultList.ToLeaseListingListViewModel();
 
-                var resultListForExport = LeaseListingViewModel.ToLeaseListingListExport();
+                var resultListForExport = leaseListingViewModel.ToLeaseListingListExport();
 
                 switch (format)
                 {
