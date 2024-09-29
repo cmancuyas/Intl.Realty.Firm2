@@ -79,5 +79,25 @@ namespace Intl.Realty.Firm.Service
             }
             return "";
         }
+
+        public string GetSecretKey()
+        {
+            var secretKey = _configuration["GoogleReCaptcha:SecretKey"];
+            if (secretKey != null)
+            {
+                return secretKey;
+            }
+            return "";
+        }
+
+        public string GetSiteKey()
+        {
+            var siteKey = _configuration["GoogleReCaptcha:SiteKey"];
+            if (siteKey != null)
+            {
+                return siteKey;
+            }
+            return "";
+        }
     }
 }

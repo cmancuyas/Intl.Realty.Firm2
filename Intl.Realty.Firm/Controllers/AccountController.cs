@@ -17,16 +17,19 @@ namespace Intl.Realty.Firm.Controllers
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly IEmailService _emailService;
         private readonly ILogger<AccountController> _logger;
+        private readonly IGoogleCaptchaService _googleCaptchaService;
 
         public AccountController(UserManager<ApplicationUser> userManager,
                                 SignInManager<ApplicationUser> signInManager,
                                 IEmailService emailService,
-                                ILogger<AccountController> logger)
+                                ILogger<AccountController> logger,
+                                IGoogleCaptchaService googleCaptchaService)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _emailService = emailService;
             _logger = logger;
+            _googleCaptchaService = googleCaptchaService;
         }
 
         [AcceptVerbs("Get", "Post")]
@@ -50,6 +53,12 @@ namespace Intl.Realty.Firm.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> Login(LoginViewModel viewModel, string? returnUrl)
         {
+            var captchaResult = await _googleCaptchaService.VerifyToken(viewModel.Token);
+            if(captchaResult == false)
+            {
+                return View();
+            }
+
             viewModel.ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
 
             if (ModelState.IsValid)
@@ -167,6 +176,13 @@ namespace Intl.Realty.Firm.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> Register(RegisterViewModel viewModel)
         {
+
+            var captchaResult = await _googleCaptchaService.VerifyToken(viewModel.Token);
+            if (captchaResult == false)
+            {
+                return View();
+            }
+
             if (ModelState.IsValid && viewModel.UserAgreement == true)
             {
                 var applicationUser = new ApplicationUser

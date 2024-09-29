@@ -15,12 +15,15 @@ using Intl.Realty.Firm.Service.Export;
 using Intl.Realty.Firm.Service.IService.IExport;
 using Newtonsoft.Json.Serialization;
 using Intl.Realty.Firm.Model.Model;
+using Intl.Realty.Firm.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString(name: "DefaultConnection")));
+
+builder.Services.Configure<GoogleCaptchaConfig>(builder.Configuration.GetSection("GoogleReCaptcha"));
 
 builder.Services.AddIdentity<ApplicationUser, ApplicationRole>(options =>
 {
@@ -116,6 +119,7 @@ builder.Services.AddTransient<IFileHandlerService, FileHandlerService>();
 builder.Services.AddTransient<IEmailService, EmailService>();
 builder.Services.AddTransient<IDocumentTransactionService, DocumentTransactionService>();
 builder.Services.AddTransient<INotificationService, NotificationService>();
+builder.Services.AddTransient<IGoogleCaptchaService, GoogleCaptchaService>();
 
 builder.Services.Configure<FormOptions>(o =>
 {

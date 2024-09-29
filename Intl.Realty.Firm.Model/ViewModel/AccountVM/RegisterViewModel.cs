@@ -33,5 +33,8 @@ namespace Intl.Realty.Firm.Model.ViewModel.AccountVM
         //[Range(typeof(bool), "false", "true", ErrorMessage = "You must accept the terms and conditions.")]
         [MustBeTrueAttribute(ErrorMessage = "You must accept the terms and conditions")]
         public bool UserAgreement { get; set; } = false;
+
+        [Required]
+        public string Token { get; set; } = string.Empty;
     }
 }
