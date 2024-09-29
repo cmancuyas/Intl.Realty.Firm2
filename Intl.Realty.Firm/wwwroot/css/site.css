@@ -33,7 +33,8 @@ label {
 }
 input:focus, input:focus-visible,
 button:focus, button:focus-visible,
-select:focus, select:focus-visible {
+select:focus, select:focus-visible,
+textarea:focus, textarea:focus-visible {
     outline: none !important;
     border: 1px solid #31698a !important;
     box-shadow: none !important;
@@ -63,6 +64,15 @@ select:focus, select:focus-visible {
 .pos-relative {
     position: relative;
 }
+.c-content a, .page-controller a {
+    color: #203d57;
+    text-decoration: none !important;
+    font-weight: 500 !important;
+}
+    .c-content a svg {
+        width: 20px;
+        margin-left: -5px;
+    }
 body {
     background: url('../files/img/bg-wavy.png') no-repeat;
     background-size: cover;
@@ -107,13 +117,15 @@ button#password-toggle:focus {
 
 .btn:hover {
     box-shadow: rgba(0, 0, 0, 0.07) 0px 1px 1px, rgba(0, 0, 0, 0.07) 0px 2px 2px, rgba(0, 0, 0, 0.07) 0px 4px 4px, rgba(0, 0, 0, 0.07) 0px 8px 8px, rgba(0, 0, 0, 0.07) 0px 16px 16px;
-    transform: translateY(-2px);
+    transform: translateY(-1px);
+    transition: all 0.15s ease-in-out;
     transition: all 0.15s ease-in-out;
 }
 
 .btn-primary {
     background-color: #203d57 !important;
     border-color: #203d57 !important;
+    color: #FFF !important;
     min-width: 4rem;
 }
 
@@ -1055,7 +1067,7 @@ input.select2-search__field {
 
 .dashboard-cards .label {
     border-radius: 4px;
-    background-color: cornflowerblue;
+    background-color: #203d57;
     color: white;
     font-size: 13px;
     padding: 2px 12px;
@@ -1067,6 +1079,34 @@ input.select2-search__field {
 .dashboard-cards .value {
     font-size: 30px;
     font-weight: 500;
+}
+
+.dashboard-cards .progress-bar {
+    background-color: #31698a !important;
+}
+
+.dashboard-cards .card-title {
+    font-size: 26px;
+    font-weight: 500;
+}
+
+.dashboard-cards .card-btn {
+    background: #EEE;
+    border-radius: 6px;
+}
+    .dashboard-cards .card-btn a:hover {
+        transform: translateY(-1px) !important;
+    }
+
+    .dashboard-cards .card-btn a {
+        text-decoration: none;
+        color: #203d57;
+        font-weight: 500;
+        font-size: 13px;
+    }
+
+.dashboard-lists .card-body {
+    min-height: 25vh;
 }
 
 .dashboard-lists .list-group-item {
@@ -1150,6 +1190,9 @@ input.select2-search__field {
     color: #888;
 }
 
+.dashboard-tables .card-body {
+/*    min-height: 30vh;*/
+}
 
 .dashboard-tables .table-custom th,
 .dashboard-tables .table-custom td {
@@ -1190,4 +1233,67 @@ input.select2-search__field {
     border-radius: 5px;
     font-size: 0.8rem;
     font-weight: bold;
+}
+
+/* NAVS */
+.tab-page .nav-tabs {
+/*    border: none !important;*/
+}
+
+    .tab-page .nav-tabs li .nav-link {
+        padding: 10px 50px;
+    }
+
+/* DATA FORM */
+.data-form .card {
+    background-color: transparent !important;
+    border: none !important;
+    padding: 0 !important;
+}
+    .data-form .card .nav-link {
+        font-size: 18px;
+        font-weight: 500;
+    }
+    .data-form .card .nav-item:hover {
+        background: #DDD !important;
+        color: #203d57;
+    }
+
+        .data-form .card .active, .data-form .card .nav-link:focus, .data-form .card .nav-link:focus-visible {
+            margin: 0 0 -1px 0;
+            border: 1px solid white !important;
+        }
+
+    .data-form .card .tab-content {
+        background: #FFF !important;
+        padding: 15px 30px 30px;
+    }
+
+    .data-form .card .tab-page .nav-tabs .nav-item.show .nav-link,
+    .data-form .card .tab-page .nav-tabs .nav-item.show .nav-link,
+    .nav-tabs .nav-link:not(.active) {
+        background: transparent !important;
+    }
+/* TABLES */
+.tab-content, .tab-page .tab-content {
+    background: transparent !important;
+    padding: 0;
+}
+.tab-page .table-responsive #modelTable_wrapper .dt-length {
+    text-align: right;
+}
+    .tab-page .table-responsive #modelTable_wrapper .dt-buttons {
+        display: none;
+    }
+.tab-page .table-responsive #modelTable_wrapper .dt-search input {
+    margin: 0 0 12px 0 !important;
+    height: 50px;
+    border-radius: 4px;
+    font-size: 18px;
+}
+.tab-page .table-responsive #modelTable_wrapper .dt-info {
+    text-align: right;
+}
+.tab-page .table-responsive #modelTable_wrapper .dt-paging .pagination {
+    justify-content: flex-end;
 }
