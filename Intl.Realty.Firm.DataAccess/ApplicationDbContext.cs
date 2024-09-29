@@ -1,5 +1,6 @@
 ﻿using Intl.Realty.Firm.DataAccess.Config;
 using Intl.Realty.Firm.Model.Model;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
@@ -64,7 +65,68 @@ namespace Intl.Realty.Firm.DataAccess
             new DocumentTypeAssignment { Id = 1, TransactionTypeId = 1, DocumentTypeId = 1 },
             new DocumentTypeAssignment { Id = 2, TransactionTypeId = 1, DocumentTypeId = 2 },
             new DocumentTypeAssignment { Id = 3, TransactionTypeId = 1, DocumentTypeId = 3 }
-);
+            );
+
+            List<ApplicationRole> roles = new List<ApplicationRole>
+            {
+                new ApplicationRole
+                {
+                    Id = new Guid("6ca041d2-d159-4077-ae85-44a8e33b0d44"),
+                    Name = "SuperAdmin",
+                    NormalizedName = "SUPERADMIN"
+                },
+                new ApplicationRole
+                {
+                    Id = new Guid("529e4622-26e2-4403-88a0-554d6e197557"),
+                    Name = "Admin",
+                    NormalizedName = "ADMIN"
+                },
+                new ApplicationRole
+                {
+                    Id = new Guid("a48ea010-1a28-4bf4-b13f-3b210714d39a"),
+                    Name = "DealAdmin",
+                    NormalizedName = "DEALADMIN"
+                },
+                new ApplicationRole
+                {
+                    Id = new Guid("4049c51e-53d5-482d-bd3d-1edebf961e0b"),
+                    Name = "Agent",
+                    NormalizedName = "AGENT"
+                }
+            };
+            modelBuilder.Entity<ApplicationRole>().HasData(roles);
+
+            var hasher = new PasswordHasher<ApplicationUser>();
+            List<ApplicationUser> users = new List<ApplicationUser>
+            {
+                new ApplicationUser
+                {
+                    Id=new Guid("74b7ddfa-9c71-4b95-84e2-9b5fcdef884c"),
+                    UserName = "superadmin@internationalrealtyfirm.com",
+                    Email = "superadmin@internationalrealtyfirm.com",
+                    NormalizedUserName = "SUPERADMIN@INTERNATIONALREALTYFIRM.COM",
+                    NormalizedEmail = "SUPERADMIN@INTERNATIONALREALTYFIRM.COM",
+                    PasswordHash = hasher.HashPassword(null, "aMyhurLX9Ad94D!"),
+                    EmailConfirmed = true,
+                    EmploymentStatusId = 1,
+                    FirstName = "Christopher",
+                    LastName = "Mancuyas",
+                    RegistrationDate = DateTime.Now,
+                    SecurityStamp = Guid.NewGuid().ToString()
+
+                },
+            };
+            modelBuilder.Entity<ApplicationUser>().HasData(users);
+
+            List<IdentityUserRole<Guid>> userRoles = new List<IdentityUserRole<Guid>>
+            {
+                new IdentityUserRole<Guid>
+                {
+                    RoleId = roles.First(r => r.Name == "SuperAdmin").Id,
+                    UserId = users.First(u => u.UserName == "superadmin@internationalrealtyfirm.com").Id
+                },
+            };
+            modelBuilder.Entity<IdentityUserRole<Guid>>().HasData(userRoles);
         }
     }
 
