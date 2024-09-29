@@ -74,21 +74,21 @@ namespace Intl.Realty.Firm.DataAccess
             );
 
             modelBuilder.Entity<DocumentTypeAssignment>().HasData(
-            new DocumentTypeAssignment { Id = 1, TransactionTypeId = 2, DocumentTypeId = 1 },
-            new DocumentTypeAssignment { Id = 2, TransactionTypeId = 2, DocumentTypeId = 2 },
-            new DocumentTypeAssignment { Id = 3, TransactionTypeId = 2, DocumentTypeId = 3 }
+            new DocumentTypeAssignment { Id = 4, TransactionTypeId = 2, DocumentTypeId = 1 },
+            new DocumentTypeAssignment { Id = 5, TransactionTypeId = 2, DocumentTypeId = 2 },
+            new DocumentTypeAssignment { Id = 6, TransactionTypeId = 2, DocumentTypeId = 3 }
             );
 
             modelBuilder.Entity<DocumentTypeAssignment>().HasData(
-                new DocumentTypeAssignment { Id = 1, TransactionTypeId = 3, DocumentTypeId = 1 },
-                new DocumentTypeAssignment { Id = 2, TransactionTypeId = 3, DocumentTypeId = 2 },
-                new DocumentTypeAssignment { Id = 3, TransactionTypeId = 3, DocumentTypeId = 3 }
+                new DocumentTypeAssignment { Id = 7, TransactionTypeId = 3, DocumentTypeId = 1 },
+                new DocumentTypeAssignment { Id = 8, TransactionTypeId = 3, DocumentTypeId = 2 },
+                new DocumentTypeAssignment { Id = 9, TransactionTypeId = 3, DocumentTypeId = 3 }
                 );
 
             modelBuilder.Entity<DocumentTypeAssignment>().HasData(
-                new DocumentTypeAssignment { Id = 1, TransactionTypeId = 4, DocumentTypeId = 1 },
-                new DocumentTypeAssignment { Id = 2, TransactionTypeId = 4, DocumentTypeId = 2 },
-                new DocumentTypeAssignment { Id = 3, TransactionTypeId = 4, DocumentTypeId = 3 }
+                new DocumentTypeAssignment { Id = 10, TransactionTypeId = 4, DocumentTypeId = 1 },
+                new DocumentTypeAssignment { Id = 11, TransactionTypeId = 4, DocumentTypeId = 2 },
+                new DocumentTypeAssignment { Id = 12, TransactionTypeId = 4, DocumentTypeId = 3 }
                 );
 
             List<ApplicationRole> roles = new List<ApplicationRole>

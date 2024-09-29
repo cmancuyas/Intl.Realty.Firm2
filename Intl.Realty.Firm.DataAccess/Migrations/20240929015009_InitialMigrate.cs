@@ -686,8 +686,18 @@ namespace Intl.Realty.Firm.DataAccess.Migrations
                 columns: new[] { "Id", "Code", "CreatedAt", "CreatedBy", "DeletedAt", "DeletedBy", "Description", "IsActive", "IsDeleted", "UpdatedAt", "UpdatedBy" },
                 values: new object[,]
                 {
-                    { 1, "1", new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new Guid("00000000-0000-0000-0000-000000000000"), null, null, "Saved", true, false, null, null },
-                    { 2, "2", new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new Guid("00000000-0000-0000-0000-000000000000"), null, null, "Submitted", true, false, null, null }
+                    { 1, "1", new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new Guid("00000000-0000-0000-0000-000000000000"), null, null, "Submitted", true, false, null, null },
+                    { 2, "2", new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new Guid("00000000-0000-0000-0000-000000000000"), null, null, "Saved", true, false, null, null }
+                });
+
+            migrationBuilder.InsertData(
+                table: "Departments",
+                columns: new[] { "Id", "Code", "CreatedAt", "CreatedBy", "DeletedAt", "DeletedBy", "Description", "IsActive", "IsDeleted", "UpdatedAt", "UpdatedBy" },
+                values: new object[,]
+                {
+                    { 1, "1", new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new Guid("00000000-0000-0000-0000-000000000000"), null, null, "Information Technology", true, false, null, null },
+                    { 2, "2", new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new Guid("00000000-0000-0000-0000-000000000000"), null, null, "Human Resources", true, false, null, null },
+                    { 3, "3", new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new Guid("00000000-0000-0000-0000-000000000000"), null, null, "Sales", true, false, null, null }
                 });
 
             migrationBuilder.InsertData(
@@ -724,7 +734,7 @@ namespace Intl.Realty.Firm.DataAccess.Migrations
             migrationBuilder.InsertData(
                 table: "AspNetUsers",
                 columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "DepartmentId", "Email", "EmailConfirmed", "EmploymentStatusId", "FirstName", "LastName", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "ProfilePictureId", "RegistrationDate", "SecurityStamp", "TwoFactorEnabled", "UserAgreement", "UserName" },
-                values: new object[] { new Guid("74b7ddfa-9c71-4b95-84e2-9b5fcdef884c"), 0, "d12980b0-c696-4bab-bb1b-4e298a96f286", null, "superadmin@internationalrealtyfirm.com", true, 1, "Christopher", "Mancuyas", false, null, "SUPERADMIN@INTERNATIONALREALTYFIRM.COM", "SUPERADMIN@INTERNATIONALREALTYFIRM.COM", "AQAAAAIAAYagAAAAEGX9oObxhoby6ifktRPfEjVPjJz4hFL5fI9XQXM8GGWJeeoDr4vhet5N/MfMTccE1g==", null, false, null, new DateTime(2024, 9, 29, 9, 28, 15, 819, DateTimeKind.Local).AddTicks(8770), "57676eb2-0e9e-475d-b5dd-040655d19349", false, false, "superadmin@internationalrealtyfirm.com" });
+                values: new object[] { new Guid("74b7ddfa-9c71-4b95-84e2-9b5fcdef884c"), 0, "2ef250bb-bab5-44c1-a0b7-50fc6e507a11", null, "superadmin@internationalrealtyfirm.com", true, 1, "Christopher", "Mancuyas", false, null, "SUPERADMIN@INTERNATIONALREALTYFIRM.COM", "SUPERADMIN@INTERNATIONALREALTYFIRM.COM", "AQAAAAIAAYagAAAAEJTX3Yz5H42UmaX9IR165d4jQ1DANfF8VtZsbAeBP3y6v8yjCpUxnzHMKS9Yjt6cSw==", null, false, null, new DateTime(2024, 9, 29, 9, 50, 8, 553, DateTimeKind.Local).AddTicks(9182), "ca0c5845-5715-4813-9811-c08beafa2351", false, false, "superadmin@internationalrealtyfirm.com" });
 
             migrationBuilder.InsertData(
                 table: "DocumentTypeAssignments",
@@ -733,7 +743,16 @@ namespace Intl.Realty.Firm.DataAccess.Migrations
                 {
                     { 1, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new Guid("00000000-0000-0000-0000-000000000000"), null, null, 1, true, false, 1, null, null },
                     { 2, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new Guid("00000000-0000-0000-0000-000000000000"), null, null, 2, true, false, 1, null, null },
-                    { 3, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new Guid("00000000-0000-0000-0000-000000000000"), null, null, 3, true, false, 1, null, null }
+                    { 3, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new Guid("00000000-0000-0000-0000-000000000000"), null, null, 3, true, false, 1, null, null },
+                    { 4, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new Guid("00000000-0000-0000-0000-000000000000"), null, null, 1, true, false, 2, null, null },
+                    { 5, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new Guid("00000000-0000-0000-0000-000000000000"), null, null, 2, true, false, 2, null, null },
+                    { 6, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new Guid("00000000-0000-0000-0000-000000000000"), null, null, 3, true, false, 2, null, null },
+                    { 7, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new Guid("00000000-0000-0000-0000-000000000000"), null, null, 1, true, false, 3, null, null },
+                    { 8, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new Guid("00000000-0000-0000-0000-000000000000"), null, null, 2, true, false, 3, null, null },
+                    { 9, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new Guid("00000000-0000-0000-0000-000000000000"), null, null, 3, true, false, 3, null, null },
+                    { 10, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new Guid("00000000-0000-0000-0000-000000000000"), null, null, 1, true, false, 4, null, null },
+                    { 11, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new Guid("00000000-0000-0000-0000-000000000000"), null, null, 2, true, false, 4, null, null },
+                    { 12, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new Guid("00000000-0000-0000-0000-000000000000"), null, null, 3, true, false, 4, null, null }
                 });
 
             migrationBuilder.InsertData(

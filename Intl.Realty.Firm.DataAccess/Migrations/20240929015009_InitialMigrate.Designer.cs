@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Intl.Realty.Firm.DataAccess.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240929012816_InitialMigrate")]
+    [Migration("20240929015009_InitialMigrate")]
     partial class InitialMigrate
     {
         /// <inheritdoc />
@@ -176,7 +176,7 @@ namespace Intl.Realty.Firm.DataAccess.Migrations
                         {
                             Id = new Guid("74b7ddfa-9c71-4b95-84e2-9b5fcdef884c"),
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "d12980b0-c696-4bab-bb1b-4e298a96f286",
+                            ConcurrencyStamp = "2ef250bb-bab5-44c1-a0b7-50fc6e507a11",
                             Email = "superadmin@internationalrealtyfirm.com",
                             EmailConfirmed = true,
                             EmploymentStatusId = 1,
@@ -185,10 +185,10 @@ namespace Intl.Realty.Firm.DataAccess.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "SUPERADMIN@INTERNATIONALREALTYFIRM.COM",
                             NormalizedUserName = "SUPERADMIN@INTERNATIONALREALTYFIRM.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEGX9oObxhoby6ifktRPfEjVPjJz4hFL5fI9XQXM8GGWJeeoDr4vhet5N/MfMTccE1g==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEJTX3Yz5H42UmaX9IR165d4jQ1DANfF8VtZsbAeBP3y6v8yjCpUxnzHMKS9Yjt6cSw==",
                             PhoneNumberConfirmed = false,
-                            RegistrationDate = new DateTime(2024, 9, 29, 9, 28, 15, 819, DateTimeKind.Local).AddTicks(8770),
-                            SecurityStamp = "57676eb2-0e9e-475d-b5dd-040655d19349",
+                            RegistrationDate = new DateTime(2024, 9, 29, 9, 50, 8, 553, DateTimeKind.Local).AddTicks(9182),
+                            SecurityStamp = "ca0c5845-5715-4813-9811-c08beafa2351",
                             TwoFactorEnabled = false,
                             UserAgreement = false,
                             UserName = "superadmin@internationalrealtyfirm.com"
@@ -247,7 +247,7 @@ namespace Intl.Realty.Firm.DataAccess.Migrations
                             Code = "1",
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CreatedBy = new Guid("00000000-0000-0000-0000-000000000000"),
-                            Description = "Saved",
+                            Description = "Submitted",
                             IsActive = true,
                             IsDeleted = false
                         },
@@ -257,7 +257,7 @@ namespace Intl.Realty.Firm.DataAccess.Migrations
                             Code = "2",
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CreatedBy = new Guid("00000000-0000-0000-0000-000000000000"),
-                            Description = "Submitted",
+                            Description = "Saved",
                             IsActive = true,
                             IsDeleted = false
                         });
@@ -355,6 +355,38 @@ namespace Intl.Realty.Firm.DataAccess.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Departments");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Code = "1",
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreatedBy = new Guid("00000000-0000-0000-0000-000000000000"),
+                            Description = "Information Technology",
+                            IsActive = true,
+                            IsDeleted = false
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Code = "2",
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreatedBy = new Guid("00000000-0000-0000-0000-000000000000"),
+                            Description = "Human Resources",
+                            IsActive = true,
+                            IsDeleted = false
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Code = "3",
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreatedBy = new Guid("00000000-0000-0000-0000-000000000000"),
+                            Description = "Sales",
+                            IsActive = true,
+                            IsDeleted = false
+                        });
                 });
 
             modelBuilder.Entity("Intl.Realty.Firm.Model.Model.DocumentType", b =>
@@ -516,6 +548,96 @@ namespace Intl.Realty.Firm.DataAccess.Migrations
                             IsActive = true,
                             IsDeleted = false,
                             TransactionTypeId = 1
+                        },
+                        new
+                        {
+                            Id = 4,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreatedBy = new Guid("00000000-0000-0000-0000-000000000000"),
+                            DocumentTypeId = 1,
+                            IsActive = true,
+                            IsDeleted = false,
+                            TransactionTypeId = 2
+                        },
+                        new
+                        {
+                            Id = 5,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreatedBy = new Guid("00000000-0000-0000-0000-000000000000"),
+                            DocumentTypeId = 2,
+                            IsActive = true,
+                            IsDeleted = false,
+                            TransactionTypeId = 2
+                        },
+                        new
+                        {
+                            Id = 6,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreatedBy = new Guid("00000000-0000-0000-0000-000000000000"),
+                            DocumentTypeId = 3,
+                            IsActive = true,
+                            IsDeleted = false,
+                            TransactionTypeId = 2
+                        },
+                        new
+                        {
+                            Id = 7,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreatedBy = new Guid("00000000-0000-0000-0000-000000000000"),
+                            DocumentTypeId = 1,
+                            IsActive = true,
+                            IsDeleted = false,
+                            TransactionTypeId = 3
+                        },
+                        new
+                        {
+                            Id = 8,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreatedBy = new Guid("00000000-0000-0000-0000-000000000000"),
+                            DocumentTypeId = 2,
+                            IsActive = true,
+                            IsDeleted = false,
+                            TransactionTypeId = 3
+                        },
+                        new
+                        {
+                            Id = 9,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreatedBy = new Guid("00000000-0000-0000-0000-000000000000"),
+                            DocumentTypeId = 3,
+                            IsActive = true,
+                            IsDeleted = false,
+                            TransactionTypeId = 3
+                        },
+                        new
+                        {
+                            Id = 10,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreatedBy = new Guid("00000000-0000-0000-0000-000000000000"),
+                            DocumentTypeId = 1,
+                            IsActive = true,
+                            IsDeleted = false,
+                            TransactionTypeId = 4
+                        },
+                        new
+                        {
+                            Id = 11,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreatedBy = new Guid("00000000-0000-0000-0000-000000000000"),
+                            DocumentTypeId = 2,
+                            IsActive = true,
+                            IsDeleted = false,
+                            TransactionTypeId = 4
+                        },
+                        new
+                        {
+                            Id = 12,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreatedBy = new Guid("00000000-0000-0000-0000-000000000000"),
+                            DocumentTypeId = 3,
+                            IsActive = true,
+                            IsDeleted = false,
+                            TransactionTypeId = 4
                         });
                 });
 
