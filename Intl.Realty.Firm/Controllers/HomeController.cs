@@ -322,7 +322,7 @@ namespace Intl.Realty.Firm.Controllers
             List<LeaseListing> leaseListingListPast1Min = new List<LeaseListing>();
             List<LeaseListing> leaseListingListPast5Mins = new List<LeaseListing>();
             List<LeaseListing> leaseListingListPastHour = new List<LeaseListing>();
-            List<LeaseListing> leaseListingListPastToday = new List<LeaseListing>();
+            List<LeaseListing> leaseListingListToday = new List<LeaseListing>();
             List<LeaseListing> leaseListingListMonth = new List<LeaseListing>();
 
             var leaseListingListAll = leaseListingIEnum.ToList();
@@ -348,7 +348,7 @@ namespace Intl.Realty.Firm.Controllers
                 }
                 if (item.CreatedAt > DateTime.Now.AddHours(-24) && item.CreatedAt <= DateTime.Now)
                 {
-                    leaseListingListPastToday!.Add(item);
+                    leaseListingListToday!.Add(item);
                 }
                 bool isCurrentMonth = DateTime.Now.Month == item.CreatedAt.Month
                                     && DateTime.Now.Year == item.CreatedAt.Year;
@@ -360,7 +360,7 @@ namespace Intl.Realty.Firm.Controllers
             dashboardViewModel.LeaseListingListPast1Min = leaseListingListPast1Min;
             dashboardViewModel.LeaseListingListPast5Mins = leaseListingListPast5Mins;
             dashboardViewModel.LeaseListingListPastHour = leaseListingListPastHour;
-            dashboardViewModel.LeaseListingListToday = leaseListingListPastToday;
+            dashboardViewModel.LeaseListingListToday = leaseListingListToday;
             dashboardViewModel.LeaseListingListMonth = leaseListingListMonth;
             dashboardViewModel.LeaseListingListAll = leaseListingListAll;
             return (dashboardViewModel);

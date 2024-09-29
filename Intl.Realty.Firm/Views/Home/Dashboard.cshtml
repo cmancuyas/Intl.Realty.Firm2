@@ -102,7 +102,7 @@
                 <div class="card-body">
                     <p class="card-title">Lease Listing</p>
                     <span class="label">Today</span>
-                    <p class="value">@Model.LeaseCoopCountToday</p>
+                    <p class="value">@Model.LeaseListingCountToday</p>
                     <div class="progress" style="height: 8px;">
                         <div class="progress-bar w-75" role="progressbar" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"></div>
                     </div>
@@ -289,10 +289,10 @@
 
                                     </td>
                                     <td>
-                                        <a class="btn btn-link" type="button" asp-action="Preview" asp-controller="SaleListing" asp-route-id="@item.Id">
+                                        <a class="btn btn-link" type="button" asp-action="Preview" asp-controller="@item.TransactionTypeName" asp-route-id="@item.Id">
                                             Preview
                                         </a>
-                                        <a class="btn btn-link" type="button" asp-action="Edit" asp-controller="SaleListing" asp-route-id="@item.Id">
+                                        <a class="btn btn-link" type="button" asp-action="Edit" asp-controller="@item.TransactionTypeName" asp-route-id="@item.Id">
                                             Edit
                                         </a>
                                     </td>
