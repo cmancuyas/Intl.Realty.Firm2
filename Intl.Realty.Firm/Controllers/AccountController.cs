@@ -167,7 +167,7 @@ namespace Intl.Realty.Firm.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> Register(RegisterViewModel viewModel)
         {
-            if (ModelState.IsValid)
+            if (ModelState.IsValid && viewModel.UserAgreement == true)
             {
                 var applicationUser = new ApplicationUser
                 {
@@ -211,6 +211,10 @@ namespace Intl.Realty.Firm.Controllers
                 {
                     ModelState.AddModelError("", error.Description);
                 }
+            }
+            else
+            {
+                
             }
             return View(viewModel);
         }

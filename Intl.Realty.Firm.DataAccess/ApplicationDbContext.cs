@@ -38,6 +38,12 @@ namespace Intl.Realty.Firm.DataAccess
             modelBuilder.ApplyConfiguration(new LeaseCoopConfig());
             modelBuilder.ApplyConfiguration(new IRFDealConfig());
 
+            modelBuilder.Entity<Department>().HasData(
+            new Department { Id = 1, Code = "1", Description = "Information Technology" },
+            new Department { Id = 2, Code = "2", Description = "Human Resources" },
+            new Department { Id = 3, Code = "3", Description = "Sales" }
+                );
+
             modelBuilder.Entity<EmploymentStatus>().HasData(
             new EmploymentStatus { Id = 1, Code = "1", Description = "Active" },
             new EmploymentStatus { Id = 2, Code = "2", Description = "Inactive" },
@@ -45,8 +51,8 @@ namespace Intl.Realty.Firm.DataAccess
                 );
 
             modelBuilder.Entity<DealStatus>().HasData(
-            new DealStatus { Id = 1, Code = "1", Description = "Saved" },
-            new DealStatus { Id = 2, Code = "2", Description = "Submitted" }
+            new DealStatus { Id = 1, Code = "1", Description = "Submitted" },
+            new DealStatus { Id = 2, Code = "2", Description = "Saved" }
             );
 
             modelBuilder.Entity<TransactionType>().HasData(
@@ -66,6 +72,24 @@ namespace Intl.Realty.Firm.DataAccess
             new DocumentTypeAssignment { Id = 2, TransactionTypeId = 1, DocumentTypeId = 2 },
             new DocumentTypeAssignment { Id = 3, TransactionTypeId = 1, DocumentTypeId = 3 }
             );
+
+            modelBuilder.Entity<DocumentTypeAssignment>().HasData(
+            new DocumentTypeAssignment { Id = 1, TransactionTypeId = 2, DocumentTypeId = 1 },
+            new DocumentTypeAssignment { Id = 2, TransactionTypeId = 2, DocumentTypeId = 2 },
+            new DocumentTypeAssignment { Id = 3, TransactionTypeId = 2, DocumentTypeId = 3 }
+            );
+
+            modelBuilder.Entity<DocumentTypeAssignment>().HasData(
+                new DocumentTypeAssignment { Id = 1, TransactionTypeId = 3, DocumentTypeId = 1 },
+                new DocumentTypeAssignment { Id = 2, TransactionTypeId = 3, DocumentTypeId = 2 },
+                new DocumentTypeAssignment { Id = 3, TransactionTypeId = 3, DocumentTypeId = 3 }
+                );
+
+            modelBuilder.Entity<DocumentTypeAssignment>().HasData(
+                new DocumentTypeAssignment { Id = 1, TransactionTypeId = 4, DocumentTypeId = 1 },
+                new DocumentTypeAssignment { Id = 2, TransactionTypeId = 4, DocumentTypeId = 2 },
+                new DocumentTypeAssignment { Id = 3, TransactionTypeId = 4, DocumentTypeId = 3 }
+                );
 
             List<ApplicationRole> roles = new List<ApplicationRole>
             {
