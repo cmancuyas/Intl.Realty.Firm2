@@ -26,7 +26,7 @@ namespace Intl.Realty.Firm.Utility.Mapper
             return new EditSaleListingViewModel
             {
                 Id = model.Id,
-
+                DealTransactionNumber = model.DealTransactionNumber,
                 TransactionTypeId = model.TransactionTypeId,
                 IRFDealId = model.IRFDealId,
                 DealStatusId = model.DealStatusId,
@@ -52,7 +52,7 @@ namespace Intl.Realty.Firm.Utility.Mapper
                 viewModelIEnum = modelIEnum.Select(x => new SaleListingViewModel()
                 {
                     Id = x.Id,
-
+                    DealTransactionNumber = x.DealTransactionNumber,
                     TransactionTypeId = x.TransactionTypeId,
                     IRFDealId = x.IRFDealId,
                     DealStatusId = x.DealStatusId,
@@ -84,7 +84,7 @@ namespace Intl.Realty.Firm.Utility.Mapper
                 IRFDealId = viewModel.IRFDealId,
                 DealStatusId = viewModel.DealStatusId,
                 DateSubmitted = viewModel.DateSubmitted,
-
+                DealTransactionNumber = viewModel.DealTransactionNumber,
                 CreatedByFullName = viewModel.CreatedByFullName,
                 Notes = viewModel.Notes,
 
@@ -104,6 +104,7 @@ namespace Intl.Realty.Firm.Utility.Mapper
                 IRFDealId = viewModel.IRFDealId,
                 DealStatusId = viewModel.DealStatusId,
                 DateSubmitted = viewModel.DateSubmitted,
+                DealTransactionNumber = viewModel.DealTransactionNumber,
 
                 UpdatedByFullName = viewModel.UpdatedByFullName,
                 Notes = viewModel.Notes,
@@ -122,6 +123,7 @@ namespace Intl.Realty.Firm.Utility.Mapper
             {
                 exportList = modelList.Select(x => new SaleListingExport
                 {
+                    DealTransactionNumber = x.DealTransactionNumber,
                     TransactionType = x.TransactionType!.Description,
                     DateCreated = x.CreatedAt,
                     DateSubmitted = x.DateSubmitted ?? DateTime.MinValue,
@@ -157,7 +159,7 @@ namespace Intl.Realty.Firm.Utility.Mapper
             return new PreviewSaleListingViewModel
             {
                 Id = model.Id,
-
+                DealTransactionNumber = model.DealTransactionNumber,
                 TransactionTypeId = model.TransactionTypeId,
                 IRFDealId = model.IRFDealId,
                 DealStatusId = model.DealStatusId,
@@ -194,7 +196,7 @@ namespace Intl.Realty.Firm.Utility.Mapper
                 listViewModel = modelList.Select(x => new SaleListingViewModel
                 {
                     Id = x.Id,
-
+                    DealTransactionNumber = x.DealTransactionNumber,
                     TransactionTypeId = x.TransactionTypeId,
                     IRFDealId = x.IRFDealId,
                     DealStatusId = x.DealStatusId,
@@ -227,13 +229,14 @@ namespace Intl.Realty.Firm.Utility.Mapper
 
             viewModel.Id = model.Id;
             viewModel.BridgeId = model.Id;
+            viewModel.DealTransactionNumber = model.DealTransactionNumber;
             viewModel.TransactionTypeId = model.TransactionTypeId;
             viewModel.TransactionTypeName = model.TransactionType!.Description;
             viewModel.BridgeId = model.Id;
             viewModel.PropertyAddress = model.IRFDeal!.PropertyAddress;
             viewModel.DealStatusName = model.DealStatus!.Description;
             viewModel.FinalClosingDate = model.IRFDeal.FinalClosingDate;
-            viewModel.FileExtensions = model.FileUploads.Select(x => x.FileExtension).ToList();
+            viewModel.FileExtensions = model.FileUploads!.Select(x => x.FileExtension).ToList();
             viewModel.CreatedAt = model.CreatedAt;
             viewModel.CreatedByFullName = createdByUser.FirstName + " " + createdByUser.LastName;
             viewModel.UpdatedByFullName = updatedByUser!.FirstName + " " + updatedByUser!.LastName;

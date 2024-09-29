@@ -31,7 +31,7 @@
     </a>
     <div class="row justify-content-center">
         <div class="col-md-8 card p-4">
-            <h1 class="text-blue mb-0">Edit LeaseCoop - Deal Id: @Model.EditLeaseCoop.Id - @Model.EditLeaseCoop.DealStatus!.Description</h1>
+            <h1 class="text-blue mb-0">Edit LeaseCoop - Deal Id: @Model.EditLeaseCoop.DealTransactionNumber - @Model.EditLeaseCoop.DealStatus!.Description</h1>
             <hr class="my-4" />
             <form id="ListFormId"
                   asp-action="Edit"
@@ -456,7 +456,7 @@
                         {
                             <button type="button" id="btnSave" class="btn btn-primary w-15" onclick="$('.text-danger').show();">Save</button>
                         }
-                        @if (isAdmin || isSuperAdmin || isDealAdmin || isAgent && Model.EditLeaseCoop.DealStatus!.Id == 1) //Saved
+                        @if (isAdmin || isSuperAdmin || isAgent && Model.EditLeaseCoop.DealStatus!.Id == 1) //Saved
                         {
                             <button type="button" id="btnEditRequest" data-bs-toggle="modal" data-bs-target="#sendEditRequestModal" class="btn btn-primary w-15">Edit Request</button>
                             <!-- Button trigger modal -->

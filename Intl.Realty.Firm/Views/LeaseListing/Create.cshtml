@@ -25,6 +25,7 @@
                   asp-controller="LeaseListing"
                   method="post"
                   enctype="multipart/form-data">
+                <input asp-for="CreateLeaseListing.DealTransactionNumber" hidden />
                 <div asp-validation-summary="All" class="text-danger"></div>
 
                 <div class="tab-page">

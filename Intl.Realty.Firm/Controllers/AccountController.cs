@@ -84,15 +84,16 @@ namespace Intl.Realty.Firm.Controllers
                         var isAdmin = await _userManager.IsInRoleAsync(user!, "Admin");
 
                         var isSuperAdmin = await _userManager.IsInRoleAsync(user!, "SuperAdmin");
-                        if(isAdmin == true || isSuperAdmin == true)
-                        {
-                            return RedirectToAction("AdminDashboard", "Home");
-                        }
-                        else
-                        {
-                            return RedirectToAction("Dashboard", "Home");
-                        }
-                        
+                        //if(isAdmin == true || isSuperAdmin == true)
+                        //{
+                        //    return RedirectToAction("AdminDashboard", "Home");
+                        //}
+                        //else
+                        //{
+                        //    return RedirectToAction("Dashboard", "Home");
+                        //}
+                        return RedirectToAction("Dashboard", "Home");
+
                     }
 
                 }

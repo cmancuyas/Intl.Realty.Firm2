@@ -5,6 +5,7 @@ namespace Intl.Realty.Firm.Model.ViewModel.SaleListingVM
     public class SaleListingViewModel : BaseModel
     {
         public int Id { get; set; }
+        public int DealTransactionNumber { get; set; }
         public int TransactionTypeId { get; set; }
         public int IRFDealId { get; set; }
         public int DealStatusId { get; set; }

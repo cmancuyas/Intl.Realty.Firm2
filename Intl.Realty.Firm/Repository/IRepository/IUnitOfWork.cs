@@ -2,6 +2,7 @@
 {
     public interface IUnitOfWork
     {
+        IDealTransactionNumberRangeRepository DealTransactionNumberRange { get; }
         IInternalEmailRepository InternalEmail { get; }
         IDepartmentRepository Department { get; }
         IProvinceRepository Province { get; }

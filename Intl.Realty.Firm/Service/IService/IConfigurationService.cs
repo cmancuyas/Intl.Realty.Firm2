@@ -2,7 +2,7 @@
 
 namespace Intl.Realty.Firm.Service.IService
 {
-    public interface IConfigurationService: IConfigurationEmail
+    public interface IConfigurationService: IConfigurationEmail,IConfigurationNotification
     {
         string GetDefaultUploadPathFromConfig();
     }

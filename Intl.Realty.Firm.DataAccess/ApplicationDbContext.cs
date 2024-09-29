@@ -11,6 +11,7 @@ namespace Intl.Realty.Firm.DataAccess
         {
 
         }
+        public DbSet<DealTransactionNumberRange> DealTransactionNumberRanges { get; set; }
         public DbSet<InternalEmail> InternalEmails { get; set; }
         public DbSet<Department> Departments { get; set; }
         public DbSet<Province> Provinces { get; set; }

@@ -28,6 +28,7 @@ namespace DENR_FASPIS.Controllers
         private readonly IFileHandlerService _fileHandlerService;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IDocumentTransactionService _documentTransactionService;
+        private readonly INotificationService _notificationService;
         private readonly IEmailService _emailService;
         private readonly string _backupFileDirectory = "\\wwwroot\\Files\\Uploads\\";
         private readonly string _transactionTypeName = "LeaseCoop";
@@ -37,6 +38,7 @@ namespace DENR_FASPIS.Controllers
                                     IFileHandlerService fileHandlerService,
                                     UserManager<ApplicationUser> userManager,
                                     IDocumentTransactionService documentTransactionService,
+                                    INotificationService notificationService,
                                     IEmailService emailService
                                                                         )
         {
@@ -46,6 +48,7 @@ namespace DENR_FASPIS.Controllers
             _fileHandlerService = fileHandlerService;
             _userManager = userManager;
             _documentTransactionService = documentTransactionService;
+            _notificationService = notificationService;
             _emailService = emailService;
         }
         public IActionResult Index()
@@ -68,6 +71,17 @@ namespace DENR_FASPIS.Controllers
 
             string transactionTypeName = _transactionTypeName; // 1 = Sale Listing
 
+            var yearValidation = LinqExtensions.AndAlso<DealTransactionNumberRange>(x => x.IsDeleted == false, x => x.Year == DateTime.Now.Year);
+
+            var numberRange = await _unitOfWork.DealTransactionNumberRange.GetAsync(yearValidation);
+            if (numberRange == null)
+            {
+                var notification = _notificationService.Notify("Number Range for current year is not found. Contact administrator to fix this issue", "Number Range not found", NotificationType.error);
+
+                TempData["Message"] = JsonConvert.SerializeObject(notification);
+                return RedirectToAction(nameof(Index));
+            }
+            viewModel.CreateLeaseCoop.DealTransactionNumber = numberRange.CurrentNumber + 1;
             var transactionType = await _unitOfWork.TransactionType.GetAsync(x => x.Description == transactionTypeName);
             viewModel.CreateLeaseCoop.TransactionType = transactionType;
             viewModel.CreateLeaseCoop.TransactionTypeId = transactionType.Id;
@@ -110,6 +124,16 @@ namespace DENR_FASPIS.Controllers
             var transactionType = await _unitOfWork.TransactionType.GetAsync(x => x.Description == _transactionTypeName); //Sale Listing
             viewModel.CreateLeaseCoop.TransactionType = await _unitOfWork.TransactionType.GetByNameAsync(transactionType.Description);
             viewModel.CreateLeaseCoop.TransactionTypeId = transactionType.Id;
+
+            var yearValidation = LinqExtensions.AndAlso<DealTransactionNumberRange>(x => x.IsDeleted == false, x => x.Year == DateTime.Now.Year);
+
+            var numberRange = await _unitOfWork.DealTransactionNumberRange.GetAsync(yearValidation);
+            numberRange.CurrentNumber = viewModel.CreateLeaseCoop.DealTransactionNumber;
+            if (numberRange != null)
+            {
+                await _unitOfWork.DealTransactionNumberRange.UpdateAsync(numberRange);
+                _unitOfWork.SaveAsync();
+            }
 
             var documentTypeAssignmentIEnum = await _unitOfWork.DocumentTypeAssignment.GetAllAsync(x => x.IsDeleted == false, includeProperties: "TransactionType,DocumentType");
             var documentTypeIEnum = await _unitOfWork.DocumentType.GetAllAsync(x => x.IsDeleted == false);
@@ -202,7 +226,7 @@ namespace DENR_FASPIS.Controllers
                                                                                    userRoles,
                                                                                    viewModel.CreateLeaseCoop.TransactionType.Description,
                                                                                    dealAdminEmails,
-                                                                                   leaseCoopModel.Id,
+                                                                                   leaseCoopModel.DealTransactionNumber,
                                                                                    dealLink!);
 
                     await _emailService.SendEmailAsync(mailRequest);
@@ -238,7 +262,7 @@ namespace DENR_FASPIS.Controllers
             var leaseCoop = await _unitOfWork.LeaseCoop.GetAsync(x => x.Id == dealId, includeProperties: "IRFDeal,TransactionType,DealStatus");
             var transactionType = leaseCoop.TransactionType;
 
-            var mailRequest = EmailRequest.SendRequestToEditTheDeal(user!, userRoles, transactionType!.Description, dealAdminEmails, dealId, dealLink!);
+            var mailRequest = EmailRequest.SendRequestToEditTheDeal(user!, userRoles, transactionType!.Description, dealAdminEmails, leaseCoop.DealTransactionNumber, dealLink!);
 
             await _emailService.SendEmailAsync(mailRequest);
 

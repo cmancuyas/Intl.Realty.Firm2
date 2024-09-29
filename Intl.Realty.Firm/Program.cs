@@ -115,6 +115,7 @@ builder.Services.AddTransient<IConfigurationService, ConfigurationService>();
 builder.Services.AddTransient<IFileHandlerService, FileHandlerService>();
 builder.Services.AddTransient<IEmailService, EmailService>();
 builder.Services.AddTransient<IDocumentTransactionService, DocumentTransactionService>();
+builder.Services.AddTransient<INotificationService, NotificationService>();
 
 builder.Services.Configure<FormOptions>(o =>
 {

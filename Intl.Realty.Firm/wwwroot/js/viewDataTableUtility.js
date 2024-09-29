@@ -29,6 +29,9 @@
     $("#provinces-tab").on("click", function () {
         window.location.href = '/Province/Index';
     });
+    $("#dealTransactionNumberRanges-tab").on("click", function () {
+        window.location.href = '/DealTransactionNumberRange/Index';
+    });
 }
 function SearchBoxSettings() {
     $('[id^=dt-search]').attr('placeholder', 'Search...').addClass('fst-italic');

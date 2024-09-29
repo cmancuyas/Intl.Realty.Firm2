@@ -71,7 +71,7 @@
                             <tr>
                                 <th class="text-center w-5"><input id="select_all" type="checkbox" class="column-checkbox no-sort no-search" data-toggle="tooltip" data-bs-placement="left" title="Select all"></th>
                                 @* <th class="text-start">@Html.DisplayCodeFor(model => model.Id)</th> *@
-                                <th class="text-start">Id</th>
+                                <th class="text-start">Deal Transaction Number</th>
                                 <th class="text-start">Property Address</th>
                                 <th class="text-start">Deal Status</th>
                                 <th class="text-start">Created At</th>
@@ -209,7 +209,7 @@
                     },
                 },
                 {
-                    data: "id",
+                    data: "dealTransactionNumber",
                 },
                 {
                     data: "irfDeal.propertyAddress", title:"Property Address",

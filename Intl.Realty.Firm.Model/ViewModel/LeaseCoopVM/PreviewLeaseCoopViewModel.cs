@@ -7,6 +7,7 @@ namespace Intl.Realty.Firm.Model.ViewModel.LeaseCoopVM
     {
         [Key]
         public int Id { get; set; }
+        public int DealTransactionNumber { get; set; }
         public int TransactionTypeId { get; set; }
         public TransactionType TransactionType { get; set; } = new TransactionType();
         public int IRFDealId { get; set; }

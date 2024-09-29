@@ -6,6 +6,7 @@ namespace Intl.Realty.Firm.Model.ViewModel.SaleCoopVM
 {
     public class CreateSaleCoopViewModel
     {
+        public int DealTransactionNumber { get; set; }
         public int TransactionTypeId { get; set; }
         public int IRFDealId { get; set; }
         public CreateIRFDealViewModel CreateIRFDealViewModel { get; set; } = new CreateIRFDealViewModel();

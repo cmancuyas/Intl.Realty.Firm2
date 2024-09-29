@@ -10,11 +10,26 @@
     Layout = "~/Views/Shared/_LayoutAfterLogin.cshtml";
 
     var users = _userManager.Users;
+    var user = await _userManager.GetUserAsync(User);
+    var isAgent = await _userManager.IsInRoleAsync(user!, "Agent");
+    var isDealAdmin = await _userManager.IsInRoleAsync(user!, "DealAdmin");
+    var isAdmin = await _userManager.IsInRoleAsync(user!, "Admin");
+    var isSuperAdmin = await _userManager.IsInRoleAsync(user!, "SuperAdmin");
+
 }
 
 <div class="container-fluid">
     <div class="row">
-        <h1 class="text-blue">Dashboard</h1>
+        @{
+            if (isAgent)
+            {
+                <h1 class="text-blue">Dashboard</h1>
+            }
+            else{
+                <h1 class="text-blue">Admin Dashboard</h1>
+            }
+        }
+        
     </div>
 </div>
 
@@ -161,7 +176,7 @@
 
                                     </div>
                                     <div>
-                                        <div>@item.PropertyAddress - @item.Id</div>
+                                        <div>@item.PropertyAddress - @item.DealTransactionNumber</div>
                                         <div class="text-small">@item.CreatedAt - @item.TransactionTypeName</div>
                                     </div>
                                 </div>
@@ -188,15 +203,15 @@
                             <div class="activity-timeline-item">
                                 <div class="timeline-dot"></div>
                                 <div class="activity-time">a few seconds ago</div>
-                                <div class="activity-desc">@item.TransactionTypeName was created - Deal Id: @item.Id - @item.DealStatusName</div>
+                                <div class="activity-desc">@item.TransactionTypeName was created - Deal Id: @item.DealTransactionNumber - @item.DealStatusName</div>
                             </div>
                         }
                         @foreach (var item in Model.AllDealsPast5Mins)
                         {
                             <div class="activity-timeline-item">
                                 <div class="timeline-dot"></div>
-                                <div class="activity-time">5 few seconds ago</div>
-                                <div class="activity-desc">@item.TransactionTypeName was created - Deal Id: @item.Id - @item.DealStatusName</div>
+                                <div class="activity-time">5 minutes seconds ago</div>
+                                <div class="activity-desc">@item.TransactionTypeName was created - Deal Id: @item.DealTransactionNumber - @item.DealStatusName</div>
                             </div>
                         }
                         @foreach (var item in Model.AllDealsPastHour)
@@ -204,7 +219,7 @@
                             <div class="activity-timeline-item">
                                 <div class="timeline-dot"></div>
                                 <div class="activity-time">an hour ago</div>
-                                <div class="activity-desc">@item.TransactionTypeName was created - Deal Id: @item.Id - @item.DealStatusName</div>
+                                <div class="activity-desc">@item.TransactionTypeName was created - Deal Id: @item.DealTransactionNumber - @item.DealStatusName</div>
                             </div>
                         }
                     </div>
@@ -249,7 +264,7 @@
                             @foreach (var item in Model.AllDealsForCurrentMonth)
                             {
                                 <tr>
-                                    <td>@item.Id</td>
+                                    <td>@item.DealTransactionNumber</td>
                                     <td>@item.TransactionTypeName</td>
                                     <td>@item.PropertyAddress</td>
                                     <td>@item.DealStatusName</td>

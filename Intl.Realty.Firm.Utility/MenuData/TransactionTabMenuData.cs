@@ -61,6 +61,19 @@ namespace Intl.Realty.Firm.Utility.MenuData
             menus.Add(menu);
             // End
 
+            // Start
+            menu = new TabMenu()
+            {
+                Id = count + 1,
+                Menu = "DealTransactionNumberRange",
+                Description = "Deal Transaction Number Range",
+                Tab = "dealTransactionNumberRanges-tab",
+                Control = "dealTransactionNumberRanges",
+            };
+
+            menus.Add(menu);
+            // End
+
             return menus;
         }
     }

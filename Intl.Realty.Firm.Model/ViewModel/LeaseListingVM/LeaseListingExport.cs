@@ -6,7 +6,7 @@ namespace Intl.Realty.Firm.Model.ViewModel.LeaseListingVM
 {
     public class LeaseListingExport
     {
-
+        public int DealTransactionNumber { get; set; }
         public string TransactionType { get; set; } = string.Empty;
         public string DocumentType { get; set; } = string.Empty;
         public DateTime DateCreated { get; set; }

@@ -50,6 +50,16 @@ namespace Intl.Realty.Firm.Service
             return "";
         }
 
+        public string GetNotificationProvider()
+        {
+            var item = _configuration["NotificationProvider"];
+            if (item != null)
+            {
+                return item;
+            }
+            return "";
+        }
+
         public string GetPassword()
         {
             var password = _configuration["EmailSettings:Password"];

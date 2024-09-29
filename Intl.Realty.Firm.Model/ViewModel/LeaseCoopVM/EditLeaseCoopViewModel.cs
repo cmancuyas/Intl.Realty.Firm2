@@ -9,6 +9,7 @@ namespace Intl.Realty.Firm.Model.ViewModel.LeaseCoopVM
     {
         [Key]
         public int Id { get; set; }
+        public int DealTransactionNumber { get; set; }
         public int TransactionTypeId { get; set; }
         public int IRFDealId { get; set; }
         public DateTime? DateSubmitted { get; set; }

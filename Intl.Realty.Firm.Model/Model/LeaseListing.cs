@@ -9,6 +9,8 @@ namespace Intl.Realty.Firm.Model.Model
         [DatabaseGeneratedAttribute(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
         [Required]
+        public int DealTransactionNumber { get; set; }
+        [Required]
         [ForeignKey("TransactionType")]
         public int TransactionTypeId { get; set; }
         [Required]

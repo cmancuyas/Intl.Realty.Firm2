@@ -5,6 +5,7 @@ namespace Intl.Realty.Firm.Model.ViewModel.LeaseCoopVM
     public class LeaseCoopViewModel : BaseModel
     {
         public int Id { get; set; }
+        public int DealTransactionNumber { get; set; }
         public int TransactionTypeId { get; set; }
         public int IRFDealId { get; set; }
         public int DealStatusId { get; set; }

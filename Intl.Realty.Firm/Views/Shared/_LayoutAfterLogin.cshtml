@@ -163,7 +163,7 @@
             mainPageLayout($); 
         })
     </script>
-
+    @await Html.PartialAsync("_NotificationPartial.cshtml");
     @await RenderSectionAsync("Scripts", required: false)
 
 </body>

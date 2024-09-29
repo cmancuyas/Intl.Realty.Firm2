@@ -6,6 +6,7 @@ namespace Intl.Realty.Firm.Repository
     public class UnitOfWork : IUnitOfWork
     {
         private ApplicationDbContext _db;
+        public IDealTransactionNumberRangeRepository DealTransactionNumberRange { get; private set; }
         public IInternalEmailRepository InternalEmail { get; private set; }
         public IDepartmentRepository Department { get; private set; }
         public IProvinceRepository Province { get; private set; }
@@ -24,6 +25,7 @@ namespace Intl.Realty.Firm.Repository
         public UnitOfWork(ApplicationDbContext db)
         {
             _db = db;
+            DealTransactionNumberRange = new DealTransactionNumberRangeRepository(_db);
             InternalEmail = new InternalEmailRepository(_db);
             Department = new DepartmentRepository(_db);
             Province = new ProvinceRepository(_db);

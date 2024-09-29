@@ -26,7 +26,7 @@
                   method="post"
                   enctype="multipart/form-data">
                 <div asp-validation-summary="All" class="text-danger"></div>
-
+                <input asp-for="CreateSaleListing.DealTransactionNumber" hidden/>
                 <div class="tab-page">
                     <ul class="nav nav-tabs" id="consultantStatusManagementTab" role="tablist">
                         @foreach (var item in Model.Menus)

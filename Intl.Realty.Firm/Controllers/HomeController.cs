@@ -35,7 +35,25 @@ namespace Intl.Realty.Firm.Controllers
         }
         public async Task<IActionResult> Dashboard()
         {
+            DashboardViewModel viewModel = await GetDashboardData();
+
+            return View(viewModel);
+        }
+        public async Task<IActionResult> AdminDashboard()
+        {
+            DashboardViewModel viewModel = await GetDashboardData();
+
+            return View(viewModel);
+        }
+
+        private async Task<DashboardViewModel> GetDashboardData()
+        {
             var user = await _userManager.GetUserAsync(User);
+
+            var isAgent = await _userManager.IsInRoleAsync(user!, "Agent");
+            var isDealAdmin = await _userManager.IsInRoleAsync(user!, "DealAdmin");
+            var isAdmin = await _userManager.IsInRoleAsync(user!, "Admin");
+            var isSuperAdmin = await _userManager.IsInRoleAsync(user!, "SuperAdmin");
 
             DashboardViewModel viewModel = new DashboardViewModel();
 
@@ -44,11 +62,13 @@ namespace Intl.Realty.Firm.Controllers
             var leaseListingIEnum = await GetLeaseListingData();
             var leaseCoopIEnum = await GetLeaseCoopData();
 
-            saleListingIEnum = saleListingIEnum.Where(x => x.CreatedBy == user!.Id);
-            saleCoopIEnum = saleCoopIEnum.Where(x => x.CreatedBy == user!.Id);
-            leaseListingIEnum = leaseListingIEnum.Where(x => x.CreatedBy == user!.Id);
-            leaseCoopIEnum = leaseCoopIEnum.Where(x => x.CreatedBy == user!.Id);
-
+            if (isAgent)
+            {
+                saleListingIEnum = saleListingIEnum.Where(x => x.CreatedBy == user!.Id);
+                saleCoopIEnum = saleCoopIEnum.Where(x => x.CreatedBy == user!.Id);
+                leaseListingIEnum = leaseListingIEnum.Where(x => x.CreatedBy == user!.Id);
+                leaseCoopIEnum = leaseCoopIEnum.Where(x => x.CreatedBy == user!.Id);
+            }
 
             saleListingIEnum = saleListingIEnum.OrderByDescending(x => x.CreatedAt);
             saleCoopIEnum = saleCoopIEnum.OrderByDescending(x => x.CreatedAt);
@@ -119,91 +139,7 @@ namespace Intl.Realty.Firm.Controllers
 
             viewModel.AllDealsToday = allDealsToday;
 
-            return View(viewModel);
-        }
-        public async Task<IActionResult> AdminDashboard()
-        {
-            var user = await _userManager.GetUserAsync(User);
-
-            DashboardViewModel viewModel = new DashboardViewModel();
-
-            var saleListingIEnum = await GetSaleListingData();
-            var saleCoopIEnum = await GetSaleCoopData();
-            var leaseListingIEnum = await GetLeaseListingData();
-            var leaseCoopIEnum = await GetLeaseCoopData();
-
-            //saleListingIEnum = saleListingIEnum.Where(x => x.CreatedBy == user!.Id);
-            //saleCoopIEnum = saleCoopIEnum.Where(x => x.CreatedBy == user!.Id);
-            //leaseListingIEnum = leaseListingIEnum.Where(x => x.CreatedBy == user!.Id);
-            //leaseCoopIEnum = leaseCoopIEnum.Where(x => x.CreatedBy == user!.Id);
-
-
-            saleListingIEnum = saleListingIEnum.OrderByDescending(x => x.CreatedAt);
-
-            viewModel = GetAllDealsPerSaleListing(saleListingIEnum, viewModel);
-            viewModel = GetAllDealsPerSaleCoop(saleCoopIEnum, viewModel);
-            viewModel = GetAllDealsPerLeaseListing(leaseListingIEnum, viewModel);
-            viewModel = GetAllDealsPerLeaseCoop(leaseCoopIEnum, viewModel);
-
-            viewModel.SaleListingCountToday = viewModel.SaleListingListToday!.Count();
-            viewModel.SaleCoopCountToday = viewModel.SaleCoopListToday.Count();
-            viewModel.LeaseListingCountToday = viewModel.LeaseListingListToday.Count();
-            viewModel.LeaseCoopCountToday = viewModel.LeaseCoopListToday.Count();
-
-            var allDealsPast1Min = await GetAllDealsFor(viewModel.SaleListingListPast1Min,
-                                                 viewModel.SaleCoopListPast1Min,
-                                                 viewModel.LeaseCoopListPast1Min,
-                                                 viewModel.LeaseListingListPast1Min);
-
-            var allDealsPast5Mins = await GetAllDealsFor(viewModel.SaleListingListPast5Mins,
-                                                 viewModel.SaleCoopListPast5Mins,
-                                                 viewModel.LeaseCoopListPast5Mins,
-                                                 viewModel.LeaseListingListPast5Mins);
-
-            var allDealsPastHour = await GetAllDealsFor(viewModel.SaleListingListPastHour,
-                                                 viewModel.SaleCoopListPastHour,
-                                                 viewModel.LeaseCoopListPastHour,
-                                                 viewModel.LeaseListingListPastHour);
-
-            var allDealsToday = await GetAllDealsFor(viewModel.SaleListingListToday,
-                                                 viewModel.SaleCoopListToday,
-                                                 viewModel.LeaseCoopListToday,
-                                                 viewModel.LeaseListingListToday);
-
-
-            var allDealsForCurrentMonth = await GetAllDealsFor(viewModel.SaleListingListMonth,
-                                                                viewModel.SaleCoopListMonth,
-                                                                viewModel.LeaseCoopListMonth,
-                                                                viewModel.LeaseListingListMonth);
-
-            var allDealsForAll = await GetAllDealsFor(viewModel.SaleListingListAll,
-                                                    viewModel.SaleCoopListAll,
-                                                    viewModel.LeaseCoopListAll,
-                                                    viewModel.LeaseListingListAll);
-
-            allDealsPast1Min = allDealsPast1Min.OrderByDescending(x => x.CreatedAt).ToList();
-            allDealsPast5Mins = allDealsPast5Mins.OrderByDescending(x => x.CreatedAt).ToList();
-            allDealsPastHour = allDealsPastHour.OrderByDescending(x => x.CreatedAt).ToList();
-            allDealsToday = allDealsToday.OrderByDescending(x => x.CreatedAt).ToList();
-            allDealsForCurrentMonth = allDealsForCurrentMonth.OrderByDescending(x => x.CreatedAt).ToList();
-            allDealsPastHour = allDealsPastHour.OrderByDescending(x => x.CreatedAt).ToList();
-            allDealsForAll = allDealsForAll.OrderByDescending(x => x.CreatedAt).ToList();
-
-
-            viewModel.AllDealsPast1Min = allDealsPast1Min;
-            viewModel.AllDealsPast5Mins = allDealsPast5Mins;
-            viewModel.AllDealsPastHour = allDealsPastHour;
-            viewModel.AllDealsToday = allDealsToday;
-            viewModel.AllDealsForCurrentMonth = allDealsForCurrentMonth;
-            viewModel.AllDealsForAll = allDealsForAll;
-
-            if (allDealsToday.Count > 10)
-            {
-                allDealsToday.RemoveRange(10, allDealsToday.Count - 10);
-            }
-
-            return View(viewModel);
-
+            return viewModel;
         }
         private async Task<IEnumerable<SaleListing>> GetSaleListingData()
         {
