@@ -151,6 +151,13 @@ namespace Intl.Realty.Firm.DataAccess
                 },
             };
             modelBuilder.Entity<IdentityUserRole<Guid>>().HasData(userRoles);
+
+            modelBuilder.Entity<DealTransactionNumberRange>().HasData(
+            new DealTransactionNumberRange { Id = 1, Year = DateTime.Now.Year, CurrentNumber = 0, NumberRange = "1000000" },
+            new DealTransactionNumberRange { Id = 2, Year = DateTime.Now.Year + 1, CurrentNumber = 0, NumberRange = "1000000" },
+            new DealTransactionNumberRange { Id = 3, Year = DateTime.Now.Year + 2, CurrentNumber = 0, NumberRange = "1000000" },
+            new DealTransactionNumberRange { Id = 4, Year = DateTime.Now.Year + 3, CurrentNumber = 0, NumberRange = "1000000" }
+            );
         }
     }
 

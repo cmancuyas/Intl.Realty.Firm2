@@ -9,6 +9,10 @@ using Microsoft.AspNetCore.Identity;
 using Intl.Realty.Firm.Model.Model;
 using Intl.Realty.Firm.Model.ViewModel.AllDealsVM;
 using Intl.Realty.Firm.Utility.Mapper;
+using Intl.Realty.Firm.Models;
+using MailKit.Search;
+using System.Data.Entity.Core.Common.CommandTrees;
+using System.Drawing.Printing;
 
 namespace Intl.Realty.Firm.Controllers
 {
@@ -146,8 +150,28 @@ namespace Intl.Realty.Firm.Controllers
             var modelList = await _unitOfWork.SaleListing
                             .GetAllAsync(
                                 x => x.IsDeleted == false,
-                                includeProperties: "IRFDeal,TransactionType,DealStatus"
+                                includeProperties: "IRFDeal,TransactionType,DealStatus",
+                                orderBy: x=>x.OrderByDescending(x => x.CreatedAt)
+                                //pageSize: pageSize,
+                                //pageNumber:pageIndex
                                 );
+
+
+            //SortModel sortModel = new SortModel();
+
+            //sortModel.AddColumn("name");
+            //sortModel.AddColumn("description");
+            //sortModel.ApplySort(sortExpression);
+            //ViewData["sortModel"] = sortModel;
+            //ViewBag.SearchText = searchText;
+
+            //PaginatedList<AllDealsViewModel> allDealsViewModelCurrentMonth = viewModel.AllDealsForCurrentMonth(sortModel.SortedProperty, sortModel.SortOrder, searchText, page, pageSize);
+
+            ////int totRecs = ((PaginatedList<Unit>)units).TotalRecords;
+
+            //var pager = new PagerModel(allDealsViewModelCurrentMonth.TotalRecords, page, pageSize);
+            //pager.SortExpression = sortExpression;
+            //this.ViewBag.Pager = pager;
 
             foreach (var item in modelList)
             {
