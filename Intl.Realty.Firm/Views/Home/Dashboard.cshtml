@@ -39,28 +39,27 @@
         <div class="col-md-3">
             <div class="card">
                 <div class="card-body">
-                    <p class="card-title">SaleListing</p>
+                    <p class="card-title">Sale Listing</p>
                     <span class="label">Today</span>
                     <p class="value">@Model.SaleListingCountToday</p>
-                    <div class="progress" style="height: 8px;">
+                    <div class="progress mb-4" style="height: 8px;">
                         <div class="progress-bar w-75" role="progressbar" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"></div>
                     </div>
-                    <div class="d-flex">
-                        <div>
+                    <div class="d-flex justify-content-between">
+                        <div class="card-btn">
                             <a asp-action="Index"
                                asp-controller="SaleListing"
                                class="btn btn-link d-flex align-items-center">
                                 View Sale Listing
                             </a>
                         </div>
-                        <div class="ml-auto">
+                        <div class="card-btn ml-auto">
                             <a asp-action="Create"
                                asp-controller="SaleListing"
                                class="btn btn-link d-flex align-items-center">
                                 Create Sale Listing
                             </a>
                         </div>
-
                     </div>
 
                 </div>
@@ -73,18 +72,18 @@
                     <p class="card-title">Sale Coop</p>
                     <span class="label">Today</span>
                     <p class="value">@Model.SaleCoopCountToday</p>
-                    <div class="progress" style="height: 8px;">
+                    <div class="progress mb-4" style="height: 8px;">
                         <div class="progress-bar w-75" role="progressbar" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"></div>
                     </div>
-                    <div class="d-flex">
-                        <div>
+                    <div class="d-flex justify-content-between">
+                        <div class="card-btn">
                             <a asp-action="Index"
                                asp-controller="SaleCoop"
                                class="btn btn-link d-flex align-items-center">
                                 View Sale Coop
                             </a>
                         </div>
-                        <div class="ml-auto">
+                        <div class="card-btn ml-auto">
                             <a asp-action="Create"
                                asp-controller="SaleCoop"
                                class="btn btn-link d-flex align-items-center">
@@ -103,18 +102,18 @@
                     <p class="card-title">Lease Listing</p>
                     <span class="label">Today</span>
                     <p class="value">@Model.LeaseListingCountToday</p>
-                    <div class="progress" style="height: 8px;">
+                    <div class="progress mb-4" style="height: 8px;">
                         <div class="progress-bar w-75" role="progressbar" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"></div>
                     </div>
-                    <div class="d-flex">
-                        <div>
+                    <div class="d-flex justify-content-between">
+                        <div class="card-btn">
                             <a asp-action="Index"
                                asp-controller="LeaseListing"
                                class="btn btn-link d-flex align-items-center">
                                 View Lease Listing
                             </a>
                         </div>
-                        <div class="ml-auto">
+                        <div class="card-btn ml-auto">
                             <a asp-action="Create"
                                asp-controller="LeaseListing"
                                class="btn btn-link d-flex align-items-center">
@@ -133,18 +132,18 @@
                     <p class="card-title">Lease Coop</p>
                     <span class="label">Today</span>
                     <p class="value">@Model.LeaseCoopCountToday</p>
-                    <div class="progress" style="height: 8px;">
+                    <div class="progress mb-4" style="height: 8px;">
                         <div class="progress-bar w-75" role="progressbar" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"></div>
                     </div>
-                    <div class="d-flex">
-                        <div>
+                    <div class="d-flex justify-content-between">
+                        <div class="card-btn">
                             <a asp-action="Index"
                                asp-controller="LeaseCoop"
                                class="btn btn-link d-flex align-items-center">
                                 View Lease Coop
                             </a>
                         </div>
-                        <div class="ml-auto">
+                        <div class="card-btn ml-auto">
                             <a asp-action="Create"
                                asp-controller="LeaseCoop"
                                class="btn btn-link d-flex align-items-center">
@@ -242,7 +241,7 @@
                                 <input name="searchBy" class="form-control" placeholder="Search" />
                             </div>
                             <div class="col-md-4">
-                                <button type="submit" class="btn btn-info">Search</button>
+                                <button type="submit" class="btn btn-primary w-25">Search</button>
                             </div>
                         </div>
                     </form>

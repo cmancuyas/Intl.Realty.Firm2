@@ -10,19 +10,19 @@
 <partial name="~/Views/Shared/Modal/_ConfirmSubmitModal.cshtml" />
 <partial name="~/Views/Shared/Modal/_ConfirmSuccessModal.cshtml" />
 <partial name="~/Views/Shared/Modal/_ConfirmSaveModal.cshtml" />
-<div class="mb-5">
+<div class="page-controller mb-5">
     @*     <a href="@Url.Action("Index","SaleListing")" class="text-decoration-none text-blue d-flex mb-4">
     <i data-feather="chevron-left"></i><span>Back</span>
     </a> *@
-    <a href="##" onClick="history.go(-1); return false;">
+    <a href="##" class="back" onClick="history.go(-1); return false;">
         <i data-feather="chevron-left"></i><span>Back</span>
     </a>
-    <div class="row justify-content-center">
-        <div class="col-md-8 card p-4">
-            <h1 class="text-blue mb-0">Create Sale Listing</h1>
-            <hr class="my-4" />
+    <div class="data-form row justify-content-center">
+        <div class="col-md-8 card w-100 mt-4 p-4">
+            <h1 class="text-blue mb-3">Create Sale Listing</h1>
             <form asp-action="Create"
                   asp-controller="SaleListing"
+                  class="mb-5"
                   method="post"
                   enctype="multipart/form-data">
                 <div asp-validation-summary="All" class="text-danger"></div>
@@ -326,7 +326,7 @@
                 </div>
 
                 <hr class="my-5" />
-                <div class="form-group d-flex justify-content-center gap-4">
+                <div class="form-group d-flex justify-content-end gap-4">
                     <input type="button" value="Cancel" class="btn btn-secondary w-15" onclick="window.location.href='@Url.Action("Index", "SaleListing")'" />
                     <button type="reset" class="btn btn-secondary w-15" onclick="$('.text-danger').hide();">Reset</button>
                     <button type="submit"
