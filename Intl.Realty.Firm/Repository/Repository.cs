@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 using Intl.Realty.Firm.DataAccess;
+using Intl.Realty.Firm.Model.Pagination;
 
 namespace Intl.Realty.Firm.Repository
 {
@@ -51,11 +52,12 @@ namespace Intl.Realty.Firm.Repository
             return await query.FirstOrDefaultAsync() ?? query.FirstOrDefault()!;
 
         }
-        public async Task<IEnumerable<T>> GetAllAsync(Expression<Func<T, bool>>? filter = null, string?
-                                                    includeProperties = null,
-                                                    Func<IQueryable<T>, IOrderedQueryable<T>> orderBy = null!,
-                                                    bool tracked = false,
-                                                    int pageSize = 0, int pageNumber = 1)
+        public async Task<IEnumerable<T>>
+                GetAllAsync(Expression<Func<T, bool>>? filter = null,
+                            string? includeProperties = null,
+                            Func<IQueryable<T>, IOrderedQueryable<T>> orderBy = null!,
+                            bool tracked = false,
+                            int pageSize = 0, int pageNumber = 1)
         {
             IQueryable<T> query = dbSet;
 
@@ -93,9 +95,41 @@ namespace Intl.Realty.Firm.Repository
             }
             return await query.ToListAsync();
         }
+        public async Task<PaginatedList<T>> GetPagedAsync(
+            Expression<Func<T, bool>>? filter = null, 
+            string? includeProperties = null, 
+            Func<IQueryable<T>, IOrderedQueryable<T>> orderBy = null, 
+            bool tracked = false, 
+            int pageSize = 0, 
+            int pageIndex = 1)
+        {
+            IQueryable<T> query = dbSet;
+
+            if (filter != null)
+            {
+                query = query.Where(filter);
+            }
+
+            // Include the properties specified
+            foreach (var includeProperty in includeProperties.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
+            {
+                query = query.Include(includeProperty);
+            }
+
+            // Apply ordering if provided
+            if (orderBy != null)
+            {
+                query = orderBy(query);
+            }
+
+            // Return a paginated list
+            return await PaginatedList<T>.CreateAsync(query, pageIndex, pageSize);
+        }
+
         public async Task UpdateAsync(T entity)
         {
-            _context.Update(entity);
+            _context.Attach(entity);
+            _context.Entry(entity).State = EntityState.Modified;
             await _context.SaveChangesAsync();
         }
         public async Task UpdateRangeAsync(IEnumerable<T> entities)
@@ -106,7 +140,8 @@ namespace Intl.Realty.Firm.Repository
 
         public async Task RemoveAsync(T entity)
         {
-            _context.Remove(entity);
+            dbSet.Attach(entity);
+            _context.Entry(entity).State = EntityState.Modified;
             await _context.SaveChangesAsync();
         }
 
@@ -214,5 +249,7 @@ namespace Intl.Realty.Firm.Repository
         {
             return dbSet.Count();
         }
+
+
     }
 }

@@ -25,11 +25,12 @@
             {
                 <h1 class="text-blue">Dashboard</h1>
             }
-            else{
+            else
+            {
                 <h1 class="text-blue">Admin Dashboard</h1>
             }
         }
-        
+
     </div>
 </div>
 
@@ -235,35 +236,79 @@
             <div class="card-body">
                 <h5 class="card-title">Monthly Transactions - @DateTime.Now.ToString("MMMM") @DateTime.Now.ToString("yyyy")</h5>
                 <div class="table-responsive">
-                    <form asp-action="DashboardSaleListingForm">
-                        <div class="row">
-                            <div class="col-md-8">
-                                <input name="searchBy" class="form-control" placeholder="Search" />
-                            </div>
-                            <div class="col-md-4">
-                                <button type="submit" class="btn btn-primary w-25">Search</button>
-                            </div>
+                    <!-- Total Products and Total Sales -->
+                    <div class="dashboard-stats">
+                        <h3>Total Products: @Model.AllDealsTotalDeals</h3>
+                    </div>
+
+                    <!-- Filter form -->
+                    <form method="get" asp-action="Dashboard">
+                        <div>
+                            <input type="text" name="searchString" value="@Model.AllDealsSearchString" placeholder="Search Products..." />
+                            <select asp-for="AllDealsPageSize" asp-items="new SelectList(new[] {5, 10, 20, 50})">
+                                <option value="">Select Page Size</option>
+                            </select>
+                            <button type="submit">Search</button>
                         </div>
                     </form>
-                    <table class="table table-custom">
+
+
+                    <!-- Products Table -->
+                    <table class="table">
                         <thead>
                             <tr>
-                                <th>Deal #</th>
-                                <th>Transaction</th>
-                                <th>Property Address</th>
-                                <th>Deal Status</th>
-                                <th>Created By</th>
-                                <th>Created At</th>
-                                <th>Final Closing Date</th>
-                                <th>Attachment</th>
+                                <th>
+                                    <a asp-action="Dashboard"
+                                       asp-route-sortOrder='"@Model.AllDealsCurrentSort == "dealTransactionNumber" ? "dealTransactionNumber_desc" : "dealTransactionNumber"'>
+                                       Deal#
+                                   </a>
+                                </th>
+                                <th>
+                                    <a asp-action="Dashboard"
+                                       asp-route-sortOrder='"@Model.AllDealsCurrentSort == "transactionType" ? "transactionType_desc" : "transactionType"'>
+                                        Transaction Type
+                                    </a>
+                                </th>
+                                <th>
+                                <th>
+                                    <a asp-action="Dashboard"
+                                       asp-route-sortOrder='"@Model.AllDealsCurrentSort == "propertyAddress" ? "propertyAddress_desc" : "propertyAddress"'>
+                                        Property Address
+                                    </a>
+                                </th>
+                                <th>
+                                    <a asp-action="Dashboard"
+                                       asp-route-sortOrder='"@Model.AllDealsCurrentSort == "dealStatus" ? "dealStatus_desc" : "dealStatus"'>
+                                        Deal Status
+                                    </a>
+                                </th>
+                                <th>
+                                <th>
+                                    <a asp-action="Dashboard"
+                                       asp-route-sortOrder='"@Model.AllDealsCurrentSort == "createdAt" ? "createdAt_desc" : "createdAt"'>
+                                        Created At
+                                    </a>
+                                </th>
+                                <th>
+                                    <a asp-action="Dashboard"
+                                       asp-route-sortOrder='"@Model.AllDealsCurrentSort == "finalClosingDate" ? "finalClosingDate_desc" : "finalClosingDate"'>
+                                        Final Closing Date
+                                    </a>
+                                </th>
+                                <th>
+                                    <a asp-action="Dashboard"
+                                       asp-route-sortOrder='"@Model.AllDealsCurrentSort == "attachment" ? "attachment_desc" : "attachment"'>
+                                       Attachment
+                                    </a>
+                                </th>
                                 <th>Action</th>
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach (var item in Model.AllDealsForCurrentMonth)
+                            @foreach (var item in Model.AllDeals!)
                             {
                                 <tr>
-                                    <td>@item.DealTransactionNumber</td>
+                                    <td>@item.Id</td>
                                     <td>@item.TransactionTypeName</td>
                                     <td>@item.PropertyAddress</td>
                                     <td>@item.DealStatusName</td>
@@ -272,26 +317,26 @@
                                     <td>@item.FinalClosingDate</td>
                                     <td>
                                         @{
-                                            if (item.FileExtensions.Any())
+                                            if (item.FileExtensions!.Any())
                                             {
-                                                var str = item.FileExtensions.FirstOrDefault();
+                                                var str = item.FileExtensions!.FirstOrDefault();
                                                 string[] split = str!.Split('.');
                                                 var fileExtension = split[1];
                                                 <div class="attachment-icon">@fileExtension</div>
                                             }
                                             else
                                             {
-                                                
+                                                <div class="attachment-icon">PDF</div>
                                             }
                                         }
 
 
                                     </td>
                                     <td>
-                                        <a class="btn btn-link" type="button" asp-action="Preview" asp-controller="@item.TransactionTypeName" asp-route-id="@item.Id">
+                                        <a class="btn btn-link" type="button" asp-action="Preview" asp-controller="SaleListing" asp-route-id="@item.Id">
                                             Preview
                                         </a>
-                                        <a class="btn btn-link" type="button" asp-action="Edit" asp-controller="@item.TransactionTypeName" asp-route-id="@item.Id">
+                                        <a class="btn btn-link" type="button" asp-action="Edit" asp-controller="SaleListing" asp-route-id="@item.Id">
                                             Edit
                                         </a>
                                     </td>
@@ -300,7 +345,51 @@
                         </tbody>
                     </table>
 
+                    <!-- Pagination Controls -->
+                    <div class="pagination-controls">
+                        <p>Showing page @Model.AllDeals.PageIndex of @Model.AllDeals.TotalPages</p>
 
+                        <nav aria-label="Page navigation">
+                            <ul class="pagination">
+                                <!-- First Page Link -->
+                                @if (Model.AllDeals.PageIndex != 1)
+                                {
+                                    <li class="page-item">
+                                        <a class="page-link" asp-page="./Dashboard" asp-route-pageIndex="1">First</a>
+                                    </li>
+                                }
+
+                                <!-- Previous Page Link -->
+                                @if (Model.AllDeals.HasPreviousPage)
+                                {
+                                    <li class="page-item">
+                                        <a class="page-link" asp-page="./Dashboard" asp-route-pageIndex="@(Model.AllDeals.PageIndex - 1)">Previous</a>
+                                    </li>
+                                }
+
+                                <!-- Current Page Display -->
+                                <li class="page-item active">
+                                    <span class="page-link">@Model.AllDeals.PageIndex</span>
+                                </li>
+
+                                <!-- Next Page Link -->
+                                @if (Model.AllDeals.HasNextPage)
+                                {
+                                    <li class="page-item">
+                                        <a class="page-link" asp-page="./Dashboard" asp-route-pageIndex="@(Model.AllDeals.PageIndex + 1)">Next</a>
+                                    </li>
+                                }
+
+                                <!-- Last Page Link -->
+                                @if (Model.AllDeals.PageIndex != Model.AllDeals.TotalPages)
+                                {
+                                    <li class="page-item">
+                                        <a class="page-link" asp-page="./Dashboard" asp-route-pageIndex="@(Model.AllDeals.TotalPages)">Last</a>
+                                    </li>
+                                }
+                            </ul>
+                        </nav>
+                    </div>
                 </div>
             </div>
         </div>

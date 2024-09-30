@@ -1,6 +1,6 @@
 ﻿namespace Intl.Realty.Firm.Model.ViewModel.AllDealsVM
 {
-    public class AllDealsViewModel
+    public class AllDealViewModel
     {
         public int Id { get; set; }
         public int TransactionTypeId { get; set; }

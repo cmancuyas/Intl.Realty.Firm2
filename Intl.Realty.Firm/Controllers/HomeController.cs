@@ -9,10 +9,7 @@ using Microsoft.AspNetCore.Identity;
 using Intl.Realty.Firm.Model.Model;
 using Intl.Realty.Firm.Model.ViewModel.AllDealsVM;
 using Intl.Realty.Firm.Utility.Mapper;
-using Intl.Realty.Firm.Models;
-using MailKit.Search;
-using System.Data.Entity.Core.Common.CommandTrees;
-using System.Drawing.Printing;
+using Intl.Realty.Firm.Service.IService;
 
 namespace Intl.Realty.Firm.Controllers
 {
@@ -22,24 +19,45 @@ namespace Intl.Realty.Firm.Controllers
         private readonly ILogger<HomeController> _logger;
         private readonly IUnitOfWork _unitOfWork;
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly IAllDealsService _allDealsService;
 
         public HomeController(ILogger<HomeController> logger,
                               IUnitOfWork unitOfWork,
-                              UserManager<ApplicationUser> userManager
+                              UserManager<ApplicationUser> userManager,
+                              IAllDealsService allDealsService
                                 )
         {
             _logger = logger;
             _unitOfWork = unitOfWork;
             _userManager = userManager;
+            _allDealsService = allDealsService;
         }
 
         public IActionResult Index()
         {
             return View();
         }
-        public async Task<IActionResult> Dashboard()
+        public async Task<IActionResult> Dashboard(int? pageIndex, int? pageSize, string searchString, string sortOrder)
         {
             DashboardViewModel viewModel = await GetDashboardData();
+
+            int currentPage = pageIndex ?? 1;
+            int currentPageSize = pageSize ?? 10;
+
+            // Get the dashboard data using the unified DashboardModel
+            var dashboardViewModel = await _allDealsService.GetAllDealsForDashboardData(
+                currentPage,
+                currentPageSize,
+                searchString,
+                sortOrder
+            );
+
+            viewModel.AllDealsCurrentSort = dashboardViewModel.AllDealsCurrentSort;
+            viewModel.AllDealsPageSize = dashboardViewModel.AllDealsPageSize;
+            viewModel.AllDealsSearchString = dashboardViewModel.AllDealsSearchString;
+            viewModel.AllDealsTotalDeals = dashboardViewModel.AllDealsTotalDeals;
+            viewModel.AllDeals = dashboardViewModel.AllDeals;
+ 
 
             return View(viewModel);
         }
@@ -109,32 +127,17 @@ namespace Intl.Realty.Firm.Controllers
                                                  viewModel.LeaseCoopListToday,
                                                  viewModel.LeaseListingListToday);
 
-
-            var allDealsForCurrentMonth = await GetAllDealsFor(viewModel.SaleListingListMonth,
-                                                                viewModel.SaleCoopListMonth,
-                                                                viewModel.LeaseCoopListMonth,
-                                                                viewModel.LeaseListingListMonth);
-
-            var allDealsForAll = await GetAllDealsFor(viewModel.SaleListingListAll,
-                                                    viewModel.SaleCoopListAll,
-                                                    viewModel.LeaseCoopListAll,
-                                                    viewModel.LeaseListingListAll);
-
             allDealsPast1Min = allDealsPast1Min.OrderByDescending(x => x.CreatedAt).ToList();
             allDealsPast5Mins = allDealsPast5Mins.OrderByDescending(x => x.CreatedAt).ToList();
             allDealsPastHour = allDealsPastHour.OrderByDescending(x => x.CreatedAt).ToList();
             allDealsToday = allDealsToday.OrderByDescending(x => x.CreatedAt).ToList();
-            allDealsForCurrentMonth = allDealsForCurrentMonth.OrderByDescending(x => x.CreatedAt).ToList();
             allDealsPastHour = allDealsPastHour.OrderByDescending(x => x.CreatedAt).ToList();
-            allDealsForAll = allDealsForAll.OrderByDescending(x => x.CreatedAt).ToList();
-
 
             viewModel.AllDealsPast1Min = allDealsPast1Min;
             viewModel.AllDealsPast5Mins = allDealsPast5Mins;
             viewModel.AllDealsPastHour = allDealsPastHour;
             viewModel.AllDealsToday = allDealsToday;
-            viewModel.AllDealsForCurrentMonth = allDealsForCurrentMonth;
-            viewModel.AllDealsForAll = allDealsForAll;
+
 
             if (allDealsToday.Count > 10)
             {
@@ -152,27 +155,7 @@ namespace Intl.Realty.Firm.Controllers
                                 x => x.IsDeleted == false,
                                 includeProperties: "IRFDeal,TransactionType,DealStatus",
                                 orderBy: x=>x.OrderByDescending(x => x.CreatedAt)
-                                //pageSize: pageSize,
-                                //pageNumber:pageIndex
                                 );
-
-
-            //SortModel sortModel = new SortModel();
-
-            //sortModel.AddColumn("name");
-            //sortModel.AddColumn("description");
-            //sortModel.ApplySort(sortExpression);
-            //ViewData["sortModel"] = sortModel;
-            //ViewBag.SearchText = searchText;
-
-            //PaginatedList<AllDealsViewModel> allDealsViewModelCurrentMonth = viewModel.AllDealsForCurrentMonth(sortModel.SortedProperty, sortModel.SortOrder, searchText, page, pageSize);
-
-            ////int totRecs = ((PaginatedList<Unit>)units).TotalRecords;
-
-            //var pager = new PagerModel(allDealsViewModelCurrentMonth.TotalRecords, page, pageSize);
-            //pager.SortExpression = sortExpression;
-            //this.ViewBag.Pager = pager;
-
             foreach (var item in modelList)
             {
                 var fileUploads = await _unitOfWork.FileUpload.GetAllAsync(x => x.SaleListingId == item.Id);
@@ -289,8 +272,7 @@ namespace Intl.Realty.Firm.Controllers
             dashboardViewModel.SaleListingListPast5Mins = saleListingListPast5Mins;
             dashboardViewModel.SaleListingListPastHour = saleListingListPastHour;
             dashboardViewModel.SaleListingListToday = saleListingListToday;
-            dashboardViewModel.SaleListingListMonth = saleListingListMonth;
-            dashboardViewModel.SaleListingListAll = saleListingListAll;
+
             return (dashboardViewModel);
         }
         private DashboardViewModel GetAllDealsPerSaleCoop(IEnumerable<SaleCoop> saleCoopIEnum, DashboardViewModel dashboardViewModel)
@@ -337,8 +319,7 @@ namespace Intl.Realty.Firm.Controllers
             dashboardViewModel.SaleCoopListPast5Mins = saleCoopListPast5Mins;
             dashboardViewModel.SaleCoopListPastHour = saleCoopListPastHour;
             dashboardViewModel.SaleCoopListToday = saleCoopListToday;
-            dashboardViewModel.SaleCoopListMonth = saleCoopListMonth;
-            dashboardViewModel.SaleCoopListAll = saleCoopListAll;
+
             return (dashboardViewModel);
         }
         private DashboardViewModel GetAllDealsPerLeaseListing(IEnumerable<LeaseListing> leaseListingIEnum, DashboardViewModel dashboardViewModel)
@@ -385,8 +366,7 @@ namespace Intl.Realty.Firm.Controllers
             dashboardViewModel.LeaseListingListPast5Mins = leaseListingListPast5Mins;
             dashboardViewModel.LeaseListingListPastHour = leaseListingListPastHour;
             dashboardViewModel.LeaseListingListToday = leaseListingListToday;
-            dashboardViewModel.LeaseListingListMonth = leaseListingListMonth;
-            dashboardViewModel.LeaseListingListAll = leaseListingListAll;
+
             return (dashboardViewModel);
         }
         private DashboardViewModel GetAllDealsPerLeaseCoop(IEnumerable<LeaseCoop> leaseCoopIEnum, DashboardViewModel dashboardViewModel)
@@ -433,19 +413,18 @@ namespace Intl.Realty.Firm.Controllers
             dashboardViewModel.LeaseCoopListPast5Mins = leaseCoopListPast5Mins;
             dashboardViewModel.LeaseCoopListPastHour = leaseCoopListPastHour;
             dashboardViewModel.LeaseCoopListToday = leaseCoopListToday;
-            dashboardViewModel.LeaseCoopListMonth = leaseCoopListMonth;
-            dashboardViewModel.LeaseCoopListAll = leaseCoopListAll;
+
             return (dashboardViewModel);
         }
 
 
-        private async Task<List<AllDealsViewModel>> GetAllDealsFor(
+        private async Task<List<AllDealViewModel>> GetAllDealsFor(
                                                     List<SaleListing> saleListingList,
                                                     List<SaleCoop> saleCoopList,
                                                     List<LeaseCoop> leaseCoopList,
                                                     List<LeaseListing> leaseListingList)
         {
-            List<AllDealsViewModel> allDealsToday = new List<AllDealsViewModel>();
+            List<AllDealViewModel> allDealsToday = new List<AllDealViewModel>();
 
             foreach (var item in saleListingList)
             {

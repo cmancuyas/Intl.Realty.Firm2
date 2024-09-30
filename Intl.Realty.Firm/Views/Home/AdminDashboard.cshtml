@@ -246,7 +246,10 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach (var item in Model.AllDealsForCurrentMonth)
+                            @{
+
+                            }
+                            @foreach (var item in Model.AllDeals!)
                             {
                                 <tr>
                                     <td>@item.Id</td>
@@ -258,9 +261,9 @@
                                     <td>@item.FinalClosingDate</td>
                                     <td>
                                         @{
-                                            if (item.FileExtensions.Any())
+                                            if (item.FileExtensions!.Any())
                                             {
-                                                var str = item.FileExtensions.FirstOrDefault();
+                                                var str = item.FileExtensions!.FirstOrDefault();
                                                 string[] split = str!.Split('.');
                                                 var fileExtension = split[1];
                                                 <div class="attachment-icon">@fileExtension</div>

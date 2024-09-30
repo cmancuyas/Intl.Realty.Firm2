@@ -110,6 +110,7 @@ builder.Services.AddScoped<IXmlService, XmlService>();
 builder.Services.AddScoped<IYamlService, YamlService>();
 
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+builder.Services.AddScoped<IAllDealsService, AllDealsService>();
 builder.Services.AddSingleton<IAuthorizationHandler, SuperAdminHandler>();
 builder.Services.AddSingleton<IAuthorizationHandler, CanEditOnlyOtherAdminRolesAndClaimsHandler>();
 builder.Services.AddSingleton<DataProtectionPurposeStrings>();

@@ -219,13 +219,13 @@ namespace Intl.Realty.Firm.Utility.Mapper
             return listViewModel;
         }
 
-        public static AllDealsViewModel ToAllDealsViewModel(this SaleListing model,
+        public static AllDealViewModel ToAllDealsViewModel(this SaleListing model,
                                                             ApplicationUser createdByUser,
                                                             ApplicationUser? updatedByUser,
                                                             ApplicationUser? deletedByUser
                                                             )
         {
-            AllDealsViewModel viewModel = new AllDealsViewModel();
+            AllDealViewModel viewModel = new AllDealViewModel();
 
             viewModel.Id = model.Id;
             viewModel.BridgeId = model.Id;

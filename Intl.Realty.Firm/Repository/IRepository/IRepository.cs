@@ -1,15 +1,38 @@
-﻿using System.Linq.Expressions;
+﻿using Intl.Realty.Firm.Model.Pagination;
+using System.Linq.Expressions;
 
 namespace Intl.Realty.Firm.Repository.IRepository
 {
     public interface IRepository<T> where T : class
     {
-        Task<IEnumerable<T>> GetAllAsync(Expression<Func<T, bool>>? filter = null,
+        Task<IEnumerable<T>> GetAllAsync(
+                    Expression<Func<T, bool>>? filter = null,
                     string? includeProperties = null,
                     Func<IQueryable<T>, IOrderedQueryable<T>> orderBy = null!,
                     bool tracked = false,
                     int pageSize = 0,
                     int pageNumber = 1);
+        // Pagination, Filtering, and Sorting
+        Task<PaginatedList<T>> GetPagedAsync(
+                    Expression<Func<T, bool>>? filter = null,
+                    string? includeProperties = null,
+                    Func<IQueryable<T>, IOrderedQueryable<T>> orderBy = null!,
+                    bool tracked = false,
+                    int pageSize = 0,
+                    int pageNumber = 1);
+
+        // Merging two tables with a category
+        public IQueryable<TResult> MergeWith<TEntity2, TKey, TResult>(
+            IQueryable<T> table1,
+            IQueryable<TEntity2> table2,
+            Expression<Func<T, TKey>> keySelector1,
+            Expression<Func<TEntity2, TKey>> keySelector2,
+            Expression<Func<T, TEntity2, TResult>> resultSelector)
+            where TEntity2 : class
+        {
+            return table1.Join(table2, keySelector1, keySelector2, resultSelector);
+        }
+
         Task<T> GetAsync(Expression<Func<T, bool>> filter, string? includeProperties = null, bool tracked = false);
         Task AddAsync(T entity);
         Task AddRangeAsync(IEnumerable<T> entity);
