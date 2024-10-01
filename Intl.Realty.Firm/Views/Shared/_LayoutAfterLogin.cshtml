@@ -87,13 +87,13 @@
                             <circle cx="12" cy="4" r="2" fill="red" />
                         </svg>
                     </a>
-                    <div class="d-flex flex-column justify-content-end">
+                    <div class="d-flex flex-column justify-content-end roles">
                         @{
                             var user = await _userManager.GetUserAsync(User);
                             var roles = await _userManager.GetRolesAsync(user!);
-                            <span id="DisplayName" class="fw-bolder text-end">@user!.Email</span>
-                            <span id="DisplayFullName" class="small text-end">@user.FirstName @user.LastName</span>
-                            <span id="DisplayRole" class="small text-end">
+                            <span id="DisplayFullName" class="fw-bolder text-end name-role">@user.FirstName @user.LastName</span>
+                            <span id="DisplayName" class="small text-end">@user!.Email</span>
+                            <span id="DisplayRole" class="small text-end badge-role">
                                 @foreach(var item in roles)
                                 {
                                     @item
@@ -105,7 +105,7 @@
                     <div class="d-fex">
                         <img src="~/files/img/avatar-blank.png" class="avatar" id="avatar" width="40" height="40" />
                         <div class="dropdown">
-                            <button class="bg-transparent px-0" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <button class="bg-transparent b-none px-0" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 <i data-feather="chevron-down" class="text-secondary"></i>
                             </button>
                             <div class="dropdown-menu text-center text-secondary py-0">
