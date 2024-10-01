@@ -1,7 +1,6 @@
 ﻿using Intl.Realty.Firm.Model.Model;
 using Intl.Realty.Firm.Model.ViewModel.AccountVM;
 using Intl.Realty.Firm.Models.Auxiliary;
-using System.Collections.Generic;
 
 namespace Intl.Realty.Firm.Helper
 {
@@ -34,7 +33,7 @@ namespace Intl.Realty.Firm.Helper
 
         public static MailRequest SendNotificationWhenDealIsSubmitted(ApplicationUser user, 
                                                                      IList<string> userRoles, string transactionTypeName, 
-                                                                     List<InternalEmail> emails, int dealId, string dealLink)
+                                                                     List<InternalEmail> emails, string dealId, string dealLink)
         {
             var emailString = string.Empty;
             foreach (var email in emails)
@@ -61,7 +60,7 @@ namespace Intl.Realty.Firm.Helper
                                                            IList<string> userRoles, 
                                                            string transactionTypeName,
                                                            List<InternalEmail> emails, 
-                                                           int dealId, 
+                                                           string dealId, 
                                                            string dealLink)
         {
             var emailString = string.Empty;

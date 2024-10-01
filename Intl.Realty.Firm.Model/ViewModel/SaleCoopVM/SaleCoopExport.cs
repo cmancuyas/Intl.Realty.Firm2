@@ -6,7 +6,8 @@ namespace Intl.Realty.Firm.Model.ViewModel.SaleCoopVM
 {
     public class SaleCoopExport
     {
-        public int DealTransactionNumber { get; set; }
+        [Required]
+        public string DealTransactionNumber { get; set; } = string.Empty;
         public string TransactionType { get; set; } = string.Empty;
         public string DocumentType { get; set; } = string.Empty;
         public DateTime DateCreated { get; set; }

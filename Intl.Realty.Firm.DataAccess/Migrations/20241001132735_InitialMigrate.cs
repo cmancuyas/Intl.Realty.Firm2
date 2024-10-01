@@ -351,7 +351,7 @@ namespace Intl.Realty.Firm.DataAccess.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    DealTransactionNumber = table.Column<int>(type: "int", nullable: false),
+                    DealTransactionNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     TransactionTypeId = table.Column<int>(type: "int", nullable: false),
                     IRFDealId = table.Column<int>(type: "int", nullable: false),
                     DealStatusId = table.Column<int>(type: "int", nullable: false),
@@ -395,7 +395,7 @@ namespace Intl.Realty.Firm.DataAccess.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    DealTransactionNumber = table.Column<int>(type: "int", nullable: false),
+                    DealTransactionNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     TransactionTypeId = table.Column<int>(type: "int", nullable: false),
                     IRFDealId = table.Column<int>(type: "int", nullable: false),
                     DealStatusId = table.Column<int>(type: "int", nullable: false),
@@ -439,7 +439,7 @@ namespace Intl.Realty.Firm.DataAccess.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    DealTransactionNumber = table.Column<int>(type: "int", nullable: false),
+                    DealTransactionNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     TransactionTypeId = table.Column<int>(type: "int", nullable: false),
                     IRFDealId = table.Column<int>(type: "int", nullable: false),
                     DealStatusId = table.Column<int>(type: "int", nullable: false),
@@ -483,7 +483,7 @@ namespace Intl.Realty.Firm.DataAccess.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    DealTransactionNumber = table.Column<int>(type: "int", nullable: false),
+                    DealTransactionNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     TransactionTypeId = table.Column<int>(type: "int", nullable: false),
                     IRFDealId = table.Column<int>(type: "int", nullable: false),
                     DealStatusId = table.Column<int>(type: "int", nullable: false),
@@ -691,6 +691,17 @@ namespace Intl.Realty.Firm.DataAccess.Migrations
                 });
 
             migrationBuilder.InsertData(
+                table: "DealTransactionNumberRanges",
+                columns: new[] { "Id", "CreatedAt", "CreatedBy", "CurrentNumber", "DeletedAt", "DeletedBy", "IsActive", "IsDeleted", "NumberRange", "UpdatedAt", "UpdatedBy", "Year" },
+                values: new object[,]
+                {
+                    { 1, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new Guid("00000000-0000-0000-0000-000000000000"), 0, null, null, true, false, "1000000", null, null, 2024 },
+                    { 2, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new Guid("00000000-0000-0000-0000-000000000000"), 0, null, null, true, false, "1000000", null, null, 2025 },
+                    { 3, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new Guid("00000000-0000-0000-0000-000000000000"), 0, null, null, true, false, "1000000", null, null, 2026 },
+                    { 4, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new Guid("00000000-0000-0000-0000-000000000000"), 0, null, null, true, false, "1000000", null, null, 2027 }
+                });
+
+            migrationBuilder.InsertData(
                 table: "Departments",
                 columns: new[] { "Id", "Code", "CreatedAt", "CreatedBy", "DeletedAt", "DeletedBy", "Description", "IsActive", "IsDeleted", "UpdatedAt", "UpdatedBy" },
                 values: new object[,]
@@ -734,7 +745,7 @@ namespace Intl.Realty.Firm.DataAccess.Migrations
             migrationBuilder.InsertData(
                 table: "AspNetUsers",
                 columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "DepartmentId", "Email", "EmailConfirmed", "EmploymentStatusId", "FirstName", "LastName", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "ProfilePictureId", "RegistrationDate", "SecurityStamp", "TwoFactorEnabled", "UserAgreement", "UserName" },
-                values: new object[] { new Guid("74b7ddfa-9c71-4b95-84e2-9b5fcdef884c"), 0, "2ef250bb-bab5-44c1-a0b7-50fc6e507a11", null, "superadmin@internationalrealtyfirm.com", true, 1, "Christopher", "Mancuyas", false, null, "SUPERADMIN@INTERNATIONALREALTYFIRM.COM", "SUPERADMIN@INTERNATIONALREALTYFIRM.COM", "AQAAAAIAAYagAAAAEJTX3Yz5H42UmaX9IR165d4jQ1DANfF8VtZsbAeBP3y6v8yjCpUxnzHMKS9Yjt6cSw==", null, false, null, new DateTime(2024, 9, 29, 9, 50, 8, 553, DateTimeKind.Local).AddTicks(9182), "ca0c5845-5715-4813-9811-c08beafa2351", false, false, "superadmin@internationalrealtyfirm.com" });
+                values: new object[] { new Guid("74b7ddfa-9c71-4b95-84e2-9b5fcdef884c"), 0, "219eeed6-27bb-44d9-a4c6-e383965f73eb", null, "superadmin@internationalrealtyfirm.com", true, 1, "Christopher", "Mancuyas", false, null, "SUPERADMIN@INTERNATIONALREALTYFIRM.COM", "SUPERADMIN@INTERNATIONALREALTYFIRM.COM", "AQAAAAIAAYagAAAAEI/d9Q9GfjWm8p+/70m0OOemT1397V0WjvMWeTlsuRzDKKK7V7uBZZttlRfR769sRQ==", null, false, null, new DateTime(2024, 10, 1, 21, 27, 35, 89, DateTimeKind.Local).AddTicks(78), "d282efd2-5c43-4aad-90c3-26c5af5f9e4f", false, false, "superadmin@internationalrealtyfirm.com" });
 
             migrationBuilder.InsertData(
                 table: "DocumentTypeAssignments",

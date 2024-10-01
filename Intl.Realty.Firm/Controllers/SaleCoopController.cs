@@ -90,10 +90,19 @@ namespace DENR_FASPIS.Controllers
                 TempData["Message"] = JsonConvert.SerializeObject(notification);
                 return RedirectToAction(nameof(Index));
             }
-            viewModel.CreateSaleCoop.DealTransactionNumber = numberRange.CurrentNumber + 1;
+
             var transactionType = await _unitOfWork.TransactionType.GetAsync(x => x.Description == transactionTypeName);
             viewModel.CreateSaleCoop.TransactionType = transactionType;
             viewModel.CreateSaleCoop.TransactionTypeId = transactionType.Id;
+
+            var paddedTransactionType = transactionType.Id.ToString().PadLeft(2, '0');
+
+            var currentYear = DateTime.Now.Year.ToString();
+            var currentMonth = DateTime.Now.Month.ToString();
+            var paddedCurrentNumber = (numberRange.CurrentNumber + 1).ToString().PadLeft(5, '0');
+            var paddedNumberRange = currentYear + currentMonth + "-" + paddedTransactionType + "-" + paddedCurrentNumber;
+
+            viewModel.CreateSaleCoop.DealTransactionNumber = paddedNumberRange;
 
             var documentTypeAssignmentIEnum = await _unitOfWork.DocumentTypeAssignment.GetAllAsync(x => x.IsDeleted == false, includeProperties: "TransactionType,DocumentType");
             var documentTypeIEnum = await _unitOfWork.DocumentType.GetAllAsync(x => x.IsDeleted == false);
@@ -138,7 +147,7 @@ namespace DENR_FASPIS.Controllers
             var yearValidation = LinqExtensions.AndAlso<DealTransactionNumberRange>(x => x.IsDeleted == false, x => x.Year == DateTime.Now.Year);
 
             var numberRange = await _unitOfWork.DealTransactionNumberRange.GetAsync(yearValidation);
-            numberRange.CurrentNumber = viewModel.CreateSaleCoop.DealTransactionNumber;
+            numberRange.CurrentNumber += 1;
             if (numberRange != null)
             {
                 await _unitOfWork.DealTransactionNumberRange.UpdateAsync(numberRange);

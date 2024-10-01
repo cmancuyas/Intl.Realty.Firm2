@@ -7,7 +7,8 @@ namespace Intl.Realty.Firm.Model.ViewModel.LeaseListingVM
 {
     public class CreateLeaseListingViewModel
     {
-        public int DealTransactionNumber { get; set; }
+        [Required]
+        public string DealTransactionNumber { get; set; } = string.Empty;
         public int TransactionTypeId { get; set; }
         public int IRFDealId { get; set; }
         public CreateIRFDealViewModel CreateIRFDealViewModel { get; set; } = new CreateIRFDealViewModel();

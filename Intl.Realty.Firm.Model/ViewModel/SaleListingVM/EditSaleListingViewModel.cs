@@ -9,7 +9,8 @@ namespace Intl.Realty.Firm.Model.ViewModel.SaleListingVM
     {
         [Key]
         public int Id { get; set; }
-        public int DealTransactionNumber { get; set; }
+        [Required]
+        public string DealTransactionNumber { get; set; } = string.Empty;
         public int TransactionTypeId { get; set; }
         public int IRFDealId { get; set; }
         public DateTime? DateSubmitted { get; set; }

@@ -9,7 +9,7 @@ namespace Intl.Realty.Firm.Model.Model
         [DatabaseGeneratedAttribute(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
         [Required]
-        public int DealTransactionNumber { get; set; }
+        public string DealTransactionNumber { get; set; } = string.Empty;
         [Required]
         [ForeignKey("TransactionType")]
         public int TransactionTypeId { get; set; }

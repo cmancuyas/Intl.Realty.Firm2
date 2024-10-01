@@ -1,11 +1,13 @@
 ﻿using Intl.Realty.Firm.Model.Model;
+using System.ComponentModel.DataAnnotations;
 
 namespace Intl.Realty.Firm.Model.ViewModel.SaleListingVM
 {
     public class SaleListingViewModel : BaseModel
     {
         public int Id { get; set; }
-        public int DealTransactionNumber { get; set; }
+        [Required]
+        public string DealTransactionNumber { get; set; } = string.Empty;
         public int TransactionTypeId { get; set; }
         public int IRFDealId { get; set; }
         public int DealStatusId { get; set; }

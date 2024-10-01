@@ -123,7 +123,7 @@ namespace Intl.Realty.Firm.Repository
             }
 
             // Return a paginated list
-            return await PaginatedList<T>.CreateAsync(query, pageIndex, pageSize);
+            return PaginatedList<T>.CreateAsync(query, pageIndex, pageSize);
         }
 
         public async Task UpdateAsync(T entity)

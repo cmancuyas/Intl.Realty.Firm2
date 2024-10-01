@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Intl.Realty.Firm.DataAccess.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240929015009_InitialMigrate")]
+    [Migration("20241001132735_InitialMigrate")]
     partial class InitialMigrate
     {
         /// <inheritdoc />
@@ -176,7 +176,7 @@ namespace Intl.Realty.Firm.DataAccess.Migrations
                         {
                             Id = new Guid("74b7ddfa-9c71-4b95-84e2-9b5fcdef884c"),
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "2ef250bb-bab5-44c1-a0b7-50fc6e507a11",
+                            ConcurrencyStamp = "219eeed6-27bb-44d9-a4c6-e383965f73eb",
                             Email = "superadmin@internationalrealtyfirm.com",
                             EmailConfirmed = true,
                             EmploymentStatusId = 1,
@@ -185,10 +185,10 @@ namespace Intl.Realty.Firm.DataAccess.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "SUPERADMIN@INTERNATIONALREALTYFIRM.COM",
                             NormalizedUserName = "SUPERADMIN@INTERNATIONALREALTYFIRM.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEJTX3Yz5H42UmaX9IR165d4jQ1DANfF8VtZsbAeBP3y6v8yjCpUxnzHMKS9Yjt6cSw==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEI/d9Q9GfjWm8p+/70m0OOemT1397V0WjvMWeTlsuRzDKKK7V7uBZZttlRfR769sRQ==",
                             PhoneNumberConfirmed = false,
-                            RegistrationDate = new DateTime(2024, 9, 29, 9, 50, 8, 553, DateTimeKind.Local).AddTicks(9182),
-                            SecurityStamp = "ca0c5845-5715-4813-9811-c08beafa2351",
+                            RegistrationDate = new DateTime(2024, 10, 1, 21, 27, 35, 89, DateTimeKind.Local).AddTicks(78),
+                            SecurityStamp = "d282efd2-5c43-4aad-90c3-26c5af5f9e4f",
                             TwoFactorEnabled = false,
                             UserAgreement = false,
                             UserName = "superadmin@internationalrealtyfirm.com"
@@ -309,6 +309,52 @@ namespace Intl.Realty.Firm.DataAccess.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("DealTransactionNumberRanges");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreatedBy = new Guid("00000000-0000-0000-0000-000000000000"),
+                            CurrentNumber = 0,
+                            IsActive = true,
+                            IsDeleted = false,
+                            NumberRange = "1000000",
+                            Year = 2024
+                        },
+                        new
+                        {
+                            Id = 2,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreatedBy = new Guid("00000000-0000-0000-0000-000000000000"),
+                            CurrentNumber = 0,
+                            IsActive = true,
+                            IsDeleted = false,
+                            NumberRange = "1000000",
+                            Year = 2025
+                        },
+                        new
+                        {
+                            Id = 3,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreatedBy = new Guid("00000000-0000-0000-0000-000000000000"),
+                            CurrentNumber = 0,
+                            IsActive = true,
+                            IsDeleted = false,
+                            NumberRange = "1000000",
+                            Year = 2026
+                        },
+                        new
+                        {
+                            Id = 4,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreatedBy = new Guid("00000000-0000-0000-0000-000000000000"),
+                            CurrentNumber = 0,
+                            IsActive = true,
+                            IsDeleted = false,
+                            NumberRange = "1000000",
+                            Year = 2027
+                        });
                 });
 
             modelBuilder.Entity("Intl.Realty.Firm.Model.Model.Department", b =>
@@ -997,8 +1043,9 @@ namespace Intl.Realty.Firm.DataAccess.Migrations
                     b.Property<int>("DealStatusId")
                         .HasColumnType("int");
 
-                    b.Property<int>("DealTransactionNumber")
-                        .HasColumnType("int");
+                    b.Property<string>("DealTransactionNumber")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("datetime2");
@@ -1068,8 +1115,9 @@ namespace Intl.Realty.Firm.DataAccess.Migrations
                     b.Property<int>("DealStatusId")
                         .HasColumnType("int");
 
-                    b.Property<int>("DealTransactionNumber")
-                        .HasColumnType("int");
+                    b.Property<string>("DealTransactionNumber")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("datetime2");
@@ -1185,8 +1233,9 @@ namespace Intl.Realty.Firm.DataAccess.Migrations
                     b.Property<int>("DealStatusId")
                         .HasColumnType("int");
 
-                    b.Property<int>("DealTransactionNumber")
-                        .HasColumnType("int");
+                    b.Property<string>("DealTransactionNumber")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("datetime2");
@@ -1256,8 +1305,9 @@ namespace Intl.Realty.Firm.DataAccess.Migrations
                     b.Property<int>("DealStatusId")
                         .HasColumnType("int");
 
-                    b.Property<int>("DealTransactionNumber")
-                        .HasColumnType("int");
+                    b.Property<string>("DealTransactionNumber")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("datetime2");
