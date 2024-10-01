@@ -44,7 +44,7 @@ textarea:focus, textarea:focus-visible {
     display: none !important;
 }
 
-.b-none {
+.b-none, .b-none:focus, .b-none:focus-visible {
     border: none !important;
 }
 
@@ -56,6 +56,15 @@ textarea:focus, textarea:focus-visible {
     display: flex;
     justify-content: flex-end;
 }
+.fl {
+    float: left !important;
+}
+.fr {
+    float: right !important;
+}
+
+
+
 
 /*custom styling*/
 .pos-absolute {
@@ -1067,9 +1076,9 @@ input.select2-search__field {
 
 .dashboard-cards .label {
     border-radius: 4px;
-    background-color: #203d57;
+    background-color: #198754;
     color: white;
-    font-size: 13px;
+    font-size: 12px;
     padding: 2px 12px;
     position: absolute;
     right: 15px;
@@ -1108,6 +1117,29 @@ input.select2-search__field {
 .dashboard-lists .card-body {
     min-height: 25vh;
 }
+
+.roles {
+    display: flex !important;
+    align-items: end;
+}
+.roles-header {
+    background: #203d57;
+    color: #FFF;
+    padding: 10px;
+}
+.roles .name-role {
+    letter-spacing: -0.5px;
+}
+    .roles .badge-role {
+        background: #198754;
+        border-radius: 3px;
+        font-size: 12px;
+        font-weight: 500;
+        color: #FFF;
+        width: fit-content;
+        padding: 2px 10px;
+    }
+
 
 .dashboard-lists .list-group-item {
     display: flex;
@@ -1242,10 +1274,16 @@ input.select2-search__field {
 
     .tab-page .nav-tabs li .nav-link {
         padding: 10px 50px;
+        margin-bottom: -3px;
+        border: none !important;
+        font-weight: 600;
+        color: #000;
     }
-
-/* DATA FORM */
-.data-form .card {
+        .tab-page .nav-tabs li .nav-link:hover {
+            color: #203d57 !important;
+        }
+        /* DATA FORM */
+        .data-form .card {
     background-color: transparent !important;
     border: none !important;
     padding: 0 !important;
@@ -1274,10 +1312,13 @@ input.select2-search__field {
     .nav-tabs .nav-link:not(.active) {
         background: transparent !important;
     }
+
+
 /* TABLES */
+
 .tab-content, .tab-page .tab-content {
-    background: transparent !important;
-    padding: 0;
+    background: #FFF !important;
+    padding: 30px;
 }
 .tab-page .table-responsive #modelTable_wrapper .dt-length {
     text-align: right;
@@ -1296,4 +1337,8 @@ input.select2-search__field {
 }
 .tab-page .table-responsive #modelTable_wrapper .dt-paging .pagination {
     justify-content: flex-end;
+}
+
+.table-no-border .data-table th, .table-no-border .data-table td {
+    border: none !important;
 }

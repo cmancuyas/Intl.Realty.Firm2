@@ -75,7 +75,7 @@ namespace DENR_FASPIS.Controllers
 
             if (dealAdminEmails == null || dealAdminEmails.Count() == 0)
             {
-                var notification = _notificationService.Notify("Email for DealAdmin not found. Contact administrator to fix this issue", "Internal Email for DealAdmin not found", NotificationType.error);
+                var notification = _notificationService.Notify("Email for DealAdmin not found. Contact administrator to fix this issue", "Internal Email for Deal Admin not found", NotificationType.error);
                 TempData["Message"] = JsonConvert.SerializeObject(notification);
                 return RedirectToAction(nameof(Index));
             }

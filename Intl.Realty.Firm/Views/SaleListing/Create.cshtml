@@ -28,7 +28,7 @@
                 <div asp-validation-summary="All" class="text-danger"></div>
                 <input asp-for="CreateSaleListing.DealTransactionNumber" hidden/>
                 <div class="tab-page">
-                    <ul class="nav nav-tabs" id="consultantStatusManagementTab" role="tablist">
+                    <ul class="nav nav-tabs" id="consultantStatusManagementTab" role="tablist" style="border:none">
                         @foreach (var item in Model.Menus)
                         {
                             <li class="nav-item mx-0">
