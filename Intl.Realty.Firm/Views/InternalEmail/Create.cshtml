@@ -12,8 +12,8 @@
         <i data-feather="chevron-left"></i><span>Back</span>
     </a>
     <div class="row justify-content-center">
-        <div class="col-md-8 card p-4">
-            <h1 class="text-blue mb-0">Create InternalEmail</h1>
+        <div class="col-md-12 card p-4">
+            <h1 class="text-blue mb-0">Create Internal Email</h1>
             <hr class="my-4" />
             <form asp-action="Create"
                   asp-controller="InternalEmail"
@@ -41,26 +41,28 @@
                     }
                     </ul> *@
                 </div>
-                <div class="tab-content" style="background-color:white;">
+                <div class="tab-content p-0" style="background-color:white;">
 
                     <div class="tab-pane active" id="internalEmailDetails" aria-labelledby="internalEmailDetails-tab" style="background-color:white;">
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label class="control-label fw-bolder">Role Name</label>
-
-                                @Html.DropDownListFor(x => x.CreateInternalEmail.RoleId, Model.CreateInternalEmail.RoleIEnum, "Select Role...",
-                                         new
-                                         {
-                                             @class = "form-select",
-                                             @required = "required",
-                                         })
-                                @Html.ValidationMessageFor(x => x.CreateInternalEmail.RoleId, "", new { @class = "text-danger" })
-                            </div>
-                        </div>
+                        
                         <div class="row">
-                            <div class="col-md-6 mt-4">
+                            <div class="col-md-6 mb-3">
                                 <div class="form-group">
-                                    <label asp-for="CreateInternalEmail.Email" class="control-label fw-bolder">Email</label>
+                                    <label class="control-label fw-bolder">Role Name</label>
+
+                                    @Html.DropDownListFor(x => x.CreateInternalEmail.RoleId, Model.CreateInternalEmail.RoleIEnum, "Select Role...",
+                                             new
+                                             {
+                                                 @class = "form-select",
+                                                 @required = "required",
+                                             })
+                                    @Html.ValidationMessageFor(x => x.CreateInternalEmail.RoleId, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <div class="form-group">
+                                    <label asp-for="CreateInternalEmail.Email" class="control-label fw-bolder">Email Address</label>
                                     <input asp-for="CreateInternalEmail.Email" class="form-control" />
                                     <span asp-validation-for="CreateInternalEmail.Email" class="text-danger"></span>
                                 </div>

@@ -10,7 +10,8 @@ html {
 }
 
 .btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-    box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+/*    box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;*/
+box-shadow: none;
 }
 
 .form-check-input:checked {
@@ -31,6 +32,9 @@ label {
     margin-bottom: 5px;
     color: #203d57;
 }
+hr {
+    color: #ced4da !important;
+}
 input:focus, input:focus-visible,
 button:focus, button:focus-visible,
 select:focus, select:focus-visible,
@@ -49,9 +53,11 @@ textarea:focus, textarea:focus-visible {
 }
 
 .bg-white {
-    background: #FFF;
+    background: #FFF !important;
 }
-
+.bg-none {
+    background: transparent !important;
+}
 .status {
     display: flex;
     justify-content: flex-end;
@@ -62,9 +68,9 @@ textarea:focus, textarea:focus-visible {
 .fr {
     float: right !important;
 }
-
-
-
+.letter-space-1 {
+    letter-spacing: -0.5px !important;
+}
 
 /*custom styling*/
 .pos-absolute {
@@ -557,6 +563,14 @@ footer {
     color: red;
 }
 
+.bg-red {
+    background: #dc3545;
+}
+
+.bg-green {
+    background: #198754;
+}
+
 .bg-blue {
     background: #203d57;
 }
@@ -712,10 +726,11 @@ label[for="dt-search-0"], .workflow-table label[for^="dt-search-"], label[for^="
 }
 
 #dt-search-0, .workflow-table [id^="dt-search-"], [id^="dt-search-"] {
-    /*margin-left: 0px !important;*/
-    width: max(300px, 100%) !important;
+    margin-left: 12px !important;
+    width: max(460px, 100%) !important;
     font-size: 16px;
     font-style: normal !important;
+    height: 50px;
 }
 
     #dt-search-0:focus, .workflow-table [id^="dt-search-"]:focus {
