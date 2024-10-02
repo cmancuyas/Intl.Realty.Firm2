@@ -187,13 +187,13 @@ namespace Intl.Realty.Firm.Controllers
                 var result = await _userManager.DeleteAsync(user);
                 if (result.Succeeded)
                 {
-                    return RedirectToAction("ListUsers");
+                    return RedirectToAction("Index","User");
                 }
                 foreach (var error in result.Errors)
                 {
                     ModelState.AddModelError("", error.Description);
                 }
-                return View("ListUsers");
+                return View("Index","User");
             }
         }
         [HttpPost]

@@ -38,18 +38,9 @@ namespace Intl.Realty.Firm.Model.ViewModel.Home
 
         public PaginatedList<AllDealViewModel>? AllDeals { get; set; } // For Deals data
         public int AllDealsTotalDeals { get; set; } // Total number of deals
-        public string CurrentSort { get; set; } // The current sort order
-        public string DealTransactionNumberSort { get; set; } // Sort order for DealTransactionNumber
-        public string TransactionTypeNameSort { get; set; } // Sort order for TransactionTypeName
-        public string PropertyAddressSort { get; set; } // Sort order for PropertyAddress
-        public string DealStatusNameSort { get; set; } // Sort order for PropertyAddress
-        public string CreatedByFullNameSort { get; set; } // Sort order for PropertyAddress
-        public string CreatedAtSort { get; set; } // Sort order for PropertyAddress
-        public string FinalClosingDateSort { get; set; } // Sort order for PropertyAddress
-        public string CurrentFilter { get; set; } // The current filter (e.g., search string)
-        public int? PageSize { get; set; } // Page size for pagination
-        public int CurrentPage { get; set; } // Current page number
-        public int TotalPages { get; set; } // Total number of pages
-
+        public int TotalCount { get; set; }
+        public int PageSize { get; set; }
+        public int CurrentPage { get; set; }
+        public string SortOrder { get; set; }
     }
 }

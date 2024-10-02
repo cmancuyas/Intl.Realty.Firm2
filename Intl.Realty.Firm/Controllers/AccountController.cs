@@ -53,11 +53,11 @@ namespace Intl.Realty.Firm.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> Login(LoginViewModel viewModel, string? returnUrl)
         {
-            var captchaResult = await _googleCaptchaService.VerifyToken(viewModel.Token);
-            if(captchaResult == false)
-            {
-                return View();
-            }
+            //var captchaResult = await _googleCaptchaService.VerifyToken(viewModel.Token);
+            //if(captchaResult == false)
+            //{
+            //    return View();
+            //}
 
             viewModel.ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
 

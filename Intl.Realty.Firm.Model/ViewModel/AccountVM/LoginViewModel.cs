@@ -17,7 +17,7 @@ namespace Intl.Realty.Firm.Model.ViewModel.AccountVM
         public bool RememberMe { get; set; }
         public string ReturnUrl { get; set; } = string.Empty;
         public IList<AuthenticationScheme> ExternalLogins { get; set; } = new List<AuthenticationScheme>();
-        [Required]
-        public string Token { get; set; } = string.Empty;
+        //[Required]
+        //public string Token { get; set; } = string.Empty;
     }
 }

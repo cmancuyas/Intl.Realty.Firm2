@@ -4,6 +4,6 @@ namespace Intl.Realty.Firm.Service.IService
 {
     public interface IAllDealsService
     {
-        Task<DashboardViewModel> GetAllDealsForDashboardData(int? pageIndex, int? pageSize, string searchString, string sortOrder);
+        Task<DashboardViewModel> GetAllDealsForDashboardData(string sortOrder, string searchString, int pageNumber = 1, int pageSize = 10);
     }
 }

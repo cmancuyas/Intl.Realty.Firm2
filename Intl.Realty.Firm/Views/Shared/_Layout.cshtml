@@ -1,7 +1,6 @@
 ﻿@using Intl.Realty.Firm.Models
 @using Microsoft.Extensions.Configuration
-@using Microsoft.Extensions.Options
-@inject IOptions<GoogleCaptchaConfig> GoogleCaptchaConfig
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -38,23 +37,7 @@
             });
         });
     </script>
-    <script src="https://www.google.com/recaptcha/api.js?render=@GoogleCaptchaConfig.Value.SiteKey"></script>
-    <script>
-        function getToken(){
-            grecaptcha.ready(function () {
-                grecaptcha.execute('@GoogleCaptchaConfig.Value.SiteKey', { action: 'submit' }).then(function (token) {
-                    // Add your logic to submit to your backend server here.
-                    console.log
 
-                    document.getElementById("LoginViewModelToken").value = token;
-                });
-            });
-        }
-        setInterval(getToken, 115000)
-        $(function () {
-            getToken();
-        })
-    </script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

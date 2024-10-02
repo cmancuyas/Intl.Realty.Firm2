@@ -2,9 +2,9 @@
 
 namespace Intl.Realty.Firm.Utility.MenuData
 {
-    public static class CreateEditDealTabMenuData
+    public static class CreateDealTransactionTabMenuData
     {
-        public static List<TabMenu> GetCreateEditDealTabMenuData()
+        public static List<TabMenu> GetCreateDealTransactionTabMenuData()
         {
             List<TabMenu> menus = new List<TabMenu>();
             int count = 0;

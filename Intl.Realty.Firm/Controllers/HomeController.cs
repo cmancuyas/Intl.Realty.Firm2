@@ -38,44 +38,17 @@ namespace Intl.Realty.Firm.Controllers
         {
             return View();
         }
-        public async Task<IActionResult> Dashboard(int? pageIndex, int? pageSize, string searchString, string sortOrder)
+        public async Task<IActionResult> Dashboard(string sortOrder, string searchString, int pageNumber = 1, int pageSize = 10)
         {
             DashboardViewModel viewModel = await GetDashboardData();
 
-
-            // Set up sorting options
-            viewModel.CurrentSort = sortOrder;
-            viewModel.DealTransactionNumberSort = sortOrder == "dealTransactionNumber" ? "dealTransactionNumber_desc" : "dealTransactionNumber";
-            viewModel.TransactionTypeNameSort = sortOrder == "transactionTypeName" ? "transactionTypeName_desc" : "transactionTypeName";
-            viewModel.PropertyAddressSort = sortOrder == "propertyAddress" ? "propertyAddress_desc" : "propertyAddress";
-            viewModel.DealStatusNameSort = sortOrder == "dealStatusName" ? "dealStatusName_desc" : "dealStatusName";
-            viewModel.CreatedByFullNameSort = sortOrder == "createdByFullName" ? "createdByFullName_desc" : "createdByFullName";
-            viewModel.CreatedAtSort = sortOrder == "createdAt" ? "createdAt_desc" : "createdAt";
-            viewModel.FinalClosingDateSort = sortOrder == "finalClosingDate" ? "finalClosingDate_desc" : "finalClosingDate";
-
             // Get the dashboard data using the unified DashboardModel
             var dashboardViewModel = await _allDealsService.GetAllDealsForDashboardData(
-                pageIndex ?? 1, pageSize??10, searchString, sortOrder
+                sortOrder, searchString, pageNumber, pageSize
             );
 
-
-            viewModel.CurrentSort = sortOrder;
-
-            viewModel.CurrentFilter = dashboardViewModel.CurrentFilter;
-            viewModel.PageSize = dashboardViewModel.PageSize;
-            viewModel.CurrentPage = dashboardViewModel.CurrentPage;
-            viewModel.TotalPages = dashboardViewModel.TotalPages;
             viewModel.AllDealsTotalDeals = dashboardViewModel.AllDealsTotalDeals;
             viewModel.AllDeals = dashboardViewModel.AllDeals;
-
-            viewModel.CurrentSort = dashboardViewModel.CurrentSort;
-            viewModel.DealTransactionNumberSort = dashboardViewModel.DealTransactionNumberSort;
-            viewModel.TransactionTypeNameSort = dashboardViewModel.TransactionTypeNameSort;
-            viewModel.PropertyAddressSort = dashboardViewModel.PropertyAddressSort;
-            viewModel.DealStatusNameSort = dashboardViewModel.DealStatusNameSort;
-            viewModel.CreatedByFullNameSort = dashboardViewModel.CreatedByFullNameSort;
-            viewModel.CreatedAtSort = dashboardViewModel.CreatedAtSort;
-            viewModel.FinalClosingDateSort = dashboardViewModel.FinalClosingDateSort;
 
             if (Request.IsAjaxRequest())
             {

@@ -113,7 +113,7 @@ namespace DENR_FASPIS.Controllers
                                                                                                         documentTypeAssignmentList,
                                                                                                         documentTypeList);
 
-            var menus = CreateEditDealTabMenuData.GetCreateEditDealTabMenuData();
+            var menus = CreateDealTransactionTabMenuData.GetCreateDealTransactionTabMenuData();
 
             string controllerName = "IRFDetails1";
 
@@ -165,7 +165,7 @@ namespace DENR_FASPIS.Controllers
                                                                                                         documentTypeList);
             viewModel.CreateSaleListing.CreatedByFullName = user!.FirstName + " " + user.LastName;
 
-            var menus = CreateEditDealTabMenuData.GetCreateEditDealTabMenuData();
+            var menus = CreateDealTransactionTabMenuData.GetCreateDealTransactionTabMenuData();
 
             string controllerName = "IRFDetails1";
 
@@ -415,7 +415,7 @@ namespace DENR_FASPIS.Controllers
             var dealStatusIEnum = await _unitOfWork.DealStatus.GetAllAsync();
             viewModel.EditSaleListing.DealStatusList = dealStatusIEnum.ToList();
 
-            var menus = EditSaleListingTabMenuData.GetEditSaleListingTabMenuData();
+            var menus = EditDealTransactionTabMenuData.GetEditDealTransactionTabMenuData();
 
             string menuName = "IRFDetails1";
 
