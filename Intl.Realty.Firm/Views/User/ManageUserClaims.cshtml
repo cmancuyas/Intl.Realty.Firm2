@@ -13,7 +13,7 @@
     </a>
 
     <div class="row justify-content-center">
-        <div class="col-md-8 card p-4">
+        <div class="col-md-12 card p-4">
             <h1 class="text-blue mb-0">Manage User Claims</h1>
             <hr class="my-4" />
             <form method="post">
@@ -32,7 +32,7 @@
                         }
                         <div asp-validation-summary="All" class="text-danger"></div>
                     </div>
-                    <div class="card-footer">
+                    <div class="card-footer bg-white b-none pt-0 pb-4">
                         <input type="submit" value="Update" class="btn btn-primary" style="width:auto" />
                         <a asp-action="Index" asp-route-id="@Model.UserId"
                            class="btn btn-primary" style="width:auto">Cancel</a>
