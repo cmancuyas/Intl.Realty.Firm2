@@ -96,38 +96,6 @@ namespace Intl.Realty.Firm.Repository
             }
             return await query.ToListAsync();
         }
-        public Task<PaginatedList<T>> GetPagedAsync(
-            Expression<Func<T, bool>>? filter = null, 
-            string? includeProperties = null, 
-            Func<IQueryable<T>, IOrderedQueryable<T>> orderBy = null, 
-            bool tracked = false, 
-            int pageSize = 0, 
-            int pageIndex = 1)
-        {
-            IQueryable<T> query = dbSet;
-
-            if (filter != null)
-            {
-                query = query.Where(filter);
-            }
-
-            // Include the properties specified
-            foreach (var includeProperty in includeProperties.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
-            {
-                query = query.Include(includeProperty);
-            }
-
-            // Apply ordering if provided
-            if (orderBy != null)
-            {
-                query = orderBy(query);
-            }
-
-
-            var paginatedList = PaginatedList<T>.CreateAsync(query, pageIndex, pageSize);
-            // Return a paginated list
-            return paginatedList;
-        }
 
         public async Task UpdateAsync(T entity)
         {

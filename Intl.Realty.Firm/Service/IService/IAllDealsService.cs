@@ -1,9 +1,10 @@
-﻿using Intl.Realty.Firm.Model.ViewModel.Home;
+﻿using Intl.Realty.Firm.Model.Pagination;
+using Intl.Realty.Firm.Model.ViewModel.AllDealsVM;
 
 namespace Intl.Realty.Firm.Service.IService
 {
     public interface IAllDealsService
     {
-        Task<DashboardViewModel> GetAllDealsForDashboardData(int pageIndex = 1, int pageSize = 10, string sortColumn = "FinalClosingDate", string sortOrder = "desc", string searchQuery = "");
+        Task<PaginatedList<AllDealViewModel>> GetAllDealsForDashboardData(string sortProperty, SortOrder sortOrder, string searchText = "", int pageIndex = 1, int pageSize = 5);
     }
 }

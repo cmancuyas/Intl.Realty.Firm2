@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc.Rendering;
-
-namespace Intl.Realty.Firm.Models
+namespace Intl.Realty.Firm.Model.Pagination
 {
     public class PagerModel
     {
@@ -13,7 +12,7 @@ namespace Intl.Realty.Firm.Models
         public int StartRecord { get; private set; }
         public int EndRecord { get; private set; }
 
-        public string Action { get; set; } = "Index";
+        public string Action { get; set; } = "Dashboard";
         public string? SearchText { get; set; }
         public string? SortExpression { get; set; }
 

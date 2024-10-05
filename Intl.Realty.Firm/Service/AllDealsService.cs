@@ -23,7 +23,7 @@ namespace Intl.Realty.Firm.Service
             _userManager = userManager;
         }
 
-        public async Task<DashboardViewModel> GetAllDealsForDashboardData(int pageIndex = 1, int pageSize = 10, string sortColumn = "FinalClosingDate", string sortOrder = "desc", string searchQuery = "")
+        public async Task<PaginatedList<AllDealViewModel>> GetAllDealsForDashboardData(string sortProperty, SortOrder sortOrder, string searchText = "", int pageIndex = 1, int pageSize = 5)
         {
             var saleListingQuery = await _unitOfWork.SaleListing.AsQueryableAsync(x => x.IsDeleted == false, includeProperties: "TransactionType,IRFDeal,DealStatus");
             var saleCoopQuery = await _unitOfWork.SaleCoop.AsQueryableAsync(x => x.IsDeleted == false, includeProperties: "TransactionType,IRFDeal,DealStatus");
@@ -106,86 +106,108 @@ namespace Intl.Realty.Firm.Service
             }
 
 
-            if (!string.IsNullOrEmpty(searchQuery))
+            if (!string.IsNullOrEmpty(searchText))
             {
-                allDeals = allDeals.Where(p => p.DealTransactionNumber.ToLower().Contains(searchQuery.ToLower()) ||
-                                               p.TransactionTypeName.ToLower().Contains(searchQuery.ToLower()) ||
-                                               p.PropertyAddress.ToLower().Contains(searchQuery.ToLower())  ||
-                                               p.DealStatusName.ToLower().Contains(searchQuery.ToLower()) ||
-                                               p.CreatedByFullName.ToLower().Contains(searchQuery.ToLower())
+                allDeals = allDeals.Where(p => p.DealTransactionNumber.ToLower().Contains(searchText.ToLower()) ||
+                                               p.TransactionTypeName.ToLower().Contains(searchText.ToLower()) ||
+                                               p.PropertyAddress.ToLower().Contains(searchText.ToLower())  ||
+                                               p.DealStatusName.ToLower().Contains(searchText.ToLower()) ||
+                                               p.CreatedByFullName.ToLower().Contains(searchText.ToLower())
                                                )
     
                             .ToList();
             }
 
-            // Sorting logic based on the sort order
-            switch (sortOrder)
-            {
-                case "createdAt_asc":
-                    allDeals = allDeals.OrderBy(x => x.CreatedAt).ToList();
-                    break;
-                case "createdAt_desc":
-                    allDeals = allDeals.OrderByDescending(x => x.CreatedAt).ToList();
-                    break;
-                case "propertyAddress_asc":
-                    allDeals = allDeals.OrderBy(x => x.PropertyAddress).ToList();
-                    break;
-                case "propertyAddress_desc":
-                    allDeals = allDeals.OrderByDescending(x => x.PropertyAddress).ToList();
-                    break;
-                case "dealTransactionNumber_asc":
-                    allDeals = allDeals.OrderBy(x => x.DealTransactionNumber).ToList();
-                    break;
-                case "dealTransactionNumber_desc":
-                    allDeals = allDeals.OrderByDescending(x => x.DealTransactionNumber).ToList();
-                    break;
-                case "transactionTypeName_asc":
-                    allDeals = allDeals.OrderBy(x => x.TransactionTypeName).ToList();
-                    break;
-                case "transactionTypeName_desc":
-                    allDeals = allDeals.OrderByDescending(x => x.TransactionTypeName).ToList();
-                    break;
-                case "dealStatusName_asc":
-                    allDeals = allDeals.OrderBy(x => x.DealStatusName).ToList();
-                    break;
-                case "dealStatusName_desc":
-                    allDeals = allDeals.OrderByDescending(x => x.DealStatusName).ToList();
-                    break;
-                case "createdByFullName_asc":
-                    allDeals = allDeals.OrderBy(x => x.CreatedByFullName).ToList();
-                    break;
-                case "createdByFullName_desc":
-                    allDeals = allDeals.OrderByDescending(x => x.CreatedByFullName).ToList();
-                    break;
-                case "finalClosingDate_asc":
-                    allDeals = allDeals.OrderBy(x => x.FinalClosingDate).ToList();
-                    break;
-                case "finalClosingDate_desc":
-                    allDeals = allDeals.OrderByDescending(x => x.FinalClosingDate).ToList();
-                    break;
-                default:
-                    allDeals = allDeals.OrderBy(x => x.CreatedAt).ToList();
-                    break;
-            }
+            allDeals = DoSort(allDeals, sortProperty, sortOrder);
 
-            var totalCount = allDeals.Count();
+            PaginatedList<AllDealViewModel> allDealsPaginated = new PaginatedList<AllDealViewModel>(allDeals, pageIndex, pageSize);
 
-            int currentPage = pageIndex;
-            int currentPageSize = pageSize;
-            var paginatedList = await PaginatedList<AllDealViewModel>.CreateAsync(allDeals, currentPage, currentPageSize);
-
-            DashboardViewModel dashboardViewModel = new DashboardViewModel();
-            dashboardViewModel.AllDeals = paginatedList;
-            dashboardViewModel.AllDealsTotalCount = totalCount;
-            dashboardViewModel.SortOrder = sortOrder;
-            dashboardViewModel.PageSize = pageSize;
-            dashboardViewModel.CurrentPage = currentPage;
-            dashboardViewModel.SortColumn = sortColumn; 
-
-
-            return dashboardViewModel;
+            return allDealsPaginated;
         }
 
+        private List<AllDealViewModel> DoSort(List<AllDealViewModel> allDeals, string sortProperty, SortOrder sortOrder)
+        {
+            if (sortProperty == "dealTransactionNumber")
+            {
+                if (sortOrder == SortOrder.Ascending)
+                {
+                    allDeals = allDeals.OrderBy(x => x.DealTransactionNumber).ToList();
+                }
+                else
+                {
+                    allDeals = allDeals.OrderByDescending(x => x.DealTransactionNumber).ToList();
+                }
+            }
+            else if (sortProperty == "transactionTypeName")
+            {
+                if (sortOrder == SortOrder.Ascending)
+                {
+                    allDeals = allDeals.OrderBy(x => x.TransactionTypeName).ToList();
+                }
+                else
+                {
+                    allDeals = allDeals.OrderByDescending(x => x.TransactionTypeName).ToList();
+                }
+            }
+            else if (sortProperty == "propertyAddress")
+            {
+                if (sortOrder == SortOrder.Ascending)
+                {
+                    allDeals = allDeals.OrderBy(x => x.PropertyAddress).ToList();
+                }
+                else
+                {
+                    allDeals = allDeals.OrderByDescending(x => x.PropertyAddress).ToList();
+                }
+            }
+            else if (sortProperty == "dealStatusName")
+            {
+                if (sortOrder == SortOrder.Ascending)
+                {
+                    allDeals = allDeals.OrderBy(x => x.DealStatusName).ToList();
+                }
+                else
+                {
+                    allDeals = allDeals.OrderByDescending(x => x.DealStatusName).ToList();
+                }
+            }
+
+            else if (sortProperty == "createdByFullName")
+            {
+                if (sortOrder == SortOrder.Ascending)
+                {
+                    allDeals = allDeals.OrderBy(x => x.CreatedByFullName).ToList();
+                }
+                else
+                {
+                    allDeals = allDeals.OrderByDescending(x => x.CreatedByFullName).ToList();
+                }
+            }
+            else if (sortProperty == "createdAt")
+            {
+                if (sortOrder == SortOrder.Ascending)
+                {
+                    allDeals = allDeals.OrderBy(x => x.CreatedAt).ToList();
+                }
+                else
+                {
+                    allDeals = allDeals.OrderByDescending(x => x.CreatedAt).ToList();
+                }
+            }
+            else
+            {
+                if (sortOrder == SortOrder.Ascending)
+                {
+                    allDeals = allDeals.OrderBy(x => x.FinalClosingDate).ToList();
+                }
+                else
+                {
+                    allDeals = allDeals.OrderByDescending(x => x.FinalClosingDate).ToList();
+                }
+            }
+
+            return allDeals;
+        }
         public async Task<string> GetUserByUserId(Guid? id)
         {
             string fullName = "";

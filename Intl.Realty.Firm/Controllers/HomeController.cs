@@ -11,6 +11,7 @@ using Intl.Realty.Firm.Model.ViewModel.AllDealsVM;
 using Intl.Realty.Firm.Utility.Mapper;
 using Intl.Realty.Firm.Service.IService;
 using Intl.Realty.Firm.Utilities;
+using Intl.Realty.Firm.Model.Pagination;
 
 namespace Intl.Realty.Firm.Controllers
 {
@@ -38,22 +39,32 @@ namespace Intl.Realty.Firm.Controllers
         {
             return View();
         }
-        public async Task<IActionResult> Dashboard(int pageIndex = 1, int pageSize = 10, string sortColumn = "FinalClosingDate", string sortOrder = "desc", string searchQuery = "")
+        public async Task<IActionResult> Dashboard(string sortExpression = "", string searchText = "", int pageIndex = 1, int pageSize = 5)
         {
+            SortModel sortModel = new SortModel();
+
+            sortModel.AddColumn("dealTransactionNumber");
+            sortModel.AddColumn("transactionTypeName");
+            sortModel.AddColumn("propertyAddress");
+            sortModel.AddColumn("dealStatusName");
+            sortModel.AddColumn("createdAt");
+            sortModel.AddColumn("createdByFullName");
+            sortModel.AddColumn("finalClosingDate");
+            sortModel.ApplySort(sortExpression);
+
             DashboardViewModel viewModel = await GetDashboardData();
 
-            // Get the dashboard data using the unified DashboardModel
-            var dashboardViewModel = await _allDealsService.GetAllDealsForDashboardData(
-                pageIndex, pageSize, sortColumn, sortOrder, searchQuery
-            );
+            viewModel.AllDealsSortModel = sortModel;
+            viewModel.AllDealsSearchText = searchText;
 
-            viewModel.AllDealsTotalCount = dashboardViewModel.AllDealsTotalCount;
-            viewModel.AllDeals = dashboardViewModel.AllDeals;
-            viewModel.SortOrder = sortOrder;
-            viewModel.SearchQuery = searchQuery;
-            viewModel.PageSize = pageSize;
-            viewModel.CurrentPage = pageIndex;
-            viewModel.SortColumn = sortColumn;
+            // Get the dashboard data using the unified DashboardModel
+            var paginatedListViewModel = await _allDealsService.GetAllDealsForDashboardData( sortModel.SortedProperty, sortModel.SortOrder, searchText, pageIndex, pageSize);
+            
+            viewModel.PaginatedListAllDeals = paginatedListViewModel;
+            var allDealsPager = new PagerModel(paginatedListViewModel.TotalRecords, pageIndex, pageSize);
+            allDealsPager.SortExpression = sortExpression;
+
+            viewModel.AllDealsPager = allDealsPager;
             if (Request.IsAjaxRequest())
             {
                 return PartialView("_DashboardPartial", viewModel);
@@ -154,7 +165,7 @@ namespace Intl.Realty.Firm.Controllers
                             .GetAllAsync(
                                 x => x.IsDeleted == false,
                                 includeProperties: "IRFDeal,TransactionType,DealStatus",
-                                orderBy: x=>x.OrderByDescending(x => x.CreatedAt)
+                                orderBy: x => x.OrderByDescending(x => x.CreatedAt)
                                 );
             foreach (var item in modelList)
             {

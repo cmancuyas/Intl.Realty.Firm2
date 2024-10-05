@@ -37,14 +37,10 @@ namespace Intl.Realty.Firm.Model.ViewModel.Home
         public List<AllDealViewModel>? AllDealsPastHour { get; set; }
         public List<AllDealViewModel>? AllDealsToday { get; set; }
 
-        public PaginatedList<AllDealViewModel>? AllDeals { get; set; } // For Deals data
-        public int AllDealsTotalCount{ get; set; } // Total number of deals
-        public string SortOrder { get; set; }
-        public string SortColumn { get; set; }
-        public string SearchQuery { get; set; }
-        public int CurrentPage { get; set; }
-        public int TotalPages { get; set; }
-        public int PageSize { get; set; }
-        public List<SelectListItem> PageSizeOptions { get; set; }
+        public PagerModel AllDealsPager { get; set; } // For All Deals data
+        public PaginatedList<AllDealViewModel> PaginatedListAllDeals { get; set; } // For All Deals data
+        public SortModel AllDealsSortModel { get; set; } // For All Deals data
+        public string AllDealsSearchText { get; set; } // For All Deals data
+        public PagerModel MonthlyDealsPager { get; set; } // For Current Month
     }
 }

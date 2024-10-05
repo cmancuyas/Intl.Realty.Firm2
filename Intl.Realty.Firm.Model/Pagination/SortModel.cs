@@ -1,9 +1,9 @@
-﻿namespace Intl.Realty.Firm.Models
+﻿namespace Intl.Realty.Firm.Model.Pagination
 {
     public class SortModel
     {
-        private string UpIcon = "fa fa-arrow-up";
-        private string DownIcon = "fa fa-arrow-down";
+        private string UpIcon = "bi bi-arrow-up";
+        private string DownIcon = "bi bi-arrow-down";
 
         public string SortedProperty { get; set; } = string.Empty;
         public SortOrder SortOrder { get; set; }
@@ -46,7 +46,7 @@
             {
                 sortableColumn.SortIcon = "";
                 sortableColumn.SortExpression = sortableColumn.ColumnName;
-                if (sortExpression == sortableColumn.ColumnName)
+                if (sortExpression == sortableColumn.ColumnName.ToLower())
                 {
                     this.SortOrder = SortOrder.Ascending;
                     this.SortedProperty = sortableColumn.ColumnName;
