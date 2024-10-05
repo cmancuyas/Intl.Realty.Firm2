@@ -98,8 +98,8 @@ namespace DENR_FASPIS.Controllers
             var paddedTransactionType = transactionType.Id.ToString().PadLeft(2, '0');
 
             var currentYear = DateTime.Now.Year.ToString();
-            var currentMonth = DateTime.Now.Month.ToString();
-            var currentDay = DateTime.Now.Day.ToString();
+            var currentMonth = DateTime.Now.Month.ToString().PadLeft(2, '0');
+            var currentDay = DateTime.Now.Day.ToString().PadLeft(2, '0');
             var paddedCurrentNumber = (numberRange.CurrentNumber + 1).ToString().PadLeft(5, '0');
             var paddedNumberRange = currentYear + currentMonth + currentDay + "-" + paddedTransactionType + "-" + paddedCurrentNumber;
 

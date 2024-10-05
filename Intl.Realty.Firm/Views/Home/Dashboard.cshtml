@@ -23,9 +23,15 @@
             });
         }
 
-        // $(document).on('change', '#pageSizeDropdown', function () {
-        //     let pageSize = $(this).val();
-        //     loadDashboard('@Model.AllDealsCurrentMonth.SortModel', 1, pageSize);
-        // });
+        function loadTopBarPaginationCurrentMonth(action, pageIndex, pageSize, searchText, sortExpression) {
+            $.get('@Url.Action("Dashboard", "Home")', { action, pageIndex, pageSize, searchText, sortExpression }, function (data) {
+                $('#dashboardContent').html(data);
+            });
+        }
+        function loadTopBarPaginationAllDeals(action, pageIndex, pageSize, searchText, sortExpression) {
+            $.get('@Url.Action("Dashboard", "Home")', { action, pageIndex, pageSize, searchText, sortExpression }, function (data) {
+                $('#dashboardContent').html(data);
+            });
+        }
     </script>
 }

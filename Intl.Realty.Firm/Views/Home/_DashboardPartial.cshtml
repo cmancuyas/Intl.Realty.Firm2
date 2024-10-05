@@ -251,29 +251,20 @@
         </div>
     </div>
 
-    <style>
-        .page-link {
-            color: black !important;
-        }
+</div>
 
-        .page-item.active .pageLink {
-            z-index: 3;
-            color: #fff;
-            background-color: red;
-            !important;
-            border-color: red;
-        }
-    </style>
-
+<div id="currentMonthContainer mb-4">
     <div class="row">
         <div class="col-12">
-            <partial name="~/Views/Home/_AllDealsForCurrentMonth.cshtml" model="@Model.AllDealsCurrentMonth" />
+            <partial name="~/Views/Home/AllDealsForCurrentMonth/_AllDealsForCurrentMonth.cshtml" model="@Model.AllDealsCurrentMonth" />
         </div>
     </div>
+    </div>
 
+<div id="allDealsontainer mb-4">
     <div class="row">
         <div class="col-12">
-            <partial name="~/Views/Home/_AllDealsForAllMonths.cshtml" model="@Model.AllDealsAllMonths" />
+            <partial name="~/Views/Home/AllDealsForAllMonths/_AllDealsForAllMonths.cshtml" model="@Model.AllDealsAllMonths" />
         </div>
     </div>
 

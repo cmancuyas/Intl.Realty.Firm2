@@ -49,9 +49,15 @@ namespace Intl.Realty.Firm.Controllers
             sortModel.AddColumn("dealStatusName");
             sortModel.AddColumn("createdAt");
             sortModel.AddColumn("createdByFullName");
-            sortModel.AddColumn("finalClosingDate");
+            sortModel.AddColumn("finalClosingDate", true);
             sortModel.ApplySort(sortExpression);
 
+            if (sortExpression == "")
+            {
+                sortModel.SortedProperty = "finalClosingDate";
+                sortModel.SortOrder = SortOrder.Descending;
+            }
+            
             DashboardViewModel viewModel = await GetDashboardData();
 
             var paginatedListCurrentMonth = await _allDealsService.GetAllDealsForDashboardData(sortModel.SortedProperty, sortModel.SortOrder, searchText, pageIndex, pageSize, true);
