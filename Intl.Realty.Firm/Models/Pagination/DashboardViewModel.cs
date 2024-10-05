@@ -1,6 +1,7 @@
 ﻿using Intl.Realty.Firm.Model.Model;
 using Intl.Realty.Firm.Model.Pagination;
 using Intl.Realty.Firm.Model.ViewModel.AllDealsVM;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace Intl.Realty.Firm.Model.ViewModel.Home
 {
@@ -37,10 +38,13 @@ namespace Intl.Realty.Firm.Model.ViewModel.Home
         public List<AllDealViewModel>? AllDealsToday { get; set; }
 
         public PaginatedList<AllDealViewModel>? AllDeals { get; set; } // For Deals data
-        public int AllDealsTotalDeals { get; set; } // Total number of deals
-        public int TotalCount { get; set; }
-        public int PageSize { get; set; }
-        public int CurrentPage { get; set; }
+        public int AllDealsTotalCount{ get; set; } // Total number of deals
         public string SortOrder { get; set; }
+        public string SortColumn { get; set; }
+        public string SearchQuery { get; set; }
+        public int CurrentPage { get; set; }
+        public int TotalPages { get; set; }
+        public int PageSize { get; set; }
+        public List<SelectListItem> PageSizeOptions { get; set; }
     }
 }

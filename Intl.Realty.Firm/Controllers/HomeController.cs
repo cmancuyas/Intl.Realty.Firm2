@@ -38,18 +38,22 @@ namespace Intl.Realty.Firm.Controllers
         {
             return View();
         }
-        public async Task<IActionResult> Dashboard(string sortOrder, string searchString, int pageNumber = 1, int pageSize = 10)
+        public async Task<IActionResult> Dashboard(int pageIndex = 1, int pageSize = 10, string sortColumn = "FinalClosingDate", string sortOrder = "desc", string searchQuery = "")
         {
             DashboardViewModel viewModel = await GetDashboardData();
 
             // Get the dashboard data using the unified DashboardModel
             var dashboardViewModel = await _allDealsService.GetAllDealsForDashboardData(
-                sortOrder, searchString, pageNumber, pageSize
+                pageIndex, pageSize, sortColumn, sortOrder, searchQuery
             );
 
-            viewModel.AllDealsTotalDeals = dashboardViewModel.AllDealsTotalDeals;
+            viewModel.AllDealsTotalCount = dashboardViewModel.AllDealsTotalCount;
             viewModel.AllDeals = dashboardViewModel.AllDeals;
-
+            viewModel.SortOrder = sortOrder;
+            viewModel.SearchQuery = searchQuery;
+            viewModel.PageSize = pageSize;
+            viewModel.CurrentPage = pageIndex;
+            viewModel.SortColumn = sortColumn;
             if (Request.IsAjaxRequest())
             {
                 return PartialView("_DashboardPartial", viewModel);

@@ -6,6 +6,7 @@ using Intl.Realty.Firm.Repository.IRepository;
 using Intl.Realty.Firm.Service.IService;
 using Intl.Realty.Firm.Utility.Mapper;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 
 
 namespace Intl.Realty.Firm.Service
@@ -22,16 +23,16 @@ namespace Intl.Realty.Firm.Service
             _userManager = userManager;
         }
 
-        public async Task<DashboardViewModel> GetAllDealsForDashboardData(string sortOrder, string searchString, int pageNumber = 1, int pageSize = 10)
+        public async Task<DashboardViewModel> GetAllDealsForDashboardData(int pageIndex = 1, int pageSize = 10, string sortColumn = "FinalClosingDate", string sortOrder = "desc", string searchQuery = "")
         {
             var saleListingQuery = await _unitOfWork.SaleListing.AsQueryableAsync(x => x.IsDeleted == false, includeProperties: "TransactionType,IRFDeal,DealStatus");
             var saleCoopQuery = await _unitOfWork.SaleCoop.AsQueryableAsync(x => x.IsDeleted == false, includeProperties: "TransactionType,IRFDeal,DealStatus");
             var leaseListingQuery = await _unitOfWork.LeaseListing.AsQueryableAsync(x => x.IsDeleted == false, includeProperties: "TransactionType,IRFDeal,DealStatus");
             var leaseCoopQuery = await _unitOfWork.LeaseCoop.AsQueryableAsync(x => x.IsDeleted == false, includeProperties: "TransactionType,IRFDeal,DealStatus");
 
-            List<AllDealViewModel> result = new List<AllDealViewModel>();
+            List<AllDealViewModel> allDeals = new List<AllDealViewModel>();
 
-            foreach(var item in saleListingQuery.ToList())
+            foreach (var item in saleListingQuery.ToList())
             {
                 var createdBy = await _userManager.FindByIdAsync(item.CreatedBy.ToString());
                 ApplicationUser updatedBy;
@@ -44,10 +45,10 @@ namespace Intl.Realty.Firm.Service
                 {
                     deletedBy = await _userManager.FindByIdAsync(item.DeletedBy.ToString());
                 }
-                
+
                 var allDeal = item.ToAllDealsViewModel(createdBy, updatedBy = new(), deletedBy = new());
 
-                result.Add(allDeal);
+                allDeals.Add(allDeal);
             }
             foreach (var item in saleCoopQuery.ToList())
             {
@@ -65,7 +66,7 @@ namespace Intl.Realty.Firm.Service
 
                 var allDeal = item.ToAllDealsViewModel(createdBy, updatedBy = new(), deletedBy = new());
 
-                result.Add(allDeal);
+                allDeals.Add(allDeal);
             }
             foreach (var item in leaseListingQuery.ToList())
             {
@@ -83,7 +84,7 @@ namespace Intl.Realty.Firm.Service
 
                 var allDeal = item.ToAllDealsViewModel(createdBy, updatedBy = new(), deletedBy = new());
 
-                result.Add(allDeal);
+                allDeals.Add(allDeal);
             }
             foreach (var item in leaseCoopQuery.ToList())
             {
@@ -101,88 +102,98 @@ namespace Intl.Realty.Firm.Service
 
                 var allDeal = item.ToAllDealsViewModel(createdBy, updatedBy = new(), deletedBy = new());
 
-                result.Add(allDeal);
+                allDeals.Add(allDeal);
             }
 
-            IQueryable<AllDealViewModel> allDeals = result.AsQueryable();
 
-            DashboardViewModel dashboardViewModel = new DashboardViewModel();
-
-            if (!string.IsNullOrEmpty(searchString))
+            if (!string.IsNullOrEmpty(searchQuery))
             {
-                allDeals = allDeals.Where(p => p.TransactionTypeName.ToLower().Contains(searchString));
-                allDeals = allDeals.Where(p => p.PropertyAddress.ToLower().Contains(searchString));
-                allDeals = allDeals.Where(p => p.DealStatusName.ToLower().Contains(searchString));
-                allDeals = allDeals.Where(p => p.CreatedByFullName.ToLower().Contains(searchString));
+                allDeals = allDeals.Where(p => p.DealTransactionNumber.ToLower().Contains(searchQuery.ToLower()) ||
+                                               p.TransactionTypeName.ToLower().Contains(searchQuery.ToLower()) ||
+                                               p.PropertyAddress.ToLower().Contains(searchQuery.ToLower())  ||
+                                               p.DealStatusName.ToLower().Contains(searchQuery.ToLower()) ||
+                                               p.CreatedByFullName.ToLower().Contains(searchQuery.ToLower())
+                                               )
+    
+                            .ToList();
             }
+
             // Sorting logic based on the sort order
             switch (sortOrder)
             {
-                case "createdAt_desc":
-                    allDeals = allDeals.OrderByDescending(x => x.CreatedAt);
-
+                case "createdAt_asc":
+                    allDeals = allDeals.OrderBy(x => x.CreatedAt).ToList();
                     break;
-                case "propertyAddress":
-                    allDeals = allDeals.OrderBy(x => x.PropertyAddress);
+                case "createdAt_desc":
+                    allDeals = allDeals.OrderByDescending(x => x.CreatedAt).ToList();
+                    break;
+                case "propertyAddress_asc":
+                    allDeals = allDeals.OrderBy(x => x.PropertyAddress).ToList();
                     break;
                 case "propertyAddress_desc":
-                    allDeals = allDeals.OrderByDescending(x => x.PropertyAddress);
+                    allDeals = allDeals.OrderByDescending(x => x.PropertyAddress).ToList();
                     break;
-                case "dealTransactionNumber":
-                    allDeals = allDeals.OrderBy(x => x.DealTransactionNumber);
+                case "dealTransactionNumber_asc":
+                    allDeals = allDeals.OrderBy(x => x.DealTransactionNumber).ToList();
                     break;
                 case "dealTransactionNumber_desc":
-                    allDeals = allDeals.OrderByDescending(x => x.DealTransactionNumber);
+                    allDeals = allDeals.OrderByDescending(x => x.DealTransactionNumber).ToList();
                     break;
-                case "transactionType":
-                    allDeals = allDeals.OrderBy(x => x.TransactionTypeName);
+                case "transactionTypeName_asc":
+                    allDeals = allDeals.OrderBy(x => x.TransactionTypeName).ToList();
                     break;
-                case "transactionType_desc":
-                    allDeals = allDeals.OrderByDescending(x => x.TransactionTypeName);
+                case "transactionTypeName_desc":
+                    allDeals = allDeals.OrderByDescending(x => x.TransactionTypeName).ToList();
                     break;
-                case "dealStatus":
-                    allDeals = allDeals.OrderBy(x => x.DealStatusName);
+                case "dealStatusName_asc":
+                    allDeals = allDeals.OrderBy(x => x.DealStatusName).ToList();
                     break;
-                case "dealStatus_desc":
-                    allDeals = allDeals.OrderByDescending(x => x.DealStatusName);
+                case "dealStatusName_desc":
+                    allDeals = allDeals.OrderByDescending(x => x.DealStatusName).ToList();
                     break;
-                case "createdByFullName":
-                    allDeals = allDeals.OrderBy(x => x.CreatedByFullName);
+                case "createdByFullName_asc":
+                    allDeals = allDeals.OrderBy(x => x.CreatedByFullName).ToList();
                     break;
                 case "createdByFullName_desc":
-                    allDeals = allDeals.OrderByDescending(x => x.CreatedByFullName);
+                    allDeals = allDeals.OrderByDescending(x => x.CreatedByFullName).ToList();
                     break;
-                case "finalClosingDate":
-                    allDeals = allDeals.OrderBy(x => x.FinalClosingDate);
+                case "finalClosingDate_asc":
+                    allDeals = allDeals.OrderBy(x => x.FinalClosingDate).ToList();
                     break;
                 case "finalClosingDate_desc":
-                    allDeals = allDeals.OrderByDescending(x => x.FinalClosingDate);
+                    allDeals = allDeals.OrderByDescending(x => x.FinalClosingDate).ToList();
                     break;
                 default:
-                    allDeals = allDeals.OrderBy(x => x.CreatedAt);
+                    allDeals = allDeals.OrderBy(x => x.CreatedAt).ToList();
                     break;
             }
 
-            var totalDeals = allDeals.Count();
+            var totalCount = allDeals.Count();
 
-            var allDealsForDashboard = PaginatedList<AllDealViewModel>.CreateAsync(allDeals.AsQueryable(), pageNumber, pageSize);
+            int currentPage = pageIndex;
+            int currentPageSize = pageSize;
+            var paginatedList = await PaginatedList<AllDealViewModel>.CreateAsync(allDeals, currentPage, currentPageSize);
 
-            dashboardViewModel.AllDeals = allDealsForDashboard;
-            dashboardViewModel.AllDealsTotalDeals = totalDeals;
+            DashboardViewModel dashboardViewModel = new DashboardViewModel();
+            dashboardViewModel.AllDeals = paginatedList;
+            dashboardViewModel.AllDealsTotalCount = totalCount;
             dashboardViewModel.SortOrder = sortOrder;
             dashboardViewModel.PageSize = pageSize;
+            dashboardViewModel.CurrentPage = currentPage;
+            dashboardViewModel.SortColumn = sortColumn; 
+
 
             return dashboardViewModel;
         }
 
-        public string GetUserByUserId(Guid? id)
+        public async Task<string> GetUserByUserId(Guid? id)
         {
             string fullName = "";
             if (id == null)
             {
-                var user = _userManager.FindByIdAsync(id.ToString()!).GetAwaiter().GetResult();
+                var user = await _userManager.FindByIdAsync(id.ToString()!);
 
-                fullName = user!.FirstName + " " + user.LastName;    
+                fullName = user!.FirstName + " " + user.LastName;
 
             }
             return fullName;

@@ -16,10 +16,13 @@ namespace Intl.Realty.Firm.Model.ViewModel.AllDealsVM
         public DateTime FinalClosingDate { get; set; }
         public string CreatedByFullName { get; set; } = string.Empty;
         public DateTime CreatedAt { get; set; }
+        public Guid CreatedBy { get; set; }
         public DateTime SubmittedAt { get; set; }
-        public string UpdatedByFullName { get; set; } = string.Empty;
-        public DateTime UpdatedAt { get; set; }
-        public string DeletedByFullName { get; set; } = string.Empty;
-        public DateTime DeletedAt { get; set; }
+        public string? UpdatedByFullName { get; set; } = string.Empty;
+        public DateTime? UpdatedAt { get; set; }
+        public Guid? UpdatedBy { get; set; }
+        public string? DeletedByFullName { get; set; } = string.Empty;
+        public DateTime? DeletedAt { get; set; }
+        public Guid? DeletedBy { get; set; }
     }
 }

@@ -17,8 +17,6 @@
 
 }
 
-
-
 <div id="dashboardContainer">
     <div class="container-fluid">
         <div class="row">
@@ -238,23 +236,94 @@
             <div class="card card-custom">
                 <div class="card-body">
                     <h5 class="card-title">Monthly Transactions - @DateTime.Now.ToString("MMMM") @DateTime.Now.ToString("yyyy")</h5>
+                    
+                    <form asp-action="Dashboard" method="get">
+                        <input type="text" name="searchQuery" value="@Model.SearchQuery" placeholder="Search..." />
+                          <select asp-for="@Model.PageSize" id="pageSizeDropdown">
+                            <option value="5">5</option>
+                            <option value="10">10</option>
+                            <option value="15">15</option>
+                            <option value="20">20</option>
+                            <option value="25">25</option>
+                        </select>
+                        <input type="submit" value="Search" />
+                    </form>
                     <div class="table-responsive">
-                        <!-- Total Products and Total Sales -->
-                        <div class="dashboard-stats">
-                            <h3>Total Deals: @Model.AllDealsTotalDeals</h3>
-                        </div>
-
                         <table class="table">
                             <thead>
                                 <tr>
-                                    <th><a href="javascript:void(0)" onclick="loadDashboard('dealTransactionNumber', @Model.CurrentPage, @Model.PageSize)">Deal#</a></th>
-                                    <th>Transaction</th>
-                                    <th>Property Address</th>
-                                    <th>Deal Status</th>
-                                    <th>Created By</th>
-                                    <th>Created At</th>
-                                    <th>Final Closing Date</th>
-                                    <th>Attachment</th>
+                                    <th>
+                                        @if (Model.SortOrder == "dealTransactionNumber_asc")
+                                        {
+                                            <a href="javascript:void(0)" onclick="loadDashboard('dealTransactionNumber_desc', @Model.CurrentPage, @Model.PageSize)">Deal#</a> <!-- Ascending -->
+                                        }
+                                        else
+                                        {
+                                            <a href="javascript:void(0)" onclick="loadDashboard('dealTransactionNumber_asc', @Model.CurrentPage, @Model.PageSize)">Deal#</a> <!-- Descending -->
+                                        }
+                                    </th>
+                             
+                                    <th>
+                                        @if (Model.SortOrder == "transactionTypeName_desc")
+                                        {
+                                            <a href="javascript:void(0)" onclick="loadDashboard('transactionTypeName_asc', @Model.CurrentPage, @Model.PageSize)">Transaction Type</a>
+                                        }
+                                        else
+                                        {
+                                            <a href="javascript:void(0)" onclick="loadDashboard('transactionTypeName_desc', @Model.CurrentPage, @Model.PageSize)">Transaction Type</a>
+                                        }
+                                    </th>
+                                    <th>
+                                        @if (Model.SortOrder == "propertyAddress_desc")
+                                        {
+                                            <a href="javascript:void(0)" onclick="loadDashboard('propertyAddress_asc', @Model.CurrentPage, @Model.PageSize)">Property Address</a>
+                                        }
+                                        else
+                                        {
+                                            <a href="javascript:void(0)" onclick="loadDashboard('propertyAddress_desc', @Model.CurrentPage, @Model.PageSize)">Property Address</a>
+                                        }
+                                    </th>
+                                    <th>
+                                        @if (Model.SortOrder == "dealStatusName_desc")
+                                        {
+                                            <a href="javascript:void(0)" onclick="loadDashboard('dealStatusName_asc', @Model.CurrentPage, @Model.PageSize)">Deal Status</a>
+                                        }
+                                        else
+                                        {
+                                            <a href="javascript:void(0)" onclick="loadDashboard('dealStatusName_desc', @Model.CurrentPage, @Model.PageSize)">Deal Status</a>
+                                        }
+                                    </th>
+                                    <th>
+                                        @if (Model.SortOrder == "createdByFullName_desc")
+                                        {
+                                            <a href="javascript:void(0)" onclick="loadDashboard('createdByFullName_asc', @Model.CurrentPage, @Model.PageSize)">Created By</a>
+                                        }
+                                        else
+                                        {
+                                            <a href="javascript:void(0)" onclick="loadDashboard('createdByFullName_desc', @Model.CurrentPage, @Model.PageSize)">Created By</a>
+                                        }
+                                    </th>
+                                    <th>
+                                        @if (Model.SortOrder == "createdAt_desc")
+                                        {
+                                            <a href="javascript:void(0)" onclick="loadDashboard('createdAt_asc', @Model.CurrentPage, @Model.PageSize)">Created At</a>
+                                        }
+                                        else
+                                        {
+                                            <a href="javascript:void(0)" onclick="loadDashboard('createdAt_desc', @Model.CurrentPage, @Model.PageSize)">Created At</a>
+                                        }
+                                    </th>
+                                    <th>
+                                        @if (Model.SortOrder == "finalClosingDate_desc")
+                                        {
+                                            <a href="javascript:void(0)" onclick="loadDashboard('finalClosingDate_asc', @Model.CurrentPage, @Model.PageSize)">Final Closing Date</a>
+                                        }
+                                        else
+                                        {
+                                            <a href="javascript:void(0)" onclick="loadDashboard('finalClosingDate_desc', @Model.CurrentPage, @Model.PageSize)">Final Closing Date</a>
+                                        }
+                                    </th>
+                                    <th>File Extension</th>
                                     <th>Action</th>
                                 </tr>
                             </thead>
@@ -267,8 +336,9 @@
                                         <td>@item.PropertyAddress</td>
                                         <td>@item.DealStatusName</td>
                                         <td>@item.CreatedByFullName</td>
-                                        <td>@item.CreatedAt</td>
-                                        <td>@item.FinalClosingDate</td>
+                                        <td>@item.CreatedAt.ToString("yyyy-MM-dd")</td>
+                                        <td>@item.FinalClosingDate.ToString("yyyy-MM-dd")</td>
+
                                         <td>
                                             @{
                                                 if (item.FileExtensions!.Any())
@@ -280,7 +350,7 @@
                                                 }
                                                 else
                                                 {
-                                                    <div class="attachment-icon">PDF</div>
+                                                    // <div class="attachment-icon">PDF</div>
                                                 }
                                             }
 
@@ -299,25 +369,14 @@
                             </tbody>
                         </table>
 
-
-                        <!-- Pagination Controls -->
-                        <div>
-                            <select id="pageSizeDropdown" asp-for="@Model.PageSize">
-                                <option value="5">5</option>
-                                <option value="10">10</option>
-                                <option value="15">15</option>
-                            </select>
-
-                            @if (Model.CurrentPage > 1)
-                            {
-                                <a href="javascript:void(0)" onclick="loadDashboard('@Model.SortOrder', @(Model.CurrentPage - 1), @Model.PageSize)">Previous</a>
-                            }
-
-                            @if (Model.CurrentPage * Model.PageSize < Model.TotalCount)
-                            {
-                                <a href="javascript:void(0)" onclick="loadDashboard('@Model.SortOrder', @(Model.CurrentPage + 1), @Model.PageSize)">Next</a>
-                            }
+                        <div class="pagination">
+                            <span>Page @Model.CurrentPage of @((Model.AllDealsTotalCount + Model.PageSize - 1) / Model.PageSize)</span>
+                            <a href="javascript:void(0)" onclick="loadDashboard('@Model.SortOrder', 1, @Model.PageSize)">First</a>
+                            <a href="javascript:void(0)" onclick="loadDashboard('@Model.SortOrder', @Math.Max(Model.CurrentPage - 1, 1), @Model.PageSize)">Previous</a>
+                            <a href="javascript:void(0)" onclick="loadDashboard('@Model.SortOrder', @Math.Min(Model.CurrentPage + 1, (Model.AllDealsTotalCount + Model.PageSize - 1) / Model.PageSize), @Model.PageSize)">Next</a>
+                            <a href="javascript:void(0)" onclick="loadDashboard('@Model.SortOrder', @((Model.AllDealsTotalCount + Model.PageSize - 1) / Model.PageSize), @Model.PageSize)">Last</a>
                         </div>
+
                     </div>
                 </div>
             </div>

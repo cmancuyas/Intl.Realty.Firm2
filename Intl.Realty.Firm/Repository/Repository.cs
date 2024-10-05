@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 using Intl.Realty.Firm.DataAccess;
 using Intl.Realty.Firm.Model.Pagination;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Intl.Realty.Firm.Repository
 {
@@ -95,7 +96,7 @@ namespace Intl.Realty.Firm.Repository
             }
             return await query.ToListAsync();
         }
-        public async Task<PaginatedList<T>> GetPagedAsync(
+        public Task<PaginatedList<T>> GetPagedAsync(
             Expression<Func<T, bool>>? filter = null, 
             string? includeProperties = null, 
             Func<IQueryable<T>, IOrderedQueryable<T>> orderBy = null, 
@@ -122,14 +123,17 @@ namespace Intl.Realty.Firm.Repository
                 query = orderBy(query);
             }
 
+
+            var paginatedList = PaginatedList<T>.CreateAsync(query, pageIndex, pageSize);
             // Return a paginated list
-            return PaginatedList<T>.CreateAsync(query, pageIndex, pageSize);
+            return paginatedList;
         }
 
         public async Task UpdateAsync(T entity)
         {
-            _context.Attach(entity);
-            _context.Entry(entity).State = EntityState.Modified;
+            //_context.Attach(entity);
+            //_context.Entry(entity).State = EntityState.Modified;
+            _context.Update(entity);
             await _context.SaveChangesAsync();
         }
         public async Task UpdateRangeAsync(IEnumerable<T> entities)
