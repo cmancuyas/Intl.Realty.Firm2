@@ -1,7 +1,7 @@
 ﻿using Intl.Realty.Firm.Model.Model;
 using Intl.Realty.Firm.Model.Pagination;
 using Intl.Realty.Firm.Model.ViewModel.AllDealsVM;
-using Microsoft.AspNetCore.Mvc.Rendering;
+using Intl.Realty.Firm.Models.Pagination;
 
 namespace Intl.Realty.Firm.Model.ViewModel.Home
 {
@@ -37,10 +37,7 @@ namespace Intl.Realty.Firm.Model.ViewModel.Home
         public List<AllDealViewModel>? AllDealsPastHour { get; set; }
         public List<AllDealViewModel>? AllDealsToday { get; set; }
 
-        public PagerModel AllDealsPager { get; set; } // For All Deals data
-        public PaginatedList<AllDealViewModel> PaginatedListAllDeals { get; set; } // For All Deals data
-        public SortModel AllDealsSortModel { get; set; } // For All Deals data
-        public string AllDealsSearchText { get; set; } // For All Deals data
-        public PagerModel MonthlyDealsPager { get; set; } // For Current Month
+        public PaginatedDealsViewModel AllDealsCurrentMonth { get; set; } = new PaginatedDealsViewModel();
+        public PaginatedDealsViewModel AllDealsAllMonths { get; set; } = new PaginatedDealsViewModel();
     }
 }

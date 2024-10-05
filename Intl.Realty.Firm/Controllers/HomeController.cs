@@ -54,17 +54,22 @@ namespace Intl.Realty.Firm.Controllers
 
             DashboardViewModel viewModel = await GetDashboardData();
 
-            viewModel.AllDealsSortModel = sortModel;
-            viewModel.AllDealsSearchText = searchText;
+            var paginatedListCurrentMonth = await _allDealsService.GetAllDealsForDashboardData(sortModel.SortedProperty, sortModel.SortOrder, searchText, pageIndex, pageSize, true);
+            viewModel.AllDealsCurrentMonth.PaginatedList = paginatedListCurrentMonth;
+            viewModel.AllDealsCurrentMonth.Pager = new PagerModel(paginatedListCurrentMonth.TotalRecords, pageIndex, pageSize);
+            
+            viewModel.AllDealsCurrentMonth.Pager.SortExpression = sortExpression;
+            viewModel.AllDealsCurrentMonth.SortModel = sortModel;
+            viewModel.AllDealsCurrentMonth.SearchText = searchText;
 
             // Get the dashboard data using the unified DashboardModel
-            var paginatedListViewModel = await _allDealsService.GetAllDealsForDashboardData( sortModel.SortedProperty, sortModel.SortOrder, searchText, pageIndex, pageSize);
-            
-            viewModel.PaginatedListAllDeals = paginatedListViewModel;
-            var allDealsPager = new PagerModel(paginatedListViewModel.TotalRecords, pageIndex, pageSize);
-            allDealsPager.SortExpression = sortExpression;
+            var paginatedListAllMonths = await _allDealsService.GetAllDealsForDashboardData(sortModel.SortedProperty, sortModel.SortOrder, searchText, pageIndex, pageSize,false);
+            viewModel.AllDealsAllMonths.PaginatedList = paginatedListAllMonths;
+            viewModel.AllDealsAllMonths.Pager = new PagerModel(paginatedListAllMonths.TotalRecords, pageIndex, pageSize);
 
-            viewModel.AllDealsPager = allDealsPager;
+            viewModel.AllDealsAllMonths.Pager.SortExpression = sortExpression;
+            viewModel.AllDealsAllMonths.SortModel = sortModel;
+            viewModel.AllDealsAllMonths.SearchText = searchText;
             if (Request.IsAjaxRequest())
             {
                 return PartialView("_DashboardPartial", viewModel);

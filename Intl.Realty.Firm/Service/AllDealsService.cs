@@ -5,8 +5,10 @@ using Intl.Realty.Firm.Model.ViewModel.Home;
 using Intl.Realty.Firm.Repository.IRepository;
 using Intl.Realty.Firm.Service.IService;
 using Intl.Realty.Firm.Utility.Mapper;
+using Intl.Realty.Firm.Utility.Utilities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Org.BouncyCastle.Asn1.X509;
 
 
 namespace Intl.Realty.Firm.Service
@@ -23,12 +25,44 @@ namespace Intl.Realty.Firm.Service
             _userManager = userManager;
         }
 
-        public async Task<PaginatedList<AllDealViewModel>> GetAllDealsForDashboardData(string sortProperty, SortOrder sortOrder, string searchText = "", int pageIndex = 1, int pageSize = 5)
+        public async Task<PaginatedList<AllDealViewModel>> GetAllDealsForDashboardData(string sortProperty, SortOrder sortOrder, string searchText = "", int pageIndex = 1, int pageSize = 5, bool getCurrentMonthFlag = true)
         {
-            var saleListingQuery = await _unitOfWork.SaleListing.AsQueryableAsync(x => x.IsDeleted == false, includeProperties: "TransactionType,IRFDeal,DealStatus");
-            var saleCoopQuery = await _unitOfWork.SaleCoop.AsQueryableAsync(x => x.IsDeleted == false, includeProperties: "TransactionType,IRFDeal,DealStatus");
-            var leaseListingQuery = await _unitOfWork.LeaseListing.AsQueryableAsync(x => x.IsDeleted == false, includeProperties: "TransactionType,IRFDeal,DealStatus");
-            var leaseCoopQuery = await _unitOfWork.LeaseCoop.AsQueryableAsync(x => x.IsDeleted == false, includeProperties: "TransactionType,IRFDeal,DealStatus");
+            IQueryable<SaleListing> saleListingQuery;
+            IQueryable<SaleCoop> saleCoopQuery;
+            IQueryable<LeaseListing> leaseListingQuery;
+            IQueryable<LeaseCoop> leaseCoopQuery;
+            if (getCurrentMonthFlag)
+            {
+                var currentMonth = DateTime.Now.Month;
+                var currentYear = DateTime.Now.Year;
+
+                var saleListingCurrentMonthQuery = LinqExtensions.AndAlso<SaleListing>(x => x.CreatedAt.Month == DateTime.Now.Month, x => x.CreatedAt.Year == DateTime.Now.Year);
+                var saleListingCombinedQuery = LinqExtensions.AndAlso<SaleListing>(x => x.IsDeleted == false, saleListingCurrentMonthQuery);
+
+                saleListingQuery = await _unitOfWork.SaleListing.AsQueryableAsync(saleListingCombinedQuery, includeProperties: "TransactionType,IRFDeal,DealStatus");
+
+                var saleCoopCurrentMonthQuery = LinqExtensions.AndAlso<SaleCoop>(x => x.CreatedAt.Month == DateTime.Now.Month, x => x.CreatedAt.Year == DateTime.Now.Year);
+                var saleCoopCombinedQuery = LinqExtensions.AndAlso<SaleCoop>(x => x.IsDeleted == false, saleCoopCurrentMonthQuery);
+
+                saleCoopQuery = await _unitOfWork.SaleCoop.AsQueryableAsync(x => x.IsDeleted == false, includeProperties: "TransactionType,IRFDeal,DealStatus");
+
+                var leaseListingCurrentMonthQuery = LinqExtensions.AndAlso<LeaseListing>(x => x.CreatedAt.Month == DateTime.Now.Month, x => x.CreatedAt.Year == DateTime.Now.Year);
+                var leaseListingCombinedQuery = LinqExtensions.AndAlso<LeaseListing>(x => x.IsDeleted == false, leaseListingCurrentMonthQuery);
+ 
+                leaseListingQuery = await _unitOfWork.LeaseListing.AsQueryableAsync(x => x.IsDeleted == false, includeProperties: "TransactionType,IRFDeal,DealStatus");
+
+                var leaseCoopCurrentMonthQuery = LinqExtensions.AndAlso<LeaseCoop>(x => x.CreatedAt.Month == DateTime.Now.Month, x => x.CreatedAt.Year == DateTime.Now.Year);
+                var leaseCoopCombinedQuery = LinqExtensions.AndAlso<LeaseCoop>(x => x.IsDeleted == false, leaseCoopCurrentMonthQuery);
+
+                leaseCoopQuery = await _unitOfWork.LeaseCoop.AsQueryableAsync(x => x.IsDeleted == false, includeProperties: "TransactionType,IRFDeal,DealStatus");
+            }
+            else
+            {
+                saleListingQuery = await _unitOfWork.SaleListing.AsQueryableAsync(x => x.IsDeleted == false, includeProperties: "TransactionType,IRFDeal,DealStatus");
+                saleCoopQuery = await _unitOfWork.SaleCoop.AsQueryableAsync(x => x.IsDeleted == false, includeProperties: "TransactionType,IRFDeal,DealStatus");
+                leaseListingQuery = await _unitOfWork.LeaseListing.AsQueryableAsync(x => x.IsDeleted == false, includeProperties: "TransactionType,IRFDeal,DealStatus");
+                leaseCoopQuery = await _unitOfWork.LeaseCoop.AsQueryableAsync(x => x.IsDeleted == false, includeProperties: "TransactionType,IRFDeal,DealStatus");
+            }
 
             List<AllDealViewModel> allDeals = new List<AllDealViewModel>();
 
@@ -110,11 +144,11 @@ namespace Intl.Realty.Firm.Service
             {
                 allDeals = allDeals.Where(p => p.DealTransactionNumber.ToLower().Contains(searchText.ToLower()) ||
                                                p.TransactionTypeName.ToLower().Contains(searchText.ToLower()) ||
-                                               p.PropertyAddress.ToLower().Contains(searchText.ToLower())  ||
+                                               p.PropertyAddress.ToLower().Contains(searchText.ToLower()) ||
                                                p.DealStatusName.ToLower().Contains(searchText.ToLower()) ||
                                                p.CreatedByFullName.ToLower().Contains(searchText.ToLower())
                                                )
-    
+
                             .ToList();
             }
 

@@ -1,0 +1,109 @@
+﻿@using Intl.Realty.Firm.Models.Pagination
+
+@model PaginatedDealsViewModel
+<div class="card">
+    <div class="card-header">
+        <h3>All Deals For All Months</h3>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            <partial name="~/Views/Home/_DashboardPaginationTopBar.cshtml" model="@Model.Pager" />
+        </div>
+    </div>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    <i class="@Model.SortModel!.GetColumn("dealTransactionNumber").SortIcon" aria-hidden="true"></i>
+                    @{
+                        <a href="#" onclick="loadDashboard('@Model.SortModel!.GetColumn("dealTransactionNumber").SortExpression', '@Model.Pager.SearchText', '@Model.Pager.CurrentPage', '@Model.Pager.PageSize')">Deal#</a>
+                    }
+                </th>
+                <th>
+                    <i class="@Model.SortModel!.GetColumn("transactionTypeName").SortIcon" aria-hidden="true"></i>
+                    @{
+                        <a href="#" onclick="loadDashboard('@Model.SortModel!.GetColumn("transactionTypeName").SortExpression', '@Model.Pager.SearchText', '@Model.Pager.CurrentPage', '@Model.Pager.PageSize')">Transaction Type</a>
+                    }
+                </th>
+                <th>
+                    <i class="@Model.SortModel!.GetColumn("propertyAddress").SortIcon" aria-hidden="true"></i>
+                    @{
+                        <a href="#" onclick="loadDashboard('@Model.SortModel!.GetColumn("propertyAddress").SortExpression', '@Model.Pager.SearchText', '@Model.Pager.CurrentPage', '@Model.Pager.PageSize')">Property Address</a>
+                    }
+                </th>
+                <th>
+                    <i class="@Model.SortModel!.GetColumn("dealStatusName").SortIcon" aria-hidden="true"></i>
+                    @{
+                        <a href="#" onclick="loadDashboard('@Model.SortModel!.GetColumn("dealStatusName").SortExpression', '@Model.Pager.SearchText', '@Model.Pager.CurrentPage', '@Model.Pager.PageSize')">Deal Status</a>
+                    }
+                </th>
+                <th>
+                    <i class="@Model.SortModel!.GetColumn("createdByFullName").SortIcon" aria-hidden="true"></i>
+                    @{
+                        <a href="#" onclick="loadDashboard('@Model.SortModel!.GetColumn("createdByFullName").SortExpression', '@Model.Pager.SearchText', '@Model.Pager.CurrentPage', '@Model.Pager.PageSize')">Created By</a>
+                    }
+                </th>
+                <th>
+                    <i class="@Model.SortModel!.GetColumn("createdAt").SortIcon" aria-hidden="true"></i>
+                    @{
+                        <a href="#" onclick="loadDashboard('@Model.SortModel!.GetColumn("createdAt").SortExpression', '@Model.Pager.SearchText', '@Model.Pager.CurrentPage', '@Model.Pager.PageSize')">Created At</a>
+                    }
+                </th>
+                <th>
+                    <i class="@Model.SortModel!.GetColumn("finalClosingDate").SortIcon" aria-hidden="true"></i>
+                    @{
+                        <a href="#" onclick="loadDashboard('@Model.SortModel!.GetColumn("finalClosingDate").SortExpression', '@Model.Pager.SearchText', '@Model.Pager.CurrentPage', '@Model.Pager.PageSize')">Final Closing Date</a>
+                    }
+                </th>
+                <th>File Extension</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.PaginatedList)
+            {
+                <tr>
+                    <td>@item.DealTransactionNumber</td>
+                    <td>@item.TransactionTypeName</td>
+                    <td>@item.PropertyAddress</td>
+                    <td>@item.DealStatusName</td>
+                    <td>@item.CreatedByFullName</td>
+                    <td>@item.CreatedAt</td>
+                    <td>@item.FinalClosingDate</td>
+                    <td>
+                        @{
+                            if (item.FileExtensions!.Any())
+                            {
+                                var str = item.FileExtensions!.FirstOrDefault();
+                                string[] split = str!.Split('.');
+                                var fileExtension = split[1];
+                                <div class="attachment-icon">@fileExtension</div>
+                            }
+                            else
+                            {
+                                <div class="attachment-icon"></div>
+                            }
+                        }
+
+
+                    </td>
+                    <td>
+                        <a class="btn btn-link" type="button" asp-action="Preview" asp-controller="@item.TransactionTypeName" asp-route-id="@item.Id">
+                            Preview
+                        </a>
+                        <a class="btn btn-link" type="button" asp-action="Edit" asp-controller="@item.TransactionTypeName" asp-route-id="@item.Id">
+                            Edit
+                        </a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <div class="row">
+        <div class="col-12">
+            <partial name="~/Views/Home/_DashboardPaginationBottomBar.cshtml" model="@Model.Pager" />
+        </div>
+    </div>
+</div>

@@ -265,108 +265,15 @@
         }
     </style>
 
-
     <div class="row">
         <div class="col-12">
-            <partial name="~/Views/Home/_DashboardPaginationTopBar.cshtml" model="@Model.AllDealsPager" />
+            <partial name="~/Views/Home/_AllDealsForCurrentMonth.cshtml" model="@Model.AllDealsCurrentMonth" />
         </div>
     </div>
 
-    <table class="table">
-        <thead>
-            <tr>
-                <th>
-                    <i class="@Model.AllDealsSortModel!.GetColumn("dealTransactionNumber").SortIcon" aria-hidden="true"></i>
-                    @{
-                        <a href="#" onclick="loadDashboard('@Model.AllDealsSortModel!.GetColumn("dealTransactionNumber").SortExpression', '@Model.AllDealsPager.SearchText', '@Model.AllDealsPager.CurrentPage', '@Model.AllDealsPager.PageSize')">Deal#</a>
-                    }
-                </th>
-                <th>
-                    <i class="@Model.AllDealsSortModel!.GetColumn("transactionTypeName").SortIcon" aria-hidden="true"></i>
-                    @{
-                        <a href="#" onclick="loadDashboard('@Model.AllDealsSortModel!.GetColumn("transactionTypeName").SortExpression', '@Model.AllDealsPager.SearchText', '@Model.AllDealsPager.CurrentPage', '@Model.AllDealsPager.PageSize')">Transaction Type</a>
-                    }
-                </th>
-                <th>
-                    <i class="@Model.AllDealsSortModel!.GetColumn("propertyAddress").SortIcon" aria-hidden="true"></i>
-                    @{
-                        <a href="#" onclick="loadDashboard('@Model.AllDealsSortModel!.GetColumn("propertyAddress").SortExpression', '@Model.AllDealsPager.SearchText', '@Model.AllDealsPager.CurrentPage', '@Model.AllDealsPager.PageSize')">Property Address</a>
-                    }
-                </th>
-                <th>
-                    <i class="@Model.AllDealsSortModel!.GetColumn("dealStatusName").SortIcon" aria-hidden="true"></i>
-                    @{
-                        <a href="#" onclick="loadDashboard('@Model.AllDealsSortModel!.GetColumn("dealStatusName").SortExpression', '@Model.AllDealsPager.SearchText', '@Model.AllDealsPager.CurrentPage', '@Model.AllDealsPager.PageSize')">Deal Status</a>
-                    }
-                </th>
-                <th>
-                    <i class="@Model.AllDealsSortModel!.GetColumn("createdByFullName").SortIcon" aria-hidden="true"></i>
-                    @{
-                        <a href="#" onclick="loadDashboard('@Model.AllDealsSortModel!.GetColumn("createdByFullName").SortExpression', '@Model.AllDealsPager.SearchText', '@Model.AllDealsPager.CurrentPage', '@Model.AllDealsPager.PageSize')">Created By</a>
-                    }
-                </th>
-                <th>
-                    <i class="@Model.AllDealsSortModel!.GetColumn("createdAt").SortIcon" aria-hidden="true"></i>
-                    @{
-                        <a href="#" onclick="loadDashboard('@Model.AllDealsSortModel!.GetColumn("createdAt").SortExpression', '@Model.AllDealsPager.SearchText', '@Model.AllDealsPager.CurrentPage', '@Model.AllDealsPager.PageSize')">Created At</a>
-                    }
-                </th>
-                <th>
-                    <i class="@Model.AllDealsSortModel!.GetColumn("finalClosingDate").SortIcon" aria-hidden="true"></i>
-                    @{
-                        <a href="#" onclick="loadDashboard('@Model.AllDealsSortModel!.GetColumn("finalClosingDate").SortExpression', '@Model.AllDealsPager.SearchText', '@Model.AllDealsPager.CurrentPage', '@Model.AllDealsPager.PageSize')">Final Closing Date</a>
-                    }
-                </th>
-                <th>File Extension</th>
-                <th>Action</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var item in Model.PaginatedListAllDeals)
-            {
-                <tr>
-                    <td>@item.DealTransactionNumber</td>
-                    <td>@item.TransactionTypeName</td>
-                    <td>@item.PropertyAddress</td>
-                    <td>@item.DealStatusName</td>
-                    <td>@item.CreatedByFullName</td>
-                    <td>@item.CreatedAt</td>
-                    <td>@item.FinalClosingDate</td>
-                    <td>
-                        @{
-                            if (item.FileExtensions!.Any())
-                            {
-                                var str = item.FileExtensions!.FirstOrDefault();
-                                string[] split = str!.Split('.');
-                                var fileExtension = split[1];
-                                <div class="attachment-icon">@fileExtension</div>
-                            }
-                            else
-                            {
-                                <div class="attachment-icon">PDF</div>
-                            }
-                        }
-
-
-                    </td>
-                    <td>
-                        <a class="btn btn-link" type="button" asp-action="Preview" asp-controller="@item.TransactionTypeName" asp-route-id="@item.Id">
-                            Preview
-                        </a>
-                        <a class="btn btn-link" type="button" asp-action="Edit" asp-controller="@item.TransactionTypeName" asp-route-id="@item.Id">
-                            Edit
-                        </a>
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
-
-    </br>
-
     <div class="row">
         <div class="col-12">
-            <partial name="~/Views/Home/_DashboardPaginationBottomBar.cshtml" model="@Model.AllDealsPager" />
+            <partial name="~/Views/Home/_AllDealsForAllMonths.cshtml" model="@Model.AllDealsAllMonths" />
         </div>
     </div>
 
