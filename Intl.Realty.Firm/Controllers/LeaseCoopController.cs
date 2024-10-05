@@ -99,8 +99,9 @@ namespace DENR_FASPIS.Controllers
 
             var currentYear = DateTime.Now.Year.ToString();
             var currentMonth = DateTime.Now.Month.ToString();
+            var currentDay = DateTime.Now.Day.ToString();
             var paddedCurrentNumber = (numberRange.CurrentNumber + 1).ToString().PadLeft(5, '0');
-            var paddedNumberRange = currentYear + currentMonth + "-" + paddedTransactionType + "-" + paddedCurrentNumber;
+            var paddedNumberRange = currentYear + currentMonth + currentDay + "-" + paddedTransactionType + "-" + paddedCurrentNumber;
 
             viewModel.CreateLeaseCoop.DealTransactionNumber = paddedNumberRange;
 
