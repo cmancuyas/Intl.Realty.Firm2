@@ -17,8 +17,8 @@
 
 @section Scripts {
     <script>
-        function loadDashboard(sortExpression,searchText,pageIndex, pageSize) {
-            $.get('@Url.Action("Dashboard", "Home")', { sortExpression, searchText, pageIndex, pageSize }, function (data) {
+        function loadDashboard(sortExpression,searchText,pageIndex, pageSize, currentMonth) {
+            $.get('@Url.Action("Dashboard", "Home")', { sortExpression, searchText, pageIndex, pageSize, currentMonth }, function (data) {
                 $('#dashboardContent').html(data);
             });
         }

@@ -16,6 +16,10 @@ namespace Intl.Realty.Firm.Model.Pagination
         public string? SearchText { get; set; }
         public string? SortExpression { get; set; }
 
+        public PagerModel()
+        {
+            
+        }
         public PagerModel(int totalItems, int currentPage, int pageSize = 5)
         {
             TotalItems = totalItems;

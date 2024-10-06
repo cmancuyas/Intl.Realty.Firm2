@@ -39,8 +39,10 @@ namespace Intl.Realty.Firm.Controllers
         {
             return View();
         }
-        public async Task<IActionResult> Dashboard(string sortExpression = "", string searchText = "", int pageIndex = 1, int pageSize = 5)
+        public async Task<IActionResult> Dashboard(string sortExpression = "", string searchText = "", int pageIndex = 1, int pageSize = 5, string currentMonth = "")
         {
+            var user = await _userManager.GetUserAsync(User);
+
             SortModel sortModel = new SortModel();
 
             sortModel.AddColumn("dealTransactionNumber");
@@ -57,25 +59,25 @@ namespace Intl.Realty.Firm.Controllers
                 sortModel.SortedProperty = "finalClosingDate";
                 sortModel.SortOrder = SortOrder.Descending;
             }
-            
+
             DashboardViewModel viewModel = await GetDashboardData();
 
-            var paginatedListCurrentMonth = await _allDealsService.GetAllDealsForDashboardData(sortModel.SortedProperty, sortModel.SortOrder, searchText, pageIndex, pageSize, true);
+            var paginatedListCurrentMonth = await _allDealsService.GetAllDealsForDashboardData(user!, sortModel.SortedProperty, sortModel.SortOrder, searchText, pageIndex, pageSize, true);
             viewModel.AllDealsCurrentMonth.PaginatedList = paginatedListCurrentMonth;
             viewModel.AllDealsCurrentMonth.Pager = new PagerModel(paginatedListCurrentMonth.TotalRecords, pageIndex, pageSize);
-            
+
             viewModel.AllDealsCurrentMonth.Pager.SortExpression = sortExpression;
             viewModel.AllDealsCurrentMonth.SortModel = sortModel;
             viewModel.AllDealsCurrentMonth.SearchText = searchText;
 
-            // Get the dashboard data using the unified DashboardModel
-            var paginatedListAllMonths = await _allDealsService.GetAllDealsForDashboardData(sortModel.SortedProperty, sortModel.SortOrder, searchText, pageIndex, pageSize,false);
+            var paginatedListAllMonths = await _allDealsService.GetAllDealsForDashboardData(user!,sortModel.SortedProperty, sortModel.SortOrder, searchText, pageIndex, pageSize, false);
             viewModel.AllDealsAllMonths.PaginatedList = paginatedListAllMonths;
             viewModel.AllDealsAllMonths.Pager = new PagerModel(paginatedListAllMonths.TotalRecords, pageIndex, pageSize);
 
             viewModel.AllDealsAllMonths.Pager.SortExpression = sortExpression;
             viewModel.AllDealsAllMonths.SortModel = sortModel;
             viewModel.AllDealsAllMonths.SearchText = searchText;
+
             if (Request.IsAjaxRequest())
             {
                 return PartialView("_DashboardPartial", viewModel);

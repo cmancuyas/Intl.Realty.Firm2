@@ -25,8 +25,10 @@ namespace Intl.Realty.Firm.Service
             _userManager = userManager;
         }
 
-        public async Task<PaginatedList<AllDealViewModel>> GetAllDealsForDashboardData(string sortProperty, SortOrder sortOrder, string searchText = "", int pageIndex = 1, int pageSize = 5, bool getCurrentMonthFlag = true)
+        public async Task<PaginatedList<AllDealViewModel>> GetAllDealsForDashboardData(ApplicationUser user, string sortProperty, SortOrder sortOrder, string searchText = "", int pageIndex = 1, int pageSize = 5, bool getCurrentMonthFlag = true)
         {
+            var isAgent = await _userManager.IsInRoleAsync(user!, "Agent");
+
             IQueryable<SaleListing> saleListingQuery;
             IQueryable<SaleCoop> saleCoopQuery;
             IQueryable<LeaseListing> leaseListingQuery;
@@ -36,32 +38,90 @@ namespace Intl.Realty.Firm.Service
                 var currentMonth = DateTime.Now.Month;
                 var currentYear = DateTime.Now.Year;
 
+                // SaleListing Query
                 var saleListingCurrentMonthQuery = LinqExtensions.AndAlso<SaleListing>(x => x.CreatedAt.Month == DateTime.Now.Month, x => x.CreatedAt.Year == DateTime.Now.Year);
                 var saleListingCombinedQuery = LinqExtensions.AndAlso<SaleListing>(x => x.IsDeleted == false, saleListingCurrentMonthQuery);
+                if (isAgent)
+                {
+                    saleListingCombinedQuery = LinqExtensions.AndAlso<SaleListing>(x => x.CreatedBy == user.Id, saleListingCurrentMonthQuery);
+                }
 
                 saleListingQuery = await _unitOfWork.SaleListing.AsQueryableAsync(saleListingCombinedQuery, includeProperties: "TransactionType,IRFDeal,DealStatus");
 
+                // SaleCoop Query
                 var saleCoopCurrentMonthQuery = LinqExtensions.AndAlso<SaleCoop>(x => x.CreatedAt.Month == DateTime.Now.Month, x => x.CreatedAt.Year == DateTime.Now.Year);
                 var saleCoopCombinedQuery = LinqExtensions.AndAlso<SaleCoop>(x => x.IsDeleted == false, saleCoopCurrentMonthQuery);
+                if (isAgent)
+                {
+                    saleCoopCombinedQuery = LinqExtensions.AndAlso<SaleCoop>(x => x.CreatedBy == user.Id, saleCoopCurrentMonthQuery);
+                }
+                
+                saleCoopQuery = await _unitOfWork.SaleCoop.AsQueryableAsync(saleCoopCombinedQuery, includeProperties: "TransactionType,IRFDeal,DealStatus");
 
-                saleCoopQuery = await _unitOfWork.SaleCoop.AsQueryableAsync(x => x.IsDeleted == false, includeProperties: "TransactionType,IRFDeal,DealStatus");
-
+                // LeaseListing Query
                 var leaseListingCurrentMonthQuery = LinqExtensions.AndAlso<LeaseListing>(x => x.CreatedAt.Month == DateTime.Now.Month, x => x.CreatedAt.Year == DateTime.Now.Year);
                 var leaseListingCombinedQuery = LinqExtensions.AndAlso<LeaseListing>(x => x.IsDeleted == false, leaseListingCurrentMonthQuery);
- 
+                if (isAgent)
+                {
+                    leaseListingCombinedQuery = LinqExtensions.AndAlso<LeaseListing>(x => x.CreatedBy == user.Id, leaseListingCurrentMonthQuery);
+                }
+                
                 leaseListingQuery = await _unitOfWork.LeaseListing.AsQueryableAsync(x => x.IsDeleted == false, includeProperties: "TransactionType,IRFDeal,DealStatus");
 
+                // LeaseCoop Query
                 var leaseCoopCurrentMonthQuery = LinqExtensions.AndAlso<LeaseCoop>(x => x.CreatedAt.Month == DateTime.Now.Month, x => x.CreatedAt.Year == DateTime.Now.Year);
                 var leaseCoopCombinedQuery = LinqExtensions.AndAlso<LeaseCoop>(x => x.IsDeleted == false, leaseCoopCurrentMonthQuery);
+                if (isAgent)
+                {
+                    leaseCoopCombinedQuery = LinqExtensions.AndAlso<LeaseCoop>(x => x.CreatedBy == user.Id, leaseCoopCurrentMonthQuery);
+                }
 
-                leaseCoopQuery = await _unitOfWork.LeaseCoop.AsQueryableAsync(x => x.IsDeleted == false, includeProperties: "TransactionType,IRFDeal,DealStatus");
+                leaseCoopQuery = await _unitOfWork.LeaseCoop.AsQueryableAsync(leaseCoopCombinedQuery, includeProperties: "TransactionType,IRFDeal,DealStatus");
             }
             else
             {
-                saleListingQuery = await _unitOfWork.SaleListing.AsQueryableAsync(x => x.IsDeleted == false, includeProperties: "TransactionType,IRFDeal,DealStatus");
-                saleCoopQuery = await _unitOfWork.SaleCoop.AsQueryableAsync(x => x.IsDeleted == false, includeProperties: "TransactionType,IRFDeal,DealStatus");
-                leaseListingQuery = await _unitOfWork.LeaseListing.AsQueryableAsync(x => x.IsDeleted == false, includeProperties: "TransactionType,IRFDeal,DealStatus");
-                leaseCoopQuery = await _unitOfWork.LeaseCoop.AsQueryableAsync(x => x.IsDeleted == false, includeProperties: "TransactionType,IRFDeal,DealStatus");
+                // SaleListing Query
+                if(isAgent)
+                {
+                    var saleListingCombinedQuery = LinqExtensions.AndAlso<SaleListing>(x => x.IsDeleted == false, x => x.CreatedBy == user.Id);
+                    saleListingQuery = await _unitOfWork.SaleListing.AsQueryableAsync(saleListingCombinedQuery, includeProperties: "TransactionType,IRFDeal,DealStatus");
+                }
+                else
+                {
+                    saleListingQuery = await _unitOfWork.SaleListing.AsQueryableAsync(x => x.IsDeleted == false, includeProperties: "TransactionType,IRFDeal,DealStatus");
+                }
+                
+                //SaleCoop
+                if(isAgent)
+                {
+                    var saleCoopCombinedQuery = LinqExtensions.AndAlso<SaleCoop>(x => x.IsDeleted == false, x => x.CreatedBy == user.Id);
+                    saleCoopQuery = await _unitOfWork.SaleCoop.AsQueryableAsync(saleCoopCombinedQuery, includeProperties: "TransactionType,IRFDeal,DealStatus");
+                }
+                else
+                {
+                    saleCoopQuery = await _unitOfWork.SaleCoop.AsQueryableAsync(x => x.IsDeleted == false, includeProperties: "TransactionType,IRFDeal,DealStatus");
+                }
+
+                //LeaseListing
+                if (isAgent)
+                {
+                    var leaseListingCombinedQuery = LinqExtensions.AndAlso<LeaseListing>(x => x.IsDeleted == false, x => x.CreatedBy == user.Id);
+                    leaseListingQuery = await _unitOfWork.LeaseListing.AsQueryableAsync(leaseListingCombinedQuery, includeProperties: "TransactionType,IRFDeal,DealStatus");
+                }
+                else
+                {
+                    leaseListingQuery = await _unitOfWork.LeaseListing.AsQueryableAsync(x => x.IsDeleted == false, includeProperties: "TransactionType,IRFDeal,DealStatus");
+                }
+                
+                if(isAgent)
+                {
+                    var leaseCoopCombinedQuery = LinqExtensions.AndAlso<LeaseCoop>(x => x.IsDeleted == false, x => x.CreatedBy == user.Id);
+                    leaseCoopQuery = await _unitOfWork.LeaseCoop.AsQueryableAsync(leaseCoopCombinedQuery, includeProperties: "TransactionType,IRFDeal,DealStatus");
+                }
+                else
+                {
+                    leaseCoopQuery = await _unitOfWork.LeaseCoop.AsQueryableAsync(x => x.IsDeleted == false, includeProperties: "TransactionType,IRFDeal,DealStatus");
+                }
             }
 
             List<AllDealViewModel> allDeals = new List<AllDealViewModel>();
