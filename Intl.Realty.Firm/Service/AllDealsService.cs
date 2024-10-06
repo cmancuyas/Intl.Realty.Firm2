@@ -1,15 +1,11 @@
 ﻿using Intl.Realty.Firm.Model.Model;
 using Intl.Realty.Firm.Model.Pagination;
 using Intl.Realty.Firm.Model.ViewModel.AllDealsVM;
-using Intl.Realty.Firm.Model.ViewModel.Home;
 using Intl.Realty.Firm.Repository.IRepository;
 using Intl.Realty.Firm.Service.IService;
 using Intl.Realty.Firm.Utility.Mapper;
 using Intl.Realty.Firm.Utility.Utilities;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
-using Org.BouncyCastle.Asn1.X509;
-
 
 namespace Intl.Realty.Firm.Service
 {
@@ -66,7 +62,7 @@ namespace Intl.Realty.Firm.Service
                     leaseListingCombinedQuery = LinqExtensions.AndAlso<LeaseListing>(x => x.CreatedBy == user.Id, leaseListingCurrentMonthQuery);
                 }
                 
-                leaseListingQuery = await _unitOfWork.LeaseListing.AsQueryableAsync(x => x.IsDeleted == false, includeProperties: "TransactionType,IRFDeal,DealStatus");
+                leaseListingQuery = await _unitOfWork.LeaseListing.AsQueryableAsync(leaseListingCombinedQuery, includeProperties: "TransactionType,IRFDeal,DealStatus");
 
                 // LeaseCoop Query
                 var leaseCoopCurrentMonthQuery = LinqExtensions.AndAlso<LeaseCoop>(x => x.CreatedAt.Month == DateTime.Now.Month, x => x.CreatedAt.Year == DateTime.Now.Year);

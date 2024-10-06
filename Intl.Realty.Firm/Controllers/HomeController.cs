@@ -39,7 +39,7 @@ namespace Intl.Realty.Firm.Controllers
         {
             return View();
         }
-        public async Task<IActionResult> Dashboard(string sortExpression = "", string searchText = "", int pageIndex = 1, int pageSize = 5, string currentMonth = "")
+        public async Task<IActionResult> Dashboard(string sortExpression = "", string searchText = "", int pageIndex = 1, int pageSize = 5, string tableName = "")
         {
             var user = await _userManager.GetUserAsync(User);
 
@@ -61,22 +61,30 @@ namespace Intl.Realty.Firm.Controllers
             }
 
             DashboardViewModel viewModel = await GetDashboardData();
+            if(tableName == "currentMonth")
+            {
+                // Current Month
+                var paginatedListCurrentMonth = await _allDealsService.GetAllDealsForDashboardData(user!, sortModel.SortedProperty, sortModel.SortOrder, searchText, pageIndex, pageSize, true);
+                viewModel.AllDealsCurrentMonth.PaginatedList = paginatedListCurrentMonth;
+                viewModel.AllDealsCurrentMonth.Pager = new PagerModel(paginatedListCurrentMonth.TotalRecords, pageIndex, pageSize);
 
-            var paginatedListCurrentMonth = await _allDealsService.GetAllDealsForDashboardData(user!, sortModel.SortedProperty, sortModel.SortOrder, searchText, pageIndex, pageSize, true);
-            viewModel.AllDealsCurrentMonth.PaginatedList = paginatedListCurrentMonth;
-            viewModel.AllDealsCurrentMonth.Pager = new PagerModel(paginatedListCurrentMonth.TotalRecords, pageIndex, pageSize);
+                viewModel.AllDealsCurrentMonth.Pager.SortExpression = sortExpression;
+                viewModel.AllDealsCurrentMonth.SortModel = sortModel;
+                viewModel.AllDealsCurrentMonth.SearchText = searchText;
+            }
 
-            viewModel.AllDealsCurrentMonth.Pager.SortExpression = sortExpression;
-            viewModel.AllDealsCurrentMonth.SortModel = sortModel;
-            viewModel.AllDealsCurrentMonth.SearchText = searchText;
+            else
+            {
+                // All Months
+                var paginatedListAllMonths = await _allDealsService.GetAllDealsForDashboardData(user!, sortModel.SortedProperty, sortModel.SortOrder, searchText, pageIndex, pageSize, false);
+                viewModel.AllDealsAllMonths.PaginatedList = paginatedListAllMonths;
+                viewModel.AllDealsAllMonths.Pager = new PagerModel(paginatedListAllMonths.TotalRecords, pageIndex, pageSize);
 
-            var paginatedListAllMonths = await _allDealsService.GetAllDealsForDashboardData(user!,sortModel.SortedProperty, sortModel.SortOrder, searchText, pageIndex, pageSize, false);
-            viewModel.AllDealsAllMonths.PaginatedList = paginatedListAllMonths;
-            viewModel.AllDealsAllMonths.Pager = new PagerModel(paginatedListAllMonths.TotalRecords, pageIndex, pageSize);
+                viewModel.AllDealsAllMonths.Pager.SortExpression = sortExpression;
+                viewModel.AllDealsAllMonths.SortModel = sortModel;
+                viewModel.AllDealsAllMonths.SearchText = searchText;
+            }
 
-            viewModel.AllDealsAllMonths.Pager.SortExpression = sortExpression;
-            viewModel.AllDealsAllMonths.SortModel = sortModel;
-            viewModel.AllDealsAllMonths.SearchText = searchText;
 
             if (Request.IsAjaxRequest())
             {
