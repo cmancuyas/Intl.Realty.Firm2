@@ -29,11 +29,11 @@
 
         </td>
         <td>
-            <a class="btn btn-link" type="button" asp-action="Preview" asp-controller="@item.TransactionTypeName" asp-route-id="@item.Id">
-                Preview
-            </a>
-            <a class="btn btn-link" type="button" asp-action="Edit" asp-controller="@item.TransactionTypeName" asp-route-id="@item.Id">
+            <a class="btn btn-cta" type="button" asp-action="Edit" asp-controller="@item.TransactionTypeName" asp-route-id="@item.Id">
                 Edit
+            </a>
+            <a class="btn btn-primary" type="button" asp-action="Preview" asp-controller="@item.TransactionTypeName" asp-route-id="@item.Id">
+                Preview
             </a>
         </td>
     </tr>

@@ -2,25 +2,24 @@
 
 @model PagerModel
 
-<div class="container mb-4 p-0 btn-group" style="background-color:cornflowerblue; border-radius:10px; height:45px; color:white;">
-    <div class="col-4 btn-group p-1 m-1">
-        <p>
+<div class="container-fluid mb-0 p-0 btn-group align-items-center dashboard-table-footer">
+    <div class="col-4 px-3 align-items-center justify-content-start">
+        <p class="m-0">
             Showing @Model.StartRecord to @Model.EndRecord of @Model.TotalItems Rows
         </p>
     </div>
-    <div class="col-3 btn-group justify-content-end">
-        <span class="col-7 mt-2 p-0">
-            Rows Per Page
-        </span>
-        <span class="col-5 p-1">
-            <select class="form-control" id="pageSelector" asp-items="Model.GetPageSizes()"
-                    onchange="ChangePageSize(this)"></select>
-        </span>
-    </div>
-    <div class="col-5 btn-group justify-content-end mt-2">
-        <p>
+    <div class="col-4 px-3 align-items-center justify-content-center">
+        <p class="m-0 text-center">
             Showing @Model.CurrentPage / @Model.TotalPages Pages
         </p>
+    </div>
+    <div class="col-4 px-3 d-flex align-items-center justify-content-end">
+        <span class="col-4 pe-2 d-flex justify-content-end">
+            Rows Per Page
+        </span>
+        <span class="col-1 p-0 d-flex justify-content-end">
+            <select class="form-control dashboard-counter" id="pageSelector" asp-items="Model.GetPageSizes()" onchange="ChangePageSize(this)"></select>
+        </span>
     </div>
 </div>
 

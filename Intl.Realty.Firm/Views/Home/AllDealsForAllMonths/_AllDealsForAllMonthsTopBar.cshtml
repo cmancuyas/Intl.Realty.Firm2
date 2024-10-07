@@ -16,17 +16,16 @@
     }
 </style>
 
-<div class="container btn-group" style="background-color:cornflowerblue; border-radius:10px;height:45px;">
-    <div class="col-4 p-0 justify-content-end mt-1">
+<div class="container-fluid">
+    <div class="col-12 p-0 justify-content-end mt-4">
         <form asp-action="Dashboard">
-            <span class="btn-group">
+            <span class="btn-group w-50 fr">
                 <input class="form-control" type="text"
                        name="SearchText"
                        value="@Model.SearchText"
                        placeholder="Search Key" />
 
-                <input class="p-1 m-lg-2 btn btn-sm btn-danger" style="border-radius:10px"
-                       type="submit" value="Search" />
+                <input class="dashboard-search-btn btn btn-primary px-3" type="submit" value="Search" />
             </span>
         </form>
     </div>
