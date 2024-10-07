@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc.Rendering;
-
-namespace Intl.Realty.Firm.Model.Pagination
+﻿namespace Intl.Realty.Firm.Model.Pagination
 {
     public class PaginatedList<T> : List<T>
     {

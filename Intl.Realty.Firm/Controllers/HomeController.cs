@@ -12,6 +12,10 @@ using Intl.Realty.Firm.Utility.Mapper;
 using Intl.Realty.Firm.Service.IService;
 using Intl.Realty.Firm.Utilities;
 using Intl.Realty.Firm.Model.Pagination;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Mvc.ViewEngines;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace Intl.Realty.Firm.Controllers
 {
@@ -22,17 +26,23 @@ namespace Intl.Realty.Firm.Controllers
         private readonly IUnitOfWork _unitOfWork;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IAllDealsService _allDealsService;
+        private readonly ICompositeViewEngine _viewEngine;
+        private readonly ITempDataProvider _tempDataProvider;
 
         public HomeController(ILogger<HomeController> logger,
                               IUnitOfWork unitOfWork,
                               UserManager<ApplicationUser> userManager,
-                              IAllDealsService allDealsService
+                              IAllDealsService allDealsService,
+                              ICompositeViewEngine viewEngine,
+                              ITempDataProvider tempDataProvider
                                 )
         {
             _logger = logger;
             _unitOfWork = unitOfWork;
             _userManager = userManager;
             _allDealsService = allDealsService;
+            _viewEngine = viewEngine;
+            _tempDataProvider = tempDataProvider;
         }
 
         public IActionResult Index()
@@ -43,15 +53,8 @@ namespace Intl.Realty.Firm.Controllers
         {
             var user = await _userManager.GetUserAsync(User);
 
-            SortModel sortModel = new SortModel();
+            SortModel sortModel = await GetSortModelData();
 
-            sortModel.AddColumn("dealTransactionNumber");
-            sortModel.AddColumn("transactionTypeName");
-            sortModel.AddColumn("propertyAddress");
-            sortModel.AddColumn("dealStatusName");
-            sortModel.AddColumn("createdAt");
-            sortModel.AddColumn("createdByFullName");
-            sortModel.AddColumn("finalClosingDate", true);
             sortModel.ApplySort(sortExpression);
 
             if (sortExpression == "")
@@ -61,30 +64,24 @@ namespace Intl.Realty.Firm.Controllers
             }
 
             DashboardViewModel viewModel = await GetDashboardData();
-            if(tableName == "currentMonth")
-            {
-                // Current Month
-                var paginatedListCurrentMonth = await _allDealsService.GetAllDealsForDashboardData(user!, sortModel.SortedProperty, sortModel.SortOrder, searchText, pageIndex, pageSize, true);
-                viewModel.AllDealsCurrentMonth.PaginatedList = paginatedListCurrentMonth;
-                viewModel.AllDealsCurrentMonth.Pager = new PagerModel(paginatedListCurrentMonth.TotalRecords, pageIndex, pageSize);
 
-                viewModel.AllDealsCurrentMonth.Pager.SortExpression = sortExpression;
-                viewModel.AllDealsCurrentMonth.SortModel = sortModel;
-                viewModel.AllDealsCurrentMonth.SearchText = searchText;
-            }
+            // Current Month
+            var paginatedListCurrentMonth = await _allDealsService.GetAllDealsForDashboardData(user!, sortModel.SortedProperty, sortModel.SortOrder, searchText, pageIndex, pageSize, true);
+            viewModel.AllDealsCurrentMonth = paginatedListCurrentMonth;
+            viewModel.AllDealsCurrentMonth.Pager = new PagerModel(paginatedListCurrentMonth.PaginatedList.TotalRecords, pageIndex, pageSize);
 
-            else
-            {
-                // All Months
-                var paginatedListAllMonths = await _allDealsService.GetAllDealsForDashboardData(user!, sortModel.SortedProperty, sortModel.SortOrder, searchText, pageIndex, pageSize, false);
-                viewModel.AllDealsAllMonths.PaginatedList = paginatedListAllMonths;
-                viewModel.AllDealsAllMonths.Pager = new PagerModel(paginatedListAllMonths.TotalRecords, pageIndex, pageSize);
+            viewModel.AllDealsCurrentMonth.Pager.SortExpression = sortExpression;
+            viewModel.AllDealsCurrentMonth.SortModel = sortModel;
+            viewModel.AllDealsCurrentMonth.SearchText = searchText;
 
-                viewModel.AllDealsAllMonths.Pager.SortExpression = sortExpression;
-                viewModel.AllDealsAllMonths.SortModel = sortModel;
-                viewModel.AllDealsAllMonths.SearchText = searchText;
-            }
+            // All Months
+            var paginatedListAllMonths = await _allDealsService.GetAllDealsForDashboardData(user!, sortModel.SortedProperty, sortModel.SortOrder, searchText, pageIndex, pageSize, false);
+            viewModel.AllDealsAllMonths = paginatedListAllMonths;
+            viewModel.AllDealsAllMonths.Pager = new PagerModel(paginatedListAllMonths.PaginatedList.TotalRecords, pageIndex, pageSize);
 
+            viewModel.AllDealsAllMonths.Pager.SortExpression = sortExpression;
+            viewModel.AllDealsAllMonths.SortModel = sortModel;
+            viewModel.AllDealsAllMonths.SearchText = searchText;
 
             if (Request.IsAjaxRequest())
             {
@@ -93,13 +90,127 @@ namespace Intl.Realty.Firm.Controllers
 
             return View(viewModel);
         }
+
+        [HttpGet]
+        public async Task<IActionResult> LoadDashboardData(string sortExpression = "", string searchText = "", int pageIndex = 1, int pageSize = 5, string tableName = "")
+        {
+            var user = await _userManager.GetUserAsync(User);
+
+            string tablePartialView, tableBodyPartialView, paginationTopBarPartialView, paginationBottomBarPartialView;
+
+            SortModel sortModel = await GetSortModelData();
+            DashboardViewModel viewModel = new DashboardViewModel();
+            if (tableName == "currentMonth")
+            {
+                // Current Month
+                var paginatedListCurrentMonth = await _allDealsService.GetAllDealsForDashboardData(user!, sortModel.SortedProperty, sortModel.SortOrder, searchText, pageIndex, pageSize, true);
+                viewModel.AllDealsCurrentMonth = paginatedListCurrentMonth;
+                viewModel.AllDealsCurrentMonth.Pager = new PagerModel(paginatedListCurrentMonth.PaginatedList.TotalRecords, pageIndex, pageSize);
+
+                viewModel.AllDealsCurrentMonth.Pager.SortExpression = sortExpression;
+                viewModel.AllDealsCurrentMonth.SortModel = sortModel;
+                viewModel.AllDealsCurrentMonth.SearchText = searchText;
+
+                tablePartialView = await RenderPartialViewToStringAsync("~/Views/Home/AllDealsForCurrentMonth/_AllDealsForCurrentMonth", paginatedListCurrentMonth);
+                tableBodyPartialView = await RenderPartialViewToStringAsync("~/Views/Home/AllDealsForCurrentMonth/_AllDealsForCurrentMonthTableBody", paginatedListCurrentMonth);
+                paginationTopBarPartialView = await RenderPartialViewToStringAsync("~/Views/Home/AllDealsForCurrentMonth/_AllDealsForCurrentMonthTopBar", new PagerModel(paginatedListCurrentMonth.PaginatedList.TotalRecords, pageIndex, pageSize));
+                paginationBottomBarPartialView = await RenderPartialViewToStringAsync("~/Views/Home/AllDealsForCurrentMonth/_AllDealsForCurrentMonthBottomBar", new PagerModel(paginatedListCurrentMonth.PaginatedList.TotalRecords, pageIndex, pageSize));
+
+                return new JsonResult(new { currentMonthPartial = tablePartialView,
+                                            currentMonthTableBody = tableBodyPartialView,
+                                            topBarHtml = paginationTopBarPartialView,
+                                            bottomBarHtml = paginationBottomBarPartialView,
+                                            Pager = viewModel.AllDealsCurrentMonth.Pager,
+                                            sortExpression,
+                                            sortModel,
+                                            searchText,
+                                            pageIndex,
+                                            pageSize
+                                        });
+            }
+
+            else
+            {
+                // All Months
+                var paginatedListAllMonths = await _allDealsService.GetAllDealsForDashboardData(user!, sortModel.SortedProperty, sortModel.SortOrder, searchText, pageIndex, pageSize, false);
+                viewModel.AllDealsAllMonths = paginatedListAllMonths;
+                viewModel.AllDealsAllMonths.Pager = new PagerModel(paginatedListAllMonths.PaginatedList.TotalRecords, pageIndex, pageSize);
+
+                viewModel.AllDealsAllMonths.Pager.SortExpression = sortExpression;
+                viewModel.AllDealsAllMonths.SortModel = sortModel;
+                viewModel.AllDealsAllMonths.SearchText = searchText;
+
+
+                tablePartialView = await RenderPartialViewToStringAsync("~/Views/Home/AllDealsForAllMonths/_AllDealsForAllMonths.cshtml", paginatedListAllMonths);
+                tableBodyPartialView = await RenderPartialViewToStringAsync("~/Views/Home/AllDealsForAllMonths/_AllDealsForAllMonthsTableBody.cshtml", paginatedListAllMonths);
+                paginationTopBarPartialView = await RenderPartialViewToStringAsync("~/Views/Home/AllDealsForAllMonths/_AllDealsForAllMonthsTopBar.cshtml", new PagerModel(paginatedListAllMonths.PaginatedList.TotalRecords, pageIndex, pageSize));
+                paginationBottomBarPartialView = await RenderPartialViewToStringAsync("~/Views/Home/AllDealsForAllMonths/_AllDealsForAllMonthsBottomBar.cshtml", new PagerModel(paginatedListAllMonths.PaginatedList.TotalRecords, pageIndex, pageSize));
+
+                return new JsonResult(new
+                {
+                    allMonthsPartial = tablePartialView,
+                    allMonthsTableBody = tableBodyPartialView,
+                    topBarHtml = paginationTopBarPartialView,
+                    bottomBarHtml = paginationBottomBarPartialView,
+                    Pager = viewModel.AllDealsCurrentMonth.Pager,
+                    sortExpression,
+                    sortModel,
+                    searchText,
+                    pageIndex,
+                    pageSize
+                });
+            }
+        }
+
+        // Helper method to render partial views as a string for AJAX responses
+        private async Task<string> RenderPartialViewToStringAsync(string viewName, object model)
+        {
+            using (var writer = new StringWriter())
+            {
+                // Use the full path for the partial view location.
+                var viewResult = _viewEngine.GetView("", viewName, false);
+
+                if (viewResult.View == null)
+                {
+                    throw new ArgumentNullException($"{viewName} does not match any available views.");
+                }
+
+                var viewContext = new ViewContext(
+                    ControllerContext,
+                    viewResult.View,
+                    new ViewDataDictionary(new EmptyModelMetadataProvider(), new ModelStateDictionary())
+                    {
+                        Model = model
+                    },
+                    TempData,
+                    writer,
+                    new HtmlHelperOptions()
+                );
+
+                await viewResult.View.RenderAsync(viewContext);
+                return writer.GetStringBuilder().ToString();
+            }
+        }
         public async Task<IActionResult> AdminDashboard()
         {
             DashboardViewModel viewModel = await GetDashboardData();
 
             return View(viewModel);
         }
+        private async Task<SortModel> GetSortModelData()
+        {
+            var sortModel = new SortModel();
 
+            sortModel.AddColumn("dealTransactionNumber");
+            sortModel.AddColumn("transactionTypeName");
+            sortModel.AddColumn("propertyAddress");
+            sortModel.AddColumn("dealStatusName");
+            sortModel.AddColumn("createdAt");
+            sortModel.AddColumn("createdByFullName");
+            sortModel.AddColumn("finalClosingDate", true);
+
+            return await Task.FromResult(sortModel);
+        }
         private async Task<DashboardViewModel> GetDashboardData()
         {
             var user = await _userManager.GetUserAsync(User);

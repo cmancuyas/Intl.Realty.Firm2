@@ -1,6 +1,7 @@
 ﻿using Intl.Realty.Firm.Model.Model;
 using Intl.Realty.Firm.Model.Pagination;
 using Intl.Realty.Firm.Model.ViewModel.AllDealsVM;
+using Intl.Realty.Firm.Models.Pagination;
 using Intl.Realty.Firm.Repository.IRepository;
 using Intl.Realty.Firm.Service.IService;
 using Intl.Realty.Firm.Utility.Mapper;
@@ -21,7 +22,7 @@ namespace Intl.Realty.Firm.Service
             _userManager = userManager;
         }
 
-        public async Task<PaginatedList<AllDealViewModel>> GetAllDealsForDashboardData(ApplicationUser user, string sortProperty, SortOrder sortOrder, string searchText = "", int pageIndex = 1, int pageSize = 5, bool getCurrentMonthFlag = true)
+        public async Task<PaginatedDealsViewModel> GetAllDealsForDashboardData(ApplicationUser user, string sortProperty, SortOrder sortOrder, string searchText = "", int pageIndex = 1, int pageSize = 5, bool getCurrentMonthFlag = true)
         {
             var isAgent = await _userManager.IsInRoleAsync(user!, "Agent");
 
@@ -212,7 +213,9 @@ namespace Intl.Realty.Firm.Service
 
             PaginatedList<AllDealViewModel> allDealsPaginated = new PaginatedList<AllDealViewModel>(allDeals, pageIndex, pageSize);
 
-            return allDealsPaginated;
+            PaginatedDealsViewModel paginatedDealsViewModel = new PaginatedDealsViewModel();
+            paginatedDealsViewModel.PaginatedList = allDealsPaginated;
+            return paginatedDealsViewModel;
         }
 
         private List<AllDealViewModel> DoSort(List<AllDealViewModel> allDeals, string sortProperty, SortOrder sortOrder)

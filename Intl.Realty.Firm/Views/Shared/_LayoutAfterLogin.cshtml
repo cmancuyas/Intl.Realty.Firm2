@@ -93,22 +93,25 @@
                             var roles = await _userManager.GetRolesAsync(user!);
                             <span id="DisplayFullName" class="fw-bolder text-end name-role">@user.FirstName @user.LastName</span>
                             <span id="DisplayName" class="small text-end">@user!.Email</span>
-                            <span id="DisplayRole" class="small text-end badge-role">
-                                @foreach(var item in roles)
+                            <span id="DisplayRole" class="small text-end">
+                                @foreach (var item in roles)
                                 {
-                                    if(item == "SuperAdmin") 
+                                    if (item == "SuperAdmin")
                                     {
                                         <span class="badge badge-danger" style="background-color:red">@item</span>
                                     }
-                                    if (item == "Admin" || item == "DealAdmin")
+                                    if (item == "Admin")
                                     {
-                                        <span class="badge badge-primary">@item</span>
+                                        <span class="badge badge-pill badge-primary" style="background-color:blue">@item</span>
                                     }
                                     if (item == "Agent")
                                     {
-                                        <span class="badge badge-success">@item</span>
+                                        <span class="badge badge-pill badge-success" style="background-color:orange">@item</span>
                                     }
-                                    
+                                    if (item == "DealAdmin")
+                                    {
+                                        <span class="badge badge-pill badge-success" style="background-color:green">@item</span>
+                                    }
                                 }
                             </span>
                         }

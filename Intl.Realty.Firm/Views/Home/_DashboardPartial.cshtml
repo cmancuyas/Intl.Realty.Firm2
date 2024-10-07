@@ -253,19 +253,15 @@
 
 </div>
 
-<div id="currentMonthContainer mb-4">
-    <div class="row">
-        <div class="col-12">
-            <partial name="~/Views/Home/AllDealsForCurrentMonth/_AllDealsForCurrentMonth.cshtml" model="@Model.AllDealsCurrentMonth" />
-        </div>
-    </div>
-    </div>
-
-<div id="allDealsontainer mb-4">
-    <div class="row">
-        <div class="col-12">
-            <partial name="~/Views/Home/AllDealsForAllMonths/_AllDealsForAllMonths.cshtml" model="@Model.AllDealsAllMonths" />
-        </div>
+<div id="currentMonthPartial">
+    <div class="col-md-12 mb-4">
+        @Html.Partial("~/Views/Home/AllDealsForCurrentMonth/_AllDealsForCurrentMonth.cshtml", Model.AllDealsCurrentMonth)
     </div>
 
 </div>
+<div id="allMonthsPartial">
+    <div class="col-md-12 mb-4">
+        @Html.Partial("~/Views/Home/AllDealsForAllMonths/_AllDealsForAllMonths.cshtml", Model.AllDealsAllMonths)
+    </div>
+</div>
+

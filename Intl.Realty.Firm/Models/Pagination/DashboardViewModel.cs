@@ -1,5 +1,4 @@
 ﻿using Intl.Realty.Firm.Model.Model;
-using Intl.Realty.Firm.Model.Pagination;
 using Intl.Realty.Firm.Model.ViewModel.AllDealsVM;
 using Intl.Realty.Firm.Models.Pagination;
 

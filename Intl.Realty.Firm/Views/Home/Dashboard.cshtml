@@ -15,23 +15,9 @@
     @Html.Partial("_DashboardPartial", Model)
 </div>
 
-@section Scripts {
-    <script>
-        function loadDashboard(sortExpression,searchText,pageIndex, pageSize, tableName) {
-            $.get('@Url.Action("Dashboard", "Home")', { sortExpression, searchText, pageIndex, pageSize, tableName }, function (data) {
-                $('#dashboardContent').html(data);
-            });
-        }
 
-        function loadTopBarPaginationCurrentMonth(action, pageIndex, pageSize, searchText, sortExpression) {
-            $.get('@Url.Action("Dashboard", "Home")', { action, pageIndex, pageSize, searchText, sortExpression }, function (data) {
-                $('#dashboardContent').html(data);
-            });
-        }
-        function loadTopBarPaginationAllDeals(action, pageIndex, pageSize, searchText, sortExpression) {
-            $.get('@Url.Action("Dashboard", "Home")', { action, pageIndex, pageSize, searchText, sortExpression }, function (data) {
-                $('#dashboardContent').html(data);
-            });
-        }
-    </script>
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="~/js/loaddealsdata.js"></script>
 }
+
