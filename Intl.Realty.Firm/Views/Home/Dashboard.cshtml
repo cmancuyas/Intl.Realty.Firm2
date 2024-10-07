@@ -9,15 +9,32 @@
 @{
     ViewData["Title"] = "Dashboard";
     Layout = "~/Views/Shared/_LayoutAfterLogin.cshtml";
+
+    DashboardViewModel dashboardViewModel = ViewBag.DashboardViewModel;
 }
 
+
 <div id="dashboardContent" class="dashboard-table">
-    @Html.Partial("_DashboardPartial", Model)
+    @{
+        if (dashboardViewModel != null)
+        {
+            <div id="dashboardContent">
+                @Html.Partial("_DashboardPartial", dashboardViewModel)
+            </div>
+
+        }
+        else
+        {
+            <div id="dashboardContent">
+                @Html.Partial("_DashboardPartial", Model)
+            </div>
+        }
+        
+    }
+    
 </div>
 
 
-@section Scripts {
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="~/js/loaddealsdata.js"></script>
-}
 
+
+<script src="~/js/loaddealsdata.js"></script>

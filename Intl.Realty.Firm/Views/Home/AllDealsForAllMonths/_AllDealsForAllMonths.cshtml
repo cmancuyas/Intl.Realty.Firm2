@@ -2,72 +2,73 @@
 
 @model PaginatedDealsViewModel
 <div class="card">
+    <a href="@Url.Action("Dashboard","Home")" class="text-decoration-none back d-flex mb-4">
+        <i data-feather="chevron-left"></i><span>Back</span>
+    </a>
     <div class="card-header p-3 bg-white">
         <h5 class="m-0">All Deals For All Months</h5>
     </div>
     <div class="container-fluid">
-        <div class="row" id="allMonthsTopBar">
+        <div class="row" id="all-months-top-bar">
             <div class="col-12">
                 @await Html.PartialAsync("~/Views/Home/AllDealsForAllMonths/_AllDealsForAllMonthsTopBar.cshtml", Model.Pager)
             </div>
         </div>
     </div>
 
-    <table class="table mt-4" id="allMonthsTable">
+    <table class="table mt-4" id="all-months-table">
         <thead>
             <tr>
                 <th>
                     <i class="@Model.SortModel!.GetColumn("dealTransactionNumber").SortIcon" aria-hidden="true"></i>
-                    @{
-                        <a href="#" onclick="loadDashboard('@Model.SortModel!.GetColumn("dealTransactionNumber").SortExpression', '@Model.Pager.SearchText', '@Model.Pager.CurrentPage', '@Model.Pager.PageSize', 'allMonths')">Deal#</a>
-                    }
+                    <a href="#" onclick="loadDashboard('@Model.SortModel!.GetColumn("dealTransactionNumber").SortExpression', '@Model.Pager.SearchText', '@Model.Pager.CurrentPage', '@Model.Pager.PageSize', 'AllMonths')">Deal#</a>
                 </th>
                 <th>
                     <i class="@Model.SortModel!.GetColumn("transactionTypeName").SortIcon" aria-hidden="true"></i>
                     @{
-                        <a href="#" onclick="loadDashboard('@Model.SortModel!.GetColumn("transactionTypeName").SortExpression', '@Model.Pager.SearchText', '@Model.Pager.CurrentPage', '@Model.Pager.PageSize', 'allMonths')">Transaction Type</a>
+                        <a href="#" onclick="loadDashboard('@Model.SortModel!.GetColumn("transactionTypeName").SortExpression', '@Model.Pager.SearchText', '@Model.Pager.CurrentPage', '@Model.Pager.PageSize', 'AllMonths')">Transaction Type</a>
                     }
                 </th>
                 <th>
                     <i class="@Model.SortModel!.GetColumn("propertyAddress").SortIcon" aria-hidden="true"></i>
                     @{
-                        <a href="#" onclick="loadDashboard('@Model.SortModel!.GetColumn("propertyAddress").SortExpression', '@Model.Pager.SearchText', '@Model.Pager.CurrentPage', '@Model.Pager.PageSize', 'allMonths')">Property Address</a>
+                        <a href="#" onclick="loadDashboard('@Model.SortModel!.GetColumn("propertyAddress").SortExpression', '@Model.Pager.SearchText', '@Model.Pager.CurrentPage', '@Model.Pager.PageSize', 'AllMonths')">Property Address</a>
                     }
                 </th>
                 <th>
                     <i class="@Model.SortModel!.GetColumn("dealStatusName").SortIcon" aria-hidden="true"></i>
                     @{
-                        <a href="#" onclick="loadDashboard('@Model.SortModel!.GetColumn("dealStatusName").SortExpression', '@Model.Pager.SearchText', '@Model.Pager.CurrentPage', '@Model.Pager.PageSize', 'allMonths')">Deal Status</a>
+                        <a href="#" onclick="loadDashboard('@Model.SortModel!.GetColumn("dealStatusName").SortExpression', '@Model.Pager.SearchText', '@Model.Pager.CurrentPage', '@Model.Pager.PageSize', 'AllMonths')">Deal Status</a>
                     }
                 </th>
                 <th>
                     <i class="@Model.SortModel!.GetColumn("createdByFullName").SortIcon" aria-hidden="true"></i>
                     @{
-                        <a href="#" onclick="loadDashboard('@Model.SortModel!.GetColumn("createdByFullName").SortExpression', '@Model.Pager.SearchText', '@Model.Pager.CurrentPage', '@Model.Pager.PageSize', 'allMonths')">Created By</a>
+                        <a href="#" onclick="loadDashboard('@Model.SortModel!.GetColumn("createdByFullName").SortExpression', '@Model.Pager.SearchText', '@Model.Pager.CurrentPage', '@Model.Pager.PageSize', 'AllMonths')">Created By</a>
                     }
                 </th>
                 <th>
                     <i class="@Model.SortModel!.GetColumn("createdAt").SortIcon" aria-hidden="true"></i>
                     @{
-                        <a href="#" onclick="loadDashboard('@Model.SortModel!.GetColumn("createdAt").SortExpression', '@Model.Pager.SearchText', '@Model.Pager.CurrentPage', '@Model.Pager.PageSize', 'allMonths')">Created At</a>
+                        <a href="#" onclick="loadDashboard('@Model.SortModel!.GetColumn("createdAt").SortExpression', '@Model.Pager.SearchText', '@Model.Pager.CurrentPage', '@Model.Pager.PageSize', 'AllMonths')">Created At</a>
                     }
                 </th>
                 <th>
                     <i class="@Model.SortModel!.GetColumn("finalClosingDate").SortIcon" aria-hidden="true"></i>
                     @{
-                        <a href="#" onclick="loadDashboard('@Model.SortModel!.GetColumn("finalClosingDate").SortExpression', '@Model.Pager.SearchText', '@Model.Pager.CurrentPage', '@Model.Pager.PageSize', 'allMonths')">Final Closing Date</a>
+                        <a href="#" onclick="loadDashboard('@Model.SortModel!.GetColumn("finalClosingDate").SortExpression', '@Model.Pager.SearchText', '@Model.Pager.CurrentPage', '@Model.Pager.PageSize', 'AllMonths')">Final Closing Date</a>
                     }
                 </th>
                 <th>File Extension</th>
                 <th>Action</th>
             </tr>
         </thead>
-        <tbody id ="allMonthsTableBody">
+        <tbody id="all-months-table-body">
             @await Html.PartialAsync("~/Views/Home/AllDealsForAllMonths/_AllDealsForAllMonthsTableBody.cshtml", Model)
         </tbody>
     </table>
 
-    <div class="row" id="allMonthsBottomBar">
+    <div class="row" id="all-months-bottom-bar">
         <div class="col-12 mb-3">
             @await Html.PartialAsync("~/Views/Home/AllDealsForAllMonths/_AllDealsForAllMonthsBottomBar.cshtml", Model.Pager)
         </div>

@@ -36,13 +36,13 @@
                 @if (Model.CurrentPage > 1)
                 {
                     <li class="page-item">
-                        <a class="page-link" href="#" onclick="loadTopBarPaginationAllDeals('@Model.Action', 1, '@Model.PageSize', '@Model.SearchText','@Model.SortExpression' )">
+                        <a class="page-link" href="#" onclick="loadTopBarPaginationCurrentMonth('@Model.Action', 1, '@Model.PageSize', '@Model.SearchText','@Model.SortExpression','CurrentMonth' )">
                             First
                         </a>
                     </li>
 
                     <li class="page-item">
-                        <a class="page-link" href="#" onclick="loadTopBarPaginationAllDeals('@Model.Action', '@Model.CurrentPage - 1', '@Model.PageSize', '@Model.SearchText','@Model.SortExpression' )">
+                        <a class="page-link" href="#" onclick="loadTopBarPaginationCurrentMonth('@Model.Action', '@Model.CurrentPage - 1', '@Model.PageSize', '@Model.SearchText','@Model.SortExpression','CurrentMonth' )">
                             Previous
                         </a>
                     </li>
@@ -54,7 +54,7 @@
 
                         @if (pge != Model.CurrentPage)
                         {
-                            <a class="page-link" href="#" onclick="loadTopBarPaginationAllDeals('@Model.Action', @pge, '@Model.PageSize', '@Model.SearchText','@Model.SortExpression' )">
+                            <a class="page-link" href="#" onclick="loadTopBarPaginationCurrentMonth('@Model.Action', @pge, '@Model.PageSize', '@Model.SearchText','@Model.SortExpression','CurrentMonth' )">
                                 @pge
                             </a>
 
@@ -72,13 +72,13 @@
                 {
                     <li class="page-item">
 
-                        <a class="page-link" href="#" onclick="loadTopBarPaginationAllDeals('@Model.Action','@(Model.CurrentPage+1)', '@Model.PageSize', '@Model.SearchText','@Model.SortExpression' )">
+                        <a class="page-link" href="#" onclick="loadTopBarPaginationCurrentMonth('@Model.Action','@(Model.CurrentPage+1)', '@Model.PageSize', '@Model.SearchText','@Model.SortExpression','CurrentMonth' )">
                             Next
                         </a>
                     </li>
 
                     <li class="page-item">
-                        <a class="page-link" href="#" onclick="loadTopBarPaginationAllDeals('@Model.Action','@Model.TotalPages', '@Model.PageSize', '@Model.SearchText','@Model.SortExpression' )">
+                        <a class="page-link" href="#" onclick="loadTopBarPaginationCurrentMonth('@Model.Action','@Model.TotalPages', '@Model.PageSize', '@Model.SearchText','@Model.SortExpression','CurrentMonth' )">
                             Last
                         </a>
                     </li>

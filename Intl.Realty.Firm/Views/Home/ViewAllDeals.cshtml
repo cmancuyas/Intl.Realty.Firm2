@@ -1,0 +1,21 @@
+﻿@using Intl.Realty.Firm.Model.Model
+@using Intl.Realty.Firm.Model.ViewModel.Home
+@using Intl.Realty.Firm.Models.Pagination
+@using Microsoft.AspNetCore.Identity
+
+@inject UserManager<ApplicationUser> _userManager;
+
+@model PaginatedDealsViewModel
+
+@{
+    ViewData["Title"] = "All Deals for All Months";
+    Layout = "~/Views/Shared/_LayoutAfterLogin.cshtml";
+}
+
+
+<div id="allMonthsPartial" class="dashboard-table">
+    @Html.Partial("~/Views/Home/AllDealsForAllMonths/_AllDealsForAllMonths.cshtml", Model)
+</div>
+
+
+<script src="~/js/loaddealsdata.js"></script>

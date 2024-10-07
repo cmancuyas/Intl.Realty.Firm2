@@ -19,237 +19,263 @@
         margin-bottom: 100px;
     }
 </style>
-<div id="dashboardContainer mb-4">
+<div id="dashboardContent mb-4">
     <div class="container-fluid">
         <div class="row">
-            @{
-                if (isAgent)
-                {
-                    <h1 class="text-blue">Dashboard</h1>
+            <div class="col-sm">
+
+                @{
+                    if (isAgent)
+                    {
+                        <h1 class="text-blue">Dashboard</h1>
+                    }
+                    else
+                    {
+                        <h1 class="text-blue">Admin Dashboard</h1>
+                    }
                 }
-                else
-                {
-                    <h1 class="text-blue">Admin Dashboard</h1>
-                }
-            }
-
-        </div>
-    </div>
-
-    <div class="container-fluid mt-3 mb-4 dashboard-cards">
-        <div class="row">
-            <!-- Card 1 -->
-            <div class="col-md-3">
-                <div class="card">
-                    <div class="card-body">
-                        <p class="card-title">Sale Listing</p>
-                        <span class="label">Today</span>
-                        <p class="value">@Model.SaleListingCountToday</p>
-                        <div class="progress mb-4" style="height: 8px;">
-                            <div class="progress-bar w-75" role="progressbar" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"></div>
-                        </div>
-                        <div class="d-flex justify-content-between">
-                            <div class="card-btn">
-                                <a asp-action="Index"
-                                   asp-controller="SaleListing"
-                                   class="btn btn-link d-flex align-items-center">
-                                    View Sale Listing
-                                </a>
-                            </div>
-                            <div class="card-btn ml-auto">
-                                <a asp-action="Create"
-                                   asp-controller="SaleListing"
-                                   class="btn btn-link d-flex align-items-center">
-                                    Create Sale Listing
-                                </a>
-                            </div>
-                        </div>
-
-                    </div>
-                </div>
             </div>
-            <!-- Card 2 -->
-            <div class="col-md-3">
-                <div class="card">
-                    <div class="card-body">
-                        <p class="card-title">Sale Coop</p>
-                        <span class="label">Today</span>
-                        <p class="value">@Model.SaleCoopCountToday</p>
-                        <div class="progress mb-4" style="height: 8px;">
-                            <div class="progress-bar w-75" role="progressbar" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"></div>
-                        </div>
-                        <div class="d-flex justify-content-between">
-                            <div class="card-btn">
-                                <a asp-action="Index"
-                                   asp-controller="SaleCoop"
-                                   class="btn btn-link d-flex align-items-center">
-                                    View Sale Coop
-                                </a>
-                            </div>
-                            <div class="card-btn ml-auto">
-                                <a asp-action="Create"
-                                   asp-controller="SaleCoop"
-                                   class="btn btn-link d-flex align-items-center">
-                                    Create Sale Coop
-                                </a>
-                            </div>
-
-                        </div>
-                    </div>
-                </div>
+            <div class="col-sm">
             </div>
-            <!-- Card 3 -->
-            <div class="col-md-3">
-                <div class="card">
-                    <div class="card-body">
-                        <p class="card-title">Lease Listing</p>
-                        <span class="label">Today</span>
-                        <p class="value">@Model.LeaseListingCountToday</p>
-                        <div class="progress mb-4" style="height: 8px;">
-                            <div class="progress-bar w-75" role="progressbar" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"></div>
-                        </div>
-                        <div class="d-flex justify-content-between">
-                            <div class="card-btn">
-                                <a asp-action="Index"
-                                   asp-controller="LeaseListing"
-                                   class="btn btn-link d-flex align-items-center">
-                                    View Lease Listing
-                                </a>
-                            </div>
-                            <div class="card-btn ml-auto">
-                                <a asp-action="Create"
-                                   asp-controller="LeaseListing"
-                                   class="btn btn-link d-flex align-items-center">
-                                    Create Lease Listing
-                                </a>
-                            </div>
-
-                        </div>
-                    </div>
-                </div>
+            <div class="col-sm">
             </div>
-            <!-- Card 4 -->
-            <div class="col-md-3">
-                <div class="card">
-                    <div class="card-body">
-                        <p class="card-title">Lease Coop</p>
-                        <span class="label">Today</span>
-                        <p class="value">@Model.LeaseCoopCountToday</p>
-                        <div class="progress mb-4" style="height: 8px;">
-                            <div class="progress-bar w-75" role="progressbar" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"></div>
-                        </div>
-                        <div class="d-flex justify-content-between">
-                            <div class="card-btn">
-                                <a asp-action="Index"
-                                   asp-controller="LeaseCoop"
-                                   class="btn btn-link d-flex align-items-center">
-                                    View Lease Coop
-                                </a>
-                            </div>
-                            <div class="card-btn ml-auto">
-                                <a asp-action="Create"
-                                   asp-controller="LeaseCoop"
-                                   class="btn btn-link d-flex align-items-center">
-                                    Create Lease Coop
-                                </a>
-                            </div>
+            <div class="col-sm">
+            </div>
+            <div class="col-sm">
+            </div>
+            <div class="col-sm">
+            </div>
+            <div class="col-sm">
+            </div>
+            <div class="col-sm">
+            </div>
+            <div class="col-sm">
 
-                        </div>
-                    </div>
+                <div>
+                    <a asp-action="ViewAllDeals"
+                       class="btn btn-primary align-items-center ">
+                        View All Deals
+                    </a>
                 </div>
             </div>
         </div>
     </div>
+</div>
 
-    <div class="container-fluid mt-3 mb-4 dashboard-lists">
-        <div class="row">
-            <div class="col-6">
-                <div class="card card-custom" style="border-radius:6px">
-                    <div class="card-body">
-                        <h5 class="card-title">My Daily Transactions</h5>
-                        <ul class="list-group">
-                            @{
-                                if (Model.AllDealsToday.Count > 0)
+<div class="container-fluid mt-3 mb-4 dashboard-cards">
+    <div class="row">
+        <!-- Card 1 -->
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body">
+                    <p class="card-title">Sale Listing</p>
+                    <span class="label">Today</span>
+                    <p class="value">@Model.SaleListingCountToday</p>
+                    <div class="progress mb-4" style="height: 8px;">
+                        <div class="progress-bar w-75" role="progressbar" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"></div>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <div class="card-btn">
+                            <a asp-action="Index"
+                               asp-controller="SaleListing"
+                               class="btn btn-link d-flex align-items-center">
+                                View Sale Listing
+                            </a>
+                        </div>
+                        <div class="card-btn ml-auto">
+                            <a asp-action="Create"
+                               asp-controller="SaleListing"
+                               class="btn btn-link d-flex align-items-center">
+                                Create Sale Listing
+                            </a>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        <!-- Card 2 -->
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body">
+                    <p class="card-title">Sale Coop</p>
+                    <span class="label">Today</span>
+                    <p class="value">@Model.SaleCoopCountToday</p>
+                    <div class="progress mb-4" style="height: 8px;">
+                        <div class="progress-bar w-75" role="progressbar" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"></div>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <div class="card-btn">
+                            <a asp-action="Index"
+                               asp-controller="SaleCoop"
+                               class="btn btn-link d-flex align-items-center">
+                                View Sale Coop
+                            </a>
+                        </div>
+                        <div class="card-btn ml-auto">
+                            <a asp-action="Create"
+                               asp-controller="SaleCoop"
+                               class="btn btn-link d-flex align-items-center">
+                                Create Sale Coop
+                            </a>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Card 3 -->
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body">
+                    <p class="card-title">Lease Listing</p>
+                    <span class="label">Today</span>
+                    <p class="value">@Model.LeaseListingCountToday</p>
+                    <div class="progress mb-4" style="height: 8px;">
+                        <div class="progress-bar w-75" role="progressbar" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"></div>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <div class="card-btn">
+                            <a asp-action="Index"
+                               asp-controller="LeaseListing"
+                               class="btn btn-link d-flex align-items-center">
+                                View Lease Listing
+                            </a>
+                        </div>
+                        <div class="card-btn ml-auto">
+                            <a asp-action="Create"
+                               asp-controller="LeaseListing"
+                               class="btn btn-link d-flex align-items-center">
+                                Create Lease Listing
+                            </a>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Card 4 -->
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body">
+                    <p class="card-title">Lease Coop</p>
+                    <span class="label">Today</span>
+                    <p class="value">@Model.LeaseCoopCountToday</p>
+                    <div class="progress mb-4" style="height: 8px;">
+                        <div class="progress-bar w-75" role="progressbar" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"></div>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <div class="card-btn">
+                            <a asp-action="Index"
+                               asp-controller="LeaseCoop"
+                               class="btn btn-link d-flex align-items-center">
+                                View Lease Coop
+                            </a>
+                        </div>
+                        <div class="card-btn ml-auto">
+                            <a asp-action="Create"
+                               asp-controller="LeaseCoop"
+                               class="btn btn-link d-flex align-items-center">
+                                Create Lease Coop
+                            </a>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container-fluid mt-3 mb-4 dashboard-lists">
+    <div class="row">
+        <div class="col-6">
+            <div class="card card-custom" style="border-radius:6px">
+                <div class="card-body">
+                    <h5 class="card-title">My Daily Transactions</h5>
+                    <ul class="list-group">
+                        @{
+                            if (Model.AllDealsToday.Count > 0)
+                            {
+                                @foreach (var item in Model.AllDealsToday!)
                                 {
-                                    @foreach (var item in Model.AllDealsToday!)
-                                    {
-                                        <li class="list-group-item">
-                                            <div class="d-flex align-items-center">
-                                                <div class="icon-circle" style="background-color: #f9e79f;">
-                                                    <i class="bi bi-check-circle-fill text-warning"></i>
+                                    <li class="list-group-item">
+                                        <div class="d-flex align-items-center">
+                                            <div class="icon-circle" style="background-color: #f9e79f;">
+                                                <i class="bi bi-check-circle-fill text-warning"></i>
 
-                                                </div>
-                                                <div>
-                                                    <div>@item.PropertyAddress - @item.DealTransactionNumber</div>
-                                                    <div class="text-small">@item.CreatedAt - @item.TransactionTypeName</div>
-                                                </div>
                                             </div>
-                                            <div class="text-right">
-                                                <div class="text-eur">@item.DealStatusName!</div>
+                                            <div>
+                                                <div>@item.PropertyAddress - @item.DealTransactionNumber</div>
+                                                <div class="text-small">@item.CreatedAt - @item.TransactionTypeName</div>
                                             </div>
-                                        </li>
-                                    }
+                                        </div>
+                                        <div class="text-right">
+                                            <div class="text-eur">@item.DealStatusName!</div>
+                                        </div>
+                                    </li>
+                                }
+                            }
+                        }
+
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-6">
+            <div class="card card-custom" style="border-radius:6px">
+                <div class="card-body">
+                    <h5 class="card-title">Recent Activity</h5>
+
+                    @* SaleListing *@
+                    <div class="activity-timeline">
+
+                        @{
+                            if (Model.AllDealsPast1Min.Count > 0)
+                            {
+                                @foreach (var item in Model.AllDealsPast1Min)
+                                {
+                                    <div class="activity-timeline-item">
+                                        <div class="timeline-dot"></div>
+                                        <div class="activity-time">a few seconds ago</div>
+                                        <div class="activity-desc">@item.TransactionTypeName was created - Deal Id: @item.DealTransactionNumber - @item.DealStatusName</div>
+                                    </div>
                                 }
                             }
 
-                        </ul>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-6">
-                <div class="card card-custom" style="border-radius:6px">
-                    <div class="card-body">
-                        <h5 class="card-title">Recent Activity</h5>
-
-                        @* SaleListing *@
-                        <div class="activity-timeline">
-
-                            @{
-                                if (Model.AllDealsPast1Min.Count > 0)
+                            if (Model.AllDealsPast5Mins.Count > 0)
+                            {
+                                @foreach (var item in Model.AllDealsPast5Mins)
                                 {
-                                    @foreach (var item in Model.AllDealsPast1Min)
-                                    {
-                                        <div class="activity-timeline-item">
-                                            <div class="timeline-dot"></div>
-                                            <div class="activity-time">a few seconds ago</div>
-                                            <div class="activity-desc">@item.TransactionTypeName was created - Deal Id: @item.DealTransactionNumber - @item.DealStatusName</div>
-                                        </div>
-                                    }
+                                    <div class="activity-timeline-item">
+                                        <div class="timeline-dot"></div>
+                                        <div class="activity-time">5 minutes seconds ago</div>
+                                        <div class="activity-desc">@item.TransactionTypeName was created - Deal Id: @item.DealTransactionNumber - @item.DealStatusName</div>
+                                    </div>
                                 }
-
-                                if (Model.AllDealsPast5Mins.Count > 0)
-                                {
-                                    @foreach (var item in Model.AllDealsPast5Mins)
-                                    {
-                                        <div class="activity-timeline-item">
-                                            <div class="timeline-dot"></div>
-                                            <div class="activity-time">5 minutes seconds ago</div>
-                                            <div class="activity-desc">@item.TransactionTypeName was created - Deal Id: @item.DealTransactionNumber - @item.DealStatusName</div>
-                                        </div>
-                                    }
-                                }
-
-                                if (Model.AllDealsPastHour.Count > 0)
-                                {
-                                    @foreach (var item in Model.AllDealsPastHour)
-                                    {
-                                        <div class="activity-timeline-item">
-                                            <div class="timeline-dot"></div>
-                                            <div class="activity-time">an hour ago</div>
-                                            <div class="activity-desc">@item.TransactionTypeName was created - Deal Id: @item.DealTransactionNumber - @item.DealStatusName</div>
-                                        </div>
-                                    }
-                                }
-
                             }
-                        </div>
 
+                            if (Model.AllDealsPastHour.Count > 0)
+                            {
+                                @foreach (var item in Model.AllDealsPastHour)
+                                {
+                                    <div class="activity-timeline-item">
+                                        <div class="timeline-dot"></div>
+                                        <div class="activity-time">an hour ago</div>
+                                        <div class="activity-desc">@item.TransactionTypeName was created - Deal Id: @item.DealTransactionNumber - @item.DealStatusName</div>
+                                    </div>
+                                }
+                            }
+
+                        }
                     </div>
+
                 </div>
             </div>
         </div>
     </div>
+</div>
 
 </div>
 
@@ -259,9 +285,9 @@
     </div>
 
 </div>
-<div id="allMonthsPartial">
+@* <div id="allMonthsPartial">
     <div class="col-md-12 mb-4">
         @Html.Partial("~/Views/Home/AllDealsForAllMonths/_AllDealsForAllMonths.cshtml", Model.AllDealsAllMonths)
     </div>
 </div>
-
+ *@

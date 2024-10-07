@@ -1,31 +1,6 @@
-﻿function loadTopBarPaginationCurrentMonth(action, pageIndex, pageSize, searchText, sortExpression) {
-    debugger;
-    $.get('@Url.Action("LoadDashboardData", "Home")', { action, pageIndex, pageSize, searchText, sortExpression }, function (data) {
-
-        $("#currentMonthPartial").html(data);
-        $("#currentMonthTableBody").html(data);
-        $("#currentMonthTopBar").html(data);
-        $("#currentMonthBottomBar").html(data);
-    });
-}
-function loadTopBarPaginationAllDeals(action, pageIndex, pageSize, searchText, sortExpression) {
-    debugger;
-    $.get('@Url.Action("LoadDashboardData", "Home")', { action, pageIndex, pageSize, searchText, sortExpression }, function (data) {
-
-        $("#allMonthsPartial").html(data);
-        $("#allMonthsTableBody").html(data);
-        $("#allMonthsTopBar").html(data);
-        $("#allMonthsBottomBar").html(data);
-    });
-}
-
-function loadDashboard(sortExpression, searchText, pageIndex, pageSize, tableName) {
-
-    debugger;
-
+﻿function loadDashboard(sortExpression, searchText, pageIndex, pageSize, tableName) {
     $.ajax({
         url: '/Home/LoadDashboardData', // Adjust this URL to match your handler
-        type: 'GET',
         data: {
             sortExpression: sortExpression,
             searchText: searchText,
@@ -33,18 +8,24 @@ function loadDashboard(sortExpression, searchText, pageIndex, pageSize, tableNam
             pageSize: pageSize,
             tableName: tableName
         },
-        async:false,
-        success: function (result) {
-            if (tableName === "currentMonth") {
-                $("#currentMonthPartial").html(result.currentMonthPartial);
-                $("#currentMonthTableBody").html(result.tableBodyHtml);
-                 $("#currentMonthTopBar").html(result.topBarHtml);
-                 $("#currentMonthBottomBar").html(result.bottomBarHtml);
-            } else if (tableName === "allMonths") {
-                $("#allMonthsPartial").html(result.allMonthsPartial);
-                $("#allMonthsTableBody").html(result.tableBodyHtml);
-                 $("#allMonthsTopBar").html(result.topBarHtml);
-                 $("#allMonthsBottomBar").html(result.bottomBarHtml);
+        async: false,
+        success: function (data) {
+
+            if (tableName === "CurrentMonth") {
+                $('#currentMonthPartial').html(data.tableHtml); // Update the table content
+                //$('#current-month-table-body').html(data.tableBodyHtml); // Update the table content
+                //$('#current-month-top-bar').html(data.topBarHtml); // Update the top pagination bar
+                //$('#current-month-bottom-bar').html(data.bottomBarHtml); // Update the bottom pagination bar
+
+
+                //$('#dashboardContent').html(data.dashboardViewModel);
+            } else if (tableName === "AllMonths") {
+                $('#allMonthsPartial').html(data.tableHtml);
+                //$('#all-months-table-body').html(data.tableBodyHtml);
+                //$('#all-months-top-bar').html(data.topBarHtml);
+                //$('#all-months-bottom-bar').html(data.bottomBarHtml);
+
+                //$('#dashboardContent').html(data.dashboardViewModel);
             }
         },
         error: function () {
@@ -53,3 +34,76 @@ function loadDashboard(sortExpression, searchText, pageIndex, pageSize, tableNam
     });
 }
 
+function loadTopBarPaginationCurrentMonth(action, pageIndex, pageSize, searchText, sortExpression, tableName) {
+    debugger;
+
+    $.ajax({
+        url: '/Home/LoadDashboardData', // Adjust this URL to match your handler
+        data: {
+            sortExpression: sortExpression,
+            searchText: searchText,
+            pageIndex: pageIndex,
+            pageSize: pageSize,
+            tableName: tableName
+        },
+        async: false,
+        success: function (data) {
+
+            if (tableName === "CurrentMonth") {
+                //$('#currentMonthPartial').html(data.tableHtml); // Update the table content
+                $('#current-month-table-body').html(data.tableBodyHtml); // Update the table content
+                $('#current-month-top-bar').html(data.topBarHtml); // Update the top pagination bar
+                $('#current-month-bottom-bar').html(data.bottomBarHtml); // Update the bottom pagination bar
+
+
+                //$('#dashboardContent').html(data.dashboardViewModel);
+            } else if (tableName === "AllMonths") {
+                //$('#allMonthsPartial').html(data.tableHtml);
+                $('#all-months-table-body').html(data.tableBodyHtml);
+                $('#all-months-top-bar').html(data.topBarHtml);
+                $('#all-months-bottom-bar').html(data.bottomBarHtml);
+
+                //$('#dashboardContent').html(data.dashboardViewModel);
+            }
+        },
+        error: function () {
+            alert("Error loading data.");
+        }
+    });
+}
+
+function loadTopBarPaginationAllMonths(action, pageIndex, pageSize, searchText, sortExpression, tableName) {
+    $.ajax({
+        url: '/Home/ViewAllDeals', // Adjust this URL to match your handler
+        data: {
+            sortExpression: sortExpression,
+            searchText: searchText,
+            pageIndex: pageIndex,
+            pageSize: pageSize,
+            tableName: tableName
+        },
+        async: false,
+        success: function (data) {
+
+            if (tableName === "CurrentMonth") {
+                //$('#currentMonthPartial').html(data.tableHtml); // Update the table content
+                //$('#current-month-table-body').html(data.tableBodyHtml); // Update the table content
+                //$('#current-month-top-bar').html(data.topBarHtml); // Update the top pagination bar
+                //$('#current-month-bottom-bar').html(data.bottomBarHtml); // Update the bottom pagination bar
+
+
+                //$('#dashboardContent').html(data.dashboardViewModel);
+            } else if (tableName === "AllMonths") {
+                //$('#allMonthsPartial').html(data.tableHtml);
+                //$('#all-months-table-body').html(data.tableBodyHtml);
+                //$('#all-months-top-bar').html(data.topBarHtml);
+                //$('#all-months-bottom-bar').html(data.bottomBarHtml);
+
+                //$('#dashboardContent').html(data.dashboardViewModel);
+            }
+        },
+        error: function () {
+            alert("Error loading data.");
+        }
+    });
+}

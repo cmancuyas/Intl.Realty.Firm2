@@ -20,8 +20,9 @@ namespace Intl.Realty.Firm.Model.Pagination
         {
             
         }
-        public PagerModel(int totalItems, int currentPage, int pageSize = 5)
+        public PagerModel(int totalItems, int currentPage, int pageSize = 5, string action = "Dashboard")
         {
+            Action = action;
             TotalItems = totalItems;
             CurrentPage = currentPage;
             PageSize = pageSize;
