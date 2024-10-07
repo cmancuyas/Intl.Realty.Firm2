@@ -651,6 +651,9 @@ input#summaryPassword {
 /* multi-step sign up form end */
 
 /* multi-step submission form */
+.form-control:disabled, .form-control[readonly] {
+    color: #AAA !important;
+}
 .form-submit-tab {
     display: none;
     background-color: #f3f3f3;
@@ -1077,6 +1080,44 @@ input.select2-search__field {
 }
 
 /* DASHBOARD */
+.dashboard-table .table th, .dashboard-table .table td {
+    vertical-align: middle;
+    padding: 12px 20px;
+    font-size: 14px;
+}
+    .dashboard-table .table th a, .dashboard-table .table td a {
+        color: #203d57;
+        text-decoration: none;
+        font-size: 14px;
+    }
+
+.dashboard-table .dashboard-table-footer {
+    font-size: 12px;
+    color: #31698a;
+}
+
+    .dashboard-table .dashboard-table-footer .dashboard-counter {
+        width: auto;
+        padding: 5px 8px;
+        text-align: center;
+        font-size: 12px;
+        border-radius: 0;
+    }
+
+    .dashboard-table .dashboard-search-btn {
+        border-radius: 4px;
+        width: 20%;
+    }
+
+.dashboard-table #currentMonthPartial, .dashboard-table #allMonthsPartial {
+    padding: 0 12px;
+}
+
+.dashboard-table .btn-cta {
+    font-size: 11px;
+    background: #EEE;
+}
+
 .card-custom {
     border-radius: 10px;
 }
@@ -1126,7 +1167,7 @@ input.select2-search__field {
         text-decoration: none;
         color: #203d57;
         font-weight: 500;
-        font-size: 13px;
+        font-size: 12px;
     }
 
 .dashboard-lists .card-body {

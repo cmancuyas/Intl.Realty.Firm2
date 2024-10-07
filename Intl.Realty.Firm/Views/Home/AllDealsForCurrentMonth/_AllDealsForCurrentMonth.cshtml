@@ -2,8 +2,8 @@
 
 @model PaginatedDealsViewModel
 <div class="card">
-    <div class="card-header">
-        <h3>All Deals For @DateTime.Now.ToString("MMMM") - @DateTime.Now.Year</h3>
+    <div class="card-header p-3 bg-white">
+        <h5 class="m-0">All Deals For @DateTime.Now.ToString("MMMM") - @DateTime.Now.Year</h5>
     </div>
     <div class="row" id="currentMonthTopBar">
         <div class="col-12">
@@ -11,7 +11,7 @@
         </div>
     </div>
 
-    <table class="table" id="currentMonthTable">
+    <table class="table mt-4" id="currentMonthTable">
         <thead>
             <tr>
                 <th>
@@ -66,8 +66,10 @@
     </table>
 
     <div class="row" id="currentMonthBottomBar">
-        <div class="col-12">
-            @await Html.PartialAsync("~/Views/Home/AllDealsForCurrentMonth/_AllDealsForCurrentMonthBottomBar.cshtml", Model.Pager)
+        <div class="container-fluid">
+            <div class="col-12 p-0 mb-3">
+                @await Html.PartialAsync("~/Views/Home/AllDealsForCurrentMonth/_AllDealsForCurrentMonthBottomBar.cshtml", Model.Pager)
+            </div>
         </div>
     </div>
 </div>
