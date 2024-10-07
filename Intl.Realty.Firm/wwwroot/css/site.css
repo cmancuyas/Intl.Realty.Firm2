@@ -651,6 +651,9 @@ input#summaryPassword {
 /* multi-step sign up form end */
 
 /* multi-step submission form */
+.form-control:disabled, .form-control[readonly] {
+    color: #AAA !important;
+}
 .form-submit-tab {
     display: none;
     background-color: #f3f3f3;
