@@ -14,25 +14,10 @@
 <div id="dashboardContent">
     @Html.Partial("_DashboardPartial", Model)
 </div>
-@{
-    await Html.RenderPartialAsync("_ValidationScriptsPartial");
-}
+
+
 @section Scripts {
-    <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous" asp-append-version="true"></script>
-    <script>
-        function loadDashboard(sortOrder, pageNumber, pageSize) {
-            $.get('@Url.Action("Dashboard", "Home")', { sortOrder: sortOrder, pageNumber: pageNumber, pageSize: pageSize }, function (data) {
-                $('#dashboardContent').html(data);
-            });
-        }
-
-        $(document).on('change', '#pageSizeDropdown', function () {
-            let pageSize = $(this).val();
-            loadDashboard('@Model.SortOrder', 1, pageSize);
-        });
-    </script>
-
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="~/js/loaddealsdata.js"></script>
 }
-
-
 

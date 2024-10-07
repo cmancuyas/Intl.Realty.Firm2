@@ -1,0 +1,75 @@
+﻿@using Intl.Realty.Firm.Models.Pagination
+
+@model PaginatedDealsViewModel
+<div class="card">
+    <div class="card-header">
+        <h3>All Deals For All Months</h3>
+    </div>
+    <div class="row" id="allMonthsTopBar">
+        <div class="col-12">
+            @await Html.PartialAsync("~/Views/Home/AllDealsForAllMonths/_AllDealsForAllMonthsTopBar.cshtml", Model.Pager)
+        </div>
+    </div>
+
+    <table class="table" id="allMonthsTable">
+        <thead>
+            <tr>
+                <th>
+                    <i class="@Model.SortModel!.GetColumn("dealTransactionNumber").SortIcon" aria-hidden="true"></i>
+                    @{
+                        <a href="#" onclick="loadDashboard('@Model.SortModel!.GetColumn("dealTransactionNumber").SortExpression', '@Model.Pager.SearchText', '@Model.Pager.CurrentPage', '@Model.Pager.PageSize', 'allMonths')">Deal#</a>
+                    }
+                </th>
+                <th>
+                    <i class="@Model.SortModel!.GetColumn("transactionTypeName").SortIcon" aria-hidden="true"></i>
+                    @{
+                        <a href="#" onclick="loadDashboard('@Model.SortModel!.GetColumn("transactionTypeName").SortExpression', '@Model.Pager.SearchText', '@Model.Pager.CurrentPage', '@Model.Pager.PageSize', 'allMonths')">Transaction Type</a>
+                    }
+                </th>
+                <th>
+                    <i class="@Model.SortModel!.GetColumn("propertyAddress").SortIcon" aria-hidden="true"></i>
+                    @{
+                        <a href="#" onclick="loadDashboard('@Model.SortModel!.GetColumn("propertyAddress").SortExpression', '@Model.Pager.SearchText', '@Model.Pager.CurrentPage', '@Model.Pager.PageSize', 'allMonths')">Property Address</a>
+                    }
+                </th>
+                <th>
+                    <i class="@Model.SortModel!.GetColumn("dealStatusName").SortIcon" aria-hidden="true"></i>
+                    @{
+                        <a href="#" onclick="loadDashboard('@Model.SortModel!.GetColumn("dealStatusName").SortExpression', '@Model.Pager.SearchText', '@Model.Pager.CurrentPage', '@Model.Pager.PageSize', 'allMonths')">Deal Status</a>
+                    }
+                </th>
+                <th>
+                    <i class="@Model.SortModel!.GetColumn("createdByFullName").SortIcon" aria-hidden="true"></i>
+                    @{
+                        <a href="#" onclick="loadDashboard('@Model.SortModel!.GetColumn("createdByFullName").SortExpression', '@Model.Pager.SearchText', '@Model.Pager.CurrentPage', '@Model.Pager.PageSize', 'allMonths')">Created By</a>
+                    }
+                </th>
+                <th>
+                    <i class="@Model.SortModel!.GetColumn("createdAt").SortIcon" aria-hidden="true"></i>
+                    @{
+                        <a href="#" onclick="loadDashboard('@Model.SortModel!.GetColumn("createdAt").SortExpression', '@Model.Pager.SearchText', '@Model.Pager.CurrentPage', '@Model.Pager.PageSize', 'allMonths')">Created At</a>
+                    }
+                </th>
+                <th>
+                    <i class="@Model.SortModel!.GetColumn("finalClosingDate").SortIcon" aria-hidden="true"></i>
+                    @{
+                        <a href="#" onclick="loadDashboard('@Model.SortModel!.GetColumn("finalClosingDate").SortExpression', '@Model.Pager.SearchText', '@Model.Pager.CurrentPage', '@Model.Pager.PageSize', 'allMonths')">Final Closing Date</a>
+                    }
+                </th>
+                <th>File Extension</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody id ="allMonthsTableBody">
+            @await Html.PartialAsync("~/Views/Home/AllDealsForAllMonths/_AllDealsForAllMonthsTableBody.cshtml", Model)
+        </tbody>
+    </table>
+
+    <div class="row" id="allMonthsBottomBar">
+        <div class="col-12">
+            @await Html.PartialAsync("~/Views/Home/AllDealsForAllMonths/_AllDealsForAllMonthsBottomBar.cshtml", Model.Pager)
+        </div>
+    </div>
+</div>
+
+

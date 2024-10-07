@@ -12,14 +12,6 @@ namespace Intl.Realty.Firm.Repository.IRepository
                     bool tracked = false,
                     int pageSize = 0,
                     int pageNumber = 1);
-        // Pagination, Filtering, and Sorting
-        Task<PaginatedList<T>> GetPagedAsync(
-                    Expression<Func<T, bool>>? filter = null,
-                    string? includeProperties = null,
-                    Func<IQueryable<T>, IOrderedQueryable<T>> orderBy = null!,
-                    bool tracked = false,
-                    int pageSize = 0,
-                    int pageNumber = 1);
 
         // Merging two tables with a category
         public IQueryable<TResult> MergeWith<TEntity2, TKey, TResult>(

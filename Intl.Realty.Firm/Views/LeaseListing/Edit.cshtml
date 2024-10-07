@@ -40,6 +40,7 @@
                   enctype="multipart/form-data">
 
                 <input type="hidden" asp-for="EditLeaseListing.Id" />
+                <input type="hidden" asp-for="EditLeaseListing.DealTransactionNumber" />
                 <input hidden id="DealStatusId" name="DealStatusId" value="1" />
 
                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>

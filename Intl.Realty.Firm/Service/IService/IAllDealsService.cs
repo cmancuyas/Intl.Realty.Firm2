@@ -1,9 +1,12 @@
-﻿using Intl.Realty.Firm.Model.ViewModel.Home;
+﻿using Intl.Realty.Firm.Model.Model;
+using Intl.Realty.Firm.Model.Pagination;
+using Intl.Realty.Firm.Model.ViewModel.AllDealsVM;
+using Intl.Realty.Firm.Models.Pagination;
 
 namespace Intl.Realty.Firm.Service.IService
 {
     public interface IAllDealsService
     {
-        Task<DashboardViewModel> GetAllDealsForDashboardData(string sortOrder, string searchString, int pageNumber = 1, int pageSize = 10);
+        Task<PaginatedDealsViewModel> GetAllDealsForDashboardData(ApplicationUser user, string sortProperty, SortOrder sortOrder = SortOrder.Descending, string searchText = "", int pageIndex = 1, int pageSize = 5, bool getCurrentMonthFlag = true);
     }
 }

@@ -1,0 +1,73 @@
+﻿@using Intl.Realty.Firm.Models.Pagination
+
+@model PaginatedDealsViewModel
+<div class="card">
+    <div class="card-header">
+        <h3>All Deals For @DateTime.Now.ToString("MMMM") - @DateTime.Now.Year</h3>
+    </div>
+    <div class="row" id="currentMonthTopBar">
+        <div class="col-12">
+            @await Html.PartialAsync("~/Views/Home/AllDealsForCurrentMonth/_AllDealsForCurrentMonthTopBar.cshtml", Model.Pager)
+        </div>
+    </div>
+
+    <table class="table" id="currentMonthTable">
+        <thead>
+            <tr>
+                <th>
+                    <i class="@Model.SortModel!.GetColumn("dealTransactionNumber").SortIcon" aria-hidden="true"></i>
+                    @{
+                        <a href="#" onclick="loadDashboard('@Model.SortModel!.GetColumn("dealTransactionNumber").SortExpression', '@Model.Pager.SearchText', '@Model.Pager.CurrentPage', '@Model.Pager.PageSize', 'currentMonth')">Deal#</a>
+                    }
+                </th>
+                <th>
+                    <i class="@Model.SortModel!.GetColumn("transactionTypeName").SortIcon" aria-hidden="true"></i>
+                    @{
+                        <a href="#" onclick="loadDashboard('@Model.SortModel!.GetColumn("transactionTypeName").SortExpression', '@Model.Pager.SearchText', '@Model.Pager.CurrentPage', '@Model.Pager.PageSize', 'currentMonth')">Transaction Type</a>
+                    }
+                </th>
+                <th>
+                    <i class="@Model.SortModel!.GetColumn("propertyAddress").SortIcon" aria-hidden="true"></i>
+                    @{
+                        <a href="#" onclick="loadDashboard('@Model.SortModel!.GetColumn("propertyAddress").SortExpression', '@Model.Pager.SearchText', '@Model.Pager.CurrentPage', '@Model.Pager.PageSize', 'currentMonth')">Property Address</a>
+                    }
+                </th>
+                <th>
+                    <i class="@Model.SortModel!.GetColumn("dealStatusName").SortIcon" aria-hidden="true"></i>
+                    @{
+                        <a href="#" onclick="loadDashboard('@Model.SortModel!.GetColumn("dealStatusName").SortExpression', '@Model.Pager.SearchText', '@Model.Pager.CurrentPage', '@Model.Pager.PageSize', 'currentMonth')">Deal Status</a>
+                    }
+                </th>
+                <th>
+                    <i class="@Model.SortModel!.GetColumn("createdByFullName").SortIcon" aria-hidden="true"></i>
+                    @{
+                        <a href="#" onclick="loadDashboard('@Model.SortModel!.GetColumn("createdByFullName").SortExpression', '@Model.Pager.SearchText', '@Model.Pager.CurrentPage', '@Model.Pager.PageSize', 'currentMonth')">Created By</a>
+                    }
+                </th>
+                <th>
+                    <i class="@Model.SortModel!.GetColumn("createdAt").SortIcon" aria-hidden="true"></i>
+                    @{
+                        <a href="#" onclick="loadDashboard('@Model.SortModel!.GetColumn("createdAt").SortExpression', '@Model.Pager.SearchText', '@Model.Pager.CurrentPage', '@Model.Pager.PageSize', 'currentMonth')">Created At</a>
+                    }
+                </th>
+                <th>
+                    <i class="@Model.SortModel!.GetColumn("finalClosingDate").SortIcon" aria-hidden="true"></i>
+                    @{
+                        <a href="#" onclick="loadDashboard('@Model.SortModel!.GetColumn("finalClosingDate").SortExpression', '@Model.Pager.SearchText', '@Model.Pager.CurrentPage', '@Model.Pager.PageSize', 'currentMonth')">Final Closing Date</a>
+                    }
+                </th>
+                <th>File Extension</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody id="currentMonthTableBody">
+            @await Html.PartialAsync("~/Views/Home/AllDealsForCurrentMonth/_AllDealsForCurrentMonthTableBody.cshtml", Model)
+        </tbody>
+    </table>
+
+    <div class="row" id="currentMonthBottomBar">
+        <div class="col-12">
+            @await Html.PartialAsync("~/Views/Home/AllDealsForCurrentMonth/_AllDealsForCurrentMonthBottomBar.cshtml", Model.Pager)
+        </div>
+    </div>
+</div>

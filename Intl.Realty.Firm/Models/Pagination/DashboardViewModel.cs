@@ -1,6 +1,6 @@
 ﻿using Intl.Realty.Firm.Model.Model;
-using Intl.Realty.Firm.Model.Pagination;
 using Intl.Realty.Firm.Model.ViewModel.AllDealsVM;
+using Intl.Realty.Firm.Models.Pagination;
 
 namespace Intl.Realty.Firm.Model.ViewModel.Home
 {
@@ -36,11 +36,7 @@ namespace Intl.Realty.Firm.Model.ViewModel.Home
         public List<AllDealViewModel>? AllDealsPastHour { get; set; }
         public List<AllDealViewModel>? AllDealsToday { get; set; }
 
-        public PaginatedList<AllDealViewModel>? AllDeals { get; set; } // For Deals data
-        public int AllDealsTotalDeals { get; set; } // Total number of deals
-        public int TotalCount { get; set; }
-        public int PageSize { get; set; }
-        public int CurrentPage { get; set; }
-        public string SortOrder { get; set; }
+        public PaginatedDealsViewModel AllDealsCurrentMonth { get; set; } = new PaginatedDealsViewModel();
+        public PaginatedDealsViewModel AllDealsAllMonths { get; set; } = new PaginatedDealsViewModel();
     }
 }
