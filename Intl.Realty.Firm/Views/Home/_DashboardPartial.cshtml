@@ -22,8 +22,7 @@
 <div id="dashboardContent mb-4">
     <div class="container-fluid">
         <div class="row">
-            <div class="col-sm">
-
+            <div class="col-md-6">
                 @{
                     if (isAgent)
                     {
@@ -35,32 +34,16 @@
                     }
                 }
             </div>
-            <div class="col-sm">
-            </div>
-            <div class="col-sm">
-            </div>
-            <div class="col-sm">
-            </div>
-            <div class="col-sm">
-            </div>
-            <div class="col-sm">
-            </div>
-            <div class="col-sm">
-            </div>
-            <div class="col-sm">
-            </div>
-            <div class="col-sm">
-
-                <div>
-                    <a asp-action="ViewAllDeals"
-                       class="btn btn-primary align-items-center ">
-                        View All Deals
-                    </a>
-                </div>
+            <div class="col-md-6 text-end">
+                <a asp-action="ViewAllDeals"
+                   class="btn btn-primary align-items-center">
+                    View All Deals
+                </a>
             </div>
         </div>
     </div>
 </div>
+
 
 <div class="container-fluid mt-3 mb-4 dashboard-cards">
     <div class="row">

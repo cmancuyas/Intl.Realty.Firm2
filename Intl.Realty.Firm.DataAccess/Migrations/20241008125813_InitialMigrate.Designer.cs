@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Intl.Realty.Firm.DataAccess.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20241001132735_InitialMigrate")]
+    [Migration("20241008125813_InitialMigrate")]
     partial class InitialMigrate
     {
         /// <inheritdoc />
@@ -176,7 +176,7 @@ namespace Intl.Realty.Firm.DataAccess.Migrations
                         {
                             Id = new Guid("74b7ddfa-9c71-4b95-84e2-9b5fcdef884c"),
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "219eeed6-27bb-44d9-a4c6-e383965f73eb",
+                            ConcurrencyStamp = "4b952d11-bec3-49b1-8f53-6f67658cb877",
                             Email = "superadmin@internationalrealtyfirm.com",
                             EmailConfirmed = true,
                             EmploymentStatusId = 1,
@@ -185,10 +185,10 @@ namespace Intl.Realty.Firm.DataAccess.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "SUPERADMIN@INTERNATIONALREALTYFIRM.COM",
                             NormalizedUserName = "SUPERADMIN@INTERNATIONALREALTYFIRM.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEI/d9Q9GfjWm8p+/70m0OOemT1397V0WjvMWeTlsuRzDKKK7V7uBZZttlRfR769sRQ==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEKdQIge6HeKlQMUiRLvoYl3uYFPyW/tHxkMlB+/djp+VDwehc/M8aC7JBEhJ8F5kjw==",
                             PhoneNumberConfirmed = false,
-                            RegistrationDate = new DateTime(2024, 10, 1, 21, 27, 35, 89, DateTimeKind.Local).AddTicks(78),
-                            SecurityStamp = "d282efd2-5c43-4aad-90c3-26c5af5f9e4f",
+                            RegistrationDate = new DateTime(2024, 10, 8, 20, 58, 11, 475, DateTimeKind.Local).AddTicks(3864),
+                            SecurityStamp = "91014eab-5b96-4067-af9d-11d79a62d9e9",
                             TwoFactorEnabled = false,
                             UserAgreement = false,
                             UserName = "superadmin@internationalrealtyfirm.com"
