@@ -33,7 +33,17 @@
 </head>
 <body>
 
-    <partial name="~/Views/Shared/_SidebarItems.cshtml" />
+    <!-- Mobile Menu Button -->
+    <button id="menu-toggle" class="menu-toggle">
+        <i data-feather="menu" type="button"></i>
+    </button>
+
+    <div id="off-canvas-menu" class="off-canvas-menu">
+        <partial name="~/Views/Shared/_SidebarItems.cshtml" />
+    </div>
+
+    <!-- Overlay -->
+    <div id="menu-overlay" class="menu-overlay"></div>
 
     <div class="top-bar">
         <div class="top-bar-container shadow-sm d-flex">
@@ -95,6 +105,24 @@
         $(document).ready(function () {
             feather.replace();
             // $(".select2").select2();
+        });
+
+                document.addEventListener("DOMContentLoaded", () => {
+            const menuToggle = document.getElementById("menu-toggle");
+            const offCanvasMenu = document.getElementById("off-canvas-menu");
+            const menuOverlay = document.getElementById("menu-overlay");
+
+            // Toggle Menu
+            menuToggle.addEventListener("click", () => {
+                offCanvasMenu.classList.toggle("active");
+                menuOverlay.classList.toggle("active");
+            });
+
+            // Close Menu on Overlay Click
+            menuOverlay.addEventListener("click", () => {
+                offCanvasMenu.classList.remove("active");
+                menuOverlay.classList.remove("active");
+            });
         });
     </script>
 

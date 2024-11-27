@@ -3,6 +3,7 @@ using Intl.Realty.Firm.Model.Model;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 
 namespace Intl.Realty.Firm.DataAccess
 {
@@ -27,6 +28,12 @@ namespace Intl.Realty.Firm.DataAccess
         public DbSet<SaleCoop> SaleCoops { get; set; }
         public DbSet<LeaseListing> LeaseListings { get; set; }
         public DbSet<LeaseCoop> LeaseCoops { get; set; }
+
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            optionsBuilder.ConfigureWarnings(warnings =>
+                warnings.Ignore(RelationalEventId.PendingModelChangesWarning));
+        }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
