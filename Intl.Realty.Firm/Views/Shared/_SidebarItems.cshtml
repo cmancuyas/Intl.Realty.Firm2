@@ -1,215 +1,219 @@
 ﻿@using Intl.Realty.Firm.Model.Model
 @using Microsoft.AspNetCore.Identity
 @inject SignInManager<ApplicationUser> signInManager;
-<aside>
-    <div class="h-auto d-flex align-items-center justify-content-center me-1 mt-4 logo-container">
-        <img src="~/files/img/logo-irf-white.png" alt="INTLRealtyFirm Logo" class="img-fluid w-75" />
-    </div>
-    <div class="nav-bar-container">
-        <ul id="navItems" class="navbar-nav mt-5">
 
-            <li id="dashboardNavItem" class="nav-item mx-2 mt-2 mb-1 rounded">
-                <a class="nav-link text-decoration-none d-flex align-items-center gap-3 ms-2 me-2 fw-bolder" asp-controller="Home" asp-action="Dashboard">
-                    <i data-feather="grid" data-toggle="tooltip" data-bs-placement="right" title="Dashboard"></i>
-                    <span>Dashboard</span>
-                </a>
-            </li>
-            @if (signInManager.IsSignedIn(User) && (User.IsInRole("SuperAdmin") ||
-                                 User.IsInRole("Admin")))
-            {
+<!-- Off-Canvas Menu -->
+<div id="off-canvas-menu" class="off-canvas-menu">
+    <aside>
+        <div class="h-auto d-flex align-items-center justify-content-center me-1 mt-4 logo-container">
+            <img src="~/files/img/logo-irf-white.png" alt="INTLRealtyFirm Logo" class="img-fluid w-75" />
+        </div>
+        <div class="nav-bar-container">
+            <ul id="navItems" class="navbar-nav mt-5">
 
-                @* Customers *@
                 <li id="dashboardNavItem" class="nav-item mx-2 mt-2 mb-1 rounded">
-                    <a class="nav-link text-decoration-none d-flex align-items-center gap-3 ms-2 me-2 fw-bolder" asp-controller="Customer" asp-action="Index">
-                        <i data-feather="user" data-toggle="tooltip" data-bs-placement="right" title="Customer"></i>
-                        <span>My Customers</span>
+                    <a class="nav-link text-decoration-none d-flex align-items-center gap-3 ms-2 me-2 fw-bolder" asp-controller="Home" asp-action="Dashboard">
+                        <i data-feather="grid" data-toggle="tooltip" data-bs-placement="right" title="Dashboard"></i>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+                @if (signInManager.IsSignedIn(User) && (User.IsInRole("SuperAdmin") ||
+                                     User.IsInRole("Admin")))
+                {
+
+                    @* Customers *@
+                    <li id="dashboardNavItem" class="nav-item mx-2 mt-2 mb-1 rounded">
+                        <a class="nav-link text-decoration-none d-flex align-items-center gap-3 ms-2 me-2 fw-bolder" asp-controller="Customer" asp-action="Index">
+                            <i data-feather="user" data-toggle="tooltip" data-bs-placement="right" title="Customer"></i>
+                            <span>My Customers</span>
+                        </a>
+                    </li>
+
+                    @* Administrator *@
+                    <li id="administratorNavItem" class="nav-item mx-2 mt-2 mb-1 rounded pe-cursor">
+                        <a id="administratorNavLink" class="nav-link text-decoration-none d-flex align-items-center gap-3 ms-2 me-2 fw-bolder">
+                        <i data-feather="key" data-toggle="tooltip" data-bs-placement="right" title="Administrator"></i>
+                        <span class="flex-grow-1">Administrator</span>
+                        <i data-feather="chevron-right" class="caret w-15px"></i>
+                    </a>
+                    </li>
+                }
+                else
+                {
+
+                }
+                <li class="administratorSubNavItem sub-nav-item">
+                    <ul class="list-unstyled">
+                        <li>
+                            <a class="sub-nav-link" asp-controller="User" asp-action="Index">
+                                <span>Account Management</span>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+
+                <li class="administratorSubNavItem sub-nav-item">
+                    <ul class="list-unstyled">
+                        <li>
+                            <a class="sub-nav-link" asp-controller="TransactionType" asp-action="Index">
+                                <span>Transaction Management</span>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+
+    @*             <li class="administratorSubNavItem sub-nav-item">
+                    <ul class="list-unstyled">
+                        <li>
+                            <a class="sub-nav-link" asp-controller="Administration" asp-action="ListUsers">
+                                <span>Users</span>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+
+                <li class="administratorSubNavItem sub-nav-item">
+                    <ul class="list-unstyled">
+                        <li>
+                            <a class="sub-nav-link" asp-controller="Administration" asp-action="ListRoles">
+                                <span>Roles</span>
+                            </a>
+                        </li>
+                    </ul>
+                </li> *@
+
+       
+                 @* Upload New Transaction  *@
+                <li id="transactionManagementNavItem" class="nav-item mx-2 mt-2 mb-1 rounded pe-cursor">
+                    <a id="transactionManagementNavLink" class="nav-link text-decoration-none d-flex align-items-center gap-3 ms-2 me-2 fw-bolder">
+                        <i data-feather="file" data-toggle="tooltip" data-bs-placement="right" title="TransactionManagement"></i>
+                        <span class="flex-grow-1">Upload New Transaction</span>
+                        <i data-feather="chevron-right" class="caret w-15px"></i>
+                    </a>
+                </li>
+                <li class="transactionManagementSubNavItem sub-nav-item">
+                    <ul class="list-unstyled">
+                        <li>
+                            <a class="sub-nav-link" asp-controller="SaleListing" asp-action="Index">
+                                <span>Sales Listing</span>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+                <li class="transactionManagementSubNavItem sub-nav-item">
+                    <ul class="list-unstyled">
+                        <li>
+                            <a class="sub-nav-link" asp-controller="SaleCoop" asp-action="Index">
+                                <span>Sale Co-op</span>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+                <li class="transactionManagementSubNavItem sub-nav-item">
+                    <ul class="list-unstyled">
+                        <li>
+                            <a class="sub-nav-link" asp-controller="LeaseListing" asp-action="Index">
+                                <span>Lease Listing</span>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+                <li class="transactionManagementSubNavItem sub-nav-item">
+                    <ul class="list-unstyled">
+                        <li>
+                            <a class="sub-nav-link" asp-controller="LeaseCoop" asp-action="Index">
+                                <span>Lease Coop</span>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+                @* Information Packages  *@
+                <li id="informationPackageManagementNavItem" class="nav-item mx-2 mt-2 mb-1 rounded pe-cursor">
+                    <a id="informationPackageManagementNavLink" class="nav-link text-decoration-none d-flex align-items-center gap-3 ms-2 me-2 fw-bolder">
+                        <i data-feather="credit-card" data-toggle="tooltip" data-bs-placement="right" title="InformationPackageManagement"></i>
+                        <span class="flex-grow-1">Information Packages</span>
+                        <i data-feather="chevron-right" class="caret w-15px"></i>
+                    </a>
+                </li>
+                <li class="informationPackageManagementSubNavItem sub-nav-item">
+                    <ul class="list-unstyled">
+                        <li>
+                            <a class="sub-nav-link" asp-controller="BusinessCard" asp-action="Index">
+                                <span>Business Cards & Signs</span>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+                <li class="informationPackageManagementSubNavItem sub-nav-item">
+                    <ul class="list-unstyled">
+                        <li>
+                            <a class="sub-nav-link" asp-controller="CommissionAdvance" asp-action="Index">
+                                <span>Apply for Commission Advance</span>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+
+                @* Training  *@
+                <li id="trainingNavItem" class="nav-item mx-2 mt-2 mb-1 rounded">
+                    <a class="nav-link text-decoration-none d-flex align-items-center gap-3 ms-2 me-2 fw-bolder" asp-controller="Training" asp-action="Index">
+                        <i data-feather="award" data-toggle="tooltip" data-bs-placement="right" title="Dashboard"></i>
+                        <span>Training</span>
                     </a>
                 </li>
 
-                @* Administrator *@
-                <li id="administratorNavItem" class="nav-item mx-2 mt-2 mb-1 rounded pe-cursor">
-                    <a id="administratorNavLink" class="nav-link text-decoration-none d-flex align-items-center gap-3 ms-2 me-2 fw-bolder">
-                    <i data-feather="key" data-toggle="tooltip" data-bs-placement="right" title="Administrator"></i>
-                    <span class="flex-grow-1">Administrator</span>
-                    <i data-feather="chevron-right" class="caret w-15px"></i>
-                </a>
+                @* IRF Programs  *@
+                <li id="irfProgramManagementNavItem" class="nav-item mx-2 mt-2 mb-1 rounded pe-cursor">
+                    <a id="irfProgramManagementNavLink" class="nav-link text-decoration-none d-flex align-items-center gap-3 ms-2 me-2 fw-bolder">
+                        <i data-feather="bookmark" data-toggle="tooltip" data-bs-placement="right" title="IrfProgramManagement"></i>
+                        <span class="flex-grow-1">IRF Programs</span>
+                        <i data-feather="chevron-right" class="caret w-15px"></i>
+                    </a>
                 </li>
-            }
-            else
-            {
+                <li class="irfProgramManagementSubNavItem sub-nav-item">
+                    <ul class="list-unstyled">
+                        <li>
+                            <a class="sub-nav-link" asp-controller="IRFMortgage" asp-action="Index">
+                                <span>IRF Mortgage Prgram</span>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+                <li class="irfProgramManagementSubNavItem sub-nav-item">
+                    <ul class="list-unstyled">
+                        <li>
+                            <a class="sub-nav-link" asp-controller="IRFLead" asp-action="Index">
+                                <span>IRF Leads</span>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
 
-            }
-            <li class="administratorSubNavItem sub-nav-item">
-                <ul class="list-unstyled">
-                    <li>
-                        <a class="sub-nav-link" asp-controller="User" asp-action="Index">
-                            <span>Account Management</span>
-                        </a>
-                    </li>
-                </ul>
-            </li>
+                @* IRF Branded Website  *@
+                <li id="irfBrandedWebsiteNavItem" class="nav-item mx-2 mt-2 mb-1 rounded">
+                    <a class="nav-link text-decoration-none d-flex align-items-center gap-3 ms-2 me-2 fw-bolder" asp-controller="IRFBrandedWebsite" asp-action="Index">
+                        <i data-feather="globe" data-toggle="tooltip" data-bs-placement="right" title="IRFBrandedWebsite"></i>
+                        <span>IRF Branded Website</span>
+                    </a>
+                </li>
 
-            <li class="administratorSubNavItem sub-nav-item">
-                <ul class="list-unstyled">
-                    <li>
-                        <a class="sub-nav-link" asp-controller="TransactionType" asp-action="Index">
-                            <span>Transaction Management</span>
-                        </a>
-                    </li>
-                </ul>
-            </li>
+                @* Purchase IRF Stocks  *@
+                <li id="purchaseIRFStocksNavItem" class="nav-item mx-2 mt-2 mb-1 rounded">
+                    <a class="nav-link text-decoration-none d-flex align-items-center gap-3 ms-2 me-2 fw-bolder" asp-controller="PurchaseIRFStocks" asp-action="Index">
+                        <i data-feather="bar-chart" data-toggle="tooltip" data-bs-placement="right" title="PurchaseIRFStocks"></i>
+                        <span>Purchase IRF Stocks</span>
+                    </a>
+                </li>
 
-@*             <li class="administratorSubNavItem sub-nav-item">
-                <ul class="list-unstyled">
-                    <li>
-                        <a class="sub-nav-link" asp-controller="Administration" asp-action="ListUsers">
-                            <span>Users</span>
-                        </a>
-                    </li>
-                </ul>
-            </li>
+                @* Refer an Agent  *@
+                <li id="referAnAgentNavItem" class="nav-item mx-2 mt-2 mb-1 rounded">
+                    <a class="nav-link text-decoration-none d-flex align-items-center gap-3 ms-2 me-2 fw-bolder" asp-controller="ReferAnAgent" asp-action="Index">
+                        <i data-feather="user-plus" data-toggle="tooltip" data-bs-placement="right" title="ReferAnAgent"></i>
+                        <span>Refer An Agent</span>
+                    </a>
+                </li>
 
-            <li class="administratorSubNavItem sub-nav-item">
-                <ul class="list-unstyled">
-                    <li>
-                        <a class="sub-nav-link" asp-controller="Administration" asp-action="ListRoles">
-                            <span>Roles</span>
-                        </a>
-                    </li>
-                </ul>
-            </li> *@
-
-       
-             @* Upload New Transaction  *@
-            <li id="transactionManagementNavItem" class="nav-item mx-2 mt-2 mb-1 rounded pe-cursor">
-                <a id="transactionManagementNavLink" class="nav-link text-decoration-none d-flex align-items-center gap-3 ms-2 me-2 fw-bolder">
-                    <i data-feather="file" data-toggle="tooltip" data-bs-placement="right" title="TransactionManagement"></i>
-                    <span class="flex-grow-1">Upload New Transaction</span>
-                    <i data-feather="chevron-right" class="caret w-15px"></i>
-                </a>
-            </li>
-            <li class="transactionManagementSubNavItem sub-nav-item">
-                <ul class="list-unstyled">
-                    <li>
-                        <a class="sub-nav-link" asp-controller="SaleListing" asp-action="Index">
-                            <span>Sales Listing</span>
-                        </a>
-                    </li>
-                </ul>
-            </li>
-            <li class="transactionManagementSubNavItem sub-nav-item">
-                <ul class="list-unstyled">
-                    <li>
-                        <a class="sub-nav-link" asp-controller="SaleCoop" asp-action="Index">
-                            <span>Sale Co-op</span>
-                        </a>
-                    </li>
-                </ul>
-            </li>
-            <li class="transactionManagementSubNavItem sub-nav-item">
-                <ul class="list-unstyled">
-                    <li>
-                        <a class="sub-nav-link" asp-controller="LeaseListing" asp-action="Index">
-                            <span>Lease Listing</span>
-                        </a>
-                    </li>
-                </ul>
-            </li>
-            <li class="transactionManagementSubNavItem sub-nav-item">
-                <ul class="list-unstyled">
-                    <li>
-                        <a class="sub-nav-link" asp-controller="LeaseCoop" asp-action="Index">
-                            <span>Lease Coop</span>
-                        </a>
-                    </li>
-                </ul>
-            </li>
-            @* Information Packages  *@
-            <li id="informationPackageManagementNavItem" class="nav-item mx-2 mt-2 mb-1 rounded pe-cursor">
-                <a id="informationPackageManagementNavLink" class="nav-link text-decoration-none d-flex align-items-center gap-3 ms-2 me-2 fw-bolder">
-                    <i data-feather="credit-card" data-toggle="tooltip" data-bs-placement="right" title="InformationPackageManagement"></i>
-                    <span class="flex-grow-1">Information Packages</span>
-                    <i data-feather="chevron-right" class="caret w-15px"></i>
-                </a>
-            </li>
-            <li class="informationPackageManagementSubNavItem sub-nav-item">
-                <ul class="list-unstyled">
-                    <li>
-                        <a class="sub-nav-link" asp-controller="BusinessCard" asp-action="Index">
-                            <span>Business Cards & Signs</span>
-                        </a>
-                    </li>
-                </ul>
-            </li>
-            <li class="informationPackageManagementSubNavItem sub-nav-item">
-                <ul class="list-unstyled">
-                    <li>
-                        <a class="sub-nav-link" asp-controller="CommissionAdvance" asp-action="Index">
-                            <span>Apply for Commission Advance</span>
-                        </a>
-                    </li>
-                </ul>
-            </li>
-
-            @* Training  *@
-            <li id="trainingNavItem" class="nav-item mx-2 mt-2 mb-1 rounded">
-                <a class="nav-link text-decoration-none d-flex align-items-center gap-3 ms-2 me-2 fw-bolder" asp-controller="Training" asp-action="Index">
-                    <i data-feather="award" data-toggle="tooltip" data-bs-placement="right" title="Dashboard"></i>
-                    <span>Training</span>
-                </a>
-            </li>
-
-            @* IRF Programs  *@
-            <li id="irfProgramManagementNavItem" class="nav-item mx-2 mt-2 mb-1 rounded pe-cursor">
-                <a id="irfProgramManagementNavLink" class="nav-link text-decoration-none d-flex align-items-center gap-3 ms-2 me-2 fw-bolder">
-                    <i data-feather="bookmark" data-toggle="tooltip" data-bs-placement="right" title="IrfProgramManagement"></i>
-                    <span class="flex-grow-1">IRF Programs</span>
-                    <i data-feather="chevron-right" class="caret w-15px"></i>
-                </a>
-            </li>
-            <li class="irfProgramManagementSubNavItem sub-nav-item">
-                <ul class="list-unstyled">
-                    <li>
-                        <a class="sub-nav-link" asp-controller="IRFMortgage" asp-action="Index">
-                            <span>IRF Mortgage Prgram</span>
-                        </a>
-                    </li>
-                </ul>
-            </li>
-            <li class="irfProgramManagementSubNavItem sub-nav-item">
-                <ul class="list-unstyled">
-                    <li>
-                        <a class="sub-nav-link" asp-controller="IRFLead" asp-action="Index">
-                            <span>IRF Leads</span>
-                        </a>
-                    </li>
-                </ul>
-            </li>
-
-            @* IRF Branded Website  *@
-            <li id="irfBrandedWebsiteNavItem" class="nav-item mx-2 mt-2 mb-1 rounded">
-                <a class="nav-link text-decoration-none d-flex align-items-center gap-3 ms-2 me-2 fw-bolder" asp-controller="IRFBrandedWebsite" asp-action="Index">
-                    <i data-feather="globe" data-toggle="tooltip" data-bs-placement="right" title="IRFBrandedWebsite"></i>
-                    <span>IRF Branded Website</span>
-                </a>
-            </li>
-
-            @* Purchase IRF Stocks  *@
-            <li id="purchaseIRFStocksNavItem" class="nav-item mx-2 mt-2 mb-1 rounded">
-                <a class="nav-link text-decoration-none d-flex align-items-center gap-3 ms-2 me-2 fw-bolder" asp-controller="PurchaseIRFStocks" asp-action="Index">
-                    <i data-feather="bar-chart" data-toggle="tooltip" data-bs-placement="right" title="PurchaseIRFStocks"></i>
-                    <span>Purchase IRF Stocks</span>
-                </a>
-            </li>
-
-            @* Refer an Agent  *@
-            <li id="referAnAgentNavItem" class="nav-item mx-2 mt-2 mb-1 rounded">
-                <a class="nav-link text-decoration-none d-flex align-items-center gap-3 ms-2 me-2 fw-bolder" asp-controller="ReferAnAgent" asp-action="Index">
-                    <i data-feather="user-plus" data-toggle="tooltip" data-bs-placement="right" title="ReferAnAgent"></i>
-                    <span>Refer An Agent</span>
-                </a>
-            </li>
-
-        </ul>
-    </div>
-</aside>
+            </ul>
+        </div>
+    </aside>
+ </div>

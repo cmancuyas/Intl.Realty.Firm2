@@ -21,8 +21,8 @@
 </style>
 <div id="dashboardContent mb-4">
     <div class="container-fluid">
-        <div class="row">
-            <div class="col-md-6">
+        <div class="d-flex align-center">
+            <div class="col-md-6 col-sm-6 dashboard-title">
                 @{
                     if (isAgent)
                     {
@@ -34,7 +34,7 @@
                     }
                 }
             </div>
-            <div class="col-md-6 text-end">
+            <div class="col-md-6 col-sm-6 dashboard-view-all text-end">
                 <a asp-action="ViewAllDeals"
                    class="btn btn-primary align-items-center">
                     View All Deals
@@ -48,7 +48,7 @@
 <div class="container-fluid mt-3 mb-4 dashboard-cards">
     <div class="row">
         <!-- Card 1 -->
-        <div class="col-md-3">
+        <div class="col-md-3 col-sm-12 mb-3">
             <div class="card">
                 <div class="card-body">
                     <p class="card-title">Sale Listing</p>
@@ -78,7 +78,7 @@
             </div>
         </div>
         <!-- Card 2 -->
-        <div class="col-md-3">
+        <div class="col-md-3 col-sm-12 mb-3">
             <div class="card">
                 <div class="card-body">
                     <p class="card-title">Sale Coop</p>
@@ -108,7 +108,7 @@
             </div>
         </div>
         <!-- Card 3 -->
-        <div class="col-md-3">
+        <div class="col-md-3 col-sm-12 mb-3">
             <div class="card">
                 <div class="card-body">
                     <p class="card-title">Lease Listing</p>
@@ -138,7 +138,7 @@
             </div>
         </div>
         <!-- Card 4 -->
-        <div class="col-md-3">
+        <div class="col-md-3 col-sm-12">
             <div class="card">
                 <div class="card-body">
                     <p class="card-title">Lease Coop</p>
@@ -172,7 +172,7 @@
 
 <div class="container-fluid mt-3 mb-4 dashboard-lists">
     <div class="row">
-        <div class="col-6">
+        <div class="col-md-6 col-sm-12 mb-4">
             <div class="card card-custom" style="border-radius:6px">
                 <div class="card-body">
                     <h5 class="card-title">My Daily Transactions</h5>
@@ -206,7 +206,7 @@
             </div>
         </div>
 
-        <div class="col-6">
+        <div class="col-md-6 col-sm-12">
             <div class="card card-custom" style="border-radius:6px">
                 <div class="card-body">
                     <h5 class="card-title">Recent Activity</h5>
