@@ -9,5 +9,6 @@
         public string Tab { get; set; } = string.Empty;
         public string Control { get; set; } = string.Empty;
         public string IsSelected { get; set; } = string.Empty;
+        public bool IsTrue { get; set; }
     }
 }

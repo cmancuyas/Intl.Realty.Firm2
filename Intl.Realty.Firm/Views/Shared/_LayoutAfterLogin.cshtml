@@ -72,7 +72,18 @@
 </head>
 <body>
 
+    <!-- Mobile Menu Button -->
+    <button id="menu-toggle" class="menu-toggle">
+        @* <span></span> *@
+        @* <span></span> *@
+        @* <span></span> *@
+        <i data-feather="menu" type="button"></i>
+    </button>
+
     <partial name="~/Views/Shared/_SidebarItems.cshtml" />
+
+    <!-- Overlay -->
+    <div id="menu-overlay" class="menu-overlay"></div>
 
     <div class="top-bar">
         <div class="top-bar-container shadow-sm d-flex">
@@ -176,6 +187,29 @@
         $(document).ready(function () {
             mainPageLayout($);
         })
+
+                document.addEventListener("DOMContentLoaded", () => {
+            const menuToggle = document.getElementById("menu-toggle");
+            const offCanvasMenu = document.getElementById("off-canvas-menu");
+            const menuOverlay = document.getElementById("menu-overlay");
+
+            // Toggle Menu
+            menuToggle.addEventListener("click", () => {
+                offCanvasMenu.classList.toggle("active");
+                menuOverlay.classList.toggle("active");
+            });
+
+            // Close Menu on Overlay Click
+            menuOverlay.addEventListener("click", () => {
+                offCanvasMenu.classList.remove("active");
+                menuOverlay.classList.remove("active");
+            });
+        });
+
+        $('#menu-toggle2').click(function(){
+            $(this).toggleClass('open');
+        });
+
     </script>
     @await Html.PartialAsync("_NotificationPartial.cshtml");
     @await RenderSectionAsync("Scripts", required: false)

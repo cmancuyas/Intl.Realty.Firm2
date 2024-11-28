@@ -6,27 +6,27 @@
     ViewBag.Title = "Not Found";
 }
 
-@if (Model.ErrorTitle == null)
-{
+@* @if (Model.ErrorTitle == null) *@
+@* { *@
 
-    <img src="~/files/img/notfound.jpg" style="height: 500px; width: 500px" />
+@*     <img src="~/files/img/notfound.jpg" style="height: 500px; width: 500px" /> *@
 
-    <hr />
-    <h5>
-        The Page you are looking for cannot be found
-    </h5>
+@*     <hr /> *@
+@*     <h5> *@
+@*         The Page you are looking for cannot be found *@
+@*     </h5> *@
 
-    <a asp-action="index" asp-controller="home" class="btn btn-outline-success" style="width:auto">
-        Click here to go to home page
-    </a>
-}
-else
-{
-    <img src="~/files/img/notfound.jpg" style="height: 300px; width: 300px" />
-    <h1 class="text-danger">@Model.ErrorTitle</h1>
-    <h6 class="text-danger">@Model.ErrorMessage</h6>
+@*     <a asp-action="index" asp-controller="home" class="btn btn-outline-success" style="width:auto"> *@
+@*         Click here to go to home page *@
+@*     </a> *@
+@* } *@
+@* else *@
+@* { *@
+@*     <img src="~/files/img/notfound.jpg" style="height: 300px; width: 300px" /> *@
+@*     <h1 class="text-danger">@Model.ErrorTitle</h1> *@
+@*     <h6 class="text-danger">@Model.ErrorMessage</h6> *@
 
-    <a asp-action="@Model.ControllerAction" asp-controller="@Model.ControllerName">
-        Click here to navigate to the @Model.ControllerName page
-    </a>
-}
+@*     <a asp-action="@Model.ControllerAction" asp-controller="@Model.ControllerName"> *@
+@*         Click here to navigate to the @Model.ControllerName page *@
+@*     </a> *@
+@* } *@

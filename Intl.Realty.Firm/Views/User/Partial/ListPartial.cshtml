@@ -6,7 +6,7 @@
     <form id="ListFormId" method="POST" enctype="application/x-www-form-urlencoded">
     </form>
     <div class="row">
-        <div class="col-md-12 d-flex justify-content-md-between align-items-center">
+        <div class="col-md-12 d-flex justify-content-between align-items-center">
             <h1 class="text-blue mb-0">Users</h1>
             <div class="d-flex gap-4">
                 <button type="button" id="btnMultipleDelete"
@@ -28,6 +28,33 @@
     <hr class="my-4" />
 
     <div class="tab-page">
+
+        <!-- Dropdown for Mobile -->
+        <div class="dropdown d-md-none mb-3">
+            <button class="btn btn-primary dropdown-toggle" type="button" id="tabDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                @Model.Menus.FirstOrDefault(m => m.IsTrue)?.Description Menu
+            </button>
+            <ul class="dropdown-menu" aria-labelledby="tabDropdown">
+                @foreach (var item in Model.Menus)
+                {
+                    <li>
+                        <input type="hidden" id="menuId" name="menuId" value="@item.Id" />
+                        <button class="nav-link @item.IsActive"
+                                id="@item.Tab"
+                                data-bs-toggle="tab"
+                                data-bs-target="#@item.Control"
+                                type="button"
+                                role="tab"
+                                aria-controls="@item.Control"
+                                aria-selected="@item.IsSelected">
+                            @item.Description
+                        </button>
+                    </li>
+                }
+            </ul>
+        </div>
+
+        <!-- Tab for Desktop -->
         <ul class="nav nav-tabs" id="usersManagementTab" role="tablist">
             @foreach (var item in Model.Menus)
             {
@@ -79,6 +106,79 @@
 
 </style>
 <script src="~/js/viewDataTableUtility.js" asp-append-version="true"></script>
+<script>
+    // Reference the dropdown items and tabs
+    const dropdownButton = document.querySelector('#tabDropdown');
+    const dropdownItems = document.querySelectorAll('.dropdown-item');
+    const tabLinks = document.querySelectorAll('.nav-link');
+
+    // Handle dropdown item click
+    dropdownItems.forEach(item => {
+        item.addEventListener('click', function (e) {
+            e.preventDefault();
+
+            // Get the tab ID from the clicked dropdown item
+            const tabId = this.getAttribute('data-tab-id');
+            const tabToActivate = document.querySelector(`#${tabId}`);
+
+            if (tabToActivate) {
+                // Activate the corresponding tab
+                new bootstrap.Tab(tabToActivate).show();
+
+                // Update dropdown button text
+                dropdownButton.textContent = this.textContent;
+
+                // Mark the selected dropdown item as active
+                dropdownItems.forEach(i => i.classList.remove('active'));
+                this.classList.add('active');
+            }
+        });
+    });
+
+    // Sync dropdown with active tab
+    tabLinks.forEach(link => {
+        link.addEventListener('shown.bs.tab', function () {
+            const activeTabId = this.id;
+
+            // Find the corresponding dropdown item
+            const activeDropdownItem = document.querySelector(`.dropdown-item[data-tab-id="${activeTabId}"]`);
+
+            if (activeDropdownItem) {
+                // Update dropdown button text
+                dropdownButton.textContent = activeDropdownItem.textContent;
+
+                // Mark the selected dropdown item as active
+                dropdownItems.forEach(i => i.classList.remove('active'));
+                activeDropdownItem.classList.add('active');
+            }
+        });
+    });
+
+        // Add click event listener to each dropdown item
+    dropdownItems.forEach(item => {
+        item.addEventListener('click', function (e) {
+            e.preventDefault(); // Prevent the default action
+
+            // Get the tab ID from the selected dropdown item
+            const tabId = this.getAttribute('data-tab-id');
+            const tabToActivate = document.querySelector(`#${tabId}`);
+
+            if (tabToActivate) {
+                // Trigger the Bootstrap Tab API to show the corresponding tab
+                new bootstrap.Tab(tabToActivate).show();
+
+                // Update the dropdown button text to reflect the selected tab's description
+                dropdownButton.textContent = this.textContent;
+
+                // Mark the clicked dropdown item as active and remove the active state from others
+                dropdownItems.forEach(i => i.classList.remove('active'));
+                this.classList.add('active');
+            }
+        });
+    });
+
+</script>
+
 <script>
     $(document).ready(function () {
 
