@@ -41,11 +41,11 @@
                     }
                     </ul> *@
                 </div>
-                <div class="tab-content p-0" style="background-color:white;">
+                <div class="tab-content p-0" style="background-color:#FFF;padding:0;">
 
                     <div class="tab-pane active" id="internalEmailDetails" aria-labelledby="internalEmailDetails-tab" style="background-color:white;">
                         
-                        <div class="row">
+                        <div class="row justify-content-center">
                             <div class="col-md-6 mb-3">
                                 <div class="form-group">
                                     <label class="control-label fw-bolder">Role Name</label>
@@ -72,11 +72,13 @@
                 </div>
 
                 <hr class="my-5" />
-                <div class="form-group d-flex justify-content-center gap-4">
-                    <input type="button" value="Cancel" class="btn btn-secondary w-15" onclick="window.location.href='@Url.Action("Index", "InternalEmail")'" />
-                    <button type="reset" class="btn btn-secondary w-15" onclick="$('.text-danger').hide();">Reset</button>
-                    <button type="submit" class="btn btn-primary w-15" onclick="$('.text-danger').show();">Submit</button>
+
+                <div class="form-group d-flex justify-content-center gap-4 mobile-ctas">
+                    <input type="button" value="Cancel" class="btn btn-secondary cta-button" onclick="window.location.href='@Url.Action("Index", "InternalEmail")'" />
+                    <button type="reset" class="btn btn-secondary cta-button" onclick="$('.text-danger').hide();">Reset</button>
+                    <button type="submit" class="btn btn-primary cta-button" onclick="$('.text-danger').show();">Submit</button>
                 </div>
+
             </form>
         </div>
     </div>

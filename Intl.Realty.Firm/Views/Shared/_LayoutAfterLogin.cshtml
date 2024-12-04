@@ -74,10 +74,11 @@
 
     <!-- Mobile Menu Button -->
     <button id="menu-toggle" class="menu-toggle">
-        @* <span></span> *@
-        @* <span></span> *@
-        @* <span></span> *@
-        <i data-feather="menu" type="button"></i>
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+        @* <i data-feather="menu" type="button"></i> *@
     </button>
 
     <partial name="~/Views/Shared/_SidebarItems.cshtml" />
@@ -91,7 +92,7 @@
                 <div class="d-flex flex-row align-items-center gap-2">
                 </div>
                 <div class="d-flex align-items-center gap-4">
-                    <a href="#" class="text-decoration-none">
+                    <a id="notification" href="#" class="text-decoration-none">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-bell-fill text-blue" viewBox="0 0 16 16">
                             <path d="M8 16a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2m.995-14.901a1 1 0 1 0-1.99 0A5 5 0 0 0 3 6c0 1.098-.5 6-2 7h14c-1.5-1-2-5.902-2-7 0-2.42-1.72-4.44-4.005-4.901" />
                             <circle cx="12" cy="4" r="2" fill="red" />
@@ -127,7 +128,7 @@
                         }
 
                     </div>
-                    <div class="d-fex">
+                    <div class="d-flex">
                         <img src="~/files/img/avatar-blank.png" class="avatar" id="avatar" width="40" height="40" />
                         <div class="dropdown">
                             <button class="bg-transparent b-none px-0" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -188,7 +189,7 @@
             mainPageLayout($);
         })
 
-                document.addEventListener("DOMContentLoaded", () => {
+        document.addEventListener("DOMContentLoaded", () => {
             const menuToggle = document.getElementById("menu-toggle");
             const offCanvasMenu = document.getElementById("off-canvas-menu");
             const menuOverlay = document.getElementById("menu-overlay");
@@ -197,17 +198,15 @@
             menuToggle.addEventListener("click", () => {
                 offCanvasMenu.classList.toggle("active");
                 menuOverlay.classList.toggle("active");
+                menuToggle.classList.toggle("open"); // Replacing jQuery toggleClass
             });
 
             // Close Menu on Overlay Click
             menuOverlay.addEventListener("click", () => {
                 offCanvasMenu.classList.remove("active");
                 menuOverlay.classList.remove("active");
+                menuToggle.classList.remove("open"); // Replacing jQuery toggleClass
             });
-        });
-
-        $('#menu-toggle2').click(function(){
-            $(this).toggleClass('open');
         });
 
     </script>

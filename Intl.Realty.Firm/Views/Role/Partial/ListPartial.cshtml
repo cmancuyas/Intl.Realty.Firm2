@@ -28,6 +28,33 @@
     <hr class="my-4" />
 
     <div class="tab-page">
+
+        <!-- Dropdown for Mobile -->
+        <div class="dropdown d-md-none mb-3">
+            <button class="btn btn-primary dropdown-toggle" type="button" id="tabDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                @Model.Menus.FirstOrDefault(m => m.IsTrue)?.Description Menu
+            </button>
+            <ul class="dropdown-menu" aria-labelledby="tabDropdown">
+                @foreach (var item in Model.Menus)
+                {
+                    <li>
+                        <input type="hidden" id="menuId" name="menuId" value="@item.Id" />
+                        <button class="nav-link @item.IsActive"
+                                id="@item.Tab"
+                                data-bs-toggle="tab"
+                                data-bs-target="#@item.Control"
+                                type="button"
+                                role="tab"
+                                aria-controls="@item.Control"
+                                aria-selected="@item.IsSelected">
+                            @item.Description
+                        </button>
+                    </li>
+                }
+            </ul>
+        </div>
+
+        <!-- Tab for Desktop -->
         <ul class="nav nav-tabs" id="usersManagementTab" role="tablist">
             @foreach (var item in Model.Menus)
             {
