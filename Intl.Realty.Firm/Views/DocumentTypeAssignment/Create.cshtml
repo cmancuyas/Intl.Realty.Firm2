@@ -12,7 +12,7 @@
         <i data-feather="chevron-left"></i><span>Back</span>
     </a>
     <div class="row justify-content-center">
-        <div class="col-md-8 card p-4">
+        <div class="col-md-12 card p-4">
             <h1 class="text-blue mb-0">Create Document Type Assignment</h1>
             <hr class="my-4" />
             <form asp-action="Create"
@@ -42,12 +42,12 @@
                     }
                     </ul> *@
                 </div>
-                <div class="tab-content" style="background-color:white;">
+                <div class="tab-content" style="background-color:#FFF;padding:0;">
 
                     <div class="tab-pane active" id="documentTypeAssignmentDetails" aria-labelledby="documentTypeAssignmentDetails-tab" style="background-color:white;">
-                        <div class="row">
+                        <div class="row justify-content-center">
                             @* Document Type *@
-                            <div class="col-md-6">
+                            <div class="col-md-6 mb-4">
                                 <div class="form-group">
                                     <label class="control-label fw-bolder">Transaction Type</label>
 
@@ -74,18 +74,16 @@
                                     @Html.ValidationMessageFor(x => x.CreateDocumentTypeAssignment.DocumentTypeId, "", new { @class = "text-danger" })
                                 </div>
                             </div>
-
-
-
                         </div>
                     </div>
                 </div>
 
                 <hr class="my-5" />
-                <div class="form-group d-flex justify-content-center gap-4">
-                    <input type="button" value="Cancel" class="btn btn-secondary w-15" onclick="window.location.href='@Url.Action("Index", "DocumentTypeAssignment")'" />
-                    <button type="reset" class="btn btn-secondary w-15" onclick="$('.text-danger').hide();">Reset</button>
-                    <button type="submit" class="btn btn-primary w-15" onclick="$('.text-danger').show();">Submit</button>
+
+                <div class="form-group d-flex justify-content-center gap-4 mobile-ctas">
+                    <input type="button" value="Cancel" class="btn btn-secondary cta-button" onclick="window.location.href='@Url.Action("Index", "DocumentTypeAssignment")'" />
+                    <button type="reset" class="btn btn-secondary cta-button" onclick="$('.text-danger').hide();">Reset</button>
+                    <button type="submit" class="btn btn-primary cta-button" onclick="$('.text-danger').show();">Submit</button>
                 </div>
             </form>
         </div>
