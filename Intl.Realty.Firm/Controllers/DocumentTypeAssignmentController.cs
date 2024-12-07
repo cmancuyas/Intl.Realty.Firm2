@@ -122,50 +122,60 @@ namespace DENR_FASPIS.Controllers
         [HttpGet]
         public async Task<IActionResult> Edit(int? id)
         {
+            if (id == null)
+            {
+                return BadRequest("Invalid ID");
+            }
+
+            // Fetch the model
             var model = await _unitOfWork.DocumentTypeAssignment.GetAsync(x => x.Id == id);
-
-            string controllerName = this.ControllerContext.RouteData.Values["controller"]!.ToString()!;
-
             if (model == null)
             {
-                NotFoundViewModel notFoundViewModel = new NotFoundViewModel();
-                notFoundViewModel.ErrorTitle = ($"{controllerName} not found");
-                notFoundViewModel.ErrorMessage = ($"{controllerName} with {id} cannot be found!");
-                notFoundViewModel.ControllerName = controllerName;
-                notFoundViewModel.ControllerAction = "Index";
+                string controllerName = ControllerContext.RouteData.Values["controller"]?.ToString() ?? string.Empty;
+
+                var notFoundViewModel = new NotFoundViewModel
+                {
+                    ErrorTitle = $"{controllerName} not found",
+                    ErrorMessage = $"{controllerName} with ID {id} cannot be found!",
+                    ControllerName = controllerName,
+                    ControllerAction = "Index"
+                };
 
                 return View("NotFound", notFoundViewModel);
             }
-            EditDocumentTypeAssignmentWithTabMenuViewModel viewModel = new EditDocumentTypeAssignmentWithTabMenuViewModel();
 
-            // to get current user ID
+            // Fetch current user info
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-            // to get current user info
-            var user = await _userManager.FindByIdAsync(userId!);
-
-            viewModel.EditDocumentTypeAssignment = model.ToEditDocumentTypeAssignmentViewModel();
-
-            var documentTypeIEnum = await _unitOfWork.DocumentType.GetAllAsync(x => x.IsDeleted == false);
-            var transactionTypeIEnum = await _unitOfWork.TransactionType.GetAllAsync(x => x.IsDeleted == false);
-            viewModel.EditDocumentTypeAssignment.DocumentTypeList = documentTypeIEnum.ToList();
-            viewModel.EditDocumentTypeAssignment.TransactionTypeList = transactionTypeIEnum.ToList();
-
-            viewModel.EditDocumentTypeAssignment.UpdatedBy = user!.Id;
-            viewModel.EditDocumentTypeAssignment.UpdatedAt = DateTime.Now;
-
-            var menus = AdministrationTabMenuData.GetAdministrationTabMenuData();
-
-            foreach (var menu in menus.Where(x => x.Menu == controllerName))
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
             {
-                menu.IsActive = "active";
-                menu.IsSelected = "true";
+                return Forbid("User information could not be retrieved.");
             }
 
-            viewModel.Menus = menus;
+            // Initialize the ViewModel
+            var viewModel = new EditDocumentTypeAssignmentWithTabMenuViewModel
+            {
+                EditDocumentTypeAssignment = model.ToEditDocumentTypeAssignmentViewModel(),
+                Menus = AdministrationTabMenuData.GetAdministrationTabMenuData()
+                          .Select(menu =>
+                          {
+                              menu.IsActive = menu.Menu == ControllerContext.RouteData.Values["controller"]?.ToString() ? "active" : string.Empty;
+                              menu.IsSelected = menu.Menu == ControllerContext.RouteData.Values["controller"]?.ToString() ? "true" : "false";
+                              return menu;
+                          })
+                          .ToList()
+            };
+
+            // Fetch related lists for the view model
+            viewModel.EditDocumentTypeAssignment.DocumentTypeList = (await _unitOfWork.DocumentType.GetAllAsync(x => !x.IsDeleted)).ToList();
+            viewModel.EditDocumentTypeAssignment.TransactionTypeList = (await _unitOfWork.TransactionType.GetAllAsync(x => !x.IsDeleted)).ToList();
+
+            viewModel.EditDocumentTypeAssignment.UpdatedBy = user.Id;
+            viewModel.EditDocumentTypeAssignment.UpdatedAt = DateTime.UtcNow;
 
             return View(viewModel);
         }
+
 
         [HttpPost]
         [ValidateAntiForgeryToken]

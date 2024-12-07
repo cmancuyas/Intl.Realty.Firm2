@@ -592,25 +592,30 @@ namespace DENR_FASPIS.Controllers
         [HttpGet]
         public async Task<IActionResult> ListPartialView(SaleListingListPartialViewModel listViewModel)
         {
-            var menus = AdministrationTabMenuData.GetAdministrationTabMenuData();
+            // Get the current controller name
+            string controllerName = ControllerContext.RouteData.Values["controller"]?.ToString() ?? string.Empty;
 
-            string controllerName = this.ControllerContext.RouteData.Values["controller"]!.ToString()!;
+            // Update menus with active state
+            listViewModel.Menus = AdministrationTabMenuData.GetAdministrationTabMenuData()
+                .Select(menu =>
+                {
+                    menu.IsActive = menu.Menu == controllerName ? "active" : string.Empty;
+                    menu.IsSelected = menu.Menu == controllerName ? "true" : "false";
+                    return menu;
+                })
+                .ToList();
 
-            foreach (var menu in menus.Where(x => x.Menu == controllerName))
-            {
-                menu.IsActive = "active";
-                menu.IsSelected = "true";
-            }
+            // Fetch SaleListing data with related properties
+            var saleListings = await _unitOfWork.SaleListing.GetAllAsync(includeProperties: "IRFDeal,TransactionType,DealStatus");
 
-            listViewModel.Menus = menus;
+            // Map data to the view model
+            listViewModel.SaleListingListViewModel = saleListings.ToSaleListingListViewModel();
 
-            var modelIEnum = await _unitOfWork.SaleListing
-                            .GetAllAsync(includeProperties: "IRFDeal,TransactionType,DealStatus");
-
-            var modelList = modelIEnum.ToSaleListingListViewModel();
-
+            // Return the partial view
             return PartialView("~/Views/SaleListing/Partial/ListPartial.cshtml", listViewModel);
         }
+
+
         public async Task<IActionResult> DeleteMultipleModal(List<int> ids)
         {
             var modelIEnum = await _unitOfWork.SaleListing.GetAllAsync(x => ids.Contains(x.Id));

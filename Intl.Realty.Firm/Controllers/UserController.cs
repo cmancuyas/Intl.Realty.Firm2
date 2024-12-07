@@ -15,6 +15,7 @@ using Microsoft.AspNetCore.Authorization;
 using Intl.Realty.Firm.Model.ViewModel.AccountVM;
 using Intl.Realty.Firm.Model.Model.Identity;
 using System.Security.Claims;
+using Intl.Realty.Firm.Model.ViewModel;
 
 namespace Intl.Realty.Firm.Controllers
 {
@@ -46,53 +47,53 @@ namespace Intl.Realty.Firm.Controllers
         [HttpGet]
         public async Task<IActionResult> Edit(Guid id)
         {
+            // Retrieve the user by ID
             var user = await _userManager.FindByIdAsync(id.ToString());
             if (user == null)
             {
-                ViewBag.ErrorMessage = $"User with Id = {id} cannot be found";
-                return View("NotFound");
+                return View("NotFound", new NotFoundViewModel
+                {
+                    ErrorTitle = "User not found",
+                    ErrorMessage = $"User with ID = {id} cannot be found.",
+                    ControllerName = "User",
+                    ControllerAction = "Index"
+                });
             }
-            EditUserWithTabMenuViewModel viewModel = new EditUserWithTabMenuViewModel();
 
-            var userClaims = await _userManager.GetClaimsAsync(user);
-            var userRoles = await _userManager.GetRolesAsync(user);
-
-            var editUser = new EditUserViewModel
+            // Initialize the view model
+            var viewModel = new EditUserWithTabMenuViewModel
             {
-                Id = user.Id,
-                Email = user.Email!,
-                UserName = user.Email!,
-                FirstName = user.FirstName,
-                LastName = user.LastName,
-                DepartmentId = user.DepartmentId,
-                EmploymentStatusId = user.EmploymentStatusId,
-                EmailConfirmed = user.EmailConfirmed,
-                ProfilePictureId = user.ProfilePictureId,
-                Claims = userClaims.Select(x => x.Type + " : " + x.Value).ToList(),
-                Roles = userRoles.ToList()
+                EditUser = new EditUserViewModel
+                {
+                    Id = user.Id,
+                    Email = user.Email!,
+                    UserName = user.Email!,
+                    FirstName = user.FirstName,
+                    LastName = user.LastName,
+                    DepartmentId = user.DepartmentId,
+                    EmploymentStatusId = user.EmploymentStatusId,
+                    EmailConfirmed = user.EmailConfirmed,
+                    ProfilePictureId = user.ProfilePictureId,
+                    Claims = (await _userManager.GetClaimsAsync(user))
+                        .Select(x => $"{x.Type} : {x.Value}")
+                        .ToList(),
+                    Roles = (await _userManager.GetRolesAsync(user)).ToList(),
+                    DepartmentList = (await _unitOfWork.Department.GetAllAsync(x => !x.IsDeleted)).ToList(),
+                    EmploymentStatusList = (await _unitOfWork.EmploymentStatus.GetAllAsync(x => !x.IsDeleted)).ToList()
+                },
+                Menus = AdministrationTabMenuData.GetEditUserTabMenuData()
+                    .Select(menu =>
+                    {
+                        menu.IsActive = menu.Menu == "EditUser" ? "active" : string.Empty;
+                        menu.IsSelected = menu.Menu == "EditUser" ? "true" : "false";
+                        return menu;
+                    })
+                    .ToList()
             };
-
-            viewModel.EditUser = editUser;
-            var departmentIEnum = await _unitOfWork.Department.GetAllAsync(x => x.IsDeleted == false);
-            viewModel.EditUser.DepartmentList = departmentIEnum.ToList();
-
-            var employmentStatusIEnum = await _unitOfWork.EmploymentStatus.GetAllAsync(x => x.IsDeleted == false);
-            viewModel.EditUser.EmploymentStatusList = employmentStatusIEnum.ToList();
-
-            var menus = AdministrationTabMenuData.GetEditUserTabMenuData();
-
-            string controllerName = "EditUser";
-
-            foreach (var menu in menus.Where(x => x.Menu == controllerName))
-            {
-                menu.IsActive = "active";
-                menu.IsSelected = "true";
-            }
-
-            viewModel.Menus = menus;
 
             return View(viewModel);
         }
+
         [HttpPost]
         public async Task<IActionResult> Edit(EditUserWithTabMenuViewModel viewModel)
         {
@@ -305,24 +306,24 @@ namespace Intl.Realty.Firm.Controllers
         [HttpGet]
         public IActionResult ListPartialView(UserListPartialWithTabMenuViewModel listViewModel)
         {
-            var users = _userManager.Users.ToList();
+            // Fetch all users
+            listViewModel.Users = _userManager.Users.ToList();
 
-            listViewModel.Users = users;
+            // Fetch the administration tab menu data
+            listViewModel.Menus = AdministrationTabMenuData.GetAdministrationTabMenuData()
+                .Select(menu =>
+                {
+                    // Mark the active menu based on the current controller
+                    menu.IsActive = menu.Menu == ControllerContext.RouteData.Values["controller"]?.ToString() ? "active" : string.Empty;
+                    menu.IsSelected = menu.Menu == ControllerContext.RouteData.Values["controller"]?.ToString() ? "true" : "false";
+                    return menu;
+                })
+                .ToList();
 
-            var menus = AdministrationTabMenuData.GetAdministrationTabMenuData();
-
-            string controllerName = this.ControllerContext.RouteData.Values["controller"]!.ToString()!;
-
-            foreach (var menu in menus.Where(x => x.Menu == controllerName))
-            {
-                menu.IsActive = "active";
-                menu.IsSelected = "true";
-            }
-
-            listViewModel.Menus = menus;
-
+            // Return the partial view with the view model
             return PartialView("~/Views/User/Partial/ListPartial.cshtml", listViewModel);
         }
+
         [HttpPost]
         public async Task<IActionResult> GetUserList([FromBody] DtParameters dtParameters)
         {

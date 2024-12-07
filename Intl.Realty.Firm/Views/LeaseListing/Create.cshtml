@@ -300,7 +300,7 @@
                                                            accept="application/all"
                                                            data-show-caption="true"
                                                            data-show-preview="false"
-                                                           onchange="fileSelected(this)"
+                                                           @* onchange="fileSelected(this)" *@
                                                            data-msg-placeholder="Select {files} for upload...">
                                                 </td>
                                                 @{
@@ -351,9 +351,9 @@
     <script type="text/javascript">
         $(document).ready(function () {
 
-            onBtnSubmitCreate();
+            // onBtnSubmitCreate();
 
-            confirmSubmitModal();
+            // confirmSubmitModal();
 
         })
 

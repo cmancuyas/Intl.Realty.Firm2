@@ -50,25 +50,32 @@ namespace DENR_FASPIS.Controllers
         [HttpGet]
         public IActionResult Create()
         {
-            CreateInternalEmailWithTabMenuViewModel viewModel = new CreateInternalEmailWithTabMenuViewModel();
+            string controllerName = ControllerContext.RouteData.Values["controller"]?.ToString() ?? string.Empty;
 
-            var menus = AdministrationTabMenuData.GetAdministrationTabMenuData();
-
-            string controllerName = this.ControllerContext.RouteData.Values["controller"]!.ToString()!;
-
-            foreach (var menu in menus.Where(x => x.Menu == controllerName))
+            // Initialize the ViewModel
+            var viewModel = new CreateInternalEmailWithTabMenuViewModel
             {
-                menu.IsActive = "active";
-                menu.IsSelected = "true";
-            }
+                Menus = AdministrationTabMenuData.GetAdministrationTabMenuData()
+                    .Select(menu =>
+                    {
+                        menu.IsActive = menu.Menu == controllerName ? "active" : string.Empty;
+                        menu.IsSelected = menu.Menu == controllerName ? "true" : "false";
+                        return menu;
+                    })
+                    .ToList(),
 
-            viewModel.Menus = menus;
-
-            var roleIEnum = _roleManager.Roles;
-            viewModel.CreateInternalEmail.RoleIEnum = SelectListConverter.CreateSelectList(roleIEnum.ToList(), x => x.Id, x => x.Name!);
+                CreateInternalEmail = new CreateInternalEmailViewModel
+                {
+                    RoleIEnum = SelectListConverter.CreateSelectList(
+                        _roleManager.Roles.ToList(),
+                        x => x.Id,
+                        x => x.Name!)
+                }
+            };
 
             return View(viewModel);
         }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(int id, CreateInternalEmailWithTabMenuViewModel viewModel)
@@ -128,50 +135,62 @@ namespace DENR_FASPIS.Controllers
         [HttpGet]
         public async Task<IActionResult> Edit(int? id)
         {
+            if (id == null)
+            {
+                return BadRequest("Invalid ID");
+            }
+
+            // Fetch the model
             var model = await _unitOfWork.InternalEmail.GetAsync(x => x.Id == id);
-
-            string controllerName = this.ControllerContext.RouteData.Values["controller"]!.ToString()!;
-
             if (model == null)
             {
-                NotFoundViewModel notFoundViewModel = new NotFoundViewModel();
-                notFoundViewModel.ErrorTitle = ($"{controllerName} not found");
-                notFoundViewModel.ErrorMessage = ($"{controllerName} with {id} cannot be found!");
-                notFoundViewModel.ControllerName = controllerName;
-                notFoundViewModel.ControllerAction = "Index";
+                string controllerName = ControllerContext.RouteData.Values["controller"]?.ToString() ?? string.Empty;
+
+                var notFoundViewModel = new NotFoundViewModel
+                {
+                    ErrorTitle = $"{controllerName} not found",
+                    ErrorMessage = $"{controllerName} with ID {id} cannot be found!",
+                    ControllerName = controllerName,
+                    ControllerAction = "Index"
+                };
 
                 return View("NotFound", notFoundViewModel);
             }
-            EditInternalEmailWithTabMenuViewModel viewModel = new EditInternalEmailWithTabMenuViewModel();
 
-            // to get current user ID
+            // Fetch current user info
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-            // to get current user info
-            var user = await _userManager.FindByIdAsync(userId!);
-
-            var roles = _roleManager.Roles;
-
-            viewModel.EditInternalEmail = model.ToEditInternalEmailViewModel();
-
-            var transactionTypeIEnum = await _unitOfWork.TransactionType.GetAllAsync(x => x.IsDeleted == false);
-            viewModel.EditInternalEmail.RoleList = roles.ToList();
-
-            viewModel.EditInternalEmail.UpdatedBy = user!.Id;
-            viewModel.EditInternalEmail.UpdatedAt = DateTime.Now;
-
-            var menus = AdministrationTabMenuData.GetAdministrationTabMenuData();
-
-            foreach (var menu in menus.Where(x => x.Menu == controllerName))
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
             {
-                menu.IsActive = "active";
-                menu.IsSelected = "true";
+                return Forbid("User information could not be retrieved.");
             }
 
-            viewModel.Menus = menus;
+            // Fetch roles and transaction types
+            var roles = _roleManager.Roles.ToList();
+            var transactionTypes = await _unitOfWork.TransactionType.GetAllAsync(x => !x.IsDeleted);
+
+            // Initialize the ViewModel
+            var viewModel = new EditInternalEmailWithTabMenuViewModel
+            {
+                EditInternalEmail = model.ToEditInternalEmailViewModel(),
+                Menus = AdministrationTabMenuData.GetAdministrationTabMenuData()
+                    .Select(menu =>
+                    {
+                        menu.IsActive = menu.Menu == ControllerContext.RouteData.Values["controller"]?.ToString() ? "active" : string.Empty;
+                        menu.IsSelected = menu.Menu == ControllerContext.RouteData.Values["controller"]?.ToString() ? "true" : "false";
+                        return menu;
+                    })
+                    .ToList()
+            };
+
+            // Populate ViewModel properties
+            viewModel.EditInternalEmail.RoleList = roles;
+            viewModel.EditInternalEmail.UpdatedBy = user.Id;
+            viewModel.EditInternalEmail.UpdatedAt = DateTime.UtcNow;
 
             return View(viewModel);
         }
+
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -243,20 +262,21 @@ namespace DENR_FASPIS.Controllers
         [HttpGet]
         public IActionResult ListPartialView(InternalEmailListPartialViewModel listViewModel)
         {
-            var menus = AdministrationTabMenuData.GetAdministrationTabMenuData();
+            string controllerName = ControllerContext.RouteData.Values["controller"]?.ToString() ?? string.Empty;
 
-            string controllerName = this.ControllerContext.RouteData.Values["controller"]!.ToString()!;
-
-            foreach (var menu in menus.Where(x => x.Menu == controllerName))
-            {
-                menu.IsActive = "active";
-                menu.IsSelected = "true";
-            }
-
-            listViewModel.Menus = menus;
+            // Update menus with active state based on the current controller
+            listViewModel.Menus = AdministrationTabMenuData.GetAdministrationTabMenuData()
+                .Select(menu =>
+                {
+                    menu.IsActive = menu.Menu == controllerName ? "active" : string.Empty;
+                    menu.IsSelected = menu.Menu == controllerName ? "true" : "false";
+                    return menu;
+                })
+                .ToList();
 
             return PartialView("~/Views/InternalEmail/Partial/ListPartial.cshtml", listViewModel);
         }
+
         public async Task<IActionResult> DeleteMultipleModal(List<int> ids)
         {
             var modelIEnum = await _unitOfWork.InternalEmail.GetAllAsync(x => ids.Contains(x.Id));

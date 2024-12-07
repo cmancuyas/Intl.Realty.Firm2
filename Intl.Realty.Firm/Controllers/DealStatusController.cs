@@ -47,23 +47,24 @@ namespace DENR_FASPIS.Controllers
         [HttpGet]
         public IActionResult Create()
         {
-            CreateDealStatusWithTabMenuViewModel viewModel = new CreateDealStatusWithTabMenuViewModel();
+            var menus = AdministrationTabMenuData.GetAdministrationTabMenuData().ToList();
+            string controllerName = ControllerContext.RouteData.Values["controller"]?.ToString() ?? string.Empty;
 
-            var menus = AdministrationTabMenuData.GetAdministrationTabMenuData();
-
-            string controllerName = this.ControllerContext.RouteData.Values["controller"]!.ToString()!;
-
-            foreach (var menu in menus.Where(x => x.Menu == controllerName))
+            // Update menu items based on the current controller
+            foreach (var menu in menus)
             {
-                menu.IsActive = "active";
-                menu.IsSelected = "true";
+                menu.IsActive = menu.Menu == controllerName ? "active" : string.Empty;
+                menu.IsSelected = menu.Menu == controllerName ? "true" : "false";
             }
 
-            viewModel.Menus = menus;
-
+            var viewModel = new CreateDealStatusWithTabMenuViewModel
+            {
+                Menus = menus
+            };
 
             return View(viewModel);
         }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(CreateDealStatusWithTabMenuViewModel viewModel)
@@ -104,45 +105,58 @@ namespace DENR_FASPIS.Controllers
         [HttpGet]
         public async Task<IActionResult> Edit(int? id)
         {
-            var model = await _unitOfWork.DealStatus.GetAsync(x => x.Id == id);
+            if (id == null)
+            {
+                return BadRequest("Invalid ID");
+            }
 
-            string controllerName = this.ControllerContext.RouteData.Values["controller"]!.ToString()!;
+            // Fetch the model
+            var model = await _unitOfWork.DealStatus.GetAsync(x => x.Id == id);
+            string controllerName = ControllerContext.RouteData.Values["controller"]?.ToString() ?? string.Empty;
 
             if (model == null)
             {
-                NotFoundViewModel notFoundViewModel = new NotFoundViewModel();
-                notFoundViewModel.ErrorTitle = ($"{controllerName} not found");
-                notFoundViewModel.ErrorMessage = ($"{controllerName} with {id} cannot be found!");
-                notFoundViewModel.ControllerName = controllerName;
-                notFoundViewModel.ControllerAction = "Index";
-
-                return View("NotFound", notFoundViewModel);
+                return View("NotFound", new NotFoundViewModel
+                {
+                    ErrorTitle = $"{controllerName} not found",
+                    ErrorMessage = $"{controllerName} with ID {id} cannot be found!",
+                    ControllerName = controllerName,
+                    ControllerAction = "Index"
+                });
             }
-            EditDealStatusWithTabMenuViewModel viewModel = new EditDealStatusWithTabMenuViewModel();
 
-            // to get current user ID
+            // Fetch current user info
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-            // to get current user info
             var user = await _userManager.FindByIdAsync(userId!);
 
-            viewModel.EditDealStatus = model.ToEditDealStatusViewModel();
-
-            viewModel.EditDealStatus.UpdatedBy = user!.Id;
-            viewModel.EditDealStatus.UpdatedAt = DateTime.Now;
-
-            var menus = AdministrationTabMenuData.GetAdministrationTabMenuData();
-
-            foreach (var menu in menus.Where(x => x.Menu == controllerName))
+            if (user == null)
             {
-                menu.IsActive = "active";
-                menu.IsSelected = "true";
+                return Forbid("User information could not be retrieved.");
+            }
+
+            // Initialize the ViewModel
+            var viewModel = new EditDealStatusWithTabMenuViewModel
+            {
+                EditDealStatus = model.ToEditDealStatusViewModel()
+            };
+
+            viewModel.EditDealStatus.UpdatedBy = user.Id;
+            viewModel.EditDealStatus.UpdatedAt = DateTime.UtcNow;
+
+            // Fetch and configure menus
+            var menus = AdministrationTabMenuData.GetAdministrationTabMenuData().ToList();
+
+            foreach (var menu in menus)
+            {
+                menu.IsActive = menu.Menu == controllerName ? "active" : string.Empty;
+                menu.IsSelected = menu.Menu == controllerName ? "true" : "false";
             }
 
             viewModel.Menus = menus;
 
             return View(viewModel);
         }
+
 
         [HttpPost]
         [ValidateAntiForgeryToken]

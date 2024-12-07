@@ -46,23 +46,24 @@ namespace DENR_FASPIS.Controllers
         [HttpGet]
         public IActionResult Create()
         {
-            CreateProvinceWithTabMenuViewModel viewModel = new CreateProvinceWithTabMenuViewModel();
+            string controllerName = ControllerContext.RouteData.Values["controller"]?.ToString() ?? string.Empty;
 
-            var menus = AdministrationTabMenuData.GetAdministrationTabMenuData();
-
-            string controllerName = this.ControllerContext.RouteData.Values["controller"]!.ToString()!;
-
-            foreach (var menu in menus.Where(x => x.Menu == controllerName))
+            // Initialize ViewModel and set menus
+            var viewModel = new CreateProvinceWithTabMenuViewModel
             {
-                menu.IsActive = "active";
-                menu.IsSelected = "true";
-            }
-
-            viewModel.Menus = menus;
-
+                Menus = AdministrationTabMenuData.GetAdministrationTabMenuData()
+                    .Select(menu =>
+                    {
+                        menu.IsActive = menu.Menu == controllerName ? "active" : string.Empty;
+                        menu.IsSelected = menu.Menu == controllerName ? "true" : "false";
+                        return menu;
+                    })
+                    .ToList()
+            };
 
             return View(viewModel);
         }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(CreateProvinceWithTabMenuViewModel viewModel)
@@ -103,45 +104,59 @@ namespace DENR_FASPIS.Controllers
         [HttpGet]
         public async Task<IActionResult> Edit(int? id)
         {
+            if (id == null)
+            {
+                return BadRequest("Province ID cannot be null.");
+            }
+
+            // Retrieve the model
             var model = await _unitOfWork.Province.GetAsync(x => x.Id == id);
-
-            string controllerName = this.ControllerContext.RouteData.Values["controller"]!.ToString()!;
-
             if (model == null)
             {
-                NotFoundViewModel notFoundViewModel = new NotFoundViewModel();
-                notFoundViewModel.ErrorTitle = ($"{controllerName} not found");
-                notFoundViewModel.ErrorMessage = ($"{controllerName} with {id} cannot be found!");
-                notFoundViewModel.ControllerName = controllerName;
-                notFoundViewModel.ControllerAction = "Index";
+                string controllerName = ControllerContext.RouteData.Values["controller"]?.ToString() ?? string.Empty;
+
+                // Return NotFound ViewModel
+                var notFoundViewModel = new NotFoundViewModel
+                {
+                    ErrorTitle = $"{controllerName} not found",
+                    ErrorMessage = $"{controllerName} with ID {id} cannot be found!",
+                    ControllerName = controllerName,
+                    ControllerAction = "Index"
+                };
 
                 return View("NotFound", notFoundViewModel);
             }
-            EditProvinceWithTabMenuViewModel viewModel = new EditProvinceWithTabMenuViewModel();
 
-            // to get current user ID
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-            // to get current user info
-            var user = await _userManager.FindByIdAsync(userId!);
-
-            viewModel.EditProvince = model.ToEditProvinceViewModel();
-
-            viewModel.EditProvince.UpdatedBy = user!.Id;
-            viewModel.EditProvince.UpdatedAt = DateTime.Now;
-
-            var menus = AdministrationTabMenuData.GetAdministrationTabMenuData();
-
-            foreach (var menu in menus.Where(x => x.Menu == controllerName))
+            // Create the ViewModel
+            var viewModel = new EditProvinceWithTabMenuViewModel
             {
-                menu.IsActive = "active";
-                menu.IsSelected = "true";
+                EditProvince = model.ToEditProvinceViewModel()
+            };
+
+            // Get current user info
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var user = await _userManager.FindByIdAsync(userId!);
+            if (user != null)
+            {
+                viewModel.EditProvince.UpdatedBy = user.Id;
+                viewModel.EditProvince.UpdatedAt = DateTime.Now;
             }
 
-            viewModel.Menus = menus;
+            // Populate the menus
+            string controllerNameForMenus = ControllerContext.RouteData.Values["controller"]?.ToString() ?? string.Empty;
+
+            viewModel.Menus = AdministrationTabMenuData.GetAdministrationTabMenuData()
+                .Select(menu =>
+                {
+                    menu.IsActive = menu.Menu == controllerNameForMenus ? "active" : string.Empty;
+                    menu.IsSelected = menu.Menu == controllerNameForMenus ? "true" : "false";
+                    return menu;
+                })
+                .ToList();
 
             return View(viewModel);
         }
+
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -209,20 +224,21 @@ namespace DENR_FASPIS.Controllers
         [HttpGet]
         public IActionResult ListPartialView(ProvinceListPartialViewModel listViewModel)
         {
-            var menus = AdministrationTabMenuData.GetAdministrationTabMenuData();
+            string controllerName = ControllerContext.RouteData.Values["controller"]?.ToString() ?? string.Empty;
 
-            string controllerName = this.ControllerContext.RouteData.Values["controller"]!.ToString()!;
-
-            foreach (var menu in menus.Where(x => x.Menu == controllerName))
-            {
-                menu.IsActive = "active";
-                menu.IsSelected = "true";
-            }
-
-            listViewModel.Menus = menus;
+            // Update menus with active state
+            listViewModel.Menus = AdministrationTabMenuData.GetAdministrationTabMenuData()
+                .Select(menu =>
+                {
+                    menu.IsActive = menu.Menu == controllerName ? "active" : string.Empty;
+                    menu.IsSelected = menu.Menu == controllerName ? "true" : "false";
+                    return menu;
+                })
+                .ToList();
 
             return PartialView("~/Views/Province/Partial/ListPartial.cshtml", listViewModel);
         }
+
         public async Task<IActionResult> DeleteMultipleModal(List<int> ids)
         {
             var modelIEnum = await _unitOfWork.Province.GetAllAsync(x => ids.Contains(x.Id));

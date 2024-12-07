@@ -592,25 +592,26 @@ namespace DENR_FASPIS.Controllers
         [HttpGet]
         public async Task<IActionResult> ListPartialView(LeaseListingListPartialViewModel listViewModel)
         {
-            var menus = AdministrationTabMenuData.GetAdministrationTabMenuData();
+            string controllerName = ControllerContext.RouteData.Values["controller"]?.ToString() ?? string.Empty;
 
-            string controllerName = this.ControllerContext.RouteData.Values["controller"]!.ToString()!;
+            // Update menus with active state
+            listViewModel.Menus = AdministrationTabMenuData.GetAdministrationTabMenuData()
+                .Select(menu =>
+                {
+                    menu.IsActive = menu.Menu == controllerName ? "active" : string.Empty;
+                    menu.IsSelected = menu.Menu == controllerName ? "true" : "false";
+                    return menu;
+                })
+                .ToList();
 
-            foreach (var menu in menus.Where(x => x.Menu == controllerName))
-            {
-                menu.IsActive = "active";
-                menu.IsSelected = "true";
-            }
-
-            listViewModel.Menus = menus;
-
-            var modelIEnum = await _unitOfWork.LeaseListing
-                            .GetAllAsync(includeProperties: "IRFDeal,TransactionType,DealStatus");
-
-            var modelList = modelIEnum.ToLeaseListingListViewModel();
+            // Fetch and map the data
+            listViewModel.LeaseListingListViewModel = (await _unitOfWork.LeaseListing
+                .GetAllAsync(includeProperties: "IRFDeal,TransactionType,DealStatus"))
+                .ToLeaseListingListViewModel();
 
             return PartialView("~/Views/LeaseListing/Partial/ListPartial.cshtml", listViewModel);
         }
+
         public async Task<IActionResult> DeleteMultipleModal(List<int> ids)
         {
             var modelIEnum = await _unitOfWork.LeaseListing.GetAllAsync(x => ids.Contains(x.Id));

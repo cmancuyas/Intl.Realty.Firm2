@@ -50,23 +50,24 @@ namespace DENR_FASPIS.Controllers
         [HttpGet]
         public IActionResult Create()
         {
-            CreateTransactionTypeWithTabMenuViewModel viewModel = new CreateTransactionTypeWithTabMenuViewModel();
+            string controllerName = ControllerContext.RouteData.Values["controller"]?.ToString() ?? string.Empty;
 
-            var menus = AdministrationTabMenuData.GetAdministrationTabMenuData();
-
-            string controllerName = this.ControllerContext.RouteData.Values["controller"]!.ToString()!;
-
-            foreach (var menu in menus.Where(x => x.Menu == controllerName))
+            // Build the view model
+            var viewModel = new CreateTransactionTypeWithTabMenuViewModel
             {
-                menu.IsActive = "active";
-                menu.IsSelected = "true";
-            }
-
-            viewModel.Menus = menus;
-
+                Menus = AdministrationTabMenuData.GetAdministrationTabMenuData()
+                    .Select(menu =>
+                    {
+                        menu.IsActive = menu.Menu == controllerName ? "active" : string.Empty;
+                        menu.IsSelected = menu.Menu == controllerName ? "true" : "false";
+                        return menu;
+                    })
+                    .ToList()
+            };
 
             return View(viewModel);
         }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(CreateTransactionTypeWithTabMenuViewModel viewModel)
@@ -107,45 +108,53 @@ namespace DENR_FASPIS.Controllers
         [HttpGet]
         public async Task<IActionResult> Edit(int? id)
         {
-            var model = await _unitOfWork.TransactionType.GetAsync(x => x.Id == id);
+            if (id == null)
+            {
+                return BadRequest("ID cannot be null.");
+            }
 
-            string controllerName = this.ControllerContext.RouteData.Values["controller"]!.ToString()!;
+            // Fetch the model by ID
+            var model = await _unitOfWork.TransactionType.GetAsync(x => x.Id == id);
 
             if (model == null)
             {
-                NotFoundViewModel notFoundViewModel = new NotFoundViewModel();
-                notFoundViewModel.ErrorTitle = ($"{controllerName} not found");
-                notFoundViewModel.ErrorMessage = ($"{controllerName} with {id} cannot be found!");
-                notFoundViewModel.ControllerName = controllerName;
-                notFoundViewModel.ControllerAction = "Index";
-
-                return View("NotFound", notFoundViewModel);
+                return View("NotFound", new NotFoundViewModel
+                {
+                    ErrorTitle = $"{ControllerContext.RouteData.Values["controller"] ?? "Item"} not found",
+                    ErrorMessage = $"Item with ID {id} cannot be found!",
+                    ControllerName = ControllerContext.RouteData.Values["controller"]?.ToString() ?? string.Empty,
+                    ControllerAction = "Index"
+                });
             }
-            EditTransactionTypeWithTabMenuViewModel viewModel = new EditTransactionTypeWithTabMenuViewModel();
 
-            // to get current user ID
+            // Prepare view model
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-            // to get current user info
             var user = await _userManager.FindByIdAsync(userId!);
 
-            viewModel.EditTransactionType = model.ToEditTransactionTypeViewModel();
-
-            viewModel.EditTransactionType.UpdatedBy = user!.Id;
-            viewModel.EditTransactionType.UpdatedAt = DateTime.Now;
-
-            var menus = AdministrationTabMenuData.GetAdministrationTabMenuData();
-
-            foreach (var menu in menus.Where(x => x.Menu == controllerName))
+            var viewModel = new EditTransactionTypeWithTabMenuViewModel
             {
-                menu.IsActive = "active";
-                menu.IsSelected = "true";
-            }
+                EditTransactionType = model.ToEditTransactionTypeViewModel(),
+                Menus = AdministrationTabMenuData.GetAdministrationTabMenuData()
+                    .Select(menu =>
+                    {
+                        var controllerName = ControllerContext.RouteData.Values["controller"]?.ToString() ?? string.Empty;
+                        menu.IsActive = menu.Menu == controllerName ? "active" : string.Empty;
+                        menu.IsSelected = menu.Menu == controllerName ? "true" : "false";
+                        return menu;
+                    })
+                    .ToList()
+            };
 
-            viewModel.Menus = menus;
+            // Update metadata
+            if (user != null)
+            {
+                viewModel.EditTransactionType.UpdatedBy = user.Id;
+                viewModel.EditTransactionType.UpdatedAt = DateTime.Now;
+            }
 
             return View(viewModel);
         }
+
 
         [HttpPost]
         [ValidateAntiForgeryToken]

@@ -46,23 +46,24 @@ namespace DENR_FASPIS.Controllers
         [HttpGet]
         public IActionResult Create()
         {
-            CreateEmploymentStatusWithTabMenuViewModel viewModel = new CreateEmploymentStatusWithTabMenuViewModel();
+            string controllerName = ControllerContext.RouteData.Values["controller"]?.ToString() ?? string.Empty;
 
-            var menus = AdministrationTabMenuData.GetAdministrationTabMenuData();
-
-            string controllerName = this.ControllerContext.RouteData.Values["controller"]!.ToString()!;
-
-            foreach (var menu in menus.Where(x => x.Menu == controllerName))
+            // Initialize the ViewModel with menus
+            var viewModel = new CreateEmploymentStatusWithTabMenuViewModel
             {
-                menu.IsActive = "active";
-                menu.IsSelected = "true";
-            }
-
-            viewModel.Menus = menus;
-
+                Menus = AdministrationTabMenuData.GetAdministrationTabMenuData()
+                          .Select(menu =>
+                          {
+                              menu.IsActive = menu.Menu == controllerName ? "active" : string.Empty;
+                              menu.IsSelected = menu.Menu == controllerName ? "true" : "false";
+                              return menu;
+                          })
+                          .ToList()
+            };
 
             return View(viewModel);
         }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(CreateEmploymentStatusWithTabMenuViewModel viewModel)
@@ -99,49 +100,59 @@ namespace DENR_FASPIS.Controllers
             return RedirectToAction(nameof(Index), new { addSuccess = true });
         }
 
-
         [HttpGet]
         public async Task<IActionResult> Edit(int? id)
         {
+            if (id == null)
+            {
+                return BadRequest("Invalid ID");
+            }
+
+            // Fetch the model
             var model = await _unitOfWork.EmploymentStatus.GetAsync(x => x.Id == id);
-
-            string controllerName = this.ControllerContext.RouteData.Values["controller"]!.ToString()!;
-
             if (model == null)
             {
-                NotFoundViewModel notFoundViewModel = new NotFoundViewModel();
-                notFoundViewModel.ErrorTitle = ($"{controllerName} not found");
-                notFoundViewModel.ErrorMessage = ($"{controllerName} with {id} cannot be found!");
-                notFoundViewModel.ControllerName = controllerName;
-                notFoundViewModel.ControllerAction = "Index";
+                string controllerName = ControllerContext.RouteData.Values["controller"]?.ToString() ?? string.Empty;
+
+                var notFoundViewModel = new NotFoundViewModel
+                {
+                    ErrorTitle = $"{controllerName} not found",
+                    ErrorMessage = $"{controllerName} with ID {id} cannot be found!",
+                    ControllerName = controllerName,
+                    ControllerAction = "Index"
+                };
 
                 return View("NotFound", notFoundViewModel);
             }
-            // to get current user ID
+
+            // Fetch current user info
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-            // to get current user info
-            var user = await _userManager.FindByIdAsync(userId!);
-
-            EditEmploymentStatusWithTabMenuViewModel viewModel = new EditEmploymentStatusWithTabMenuViewModel();
-
-            viewModel.EditEmploymentStatus = model.ToEditEmploymentStatusViewModel();
-
-            viewModel.EditEmploymentStatus.UpdatedBy = user!.Id;
-            viewModel.EditEmploymentStatus.UpdatedAt = DateTime.Now;
-
-            var menus = AdministrationTabMenuData.GetAdministrationTabMenuData();
-
-            foreach (var menu in menus.Where(x => x.Menu == controllerName))
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
             {
-                menu.IsActive = "active";
-                menu.IsSelected = "true";
+                return Forbid("User information could not be retrieved.");
             }
 
-            viewModel.Menus = menus;
+            // Initialize the ViewModel
+            var viewModel = new EditEmploymentStatusWithTabMenuViewModel
+            {
+                EditEmploymentStatus = model.ToEditEmploymentStatusViewModel(),
+                Menus = AdministrationTabMenuData.GetAdministrationTabMenuData()
+                          .Select(menu =>
+                          {
+                              menu.IsActive = menu.Menu == ControllerContext.RouteData.Values["controller"]?.ToString() ? "active" : string.Empty;
+                              menu.IsSelected = menu.Menu == ControllerContext.RouteData.Values["controller"]?.ToString() ? "true" : "false";
+                              return menu;
+                          })
+                          .ToList()
+            };
+
+            viewModel.EditEmploymentStatus.UpdatedBy = user.Id;
+            viewModel.EditEmploymentStatus.UpdatedAt = DateTime.UtcNow;
 
             return View(viewModel);
         }
+
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -209,20 +220,21 @@ namespace DENR_FASPIS.Controllers
         [HttpGet]
         public IActionResult ListPartialView(EmploymentStatusListPartialViewModel listViewModel)
         {
-            var menus = AdministrationTabMenuData.GetAdministrationTabMenuData();
+            string controllerName = ControllerContext.RouteData.Values["controller"]?.ToString() ?? string.Empty;
 
-            string controllerName = this.ControllerContext.RouteData.Values["controller"]!.ToString()!;
-
-            foreach (var menu in menus.Where(x => x.Menu == controllerName))
-            {
-                menu.IsActive = "active";
-                menu.IsSelected = "true";
-            }
-
-            listViewModel.Menus = menus;
+            // Update menus with active state based on the current controller
+            listViewModel.Menus = AdministrationTabMenuData.GetAdministrationTabMenuData()
+                .Select(menu =>
+                {
+                    menu.IsActive = menu.Menu == controllerName ? "active" : string.Empty;
+                    menu.IsSelected = menu.Menu == controllerName ? "true" : "false";
+                    return menu;
+                })
+                .ToList();
 
             return PartialView("~/Views/EmploymentStatus/Partial/ListPartial.cshtml", listViewModel);
         }
+
         public async Task<IActionResult> DeleteMultipleModal(List<int> ids)
         {
             var modelIEnum = await _unitOfWork.EmploymentStatus.GetAllAsync(x => ids.Contains(x.Id));

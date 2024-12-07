@@ -1,4 +1,5 @@
 ﻿using Intl.Realty.Firm.Helper;
+using Intl.Realty.Firm.Model.Menu;
 using Intl.Realty.Firm.Model.Model;
 using Intl.Realty.Firm.Model.ViewModel;
 using Intl.Realty.Firm.Model.ViewModel.FileUploadVM;
@@ -592,25 +593,36 @@ namespace DENR_FASPIS.Controllers
         [HttpGet]
         public async Task<IActionResult> ListPartialView(SaleCoopListPartialViewModel listViewModel)
         {
-            var menus = AdministrationTabMenuData.GetAdministrationTabMenuData();
+            // Get the name of the current controller
+            string controllerName = ControllerContext.RouteData.Values["controller"]?.ToString() ?? string.Empty;
 
-            string controllerName = this.ControllerContext.RouteData.Values["controller"]!.ToString()!;
+            // Activate menus for the current controller
+            listViewModel.Menus = ActivateMenus(controllerName);
 
-            foreach (var menu in menus.Where(x => x.Menu == controllerName))
-            {
-                menu.IsActive = "active";
-                menu.IsSelected = "true";
-            }
+            // Fetch SaleCoop data with related properties
+            var saleCoopData = await _unitOfWork.SaleCoop.GetAllAsync(includeProperties: "IRFDeal,TransactionType,DealStatus");
 
-            listViewModel.Menus = menus;
+            // Map data to the view model
+            listViewModel.SaleCoopListViewModel = saleCoopData?.ToSaleCoopListViewModel() ?? new List<SaleCoopViewModel>();
 
-            var modelIEnum = await _unitOfWork.SaleCoop
-                            .GetAllAsync(includeProperties: "IRFDeal,TransactionType,DealStatus");
-
-            var modelList = modelIEnum.ToSaleCoopListViewModel();
-
+            // Render the partial view
             return PartialView("~/Views/SaleCoop/Partial/ListPartial.cshtml", listViewModel);
         }
+
+        // Private method for menu activation logic
+        private List<TabMenu> ActivateMenus(string controllerName)
+        {
+            return AdministrationTabMenuData.GetAdministrationTabMenuData()
+                .Select(menu =>
+                {
+                    menu.IsActive = menu.Menu == controllerName ? "active" : string.Empty;
+                    menu.IsSelected = menu.Menu == controllerName ? "true" : "false";
+                    return menu;
+                })
+                .ToList();
+        }
+
+
         public async Task<IActionResult> DeleteMultipleModal(List<int> ids)
         {
             var modelIEnum = await _unitOfWork.SaleCoop.GetAllAsync(x => ids.Contains(x.Id));

@@ -4,122 +4,44 @@ namespace Intl.Realty.Firm.Utility.MenuData
 {
     public static class AdministrationTabMenuData
     {
-        public static List<TabMenu> GetAdministrationTabMenuData()
+        private static TabMenu CreateTabMenu(int id, string menu, string description, string tab, string control)
         {
-            List<TabMenu> menus = new List<TabMenu>();
-            int count = 0;
-
-            // Start
-            TabMenu menu = new TabMenu()
+            return new TabMenu
             {
-                Id = count + 1,
-                Menu = "User",
-                Description = "Users",
-                Tab = "users-tab",
-                Control = "users",
+                Id = id,
+                Menu = menu,
+                Description = description,
+                Tab = tab,
+                Control = control
             };
-
-            menus.Add(menu);
-            // End
-
-            // Start
-            menu = new TabMenu()
-            {
-                Id = count + 1,
-                Menu = "Role",
-                Description = "Roles",
-                Tab = "roles-tab",
-                Control = "roles",
-            };
-
-            menus.Add(menu);
-            // End
-
-            // Start
-            menu = new TabMenu()
-            {
-                Id = count + 1,
-                Menu = "EmploymentStatus",
-                Description = "Employment Status",
-                Tab = "employmentStatuses-tab",
-                Control = "employmentStatuses",
-            };
-
-            menus.Add(menu);
-            // End
-
-            // Start
-            menu = new TabMenu()
-            {
-                Id = count + 1,
-                Menu = "Department",
-                Description = "Departments",
-                Tab = "departments-tab",
-                Control = "departments",
-            };
-
-            menus.Add(menu);
-            // End
-
-            // Start
-            menu = new TabMenu()
-            {
-                Id = count + 1,
-                Menu = "Province",
-                Description = "Provinces",
-                Tab = "provinces-tab",
-                Control = "provinces",
-            };
-
-            menus.Add(menu);
-            // End
-
-            // Start
-            menu = new TabMenu()
-            {
-                Id = count + 1,
-                Menu = "InternalEmail",
-                Description = "Internal Emails",
-                Tab = "internalEmails-tab",
-                Control = "internalEmails",
-            };
-
-            menus.Add(menu);
-            // End
-            return menus;
         }
 
-        public static List<TabMenu> GetEditUserTabMenuData()
+        public static IReadOnlyList<TabMenu> GetAdministrationTabMenuData()
         {
-            List<TabMenu> menus = new List<TabMenu>();
             int count = 0;
-            // Start
-            TabMenu menu = new TabMenu()
+            var menus = new List<TabMenu>
             {
-                Id = count + 1,
-                Menu = "EditUser",
-                Description = "Edit User",
-                Tab = "editUsers-tab",
-                Control = "editUsers",
+                CreateTabMenu(++count, "User", "Users", "users-tab", "users"),
+                CreateTabMenu(++count, "Role", "Roles", "roles-tab", "roles"),
+                CreateTabMenu(++count, "EmploymentStatus", "Employment Status", "employmentStatuses-tab", "employmentStatuses"),
+                CreateTabMenu(++count, "Department", "Departments", "departments-tab", "departments"),
+                CreateTabMenu(++count, "Province", "Provinces", "provinces-tab", "provinces"),
+                CreateTabMenu(++count, "InternalEmail", "Internal Emails", "internalEmails-tab", "internalEmails")
             };
 
-            menus.Add(menu);
-            // End
+            return menus.AsReadOnly();
+        }
 
-            // Start
-            menu = new TabMenu()
+        public static IReadOnlyList<TabMenu> GetEditUserTabMenuData()
+        {
+            int count = 0;
+            var menus = new List<TabMenu>
             {
-                Id = count + 1,
-                Menu = "EditRole",
-                Description = "EditRole",
-                Tab = "editRoles-tab",
-                Control = "editRoles",
+                CreateTabMenu(++count, "EditUser", "Edit User", "editUsers-tab", "editUsers"),
+                CreateTabMenu(++count, "EditRole", "Edit Role", "editRoles-tab", "editRoles")
             };
 
-            menus.Add(menu);
-            // End
-
-            return menus;
+            return menus.AsReadOnly();
         }
     }
 }

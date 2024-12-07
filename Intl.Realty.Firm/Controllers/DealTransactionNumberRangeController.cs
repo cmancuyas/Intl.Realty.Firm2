@@ -47,23 +47,24 @@ namespace DENR_FASPIS.Controllers
         [HttpGet]
         public IActionResult Create()
         {
-            CreateDealTransactionNumberRangeWithTabMenuViewModel viewModel = new CreateDealTransactionNumberRangeWithTabMenuViewModel();
+            var controllerName = ControllerContext.RouteData.Values["controller"]?.ToString() ?? string.Empty;
 
-            var menus = AdministrationTabMenuData.GetAdministrationTabMenuData();
-
-            string controllerName = this.ControllerContext.RouteData.Values["controller"]!.ToString()!;
-
-            foreach (var menu in menus.Where(x => x.Menu == controllerName))
+            // Initialize the ViewModel
+            var viewModel = new CreateDealTransactionNumberRangeWithTabMenuViewModel
             {
-                menu.IsActive = "active";
-                menu.IsSelected = "true";
-            }
-
-            viewModel.Menus = menus;
-
+                Menus = AdministrationTabMenuData.GetAdministrationTabMenuData()
+                          .Select(menu =>
+                          {
+                              menu.IsActive = menu.Menu == controllerName ? "active" : string.Empty;
+                              menu.IsSelected = menu.Menu == controllerName ? "true" : "false";
+                              return menu;
+                          })
+                          .ToList()
+            };
 
             return View(viewModel);
         }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(CreateDealTransactionNumberRangeWithTabMenuViewModel viewModel)
@@ -102,48 +103,60 @@ namespace DENR_FASPIS.Controllers
         }
 
 
-        [HttpGet]
         public async Task<IActionResult> Edit(int? id)
         {
-            var model = await _unitOfWork.DealTransactionNumberRange.GetAsync(x => x.Id == id);
+            if (id == null)
+            {
+                return BadRequest("Invalid ID");
+            }
 
-            string controllerName = this.ControllerContext.RouteData.Values["controller"]!.ToString()!;
+            // Fetch the model
+            var model = await _unitOfWork.DealTransactionNumberRange.GetAsync(x => x.Id == id);
 
             if (model == null)
             {
-                NotFoundViewModel notFoundViewModel = new NotFoundViewModel();
-                notFoundViewModel.ErrorTitle = ($"{controllerName} not found");
-                notFoundViewModel.ErrorMessage = ($"{controllerName} with {id} cannot be found!");
-                notFoundViewModel.ControllerName = controllerName;
-                notFoundViewModel.ControllerAction = "Index";
+                string controllerName = ControllerContext.RouteData.Values["controller"]?.ToString() ?? string.Empty;
+
+                var notFoundViewModel = new NotFoundViewModel
+                {
+                    ErrorTitle = $"{controllerName} not found",
+                    ErrorMessage = $"{controllerName} with ID {id} cannot be found!",
+                    ControllerName = controllerName,
+                    ControllerAction = "Index"
+                };
 
                 return View("NotFound", notFoundViewModel);
             }
-            EditDealTransactionNumberRangeWithTabMenuViewModel viewModel = new EditDealTransactionNumberRangeWithTabMenuViewModel();
 
-            // to get current user ID
+            // Fetch current user info
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var user = await _userManager.FindByIdAsync(userId);
 
-            // to get current user info
-            var user = await _userManager.FindByIdAsync(userId!);
-
-            viewModel.EditDealTransactionNumberRange = model.ToEditDealTransactionNumberRangeViewModel();
-
-            viewModel.EditDealTransactionNumberRange.UpdatedBy = user!.Id;
-            viewModel.EditDealTransactionNumberRange.UpdatedAt = DateTime.Now;
-
-            var menus = AdministrationTabMenuData.GetAdministrationTabMenuData();
-
-            foreach (var menu in menus.Where(x => x.Menu == controllerName))
+            if (user == null)
             {
-                menu.IsActive = "active";
-                menu.IsSelected = "true";
+                return Forbid("User information could not be retrieved.");
             }
 
-            viewModel.Menus = menus;
+            // Initialize the ViewModel
+            var viewModel = new EditDealTransactionNumberRangeWithTabMenuViewModel
+            {
+                EditDealTransactionNumberRange = model.ToEditDealTransactionNumberRangeViewModel(),
+                Menus = AdministrationTabMenuData.GetAdministrationTabMenuData()
+                          .Select(menu =>
+                          {
+                              menu.IsActive = menu.Menu == ControllerContext.RouteData.Values["controller"]?.ToString() ? "active" : string.Empty;
+                              menu.IsSelected = menu.Menu == ControllerContext.RouteData.Values["controller"]?.ToString() ? "true" : "false";
+                              return menu;
+                          })
+                          .ToList()
+            };
+
+            viewModel.EditDealTransactionNumberRange.UpdatedBy = user.Id;
+            viewModel.EditDealTransactionNumberRange.UpdatedAt = DateTime.UtcNow;
 
             return View(viewModel);
         }
+
 
         [HttpPost]
         [ValidateAntiForgeryToken]

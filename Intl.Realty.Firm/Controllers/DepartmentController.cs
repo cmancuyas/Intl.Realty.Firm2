@@ -46,23 +46,24 @@ namespace DENR_FASPIS.Controllers
         [HttpGet]
         public IActionResult Create()
         {
-            CreateDepartmentWithTabMenuViewModel viewModel = new CreateDepartmentWithTabMenuViewModel();
+            string controllerName = ControllerContext.RouteData.Values["controller"]?.ToString() ?? string.Empty;
 
-            var menus = AdministrationTabMenuData.GetAdministrationTabMenuData();
-
-            string controllerName = this.ControllerContext.RouteData.Values["controller"]!.ToString()!;
-
-            foreach (var menu in menus.Where(x => x.Menu == controllerName))
+            // Initialize the ViewModel with menus
+            var viewModel = new CreateDepartmentWithTabMenuViewModel
             {
-                menu.IsActive = "active";
-                menu.IsSelected = "true";
-            }
-
-            viewModel.Menus = menus;
-
+                Menus = AdministrationTabMenuData.GetAdministrationTabMenuData()
+                          .Select(menu =>
+                          {
+                              menu.IsActive = menu.Menu == controllerName ? "active" : string.Empty;
+                              menu.IsSelected = menu.Menu == controllerName ? "true" : "false";
+                              return menu;
+                          })
+                          .ToList()
+            };
 
             return View(viewModel);
         }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(CreateDepartmentWithTabMenuViewModel viewModel)
@@ -100,48 +101,60 @@ namespace DENR_FASPIS.Controllers
         }
 
 
-        [HttpGet]
         public async Task<IActionResult> Edit(int? id)
         {
-            var model = await _unitOfWork.Department.GetAsync(x => x.Id == id);
+            if (id == null)
+            {
+                return BadRequest("Invalid ID");
+            }
 
-            string controllerName = this.ControllerContext.RouteData.Values["controller"]!.ToString()!;
+            // Fetch the model
+            var model = await _unitOfWork.Department.GetAsync(x => x.Id == id);
 
             if (model == null)
             {
-                NotFoundViewModel notFoundViewModel = new NotFoundViewModel();
-                notFoundViewModel.ErrorTitle = ($"{controllerName} not found");
-                notFoundViewModel.ErrorMessage = ($"{controllerName} with {id} cannot be found!");
-                notFoundViewModel.ControllerName = controllerName;
-                notFoundViewModel.ControllerAction = "Index";
+                string controllerName = ControllerContext.RouteData.Values["controller"]?.ToString() ?? string.Empty;
+
+                var notFoundViewModel = new NotFoundViewModel
+                {
+                    ErrorTitle = $"{controllerName} not found",
+                    ErrorMessage = $"{controllerName} with ID {id} cannot be found!",
+                    ControllerName = controllerName,
+                    ControllerAction = "Index"
+                };
 
                 return View("NotFound", notFoundViewModel);
             }
-            EditDepartmentWithTabMenuViewModel viewModel = new EditDepartmentWithTabMenuViewModel();
 
-            // to get current user ID
+            // Fetch current user info
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var user = await _userManager.FindByIdAsync(userId);
 
-            // to get current user info
-            var user = await _userManager.FindByIdAsync(userId!);
-
-            viewModel.EditDepartment = model.ToEditDepartmentViewModel();
-
-            viewModel.EditDepartment.UpdatedBy = user!.Id;
-            viewModel.EditDepartment.UpdatedAt = DateTime.Now;
-
-            var menus = AdministrationTabMenuData.GetAdministrationTabMenuData();
-
-            foreach (var menu in menus.Where(x => x.Menu == controllerName))
+            if (user == null)
             {
-                menu.IsActive = "active";
-                menu.IsSelected = "true";
+                return Forbid("User information could not be retrieved.");
             }
 
-            viewModel.Menus = menus;
+            // Initialize the ViewModel
+            var viewModel = new EditDepartmentWithTabMenuViewModel
+            {
+                EditDepartment = model.ToEditDepartmentViewModel(),
+                Menus = AdministrationTabMenuData.GetAdministrationTabMenuData()
+                          .Select(menu =>
+                          {
+                              menu.IsActive = menu.Menu == ControllerContext.RouteData.Values["controller"]?.ToString() ? "active" : string.Empty;
+                              menu.IsSelected = menu.Menu == ControllerContext.RouteData.Values["controller"]?.ToString() ? "true" : "false";
+                              return menu;
+                          })
+                          .ToList()
+            };
+
+            viewModel.EditDepartment.UpdatedBy = user.Id;
+            viewModel.EditDepartment.UpdatedAt = DateTime.UtcNow;
 
             return View(viewModel);
         }
+
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -205,24 +218,24 @@ namespace DENR_FASPIS.Controllers
 
             return View(viewModel);
         }
-
         [HttpGet]
         public IActionResult ListPartialView(DepartmentListPartialViewModel listViewModel)
         {
-            var menus = AdministrationTabMenuData.GetAdministrationTabMenuData();
+            string controllerName = ControllerContext.RouteData.Values["controller"]?.ToString() ?? string.Empty;
 
-            string controllerName = this.ControllerContext.RouteData.Values["controller"]!.ToString()!;
-
-            foreach (var menu in menus.Where(x => x.Menu == controllerName))
-            {
-                menu.IsActive = "active";
-                menu.IsSelected = "true";
-            }
-
-            listViewModel.Menus = menus;
+            // Update menus with active state based on the current controller
+            listViewModel.Menus = AdministrationTabMenuData.GetAdministrationTabMenuData()
+                                    .Select(menu =>
+                                    {
+                                        menu.IsActive = menu.Menu == controllerName ? "active" : string.Empty;
+                                        menu.IsSelected = menu.Menu == controllerName ? "true" : "false";
+                                        return menu;
+                                    })
+                                    .ToList();
 
             return PartialView("~/Views/Department/Partial/ListPartial.cshtml", listViewModel);
         }
+
         public async Task<IActionResult> DeleteMultipleModal(List<int> ids)
         {
             var modelIEnum = await _unitOfWork.Department.GetAllAsync(x => ids.Contains(x.Id));
