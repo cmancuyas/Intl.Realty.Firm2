@@ -13,12 +13,33 @@
         "dealTransactionNumberRanges-tab": "/DealTransactionNumberRange/Index"
     };
 
-    Object.keys(tabRoutes).forEach((id) => {
-        $(`#${id}`).on("click", function () {
-            window.location.href = tabRoutes[id];
+    // Desktop Tab Navigation
+    document.querySelectorAll('.nav-tabs .nav-link').forEach(tab => {
+        tab.addEventListener('click', function () {
+            const tabId = this.id;
+
+            if (tabRoutes[tabId]) {
+                // Redirect to the route mapped for the tab
+                window.location.href = tabRoutes[tabId];
+            }
+        });
+    });
+
+    // Mobile Dropdown Navigation
+    document.querySelectorAll('.dropdown-menu .dropdown-item').forEach(item => {
+        item.addEventListener('click', function () {
+            const tabId = this.getAttribute('data-tab-id');
+            const targetRoute = tabRoutes[tabId];
+
+            if (targetRoute) {
+                // Redirect to the route mapped for the tab
+                window.location.href = targetRoute;
+            }
         });
     });
 }
+
+
 
 function SearchBoxSettings() {
     $('[id^=dt-search]').attr('placeholder', 'Search...').addClass('fst-italic');
