@@ -46,16 +46,31 @@ function SearchBoxSettings() {
 }
 
 function CheckboxSelect() {
-    $('#modelTable').on('change', '.column-checkbox', function () {
+    const table = $('#modelTable'); // Cache the table reference
+    const deleteButton = $('#btnMultipleDelete'); // Cache the delete button reference
+
+    // Handle column-checkbox (select all)
+    table.on('change', '.column-checkbox', function () {
         const isChecked = $(this).prop('checked');
-        $('.row-checkbox').prop('checked', isChecked);
+        table.find('.row-checkbox').prop('checked', isChecked);
+        toggleDeleteButton();
     });
 
-    $('#modelTable').on('change', '.row-checkbox', function () {
-        const allChecked = $('.row-checkbox').length === $('.row-checkbox:checked').length;
-        $('.column-checkbox').prop('checked', allChecked);
+    // Handle row-checkbox (individual row)
+    table.on('change', '.row-checkbox', function () {
+        const allChecked = table.find('.row-checkbox').length === table.find('.row-checkbox:checked').length;
+        table.find('.column-checkbox').prop('checked', allChecked);
+        toggleDeleteButton();
     });
+
+    // Function to toggle the delete button
+    function toggleDeleteButton() {
+        const anyChecked = table.find('.row-checkbox:checked').length > 0;
+        deleteButton.toggleClass('d-none', !anyChecked);
+    }
 }
+
+
 
 function closeModal() {
     $("#deleteConfirmModal").modal("hide").remove();
