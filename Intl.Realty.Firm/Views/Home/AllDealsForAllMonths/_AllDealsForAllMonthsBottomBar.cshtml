@@ -3,17 +3,17 @@
 @model PagerModel
 
 <div class="container-fluid mb-0 p-0 btn-group align-items-center dashboard-table-footer">
-    <div class="col-4 px-3 align-items-center justify-content-start">
+    <div class="col-md-4 col-sm-12 px-3 align-items-center justify-content-start">
         <p class="m-0">
             Showing @Model.StartRecord to @Model.EndRecord of @Model.TotalItems Rows
         </p>
     </div>
-    <div class="col-4 px-3 align-items-center justify-content-center">
+    <div class="col-md-4 col-sm-12 px-3 align-items-center justify-content-center">
         <p class="m-0 text-center">
             Showing @Model.CurrentPage / @Model.TotalPages Pages
         </p>
     </div>
-    <div class="col-4 px-3 d-flex align-items-center justify-content-end">
+    <div class="col-md-4 col-sm-12 px-3 d-flex align-items-center justify-content-end">
         <span class="col-4 pe-2 d-flex justify-content-end">
             Rows Per Page
         </span>
