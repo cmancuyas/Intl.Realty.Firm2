@@ -177,11 +177,11 @@ namespace Intl.Realty.Firm.Controllers
         public async Task<IActionResult> Register(RegisterViewModel viewModel)
         {
 
-            var captchaResult = await _googleCaptchaService.VerifyToken(viewModel.Token);
-            if (captchaResult == false)
-            {
-                return View();
-            }
+            //var captchaResult = await _googleCaptchaService.VerifyToken(viewModel.Token);
+            //if (captchaResult == false)
+            //{
+            //    return View();
+            //}
 
             if (ModelState.IsValid && viewModel.UserAgreement == true)
             {
