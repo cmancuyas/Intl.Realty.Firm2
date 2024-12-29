@@ -1,10 +1,12 @@
 ﻿@using Intl.Realty.Firm.Models.Pagination
 
 @model PaginatedDealsViewModel
-<div class="card">
+<div class="page-controller">
     <a href="@Url.Action("Dashboard","Home")" class="text-decoration-none back d-flex mb-4">
         <i data-feather="chevron-left"></i><span>Back</span>
     </a>
+</div>
+<div class="card">
     <div class="card-header p-3 bg-white">
         <h5 class="m-0">All Deals For All Months</h5>
     </div>
@@ -16,12 +18,13 @@
         </div>
     </div>
 
-    <table class="table mt-4" id="all-months-table">
+    <div class="table-responsive">
+        <table class="data-table table mt-4" id="all-months-table" style="width:100%">
         <thead>
             <tr>
                 <th>
                     <i class="@Model.SortModel!.GetColumn("dealTransactionNumber").SortIcon" aria-hidden="true"></i>
-                    <a href="#" onclick="loadDashboard('@Model.SortModel!.GetColumn("dealTransactionNumber").SortExpression', '@Model.Pager.SearchText', '@Model.Pager.CurrentPage', '@Model.Pager.PageSize', 'AllMonths')">Deal#</a>
+                        <a href="#" onclick="loadDashboard('@Model.SortModel!.GetColumn("dealTransactionNumber").SortExpression', '@Model.Pager.SearchText', '@Model.Pager.CurrentPage', '@Model.Pager.PageSize', 'AllMonths')">Deal Num</a>
                 </th>
                 <th>
                     <i class="@Model.SortModel!.GetColumn("transactionTypeName").SortIcon" aria-hidden="true"></i>
@@ -67,6 +70,7 @@
             @await Html.PartialAsync("~/Views/Home/AllDealsForAllMonths/_AllDealsForAllMonthsTableBody.cshtml", Model)
         </tbody>
     </table>
+    </div>
 
     <div class="row" id="all-months-bottom-bar">
         <div class="col-12 mb-3">
