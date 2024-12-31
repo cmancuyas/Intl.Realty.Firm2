@@ -14,7 +14,7 @@
 
     <!-- Custom CSS -->
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link href="~/css/datatable.min.css" rel="stylesheet" />
+    @* <link href="~/css/datatable.min.css" rel="stylesheet" /> *@
 
     <!-- Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" crossorigin="anonymous" />
@@ -109,18 +109,24 @@
                         }
 
                     </div>
-                    <div class="d-flex">
-                        <img src="~/files/img/avatar-blank.png" class="avatar" id="avatar" width="40" height="40" />
-                        <div class="dropdown">
-                            <button class="bg-transparent b-none px-0" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <i data-feather="chevron-down" class="text-secondary"></i>
+
+                    <div class="d-flex align-items-center">
+                        <!-- User Avatar -->
+                        <img src="/files/img/avatar-blank.png" class="avatar" id="avatar" width="40" height="40">
+
+                        <!-- Dropdown Menu (Desktop Only) -->
+                        <div class="dropdown d-md-block ms-3">
+                            <button class="bg-transparent border-0 px-0 dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+
                             </button>
-                            <div class="dropdown-menu text-center text-secondary py-0">
-                                <a class="dropdown-item py-1" asp-action="Index" asp-controller="UserProfile" asp-route-id="@user.Id">View Profile</a>
-                                <a class="dropdown-item py-1" asp-action="Logout" asp-controller="Account">Sign Out</a>
+                            <div class="dropdown-menu text-secondary py-0">
+                                <a class="dropdown-item py-1" href="/UserProfile/Index/74b7ddfa-9c71-4b95-84e2-9b5fcdef884c">View Profile</a>
+                                <a class="dropdown-item py-1" href="/Account/Logout">Sign Out</a>
                             </div>
                         </div>
                     </div>
+
+
                 </div>
             </div>
         </div>
@@ -135,15 +141,27 @@
             © 2024 International Realty Firm
         </div>
     </footer>
+    <style>
+        .d-md-flex {
+            display: flex !important;
+        }
 
+    </style>
 
     <script src="/js/mainLayout.js" type="text/javascript" asp-append-version="true"></script>
     <script>
         $(document).ready(function () {
             mainPageLayout($);
         })
-
         document.addEventListener("DOMContentLoaded", () => {
+            feather.replace(); // Initializes Feather icons
+
+            // Ensure Bootstrap dropdowns are initialized
+            var dropdownElements = [].slice.call(document.querySelectorAll('.dropdown-toggle'));
+            dropdownElements.forEach(function (dropdownToggleEl) {
+                new bootstrap.Dropdown(dropdownToggleEl);
+            });
+
             const menuToggle = document.getElementById("menu-toggle");
             const offCanvasMenu = document.getElementById("off-canvas-menu");
             const menuOverlay = document.getElementById("menu-overlay");
