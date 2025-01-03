@@ -403,21 +403,30 @@
     function manageUserRoles(rowContext) {
         if (table) {
             var data = table.row($(rowContext).parents("tr")).data();
-            // alert("Example showing row edit with id: " + data["id"] + ", name: " + data["name"]);
+            console.log("Row Data:", data);
+            if (!data || !data["id"]) {
+                console.error("No data or ID found for row");
+                return;
+            }
             var id = data["id"];
             let parameters = { id: id };
+            console.log("Calling URL: /User/ManageUserRoles/" + id);
             $.ajax({
                 url: '/User/ManageUserRoles/' + id,
                 type: 'GET',
                 data: parameters,
                 contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
                 success: function (data) {
+                    console.log("Success response:", data);
                     window.location.href = "@Url.Action("ManageUserRoles", "User")" + "/" + id;
+                },
+                error: function (xhr, status, error) {
+                    console.error("AJAX Error:", status, error);
                 }
             });
-
         }
     }
+
     function manageUserClaims(rowContext) {
         if (table) {
             var data = table.row($(rowContext).parents("tr")).data();
