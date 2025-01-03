@@ -166,40 +166,57 @@ namespace Intl.Realty.Firm.Controllers
         //[Authorize(Policy = "EditRolePolicy")]
         public async Task<IActionResult> ManageUserRoles(Guid id)
         {
-            var user = await _userManager.FindByIdAsync(id.ToString());
-
-            if (user == null)
+            // Validate the user ID
+            if (id == Guid.Empty)
             {
-                ViewBag.ErrorMessage = $"(User with Id = {id} cannot be found";
+                ViewBag.ErrorMessage = "Invalid User ID provided.";
                 return View("NotFound");
             }
 
-            ManageUserRolesViewModel viewModel = new ManageUserRolesViewModel();
-
-            viewModel.UserId = user.Id;
-
-            foreach (var role in _roleManager.Roles)
+            // Fetch the user by ID
+            var user = await _userManager.FindByIdAsync(id.ToString());
+            if (user == null)
             {
-                var userRolesViewModel = new UserRolesViewModel
+                ViewBag.ErrorMessage = $"User with ID = {id} cannot be found.";
+                return View("NotFound");
+            }
+
+            // Fetch all roles from RoleManager
+            var roles = _roleManager.Roles.ToList();
+            if (!roles.Any())
+            {
+                ViewBag.ErrorMessage = "No roles found in the system.";
+                return View("NotFound");
+            }
+
+            // Initialize the view model
+            var viewModel = new ManageUserRolesViewModel
+            {
+                UserId = user.Id,
+                Roles = new List<UserRolesViewModel>()
+            };
+
+            // Process each role sequentially
+            foreach (var role in roles)
+            {
+                // Check if the user is in the current role
+                var isSelected = await _userManager.IsInRoleAsync(user, role.Name!);
+
+                // Add the role to the view model
+                viewModel.Roles.Add(new UserRolesViewModel
                 {
                     RoleId = role.Id,
-                    RoleName = role.Name!
-                };
-
-                if (await _userManager.IsInRoleAsync(user, role.Name!))
-                {
-                    userRolesViewModel.IsSelected = true;
-                }
-                else
-                {
-                    userRolesViewModel.IsSelected = false;
-                }
-
-                viewModel.Roles.Add(userRolesViewModel);
+                    RoleName = role.Name!,
+                    IsSelected = isSelected
+                });
             }
-            return View(viewModel);
 
+            // Return the populated view model to the view
+            return View(viewModel);
         }
+
+
+
         [HttpPost]
         //[Authorize(Policy = "EditRolePolicy")]
         public async Task<IActionResult> ManageUserRoles(ManageUserRolesViewModel model)
