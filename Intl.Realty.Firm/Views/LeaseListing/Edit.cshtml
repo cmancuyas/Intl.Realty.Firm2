@@ -451,7 +451,7 @@
                     <a href="##" onClick="history.go(-1); return false;" class="btn btn-outline-secondary w-15">
                         Back
                     </a>
-                    <button type="reset" class="btn btn-secondary w-15" onclick="$('.text-danger').hide();">Reset</button>
+                    @* <button type="reset" class="btn btn-secondary w-15" onclick="$('.text-danger').hide();">Reset</button> *@
                     @{
                         @if (isAdmin || isSuperAdmin || isDealAdmin || isAgent && Model.EditLeaseListing.DealStatus!.Id == 2) //Submitted
                         {
