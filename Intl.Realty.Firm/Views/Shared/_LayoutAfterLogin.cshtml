@@ -83,9 +83,9 @@
                         @{
                             var user = await _userManager.GetUserAsync(User);
                             var roles = await _userManager.GetRolesAsync(user!);
-                            <span id="DisplayFullName" class="fw-bolder text-end name-role">@user.FirstName @user.LastName</span>
-                            <span id="DisplayName" class="small text-end">@user!.Email</span>
-                            <span id="DisplayRole" class="small text-end">
+                            <span id="DisplayFullName" class="fw-bolder u-none text-end name-role">@user.FirstName @user.LastName</span>
+                            <span id="DisplayName" class="small u-none text-end">@user!.Email</span>
+                            <span id="DisplayRole" class="small u-none text-end">
                                 @foreach (var item in roles)
                                 {
                                     if (item == "SuperAdmin")
@@ -116,7 +116,7 @@
 
                         <!-- Dropdown Menu (Desktop Only)  -->
                         <div class="dropdown d-md-block ms-3">
-                            <button class="bg-transparent border-0 px-0 dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></button>
+                            <button class="bg-transparent border-0 b-none px-0 dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></button>
                             <div class="dropdown-menu text-secondary py-0">
                                 <a class="dropdown-item py-1" href="@Url.Action("Index", "UserProfile", new { id = user!.Id })">View Profile</a>
                                 <a class="dropdown-item py-1" asp-action="Logout" asp-controller="Account">Sign Out</a>

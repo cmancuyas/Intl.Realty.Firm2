@@ -50,6 +50,12 @@ textarea:focus, textarea:focus-visible {
     display: none !important;
 }
 
+u-none {
+    text-decoration: none !important;
+    border: none !important;
+    box-shadow: none !important;
+}
+
 .flex-column {
     flex-direction: column !important;
 }
@@ -93,6 +99,10 @@ textarea:focus, textarea:focus-visible {
 
 .letter-space-1 {
     letter-spacing: -0.5px !important;
+}
+
+.dropdown-item:focus, .dropdown-item:hover {
+    border-radius: 6px;
 }
 
 /*custom styling*/
@@ -1414,7 +1424,7 @@ input.select2-search__field {
 
     .preview-page .preview-page-header {
         display: flex;
-        justify-content: center;
+        justify-content: space-between;
     }
 
         .preview-page .preview-page-header .preview-change-pw {
@@ -1422,7 +1432,10 @@ input.select2-search__field {
         }
 
 @media screen and (min-width: 101px) and (max-width: 768px) {
-    .preview-page .preview-page-header {
+    .preview-page {
+        justify-content: center;
+    }
+        .preview-page .preview-page-header {
         display: flex;
         justify-content: flex-start;
     }
@@ -1660,7 +1673,7 @@ input.select2-search__field {
                 display: block;
                 position: absolute;
                 height: 3px;
-                width: 80%;
+                width: 60%;
                 background: #203d57;
                 border-radius: 9px;
                 opacity: 1;
