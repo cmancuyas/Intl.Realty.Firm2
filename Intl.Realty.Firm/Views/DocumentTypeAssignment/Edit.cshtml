@@ -8,13 +8,13 @@
 }
 
 <div class="page-controller mb-5">
-    <a href="@Url.Action("Index","DocumentTypeAssignment")" class="text-decoration-none back d-flex mb-4">
+    <a href="@Url.Action("Index", "DocumentTypeAssignment")" class="text-decoration-none back d-flex mb-4">
         <i data-feather="chevron-left"></i><span>Back</span>
     </a>
 
     <div class="row justify-content-center">
         <div class="col-md-12 card p-4">
-            <h1 class="text-blue mb-0">Edit DocumentTypeAssignment</h1>
+            <h1 class="text-blue mb-0">Edit DocumentType Assignment</h1>
             <hr class="my-4" />
             <form asp-action="Edit"
                   asp-controller="DocumentTypeAssignment"
@@ -23,112 +23,86 @@
                 <input type="hidden" asp-for="EditDocumentTypeAssignment.Id" />
                 <div asp-validation-summary="All" class="text-danger"></div>
 
-                <div class="tab-page">
-@*                     <ul class="nav nav-tabs" id="administrationManagementTab" role="tablist">
-                        @foreach (var item in Model.Menus)
-                        {
-                            <li class="nav-item mx-0">
-                                <input type="hidden" id="menuId" name="menuId" value="@item.Id" />
-                                <button class="nav-link @item.IsActive"
-                                        id="@item.Tab"
-                                        data-bs-toggle="tab"
-                                        data-bs-target="#@item.Control"
-                                        type="button"
-                                        role="tab"
-                                        aria-controls="@item.Control"
-                                        aria-selected="@item.IsSelected">
-                                    @item.Description
-                                </button>
-                            </li>
-                        }
-                    </ul> *@
-                </div>
-
-                <div class="tab-content" style="border-bottom:none;background-color:white;">
-
-                    <div class="tab-pane active" id="documentTypeAssignmentDetails" aria-labelledby="documentTypeAssignmentDetails-tab" style="background-color:white;">
+                <div class="tab-content" style="background-color:white;">
+                    <div class="tab-pane active" id="documentTypeAssignmentDetails" aria-labelledby="documentTypeAssignmentDetails-tab">
 
                         @* Transaction Type *@
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label class="control-label fw-bolder">Transaction Type</label>
-                                <select id="TransactionTypeId" name="TransactionTypeId" class="form-select">
-                                    @{
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="control-label fw-bolder" for="TransactionTypeId">Transaction Type</label>
+                                    <select id="TransactionTypeId" name="EditDocumentTypeAssignment.TransactionTypeId" class="form-select">
                                         @if (Model.EditDocumentTypeAssignment.TransactionTypeList != null)
                                         {
                                             @foreach (var item in Model.EditDocumentTypeAssignment.TransactionTypeList)
                                             {
-                                                if (item.Id == Model.EditDocumentTypeAssignment.TransactionTypeId)
+                                                @if (item.Id == Model.EditDocumentTypeAssignment.TransactionTypeId)
                                                 {
-                                                    <option value="@item.Id" selected>@item.Description</option>
+                                                    <option value="@item.Id" selected>
+                                                        @item.Description
+                                                    </option>
                                                 }
                                                 else
                                                 {
-                                                    <option value="@item.Id">@item.Description</option>
+                                                    <option value="@item.Id">
+                                                        @item.Description
+                                                    </option>
                                                 }
                                             }
                                         }
-                                    }
-                                </select>
-
-                                @Html.ValidationMessageFor(m => m.EditDocumentTypeAssignment.TransactionTypeId, "", new { @class = "text-danger" })
-
+                                    </select>
+                                    @Html.ValidationMessageFor(m => m.EditDocumentTypeAssignment.TransactionTypeId, "", new { @class = "text-danger" })
+                                </div>
                             </div>
                         </div>
                         @* Document Type *@
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label class="control-label fw-bolder">Document Type</label>
-                                <select id="DocumentTypeId" name="DocumentTypeId" class="form-select">
-                                    @{
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="control-label fw-bolder" for="DocumentTypeId">Document Type</label>
+                                    <select id="DocumentTypeId" name="EditDocumentTypeAssignment.DocumentTypeId" class="form-select">
                                         @if (Model.EditDocumentTypeAssignment.DocumentTypeList != null)
                                         {
                                             @foreach (var item in Model.EditDocumentTypeAssignment.DocumentTypeList)
                                             {
-                                                if (item.Id == Model.EditDocumentTypeAssignment.DocumentTypeId)
+                                                @if (item.Id == Model.EditDocumentTypeAssignment.DocumentTypeId)
                                                 {
-                                                    <option value="@item.Id" selected>@item.Description</option>
+                                                    <option value="@item.Id" selected>
+                                                        @item.Description
+                                                    </option>
                                                 }
                                                 else
                                                 {
-                                                    <option value="@item.Id">@item.Description</option>
+                                                    <option value="@item.Id">
+                                                        @item.Description
+                                                    </option>
                                                 }
+
                                             }
                                         }
-                                    }
-                                </select>
-
-                                @Html.ValidationMessageFor(m => m.EditDocumentTypeAssignment.DocumentTypeId, "", new { @class = "text-danger" })
-
+                                    </select>
+                                    @Html.ValidationMessageFor(m => m.EditDocumentTypeAssignment.DocumentTypeId, "", new { @class = "text-danger" })
+                                </div>
                             </div>
                         </div>
+                        @* Status Toggle *@
                         <div class="row mb-4">
                             <div class="col-md-12">
                                 <div class="form-check form-switch d-flex align-items-center gap-2">
-                                    <input id="isActiveCheckbox" class="form-check-input" type="checkbox" asp-for="EditDocumentTypeAssignment.IsActive">
+                                    <input id="isActiveCheckbox" class="form-check-input" type="checkbox" asp-for="EditDocumentTypeAssignment.IsActive" />
                                     <label id="lblStatus" class="fw-bolder">Active</label>
                                 </div>
-                                <span asp-validation-for="EditDocumentTypeAssignment.IsActive" class="text-danger"></span>
+                                @Html.ValidationMessageFor(m => m.EditDocumentTypeAssignment.IsActive, "", new { @class = "text-danger" })
                             </div>
                         </div>
 
                     </div>
+                </div>
 
-                </div>
-                @*               <div class="row mb-4">
-                <div class="col-md-12">
-                <div class="form-check form-switch d-flex align-items-center gap-2">
-                <input id="isDeletedCheckbox" class="form-check-input" type="checkbox" asp-for="IsDeleted">
-                <label id="lblStatusSoftDelete" class="fw-bolder">Not Deleted</label>
-                </div>
-                <span asp-validation-for="IsDeleted" class="text-danger"></span>
-                </div>
-                </div> *@
                 <hr class="my-5" />
                 <div class="form-group d-flex justify-content-center gap-4">
                     <input type="button" value="Cancel" class="btn btn-secondary w-15" onclick="window.location.href='@Url.Action("Index", "DocumentTypeAssignment")'" />
-                    @* <button type="reset" class="btn btn-secondary w-15" onclick="$('.text-danger').hide();">Reset</button> *@
-                    <button type="submit" class="btn btn-primary w-15" onclick="$('.text-danger').show();">Submit</button>
+                    <button type="submit" class="btn btn-primary w-15">Submit</button>
                 </div>
             </form>
         </div>
@@ -142,29 +116,16 @@
 
     <script type="text/javascript">
         $(document).ready(function () {
-
-            $('#isActiveCheckbox').on('click', toggleStatusLabels);
-            $('#isDeletedCheckbox').on('click', toggleStatusLabelSoftDelete);
-
+            // Initialize status labels
             toggleStatusLabels();
-            toggleStatusLabelSoftDelete();
+
+            // Event handlers
+            $('#isActiveCheckbox').on('change', toggleStatusLabels);
         });
 
         function toggleStatusLabels() {
-            if ($('#isActiveCheckbox').is(':checked')) {
-                $('#lblStatus').css('color', '#0d6efd').text("Active");
-            } else {
-                $('#lblStatus').css('color', '#bfbfbf').text("Inactive");
-            }
-        }
-        function toggleStatusLabelSoftDelete() {
-
-            if ($('#isDeletedCheckbox').is(':checked')) {
-                $('#lblStatusSoftDelete').css('color', '#0d6efd').text("IsDeleted");
-            } else {
-                $('#lblStatusSoftDelete').css('color', '#bfbfbf').text("NotDeleted");
-            }
+            const isActive = $('#isActiveCheckbox').is(':checked');
+            $('#lblStatus').css('color', isActive ? '#0d6efd' : '#bfbfbf').text(isActive ? "Active" : "Inactive");
         }
     </script>
-
 }

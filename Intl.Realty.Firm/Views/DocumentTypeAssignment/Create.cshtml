@@ -47,31 +47,35 @@
                     <div class="tab-pane active" id="documentTypeAssignmentDetails" aria-labelledby="documentTypeAssignmentDetails-tab" style="background-color:white;">
                         <div class="row justify-content-center">
                             @* Document Type *@
-                            <div class="col-md-6 mb-4">
-                                <div class="form-group">
-                                    <label class="control-label fw-bolder">Transaction Type</label>
+                            <div class="row mb-4">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label class="control-label fw-bolder">Transaction Type</label>
 
-                                    @Html.DropDownListFor(x => x.CreateDocumentTypeAssignment.TransactionTypeId, Model.CreateDocumentTypeAssignment.TransactionTypeIEnum, "Select Transaction Type...",
-                                             new
-                                             {
-                                                 @class = "form-select",
-                                                 @required = "required",
-                                             })
-                                    @Html.ValidationMessageFor(x => x.CreateDocumentTypeAssignment.TransactionTypeId, "", new { @class = "text-danger" })
+                                        @Html.DropDownListFor(x => x.CreateDocumentTypeAssignment.TransactionTypeId, Model.CreateDocumentTypeAssignment.TransactionTypeIEnum, "Select Transaction Type...",
+                                                 new
+                                                 {
+                                                     @class = "form-select",
+                                                     @required = "required",
+                                                 })
+                                        @Html.ValidationMessageFor(x => x.CreateDocumentTypeAssignment.TransactionTypeId, "", new { @class = "text-danger" })
+                                    </div>
                                 </div>
                             </div>
                             @* Transaction Type *@
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label class="control-label fw-bolder">Document Type</label>
+                            <div class="row mb-4">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label class="control-label fw-bolder">Document Type</label>
 
-                                    @Html.DropDownListFor(x => x.CreateDocumentTypeAssignment.DocumentTypeId, Model.CreateDocumentTypeAssignment.DocumentTypeIEnum, "Select Document Type...",
-                                             new
-                                             {
-                                                 @class = "form-select",
-                                                 @required = "required",
-                                             })
-                                    @Html.ValidationMessageFor(x => x.CreateDocumentTypeAssignment.DocumentTypeId, "", new { @class = "text-danger" })
+                                        @Html.DropDownListFor(x => x.CreateDocumentTypeAssignment.DocumentTypeId, Model.CreateDocumentTypeAssignment.DocumentTypeIEnum, "Select Document Type...",
+                                                 new
+                                                 {
+                                                     @class = "form-select",
+                                                     @required = "required",
+                                                 })
+                                        @Html.ValidationMessageFor(x => x.CreateDocumentTypeAssignment.DocumentTypeId, "", new { @class = "text-danger" })
+                                    </div>
                                 </div>
                             </div>
                         </div>

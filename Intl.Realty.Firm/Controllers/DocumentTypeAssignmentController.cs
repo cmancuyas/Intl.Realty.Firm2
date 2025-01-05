@@ -12,6 +12,7 @@ using Intl.Realty.Firm.Utility.Utilities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using System.Security.Claims;
@@ -183,41 +184,71 @@ namespace DENR_FASPIS.Controllers
         {
             if (id == 0)
             {
-                string controllerName = this.ControllerContext.RouteData.Values["controller"]!.ToString()!;
-                NotFoundViewModel notFoundViewModel = new NotFoundViewModel();
-                notFoundViewModel.ErrorTitle = ($"{controllerName} not found");
-                notFoundViewModel.ErrorMessage = ($"{controllerName} with {id} cannot be found!");
-                notFoundViewModel.ControllerName = controllerName;
-                notFoundViewModel.ControllerAction = "Index";
-
-                return View("NotFound", notFoundViewModel);
+                return GenerateNotFoundView(nameof(Edit), id);
             }
 
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                // to get current user ID
-                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-                // to get current user info
-                var user = await _userManager.FindByIdAsync(userId!);
-
-                var modelFromDb = await _unitOfWork.DocumentTypeAssignment.GetAsync(x => x.Id == viewModel.EditDocumentTypeAssignment.Id);
-
-                string controllerName = this.ControllerContext.RouteData.Values["controller"]!.ToString()!;
-
-                var model = viewModel.EditDocumentTypeAssignment.ToDocumentTypeAssignmentModel();
-
-                model.CreatedAt = modelFromDb.CreatedAt;
-                model.CreatedBy = modelFromDb.CreatedBy;
-
-                model.UpdatedAt = DateTime.Now;
-                model.UpdatedBy = user!.Id;
-
-                await _unitOfWork.DocumentTypeAssignment.UpdateAsync(model);
+                return View(viewModel);
             }
 
-            return RedirectToAction(nameof(Index), new { editSuccess = true });
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Unauthorized();
+            }
 
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+            {
+                return Unauthorized();
+            }
+
+            var existingModel = await _unitOfWork.DocumentTypeAssignment.GetAsync(x => x.Id == viewModel.EditDocumentTypeAssignment.Id);
+            if (existingModel == null)
+            {
+                return GenerateNotFoundView(nameof(Edit), id);
+            }
+
+            var updatedModel = viewModel.EditDocumentTypeAssignment.ToDocumentTypeAssignmentModel();
+
+            // Fetch related lists for the view model
+            viewModel.EditDocumentTypeAssignment.DocumentTypeList = (await _unitOfWork.DocumentType.GetAllAsync(x => !x.IsDeleted)).ToList();
+            viewModel.EditDocumentTypeAssignment.TransactionTypeList = (await _unitOfWork.TransactionType.GetAllAsync(x => !x.IsDeleted)).ToList();
+
+            updatedModel.DocumentTypeId = viewModel.EditDocumentTypeAssignment.DocumentTypeId;
+            updatedModel.TransactionTypeId = viewModel.EditDocumentTypeAssignment.TransactionTypeId;
+            // Preserve audit fields
+            updatedModel.CreatedAt = existingModel.CreatedAt;
+            updatedModel.CreatedBy = existingModel.CreatedBy;
+            updatedModel.UpdatedAt = DateTime.Now;
+            updatedModel.UpdatedBy = user.Id;
+
+            try
+            {
+                await _unitOfWork.DocumentTypeAssignment.UpdateAsync(updatedModel);
+                return RedirectToAction(nameof(Index), new { editSuccess = true });
+            }
+            catch (DbUpdateException ex) when (ex.InnerException is SqlException sqlEx &&
+                                               sqlEx.Number == 547) // SQL Foreign Key Violation Error Number
+            {
+                ModelState.AddModelError(string.Empty, "The selected DocumentType is invalid or does not exist.");
+                return View(viewModel);
+            }
+        }
+
+        private IActionResult GenerateNotFoundView(string actionName, int id)
+        {
+            var controllerName = this.ControllerContext.RouteData.Values["controller"]?.ToString();
+            var notFoundViewModel = new NotFoundViewModel
+            {
+                ErrorTitle = $"{controllerName} not found",
+                ErrorMessage = $"{controllerName} with ID {id} cannot be found!",
+                ControllerName = controllerName,
+                ControllerAction = actionName
+            };
+
+            return View("NotFound", notFoundViewModel);
         }
         [HttpGet]
         public async Task<IActionResult> Preview(int id)
