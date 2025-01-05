@@ -99,10 +99,17 @@ namespace Intl.Realty.Firm.Repository
 
         public async Task UpdateAsync(T entity)
         {
-            //_context.Attach(entity);
-            //_context.Entry(entity).State = EntityState.Modified;
-            _context.Update(entity);
-            await _context.SaveChangesAsync();
+            try
+            {
+                _context.Attach(entity);
+                _context.Entry(entity).State = EntityState.Modified;
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                // Log the exception (e.g., to a file or monitoring system)
+                throw;
+            }
         }
         public async Task UpdateRangeAsync(IEnumerable<T> entities)
         {

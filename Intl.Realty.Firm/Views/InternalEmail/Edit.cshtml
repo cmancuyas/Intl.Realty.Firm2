@@ -24,7 +24,7 @@
                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
                 <div class="tab-page">
-@*                     <ul class="nav nav-tabs" id="administrationManagementTab" role="tablist">
+                    @*                     <ul class="nav nav-tabs" id="administrationManagementTab" role="tablist">
                         @foreach (var item in Model.Menus)
                         {
                             <li class="nav-item mx-0">
@@ -49,34 +49,36 @@
                     <div class="tab-pane active" id="InternalEmailDetails" aria-labelledby="InternalEmailDetails-tab" style="background-color:white;">
 
                         @* Transaction Type *@
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label class="control-label fw-bolder">Role Name</label>
-                                <select id="EditInternalEmail.RoleId" name="EditInternalEmail.RoleId" class="form-select">
-                                    @{
-                                        @if (Model.EditInternalEmail.RoleList != null)
-                                        {
-                                            @foreach (var item in Model.EditInternalEmail.RoleList)
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="control-label fw-bolder">Role Name</label>
+                                    <select id="EditInternalEmail.RoleId" name="EditInternalEmail.RoleId" class="form-select">
+                                        @{
+                                            @if (Model.EditInternalEmail.RoleList != null)
                                             {
-                                                if (item.Id == Model.EditInternalEmail.RoleId)
+                                                @foreach (var item in Model.EditInternalEmail.RoleList)
                                                 {
-                                                    <option value="@item.Id" selected>@item.Name</option>
-                                                }
-                                                else
-                                                {
-                                                    <option value="@item.Id">@item.Name</option>
+                                                    if (item.Id == Model.EditInternalEmail.RoleId)
+                                                    {
+                                                        <option value="@item.Id" selected>@item.Name</option>
+                                                    }
+                                                    else
+                                                    {
+                                                        <option value="@item.Id">@item.Name</option>
+                                                    }
                                                 }
                                             }
                                         }
-                                    }
-                                </select>
+                                    </select>
 
-                                @Html.ValidationMessageFor(m => m.EditInternalEmail.RoleId, "", new { @class = "text-danger" })
+                                    @Html.ValidationMessageFor(m => m.EditInternalEmail.RoleId, "", new { @class = "text-danger" })
 
+                                </div>
                             </div>
                         </div>
 
-                        <div class="row">
+                        <div class="row mb-4">
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label asp-for="EditInternalEmail.Email" class="control-label fw-bolder"></label>
