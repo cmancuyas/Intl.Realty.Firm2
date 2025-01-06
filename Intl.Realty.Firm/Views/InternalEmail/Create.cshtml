@@ -46,7 +46,7 @@
                     <div class="tab-pane active" id="internalEmailDetails" aria-labelledby="internalEmailDetails-tab" style="background-color:white;">
 
                         <div class="row mb-4">
-                            <div class="col-md-6 mb-3">
+                            <div class="col-md-6 col-sm-12 mb-3">
                                 <div class="form-group">
                                     <label class="control-label fw-bolder">Role Name</label>
 
@@ -59,8 +59,8 @@
                                     @Html.ValidationMessageFor(x => x.CreateInternalEmail.RoleId, "", new { @class = "text-danger" })
                                 </div>
                             </div>
-                            <div class="row mb-4">
-                                <div class="col-md-6">
+                            <div class="col-md-6 col-sm-12 mb-4">
+                                <div class="col-md-12">
                                     <div class="form-group">
                                         <label asp-for="CreateInternalEmail.Email" class="control-label fw-bolder">Email Address</label>
                                         <input asp-for="CreateInternalEmail.Email" class="form-control" />
