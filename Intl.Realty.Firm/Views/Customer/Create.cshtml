@@ -1,0 +1,99 @@
+@using Intl.Realty.Firm.Model.ViewModel.CustomerVM
+
+@model CreateCustomerWithTabMenuViewModel
+
+@{
+    ViewData["Title"] = "Create";
+    Layout = "~/Views/Shared/_LayoutAfterLogin.cshtml";
+}
+
+<div class="page-controller mb-5">
+    <a href="@Url.Action("Index","Customer")" class="text-decoration-none back d-flex mb-4">
+        <i data-feather="chevron-left"></i><span>Back</span>
+    </a>
+    <div class="row justify-content-center">
+        <div class="col-md-12 card p-4">
+            <h1 class="text-blue mb-0">Create Customer</h1>
+            <hr class="my-4" />
+            <form asp-action="Create"
+                  asp-controller="Customer"
+                  method="post"
+                  enctype="multipart/form-data">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label asp-for="CreateCustomer.FirstName" class="control-label fw-bolder">First Name</label>
+                            <input asp-for="CreateCustomer.FirstName" class="form-control" />
+                            <span asp-validation-for="CreateCustomer.FirstName" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label asp-for="CreateCustomer.LastName" class="control-label fw-bolder">Last Name</label>
+                            <input asp-for="CreateCustomer.LastName" class="form-control" />
+                            <span asp-validation-for="CreateCustomer.LastName" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label asp-for="CreateCustomer.Email" class="control-label fw-bolder"></label>
+                            <input asp-for="CreateCustomer.Email" class="form-control" />
+                            <span asp-validation-for="CreateCustomer.Email" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label asp-for="CreateCustomer.TelephoneNumber" class="control-label fw-bolder">Telephone Number</label>
+                            <input asp-for="CreateCustomer.TelephoneNumber" class="form-control" />
+                            <span asp-validation-for="CreateCustomer.TelephoneNumber" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label asp-for="CreateCustomer.Address" class="control-label fw-bolder"></label>
+                            <input asp-for="CreateCustomer.Address" class="form-control" />
+                            <span asp-validation-for="CreateCustomer.Address" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+
+
+                <hr class="my-5" />
+
+                <div class="form-group d-flex justify-content-center gap-4 mobile-ctas">
+                    <input type="button" value="Cancel" class="btn btn-secondary cta-button" onclick="window.location.href='@Url.Action("Index", "Customer")'" />
+                    @* <button type="reset" class="btn btn-secondary cta-button" onclick="$('.text-danger').hide();">Reset</button> *@
+                    <button type="submit" class="btn btn-primary cta-button" onclick="$('.text-danger').show();">Submit</button>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts {
+
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script src="~/js/viewDataTableUtility.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+        })
+
+
+
+    </script>
+}

@@ -28,6 +28,7 @@ namespace Intl.Realty.Firm.DataAccess
         public DbSet<SaleCoop> SaleCoops { get; set; }
         public DbSet<LeaseListing> LeaseListings { get; set; }
         public DbSet<LeaseCoop> LeaseCoops { get; set; }
+        public DbSet<Customer> Customers { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

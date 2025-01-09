@@ -84,7 +84,7 @@ namespace DENR_FASPIS.Controllers
                 viewModel.CreateEmploymentStatus.CreatedAt = DateTime.Now;
 
 
-                var checkIfExists = await _unitOfWork.EmploymentStatus.GetAsync(x => x.Description == viewModel.CreateEmploymentStatus.Description);
+                var checkIfExists = await _unitOfWork.EmploymentStatus.GetAsync(x => x.Description == viewModel.CreateEmploymentStatus.Description && !x.IsDeleted);
                 if (checkIfExists == null)
                 {
                     var model = viewModel.CreateEmploymentStatus.ToEmploymentStatusModel();
