@@ -17,7 +17,7 @@ namespace Intl.Realty.Firm.DataAccess.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.8")
+                .HasAnnotation("ProductVersion", "9.0.0")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -173,7 +173,7 @@ namespace Intl.Realty.Firm.DataAccess.Migrations
                         {
                             Id = new Guid("74b7ddfa-9c71-4b95-84e2-9b5fcdef884c"),
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "4b952d11-bec3-49b1-8f53-6f67658cb877",
+                            ConcurrencyStamp = "9a74d96b-d258-4a70-8fb2-c72849c57129",
                             Email = "superadmin@internationalrealtyfirm.com",
                             EmailConfirmed = true,
                             EmploymentStatusId = 1,
@@ -182,14 +182,73 @@ namespace Intl.Realty.Firm.DataAccess.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "SUPERADMIN@INTERNATIONALREALTYFIRM.COM",
                             NormalizedUserName = "SUPERADMIN@INTERNATIONALREALTYFIRM.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEKdQIge6HeKlQMUiRLvoYl3uYFPyW/tHxkMlB+/djp+VDwehc/M8aC7JBEhJ8F5kjw==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEC0vyluj8TgqoNcSNrO0H9827ETgfWy4ezPsoQqYZsCfkDaTfuCtSC4CaJ677Iwlcg==",
                             PhoneNumberConfirmed = false,
-                            RegistrationDate = new DateTime(2024, 10, 8, 20, 58, 11, 475, DateTimeKind.Local).AddTicks(3864),
-                            SecurityStamp = "91014eab-5b96-4067-af9d-11d79a62d9e9",
+                            RegistrationDate = new DateTime(2025, 1, 9, 20, 40, 38, 450, DateTimeKind.Local).AddTicks(7467),
+                            SecurityStamp = "88ad9a25-33d1-471f-8f25-b8ff67c61555",
                             TwoFactorEnabled = false,
                             UserAgreement = false,
                             UserName = "superadmin@internationalrealtyfirm.com"
                         });
+                });
+
+            modelBuilder.Entity("Intl.Realty.Firm.Model.Model.Customer", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Address")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("CreatedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("DeletedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FirstName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("LastName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("TelephoneNumber")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("UpdatedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Customers");
                 });
 
             modelBuilder.Entity("Intl.Realty.Firm.Model.Model.DealStatus", b =>
@@ -317,7 +376,7 @@ namespace Intl.Realty.Firm.DataAccess.Migrations
                             IsActive = true,
                             IsDeleted = false,
                             NumberRange = "1000000",
-                            Year = 2024
+                            Year = 2025
                         },
                         new
                         {
@@ -328,7 +387,7 @@ namespace Intl.Realty.Firm.DataAccess.Migrations
                             IsActive = true,
                             IsDeleted = false,
                             NumberRange = "1000000",
-                            Year = 2025
+                            Year = 2026
                         },
                         new
                         {
@@ -339,7 +398,7 @@ namespace Intl.Realty.Firm.DataAccess.Migrations
                             IsActive = true,
                             IsDeleted = false,
                             NumberRange = "1000000",
-                            Year = 2026
+                            Year = 2027
                         },
                         new
                         {
@@ -350,7 +409,7 @@ namespace Intl.Realty.Firm.DataAccess.Migrations
                             IsActive = true,
                             IsDeleted = false,
                             NumberRange = "1000000",
-                            Year = 2027
+                            Year = 2028
                         });
                 });
 

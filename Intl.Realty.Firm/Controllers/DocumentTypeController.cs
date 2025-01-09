@@ -88,7 +88,7 @@ namespace DENR_FASPIS.Controllers
                 viewModel.CreateDocumentType.CreatedBy = user!.Id;
                 viewModel.CreateDocumentType.CreatedAt = DateTime.Now;
 
-                var checkIfExists = await _unitOfWork.DocumentType.GetAsync(x => x.Description == viewModel.CreateDocumentType.Description);
+                var checkIfExists = await _unitOfWork.DocumentType.GetAsync(x => x.Description == viewModel.CreateDocumentType.Description && !x.IsDeleted);
                 if (checkIfExists == null)
                 {
                     var model = viewModel.CreateDocumentType.ToDocumentTypeModel();

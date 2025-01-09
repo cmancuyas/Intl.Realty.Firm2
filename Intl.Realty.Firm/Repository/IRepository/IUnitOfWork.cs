@@ -17,6 +17,7 @@
         ISaleCoopRepository SaleCoop { get; }
         ILeaseListingRepository LeaseListing { get; }
         ILeaseCoopRepository LeaseCoop { get; }
+        ICustomerRepository Customer { get; }
         void SaveAsync();
         void Save();
     }

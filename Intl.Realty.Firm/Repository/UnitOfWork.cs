@@ -21,6 +21,7 @@ namespace Intl.Realty.Firm.Repository
         public ISaleCoopRepository SaleCoop { get; private set; }
         public ILeaseListingRepository LeaseListing { get; private set; }
         public ILeaseCoopRepository LeaseCoop { get; private set; }
+        public ICustomerRepository Customer { get; private set; }
 
         public UnitOfWork(ApplicationDbContext db)
         {
@@ -40,6 +41,7 @@ namespace Intl.Realty.Firm.Repository
             SaleCoop = new SaleCoopRepository(_db);
             LeaseListing = new LeaseListingRepository(_db);
             LeaseCoop = new LeaseCoopRepository(_db);
+            Customer = new CustomerRepository(_db);
         }
         public void SaveAsync()
         {

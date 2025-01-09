@@ -95,7 +95,7 @@ namespace DENR_FASPIS.Controllers
                 viewModel.CreateDocumentTypeAssignment.CreatedAt = DateTime.Now;
 
                 var combinedExp = LinqExtensions.AndAlso<DocumentTypeAssignment>(x => x.TransactionTypeId == viewModel.CreateDocumentTypeAssignment.TransactionTypeId,
-                                                                                  x => x.DocumentTypeId == viewModel.CreateDocumentTypeAssignment.DocumentTypeId);
+                                                                                  x => x.DocumentTypeId == viewModel.CreateDocumentTypeAssignment.DocumentTypeId && !x.IsDeleted);
 
                 var checkIfExists = await _unitOfWork.DocumentTypeAssignment.GetAsync(combinedExp);
                 if (checkIfExists == null)

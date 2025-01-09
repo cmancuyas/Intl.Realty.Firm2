@@ -83,7 +83,7 @@ namespace DENR_FASPIS.Controllers
                 viewModel.CreateProvince.CreatedBy = user!.Id;
                 viewModel.CreateProvince.CreatedAt = DateTime.Now;
 
-                var checkIfExists = await _unitOfWork.Province.GetAsync(x => x.Description == viewModel.CreateProvince.Description);
+                var checkIfExists = await _unitOfWork.Province.GetAsync(x => x.Description == viewModel.CreateProvince.Description && !x.IsDeleted);
                 if (checkIfExists == null)
                 {
                     var model = viewModel.CreateProvince.ToProvinceModel();
