@@ -16,7 +16,7 @@ using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using System.Security.Claims;
 
-namespace DENR_FASPIS.Controllers
+namespace Intl.Realty.Firm.Controllers
 {
     [Authorize]
     public class InternalEmailController : Controller

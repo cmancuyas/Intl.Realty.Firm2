@@ -1,6 +1,5 @@
 ﻿using Intl.Realty.Firm.Model.Model;
 using Intl.Realty.Firm.Model.ViewModel.UserProfileVM;
-using Intl.Realty.Firm.Repository;
 using Intl.Realty.Firm.Repository.IRepository;
 using Intl.Realty.Firm.Utility.Mapper;
 using Microsoft.AspNetCore.Authorization;
