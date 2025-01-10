@@ -4,6 +4,28 @@
 }
 
 <h1>Refer An Agent</h1>
+<div class="row">
+    <!-- Card 1 -->
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-body">
+                <form id="contactForm">
+                    <div class="mb-3">
+                        <label for="name" class="form-label">Name</label>
+                        <input type="text" id="name" class="form-control" placeholder="Enter your name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="phone" class="form-label">Phone Number</label>
+                        <input type="tel" id="phone" class="form-control" placeholder="Enter your phone number" required>
+                    </div>
+                    <div class="text-end">
+                        <button type="button" class="btn btn-primary" onclick="sendEmail()">Send Email</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 
 @section Scripts {
     <script type="text/javascript">
