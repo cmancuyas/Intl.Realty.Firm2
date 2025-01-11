@@ -172,7 +172,7 @@ else
     //app.UseStatusCodePagesWithRedirects("/Error/{0}");
     app.UseStatusCodePagesWithReExecute("/Error/{0}");
 }
-
+app.UseDeveloperExceptionPage();
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 
