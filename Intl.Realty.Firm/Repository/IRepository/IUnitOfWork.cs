@@ -18,7 +18,9 @@
         ILeaseListingRepository LeaseListing { get; }
         ILeaseCoopRepository LeaseCoop { get; }
         ICustomerRepository Customer { get; }
-        void SaveAsync();
+        IEmailCategoryRepository EmailCategory { get; }
+        IContactEmailRepository ContactEmail { get; }
+        Task SaveAsync();
         void Save();
     }
 }

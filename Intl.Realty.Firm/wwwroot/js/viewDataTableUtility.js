@@ -9,6 +9,8 @@
         "dealStatuses-tab": "/DealStatus/Index",
         "documentTypeAssignments-tab": "/DocumentTypeAssignment/Index",
         "internalEmails-tab": "/InternalEmail/Index",
+        "emailCategories-tab": "/EmailCategory/Index",
+        "contactEmails-tab": "/ContactEmail/Index",
         "provinces-tab": "/Province/Index",
         "dealTransactionNumberRanges-tab": "/DealTransactionNumberRange/Index"
     };

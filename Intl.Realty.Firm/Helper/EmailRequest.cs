@@ -1,5 +1,6 @@
 ﻿using Intl.Realty.Firm.Model.Model;
 using Intl.Realty.Firm.Model.ViewModel.AccountVM;
+using Intl.Realty.Firm.Model.ViewModel.ReferAnAgentVM;
 using Intl.Realty.Firm.Models.Auxiliary;
 
 namespace Intl.Realty.Firm.Helper
@@ -78,6 +79,22 @@ namespace Intl.Realty.Firm.Helper
             var mailRequest = new MailRequest
             {
                 ToEmail = emailString,
+                Subject = "do not reply",
+                Body = template
+            };
+            return mailRequest;
+        }
+        public static MailRequest SendRemailToReferAnAgent(ContactEmail contactEmail,
+                                                   ReferAnAgentViewModel referAnAgentViewModel,
+                                                   string agentLink)
+        {
+
+
+            var template = EmailTemplate.SendRemailToReferAnAgent(contactEmail, referAnAgentViewModel, agentLink);
+
+            var mailRequest = new MailRequest
+            {
+                ToEmail = contactEmail.Email,
                 Subject = "do not reply",
                 Body = template
             };

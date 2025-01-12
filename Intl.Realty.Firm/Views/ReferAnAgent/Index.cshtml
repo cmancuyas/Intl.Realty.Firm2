@@ -1,4 +1,7 @@
-﻿@{
+﻿@using Intl.Realty.Firm.Model.ViewModel.ReferAnAgentVM
+
+@model ReferAnAgentViewModel
+@{
     ViewData["Title"] = "Refer An Agent";
     Layout = "~/Views/Shared/_LayoutAfterLogin.cshtml";
 }
@@ -10,13 +13,16 @@
         <div class="card">
             <div class="card-body">
                 <form id="contactForm">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                     <div class="mb-3">
-                        <label for="name" class="form-label">Name</label>
-                        <input type="text" id="name" class="form-control" placeholder="Enter your name" required>
+                        <label for="Name" class="form-label">Name</label>
+                        <input asp-for="Name" type="text" id="Name" class="form-control" placeholder="Enter your name" required>
+                        <span asp-validation-for="Name" class="text-danger"></span>
                     </div>
                     <div class="mb-3">
-                        <label for="phone" class="form-label">Phone Number</label>
-                        <input type="tel" id="phone" class="form-control" placeholder="Enter your phone number" required>
+                        <label for="TelephoneNumber" class="form-label">Phone Number</label>
+                        <input asp-for="TelephoneNumber" type="tel" id="TelephoneNumber" class="form-control" placeholder="Enter your phone number" required>
+                        <span asp-validation-for="TelephoneNumber" class="text-danger"></span>
                     </div>
                     <div class="text-end">
                         <button type="button" class="btn btn-primary" onclick="sendEmail()">Send Email</button>
@@ -27,11 +33,66 @@
     </div>
 </div>
 
+<!-- Include the shared spinner -->
+<div id="spinner-container" style="display: none;">
+    @Html.Partial("~/Views/Shared/_Spinner.cshtml")
+</div>
+
 @section Scripts {
+    <!-- SweetAlert2 CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script type="text/javascript">
-        $(document).ready(function () {
+        function sendEmail() {
+            // Gather form data
+            const formData = {
+                Name: $("#Name").val(),
+                TelephoneNumber: $("#TelephoneNumber").val()
+            };
 
-        });
+            // Validate the input
+            if (!formData.Name || !formData.TelephoneNumber) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Validation Error',
+                    text: 'Please fill out all fields.',
+                });
+                return;
+            }
 
+            // Show the spinner
+            $("#spinner-container").show();
+
+            // Make the AJAX POST request
+            $.ajax({
+                url: '/ReferAnAgent/SendEmail', // Endpoint in the controller
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(formData), // Convert form data to JSON
+                success: function (response) {
+                    // Hide the spinner
+                    $("#spinner-container").hide();
+
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Success',
+                        text: 'Email sent successfully!',
+                    }).then(() => {
+                        // Optionally clear the form
+                        $("#contactForm")[0].reset();
+                    });
+                },
+                error: function (xhr, status, error) {
+                    // Hide the spinner
+                    $("#spinner-container").hide();
+
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'An error occurred while sending the email. Please try again.',
+                    });
+                    console.error("Error sending email:", error);
+                }
+            });
+        }
     </script>
 }

@@ -173,7 +173,7 @@ namespace Intl.Realty.Firm.DataAccess.Migrations
                         {
                             Id = new Guid("74b7ddfa-9c71-4b95-84e2-9b5fcdef884c"),
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "9a74d96b-d258-4a70-8fb2-c72849c57129",
+                            ConcurrencyStamp = "80f7a0bd-f11d-4b68-95cc-8c98166d8ee6",
                             Email = "superadmin@internationalrealtyfirm.com",
                             EmailConfirmed = true,
                             EmploymentStatusId = 1,
@@ -182,14 +182,61 @@ namespace Intl.Realty.Firm.DataAccess.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "SUPERADMIN@INTERNATIONALREALTYFIRM.COM",
                             NormalizedUserName = "SUPERADMIN@INTERNATIONALREALTYFIRM.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEC0vyluj8TgqoNcSNrO0H9827ETgfWy4ezPsoQqYZsCfkDaTfuCtSC4CaJ677Iwlcg==",
+                            PasswordHash = "AQAAAAIAAYagAAAAED7qWi68AWS47EU4nqa5Afqj7EgGFe8H9VfZ1TO9Ndijm0v3a9RFeCLj2ZNrgvONTA==",
                             PhoneNumberConfirmed = false,
-                            RegistrationDate = new DateTime(2025, 1, 9, 20, 40, 38, 450, DateTimeKind.Local).AddTicks(7467),
-                            SecurityStamp = "88ad9a25-33d1-471f-8f25-b8ff67c61555",
+                            RegistrationDate = new DateTime(2025, 1, 11, 3, 8, 27, 571, DateTimeKind.Local).AddTicks(5364),
+                            SecurityStamp = "8254c61b-efc6-4747-9586-c2916b3190a2",
                             TwoFactorEnabled = false,
                             UserAgreement = false,
                             UserName = "superadmin@internationalrealtyfirm.com"
                         });
+                });
+
+            modelBuilder.Entity("Intl.Realty.Firm.Model.Model.ContactEmail", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("CreatedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("DeletedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("EmailCategoryId")
+                        .HasMaxLength(100)
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("UpdatedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EmailCategoryId");
+
+                    b.ToTable("ContactEmails");
                 });
 
             modelBuilder.Entity("Intl.Realty.Firm.Model.Model.Customer", b =>
@@ -741,6 +788,52 @@ namespace Intl.Realty.Firm.DataAccess.Migrations
                             IsDeleted = false,
                             TransactionTypeId = 4
                         });
+                });
+
+            modelBuilder.Entity("Intl.Realty.Firm.Model.Model.EmailCategory", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("CreatedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("DeletedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("UpdatedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("EmailCategories");
                 });
 
             modelBuilder.Entity("Intl.Realty.Firm.Model.Model.EmploymentStatus", b =>
@@ -1621,6 +1714,17 @@ namespace Intl.Realty.Firm.DataAccess.Migrations
                     b.Navigation("Department");
 
                     b.Navigation("EmploymentStatus");
+                });
+
+            modelBuilder.Entity("Intl.Realty.Firm.Model.Model.ContactEmail", b =>
+                {
+                    b.HasOne("Intl.Realty.Firm.Model.Model.EmailCategory", "EmailCategory")
+                        .WithMany()
+                        .HasForeignKey("EmailCategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("EmailCategory");
                 });
 
             modelBuilder.Entity("Intl.Realty.Firm.Model.Model.DocumentTypeAssignment", b =>

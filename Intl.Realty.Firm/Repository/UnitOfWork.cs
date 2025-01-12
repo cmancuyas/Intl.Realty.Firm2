@@ -22,6 +22,8 @@ namespace Intl.Realty.Firm.Repository
         public ILeaseListingRepository LeaseListing { get; private set; }
         public ILeaseCoopRepository LeaseCoop { get; private set; }
         public ICustomerRepository Customer { get; private set; }
+        public IEmailCategoryRepository EmailCategory { get; private set; }
+        public IContactEmailRepository ContactEmail { get; private set; }
 
         public UnitOfWork(ApplicationDbContext db)
         {
@@ -42,15 +44,18 @@ namespace Intl.Realty.Firm.Repository
             LeaseListing = new LeaseListingRepository(_db);
             LeaseCoop = new LeaseCoopRepository(_db);
             Customer = new CustomerRepository(_db);
+            EmailCategory = new EmailCategoryRepository(_db);
+            ContactEmail = new ContactEmailRepository(_db);
         }
-        public void SaveAsync()
+        public async Task SaveAsync()
         {
-            _db.SaveChangesAsync();
+            await _db.SaveChangesAsync();
         }
 
         public void Save()
         {
             _db.SaveChanges();
         }
+
     }
 }
