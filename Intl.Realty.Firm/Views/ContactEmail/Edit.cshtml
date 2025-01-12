@@ -47,13 +47,32 @@
                 <div class="tab-content" style="border-bottom:none;background-color:white;">
 
                     <div class="tab-pane active" id="ContactEmailDetails" aria-labelledby="ContactEmailDetails-tab" style="background-color:white;">
-
+                        @* First Name *@
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label asp-for="EditContactEmail.FirstName" class="control-label fw-bolder">First Name</label>
+                                    <input asp-for="EditContactEmail.FirstName" class="form-control" type="text" />
+                                    <span asp-validation-for="EditContactEmail.FirstName" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+                        @* Last Name *@
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label asp-for="EditContactEmail.LastName" class="control-label fw-bolder">Last Name</label>
+                                    <input asp-for="EditContactEmail.LastName" class="form-control" type="text" />
+                                    <span asp-validation-for="EditContactEmail.LastName" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
                         @* Email Category *@
                         <div class="row mb-4">
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label class="control-label fw-bolder" for="EmailCategoryId">Email Category</label>
-                                    <select id="EmailCategoryId" name="EmailCategoryId" class="form-select">
+                                    <select id="EditContactEmail.EmailCategoryId" name="EditContactEmail.EmailCategoryId" class="form-select">
                                         @if (Model.EditContactEmail.EmailCategoryList != null)
                                         {
                                             @foreach (var item in Model.EditContactEmail.EmailCategoryList)

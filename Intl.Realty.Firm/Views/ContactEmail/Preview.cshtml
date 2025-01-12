@@ -11,7 +11,7 @@
     </a>
     <div class="row">
         <div class="col-md-12 d-flex justify-content-between align-items-center">
-            <h1 class="text-blue mb-0">ContactEmail</h1>
+            <h1 class="text-blue mb-0">Contact Email</h1>
             <div class="d-flex gap-4">
                 <button type="button" id="btnMultipleDelete"
                         class="btn btn-danger d-none align-items-center"
@@ -35,7 +35,7 @@
         <div class="row justify-content-center w-100">
             <div class="col-md-12 card p-5 mx-4 ">
                 <div class="d-flex justify-content-between">
-                    <h2 class="text-blue">@Model.EmailCategory!.Description</h2>
+                    <h2 class="text-blue">@Model.Email</h2>
                     <button type="button" class="btn btn-secondary w-15" id="EditContactEmailBtn"
                             onclick="location.href='@Url.Action("Edit", "ContactEmail", new { id = Model.Id,})'"
                             '">
@@ -47,12 +47,50 @@
                 <div class="row my-2">
                     <div class="col-md-6">
                         <div class="form-group">
-                            <label class="control-label fw-bolder">Code</label>
+                            <label class="control-label fw-bolder">FirstName</label>
+                            <p>@Model.FirstName</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="row my-2">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="control-label fw-bolder">LastName</label>
+                            <p>@Model.LastName</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="row my-2">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="control-label fw-bolder">Email Category</label>
+                            <p>@Model.EmailCategory.Description</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="row my-2">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="control-label fw-bolder">Email</label>
                             <p>@Model.Email</p>
                         </div>
                     </div>
                 </div>
-
+                <div class="row my-2">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="control-label fw-bolder">Status</label>
+                            @if (Model.IsActive == true)
+                            {
+                              <label class="status-active">Active</label>
+                            }
+                            else if (Model.IsActive == false)
+                            {
+                              <label class="status-inactive pe-cursor">Not Active</label>
+                            }
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

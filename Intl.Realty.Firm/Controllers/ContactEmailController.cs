@@ -95,7 +95,7 @@ namespace Intl.Realty.Firm.Controllers
                 var existingContactEmail = await _unitOfWork.ContactEmail.GetAsync(x =>
                     x.EmailCategoryId == viewModel.CreateContactEmail.EmailCategoryId &&
                     x.Email == viewModel.CreateContactEmail.Email &&
-                    !x.IsDeleted);
+                    !x.IsDeleted, includeProperties:"EmailCategory");
 
                 if (existingContactEmail != null)
                 {
@@ -119,7 +119,7 @@ namespace Intl.Realty.Firm.Controllers
         }
 
 
-
+        [HttpGet]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -204,7 +204,7 @@ namespace Intl.Realty.Firm.Controllers
                 // to get current user info
                 var user = await _userManager.FindByIdAsync(userId!);
 
-                var modelFromDb = await _unitOfWork.ContactEmail.GetAsync(x => x.Id == viewModel.EditContactEmail.Id);
+                var modelFromDb = await _unitOfWork.ContactEmail.GetAsync(x => x.Id == viewModel.EditContactEmail.Id, includeProperties: "EmailCategory");
 
                 string controllerName = this.ControllerContext.RouteData.Values["controller"]!.ToString()!;
 
@@ -212,7 +212,7 @@ namespace Intl.Realty.Firm.Controllers
 
                 model.CreatedAt = modelFromDb.CreatedAt;
                 model.CreatedBy = modelFromDb.CreatedBy;
-
+                model.EmailCategory = modelFromDb?.EmailCategory;
                 model.UpdatedAt = DateTime.Now;
                 model.UpdatedBy = user!.Id;
 

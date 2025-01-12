@@ -13,7 +13,7 @@
     </a>
     <div class="row justify-content-center">
         <div class="col-md-12 card p-4">
-            <h1 class="text-blue mb-0">Create ContactEmail</h1>
+            <h1 class="text-blue mb-0">Create Contact Email</h1>
             <hr class="my-4" />
             <form asp-action="Create"
                   asp-controller="ContactEmail"
@@ -44,6 +44,26 @@
                 <div class="tab-content" style="background-color:#FFF; padding:0;">
 
                     <div class="tab-pane active" id="contactEmailDetails" aria-labelledby="contactEmailDetails-tab" style="background-color:white;">
+                        @* First Name *@
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label asp-for="CreateContactEmail.FirstName" class="control-label fw-bolder">First Name</label>
+                                    <input asp-for="CreateContactEmail.FirstName" class="form-control" type="text" />
+                                    <span asp-validation-for="CreateContactEmail.FirstName" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+                        @* Last Name *@
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label asp-for="CreateContactEmail.LastName" class="control-label fw-bolder">Last Name</label>
+                                    <input asp-for="CreateContactEmail.LastName" class="form-control" type="text" />
+                                    <span asp-validation-for="CreateContactEmail.LastName" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
                         @* Email Category *@
                         <div class="row mb-4">
                             <div class="col-md-6">
@@ -63,8 +83,8 @@
                         <div class="row mb-4">
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label asp-for="CreateContactEmail.Email" class="control-label fw-bolder">Description</label>
-                                    <input asp-for="CreateContactEmail.Email" class="form-control" />
+                                    <label asp-for="CreateContactEmail.Email" class="control-label fw-bolder">Email</label>
+                                    <input asp-for="CreateContactEmail.Email" class="form-control" type="email"/>
                                     <span asp-validation-for="CreateContactEmail.Email" class="text-danger"></span>
                                 </div>
                             </div>

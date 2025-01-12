@@ -1,15 +1,22 @@
-﻿using Microsoft.AspNetCore.Mvc.Rendering;
+﻿using Intl.Realty.Firm.Model.Model;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using System.ComponentModel.DataAnnotations;
 
 namespace Intl.Realty.Firm.Model.ViewModel.ContactEmailVM
 {
     public class CreateContactEmailViewModel
     {
+        [MaxLength(100)]
+        [Required(ErrorMessage = "The FirstName field is required.")]
+        public string FirstName { get; set; } = string.Empty;
+        [MaxLength(100)]
+        [Required(ErrorMessage = "The LastName field is required.")]
+        public string LastName { get; set; } = string.Empty;
         [Required(ErrorMessage = "The Email Category field is required.")]
-        public int? EmailCategoryId { get; set; }
-
+        public int EmailCategoryId { get; set; }
         [Required(ErrorMessage = "The Email field is required.")]
-        [EmailAddress(ErrorMessage = "Please enter a valid email address.")]
+        [EmailAddress]
+        [MaxLength(100)]
         public string Email { get; set; } = string.Empty;
 
         [Required]
@@ -25,6 +32,7 @@ namespace Intl.Realty.Firm.Model.ViewModel.ContactEmailVM
         public DateTime CreatedAt { get; set; }
 
         public IEnumerable<SelectListItem>? EmailCategoryIEnum { get; set; }
+        public EmailCategory? EmailCategory { get; set; }
     }
 
 }

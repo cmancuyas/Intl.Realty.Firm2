@@ -1,5 +1,6 @@
 ﻿using Intl.Realty.Firm.Model.Model;
 using Intl.Realty.Firm.Model.ViewModel.AccountVM;
+using Intl.Realty.Firm.Model.ViewModel.ReferAnAgentVM;
 
 namespace Intl.Realty.Firm.Helper
 {
@@ -78,6 +79,26 @@ namespace Intl.Realty.Firm.Helper
                     <p><span style=""background-color:transparent;color:#000000;font-family:Arial,sans-serif;font-size:11pt;""><span style=""font-style:normal;font-variant:normal;font-weight:400;text-decoration:none;vertical-align:baseline;white-space:pre-wrap;"">{userRole} {user.FirstName} {user.LastName} is requesting to edit Deal ID: <strong>{transactionTypeName} - {dealId}</strong>.&nbsp;</span></span></p>
                     <p><span style=""background-color:transparent;color:#000000;font-family:Arial,sans-serif;font-size:11pt;""><span style=""font-style:normal;font-variant:normal;font-weight:400;text-decoration:none;vertical-align:baseline;white-space:pre-wrap;"">Click this link to login and review.&nbsp;</span></span></p>
                     <p><strong>{dealLink}</strong>,
+                    <p>&nbsp;</p>
+                    <p>
+                        <meta charset=""utf-8""><span style=""background-color:transparent;color:#000000;font-family:Arial,sans-serif;font-size:11pt;""><span style=""font-style:normal;font-variant:normal;font-weight:400;text-decoration:none;vertical-align:baseline;white-space:pre-wrap;"">Thank you.&nbsp;</span></span>
+                    </p>
+                    </body>
+                    </html>";
+            return template;
+        }
+        public static string SendRemailToReferAnAgent(ContactEmail contactEmail,
+                                                     ReferAnAgentViewModel referAnAgentViewModel,
+                                                     string agentLink)
+        {
+            string template = 
+            @$"<html>
+                     <meta charset=""utf-8"">
+                    <body>
+                    <p>Good day <strong>{contactEmail.FirstName},</strong></p>
+                    <p><span style=""background-color:transparent;color:#000000;font-family:Arial,sans-serif;font-size:11pt;""><span style=""font-style:normal;font-variant:normal;font-weight:400;text-decoration:none;vertical-align:baseline;white-space:pre-wrap;"">This agent being referred:  <br> Name: {referAnAgentViewModel.Name} <br> Phone Number: {referAnAgentViewModel.TelephoneNumber} .&nbsp;</span></span></p>
+                    <p><span style=""background-color:transparent;color:#000000;font-family:Arial,sans-serif;font-size:11pt;""><span style=""font-style:normal;font-variant:normal;font-weight:400;text-decoration:none;vertical-align:baseline;white-space:pre-wrap;"">Click this link to login and review.&nbsp;</span></span></p>
+                    <p><strong>{agentLink}</strong>,
                     <p>&nbsp;</p>
                     <p>
                         <meta charset=""utf-8""><span style=""background-color:transparent;color:#000000;font-family:Arial,sans-serif;font-size:11pt;""><span style=""font-style:normal;font-variant:normal;font-weight:400;text-decoration:none;vertical-align:baseline;white-space:pre-wrap;"">Thank you.&nbsp;</span></span>

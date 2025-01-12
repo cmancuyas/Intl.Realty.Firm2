@@ -51,14 +51,14 @@
                         <div class="row mb-3">
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label asp-for="EditUser.FirstName" class="control-label fw-bolder"></label>
+                                    <label asp-for="EditUser.FirstName" class="control-label fw-bolder">First Name</label>
                                     <input asp-for="EditUser.FirstName" class="form-control" />
                                     <span asp-validation-for="EditUser.FirstName" class="text-danger"></span>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label asp-for="EditUser.LastName" class="control-label fw-bolder"></label>
+                                    <label asp-for="EditUser.LastName" class="control-label fw-bolder">Last Name</label>
                                     <input asp-for="EditUser.LastName" class="form-control" />
                                     <span asp-validation-for="EditUser.LastName" class="text-danger"></span>
                                 </div>
@@ -104,7 +104,7 @@
                             @* EmploymentStatus *@
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label class="control-label fw-bolder">EmploymentStatus</label>
+                                    <label class="control-label fw-bolder">Employment Status</label>
                                     <select id="EditUser.EmploymentStatusId" name="EditUser.EmploymentStatusId" class="form-select">
                                         @{
                                             @if (Model.EditUser.EmploymentStatusList != null)
