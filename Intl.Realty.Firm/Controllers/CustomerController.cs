@@ -25,12 +25,14 @@ namespace Intl.Realty.Firm.Controllers
         private readonly IConfigurationService _configurationService;
         private readonly IFileHandlerService _fileHandlerService;
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly RoleManager<ApplicationRole> _roleManager;
 
         public CustomerController(IUnitOfWork unitOfWork,
                                     IExportService<CustomerExport> exportService,
                                     IConfigurationService configurationService,
                                     IFileHandlerService fileHandlerService,
-                                    UserManager<ApplicationUser> userManager
+                                    UserManager<ApplicationUser> userManager,
+                                    RoleManager<ApplicationRole> roleManager
                                                                         )
         {
             _unitOfWork = unitOfWork;
@@ -38,6 +40,7 @@ namespace Intl.Realty.Firm.Controllers
             _configurationService = configurationService;
             _fileHandlerService = fileHandlerService;
             _userManager = userManager;
+            _roleManager = roleManager;
         }
         public IActionResult Index()
         {
@@ -333,8 +336,23 @@ namespace Intl.Realty.Firm.Controllers
             // Initialize order criteria
             (orderCriteria, orderAscendingDirection) = InitializeOrderCriteria(dtParameters, orderCriteria, orderAscendingDirection);
 
-            // Query initialization
-            var result = await _unitOfWork.Customer.AsQueryableAsync(x => x.IsDeleted == false);
+            // Get current user ID
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            // Get current user info
+            var user = await _userManager.FindByIdAsync(userId!);
+
+            // Get roles of the current user
+            var roles = await _userManager.GetRolesAsync(user!);
+
+            // Check if the user is Admin or SuperAdmin or DealAdmin
+            var isAdmin = roles.Contains("Admin") || roles.Contains("SuperAdmin") || roles.Contains("DealAdmin");
+
+            // Query initialization with filtering logic
+            var result = isAdmin
+                ? await _unitOfWork.Customer.AsQueryableAsync(x => x.IsDeleted == false && x.IsActive == true) // Show all customers for Admin/SuperAdmin
+                : await _unitOfWork.Customer.AsQueryableAsync(x => x.IsDeleted == false && x.IsActive == true && x.CreatedBy == user!.Id); // Show only created by the user
+
             var totalResultsCount = result.Count();
 
             if (searchBy!.Contains(":") || searchBy.Contains("+"))
@@ -366,6 +384,8 @@ namespace Intl.Realty.Firm.Controllers
 
             return Json(jsonResult);
         }
+
+
 
         private IQueryable<Customer> DefaultFilterSearch(IQueryable<Customer> result, string searchBy)
         {
