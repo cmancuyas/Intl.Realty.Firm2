@@ -1923,3 +1923,36 @@ input.form-control {
             display: none;
         }
     }
+
+    /* TRAINING */
+    .training a.training-link {
+        color: #203d57 !important;
+        font-weight: bold;
+        cursor: pointer;
+    }
+.training .accordion-body {
+    padding: 30px;
+}
+    .training .accordion-body ul {
+        padding-left: 60px;
+    }
+.training .accordion-body ul li {
+    margin-bottom: 10px;
+}
+
+.training .accordion-button {
+    border: none !important;
+    font-weight: 500;
+    color: #203d57;
+    padding: 20px 30px;
+}
+
+    .training .accordion-button:not(.collapsed) {
+        background: #203d57 !important;
+        color: white !important;
+    }
+
+.training .accordion-collapse .alert-info {
+    background: #ececec;
+    border-color: #CCC;
+}
