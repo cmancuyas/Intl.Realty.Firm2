@@ -10,15 +10,17 @@
         </div>
         <div class="nav-bar-container">
             <ul id="navItems" class="navbar-nav mt-5">
-
-                <li id="dashboardNavItem" class="nav-item mx-2 mt-2 mb-1 rounded">
-                    <a class="nav-link text-decoration-none d-flex align-items-center gap-3 ms-2 me-2 fw-bolder" asp-controller="Home" asp-action="Dashboard">
-                        <i data-feather="grid" data-toggle="tooltip" data-bs-placement="right" title="Dashboard"></i>
-                        <span>Dashboard</span>
-                    </a>
-                </li>
+                @if (signInManager.IsSignedIn(User) && (User.IsInRole("SuperAdmin") || User.IsInRole("Admin") || User.Claims.Any(c => c.Type == System.Security.Claims.ClaimTypes.Role)))
+                {
+                    <li id="dashboardNavItem" class="nav-item mx-2 mt-2 mb-1 rounded">
+                        <a class="nav-link text-decoration-none d-flex align-items-center gap-3 ms-2 me-2 fw-bolder" asp-controller="Home" asp-action="Dashboard">
+                            <i data-feather="grid" data-toggle="tooltip" data-bs-placement="right" title="Dashboard"></i>
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+                }
                 @if (signInManager.IsSignedIn(User) && (User.IsInRole("SuperAdmin") ||
-                                     User.IsInRole("Admin")))
+                User.IsInRole("Admin")))
                 {
 
                     @* Customers *@
@@ -32,10 +34,10 @@
                     @* Administrator *@
                     <li id="administratorNavItem" class="nav-item mx-2 mt-2 mb-1 rounded pe-cursor">
                         <a id="administratorNavLink" class="nav-link text-decoration-none d-flex align-items-center gap-3 ms-2 me-2 fw-bolder">
-                        <i data-feather="key" data-toggle="tooltip" data-bs-placement="right" title="Administrator"></i>
-                        <span class="flex-grow-1">Administrator</span>
-                        <i data-feather="chevron-right" class="caret w-15px"></i>
-                    </a>
+                            <i data-feather="key" data-toggle="tooltip" data-bs-placement="right" title="Administrator"></i>
+                            <span class="flex-grow-1">Administrator</span>
+                            <i data-feather="chevron-right" class="caret w-15px"></i>
+                        </a>
                     </li>
                 }
                 else
@@ -62,71 +64,53 @@
                     </ul>
                 </li>
 
-    @*             <li class="administratorSubNavItem sub-nav-item">
-                    <ul class="list-unstyled">
-                        <li>
-                            <a class="sub-nav-link" asp-controller="Administration" asp-action="ListUsers">
-                                <span>Users</span>
-                            </a>
-                        </li>
-                    </ul>
-                </li>
-
-                <li class="administratorSubNavItem sub-nav-item">
-                    <ul class="list-unstyled">
-                        <li>
-                            <a class="sub-nav-link" asp-controller="Administration" asp-action="ListRoles">
-                                <span>Roles</span>
-                            </a>
-                        </li>
-                    </ul>
-                </li> *@
-
-       
-                 @* Upload New Transaction  *@
-                <li id="transactionManagementNavItem" class="nav-item mx-2 mt-2 mb-1 rounded pe-cursor">
-                    <a id="transactionManagementNavLink" class="nav-link text-decoration-none d-flex align-items-center gap-3 ms-2 me-2 fw-bolder">
-                        <i data-feather="file" data-toggle="tooltip" data-bs-placement="right" title="TransactionManagement"></i>
-                        <span class="flex-grow-1">Upload New Transaction</span>
-                        <i data-feather="chevron-right" class="caret w-15px"></i>
-                    </a>
-                </li>
-                <li class="transactionManagementSubNavItem sub-nav-item">
-                    <ul class="list-unstyled">
-                        <li>
-                            <a class="sub-nav-link" asp-controller="SaleListing" asp-action="Index">
-                                <span>Sales Listing</span>
-                            </a>
-                        </li>
-                    </ul>
-                </li>
-                <li class="transactionManagementSubNavItem sub-nav-item">
-                    <ul class="list-unstyled">
-                        <li>
-                            <a class="sub-nav-link" asp-controller="SaleCoop" asp-action="Index">
-                                <span>Sale Co-op</span>
-                            </a>
-                        </li>
-                    </ul>
-                </li>
-                <li class="transactionManagementSubNavItem sub-nav-item">
-                    <ul class="list-unstyled">
-                        <li>
-                            <a class="sub-nav-link" asp-controller="LeaseListing" asp-action="Index">
-                                <span>Lease Listing</span>
-                            </a>
-                        </li>
-                    </ul>
-                </li>
-                <li class="transactionManagementSubNavItem sub-nav-item">
-                    <ul class="list-unstyled">
-                        <li>
-                            <a class="sub-nav-link" asp-controller="LeaseCoop" asp-action="Index">
-                                <span>Lease Coop</span>
-                            </a>
-                        </li>
-                    </ul>
-                </li>
+                @if (signInManager.IsSignedIn(User) && (User.IsInRole("SuperAdmin") || User.IsInRole("Admin") || User.Claims.Any(c => c.Type == System.Security.Claims.ClaimTypes.Role)))
+                {
+                    @* Upload New Transaction  *@
+                    <li id="transactionManagementNavItem" class="nav-item mx-2 mt-2 mb-1 rounded pe-cursor">
+                        <a id="transactionManagementNavLink" class="nav-link text-decoration-none d-flex align-items-center gap-3 ms-2 me-2 fw-bolder">
+                            <i data-feather="file" data-toggle="tooltip" data-bs-placement="right" title="TransactionManagement"></i>
+                            <span class="flex-grow-1">Upload New Transaction</span>
+                            <i data-feather="chevron-right" class="caret w-15px"></i>
+                        </a>
+                    </li>
+                    <li class="transactionManagementSubNavItem sub-nav-item">
+                        <ul class="list-unstyled">
+                            <li>
+                                <a class="sub-nav-link" asp-controller="SaleListing" asp-action="Index">
+                                    <span>Sales Listing</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="transactionManagementSubNavItem sub-nav-item">
+                        <ul class="list-unstyled">
+                            <li>
+                                <a class="sub-nav-link" asp-controller="SaleCoop" asp-action="Index">
+                                    <span>Sale Co-op</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="transactionManagementSubNavItem sub-nav-item">
+                        <ul class="list-unstyled">
+                            <li>
+                                <a class="sub-nav-link" asp-controller="LeaseListing" asp-action="Index">
+                                    <span>Lease Listing</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="transactionManagementSubNavItem sub-nav-item">
+                        <ul class="list-unstyled">
+                            <li>
+                                <a class="sub-nav-link" asp-controller="LeaseCoop" asp-action="Index">
+                                    <span>Lease Coop</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                }
                 @* Information Packages  *@
                 <li id="informationPackageManagementNavItem" class="nav-item mx-2 mt-2 mb-1 rounded pe-cursor">
                     <a id="informationPackageManagementNavLink" class="nav-link text-decoration-none d-flex align-items-center gap-3 ms-2 me-2 fw-bolder">
@@ -208,4 +192,4 @@
             </ul>
         </div>
     </aside>
- </div>
+</div>

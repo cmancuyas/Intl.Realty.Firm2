@@ -13,7 +13,7 @@ namespace Intl.Realty.Firm.Helper
             var mailRequest = new MailRequest
             {
                 ToEmail = registerViewModel.Email,
-                Subject = "do not reply",
+                Subject = "do not reply - User Registration",
                 Body = template
             };
 
@@ -26,7 +26,7 @@ namespace Intl.Realty.Firm.Helper
             var mailRequest = new MailRequest
             {
                 ToEmail = user.Email!,
-                Subject = "do not reply",
+                Subject = "do not reply - Reset Password",
                 Body = template
             };
             return mailRequest;
@@ -51,7 +51,7 @@ namespace Intl.Realty.Firm.Helper
             var mailRequest = new MailRequest
             {
                 ToEmail = emailString,
-                Subject = "do not reply",
+                Subject = "do not reply " + dealId,
                 Body = template
             };
             return mailRequest;
@@ -79,7 +79,7 @@ namespace Intl.Realty.Firm.Helper
             var mailRequest = new MailRequest
             {
                 ToEmail = emailString,
-                Subject = "do not reply",
+                Subject = "do not reply " + dealId,
                 Body = template
             };
             return mailRequest;
@@ -95,7 +95,7 @@ namespace Intl.Realty.Firm.Helper
             var mailRequest = new MailRequest
             {
                 ToEmail = contactEmail.Email,
-                Subject = "do not reply",
+                Subject = "do not reply - Refer an agent" ,
                 Body = template
             };
             return mailRequest;
