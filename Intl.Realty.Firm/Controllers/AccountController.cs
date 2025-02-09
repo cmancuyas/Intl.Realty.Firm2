@@ -172,6 +172,59 @@ namespace Intl.Realty.Firm.Controllers
             return View("ForgotPasswordConfirmation");
         }
 
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult ResetPassword(string email, string token)
+        {
+            if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(token))
+            {
+                return BadRequest("Invalid password reset request.");
+            }
+
+            var model = new ResetPasswordViewModel
+            {
+                Email = email,
+                Token = token
+            };
+
+            return View(model);
+        }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ResetPassword(ResetPasswordViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model); // Return the form with validation errors
+            }
+
+            // ✅ Step 1: Find the user
+            var user = await _userManager.FindByEmailAsync(model.Email);
+            if (user == null)
+            {
+                TempData["ErrorMessage"] = "Invalid password reset request.";
+                return RedirectToAction("ForgotPassword"); // Redirect if user not found
+            }
+
+            // ✅ Step 2: Decode the token before resetting the password
+            var decodedToken = System.Web.HttpUtility.UrlDecode(model.Token); // Ensure proper decoding
+
+            // ✅ Step 3: Reset the password
+            var resetResult = await _userManager.ResetPasswordAsync(user, decodedToken, model.Password);
+            if (!resetResult.Succeeded)
+            {
+                foreach (var error in resetResult.Errors)
+                {
+                    ModelState.AddModelError(string.Empty, error.Description);
+                }
+                return View(model); // Show errors if reset fails
+            }
+
+            // ✅ Step 4: Redirect to Login with success message
+            TempData["SuccessMessage"] = "Your password has been reset successfully. Please log in.";
+            return RedirectToAction("Login");
+        }
+
 
 
         [AcceptVerbs("Get", "Post")]
