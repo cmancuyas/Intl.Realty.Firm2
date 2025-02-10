@@ -189,38 +189,37 @@ namespace Intl.Realty.Firm.Controllers
 
             return View(model);
         }
+
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ResetPassword(ResetPasswordViewModel model)
         {
             if (!ModelState.IsValid)
             {
-                return View(model); // Return the form with validation errors
+                return View(model); // Ensure validation errors are returned
             }
 
-            // ✅ Step 1: Find the user
             var user = await _userManager.FindByEmailAsync(model.Email);
             if (user == null)
             {
                 TempData["ErrorMessage"] = "Invalid password reset request.";
-                return RedirectToAction("ForgotPassword"); // Redirect if user not found
+                return RedirectToAction("ForgotPassword");
             }
 
-            // ✅ Step 2: Decode the token before resetting the password
-            var decodedToken = System.Web.HttpUtility.UrlDecode(model.Token); // Ensure proper decoding
-
-            // ✅ Step 3: Reset the password
+            var decodedToken = System.Web.HttpUtility.UrlDecode(model.Token);
             var resetResult = await _userManager.ResetPasswordAsync(user, decodedToken, model.Password);
+
             if (!resetResult.Succeeded)
             {
                 foreach (var error in resetResult.Errors)
                 {
-                    ModelState.AddModelError(string.Empty, error.Description);
+                    Console.WriteLine($"Error: {error.Description}"); // Debugging logs
+                    ModelState.AddModelError(string.Empty, error.Description); // ✅ Add errors to ModelState
                 }
-                return View(model); // Show errors if reset fails
+                return View(model); // ✅ Return the same view with errors
             }
 
-            // ✅ Step 4: Redirect to Login with success message
             TempData["SuccessMessage"] = "Your password has been reset successfully. Please log in.";
             return RedirectToAction("Login");
         }

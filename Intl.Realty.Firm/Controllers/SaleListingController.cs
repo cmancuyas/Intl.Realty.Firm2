@@ -152,7 +152,7 @@ namespace Intl.Realty.Firm.Controllers
             if (numberRange != null)
             {
                 await _unitOfWork.DealTransactionNumberRange.UpdateAsync(numberRange);
-                _unitOfWork.SaveAsync();
+                _unitOfWork.Save();
             }
 
 
