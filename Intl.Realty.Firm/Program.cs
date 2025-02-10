@@ -27,8 +27,8 @@ builder.Services.Configure<GoogleCaptchaConfig>(builder.Configuration.GetSection
 
 builder.Services.AddIdentity<ApplicationUser, ApplicationRole>(options =>
 {
-    options.Password.RequiredLength = 10;
-    options.Password.RequiredUniqueChars = 3;
+    options.Password.RequiredLength = 8;
+    options.Password.RequiredUniqueChars = 2;
     options.Password.RequireNonAlphanumeric = false;
 
     options.SignIn.RequireConfirmedEmail = true;
