@@ -100,22 +100,17 @@ namespace Intl.Realty.Firm.Controllers
             // ✅ Redirect users based on role
             var userRoles = await _userManager.GetRolesAsync(user);
 
-            if (userRoles.Contains("Admin") || userRoles.Contains("SuperAdmin"))
+            if (userRoles.Contains("Admin") || userRoles.Contains("SuperAdmin") || userRoles.Contains("DealAdmin"))
             {
-                return RedirectToAction("Dashboard", "Admin");
+                return RedirectToAction("Dashboard", "Home");
             }
 
-            if (userRoles.Contains("Trainer"))
+            if (userRoles.Contains("Agent"))
             {
-                return RedirectToAction("Dashboard", "Trainer");
+                return RedirectToAction("Dashboard", "Home");
             }
 
-            if (userRoles.Contains("Trainee"))
-            {
-                return RedirectToAction("Index", "Training");
-            }
-
-            return RedirectToAction("Dashboard", "Home"); // ✅ Default fallback
+            return RedirectToAction("Index", "Training"); // ✅ Default fallback
         }
 
 
