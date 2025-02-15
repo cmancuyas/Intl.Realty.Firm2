@@ -6,6 +6,7 @@ using Intl.Realty.Firm.Service.IService;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using System.Net;
 using System.Security.Claims;
 
 namespace Intl.Realty.Firm.Controllers
@@ -53,12 +54,6 @@ namespace Intl.Realty.Firm.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> Login(LoginViewModel viewModel, string? returnUrl)
         {
-            //var captchaResult = await _googleCaptchaService.VerifyToken(viewModel.Token);
-            //if (!captchaResult)
-            //{
-            //    return View(viewModel);
-            //}
-
             viewModel.ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
 
             if (!ModelState.IsValid)
@@ -67,72 +62,71 @@ namespace Intl.Realty.Firm.Controllers
             }
 
             var user = await _userManager.FindByEmailAsync(viewModel.Email);
-            if (user == null)
+
+            // ✅ Prevent user enumeration: Always return the same error
+            if (user == null || !await _userManager.CheckPasswordAsync(user, viewModel.Password))
             {
-                ModelState.AddModelError(string.Empty, "Email not found");
+                ModelState.AddModelError(string.Empty, "Invalid email or password");
                 return View(viewModel);
             }
 
-            // Check if password is valid before confirming email
-            bool isPasswordValid = await _userManager.CheckPasswordAsync(user, viewModel.Password);
-            if (!user.EmailConfirmed && isPasswordValid)
+            // ✅ Use SignInManager to check if email is confirmed
+            var result = await _signInManager.PasswordSignInAsync(user, viewModel.Password, viewModel.RememberMe, lockoutOnFailure: true);
+
+            if (result.IsNotAllowed)
             {
                 ModelState.AddModelError(string.Empty, "Email not confirmed yet");
                 return View(viewModel);
             }
 
-            var result = await _signInManager.PasswordSignInAsync(
-                                viewModel.Email,
-                                viewModel.Password,
-                                viewModel.RememberMe,
-                                lockoutOnFailure: true);
-
-            if (result.Succeeded)
-            {
-                // Secure handling of returnUrl
-                if (!string.IsNullOrEmpty(returnUrl))
-                {
-                    if (Url.IsLocalUrl(returnUrl))
-                    {
-                        return Redirect(returnUrl);
-                    }
-                    _logger.LogWarning("Suspicious return URL detected: {returnUrl}", returnUrl);
-                }
-
-                // Retrieve user roles
-                var userRoles = await _userManager.GetRolesAsync(user);
-
-                if (userRoles.Contains("Admin") || userRoles.Contains("SuperAdmin"))
-                {
-                    return RedirectToAction("Dashboard", "Home");
-                }
-
-                // If user has no roles assigned, redirect to Training/Index
-                if (!userRoles.Any())
-                {
-                    return RedirectToAction("Index", "Training");
-                }
-
-                // Default redirection for other users
-                return RedirectToAction("Dashboard", "Home");
-
-            }
-
             if (result.IsLockedOut)
             {
-                return View("AccountLocked", new { message = "Your account has been locked due to multiple failed login attempts. Please try again later." });
+                return RedirectToAction("Lockout");
             }
 
-            ModelState.AddModelError(string.Empty, "Invalid login attempt");
-            return View(viewModel);
+            if (!result.Succeeded)
+            {
+                ModelState.AddModelError(string.Empty, "Invalid login attempt");
+                return View(viewModel);
+            }
+
+            // ✅ Secure returnUrl handling
+            if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
+            {
+                return Redirect(returnUrl);
+            }
+            _logger.LogWarning("Suspicious return URL detected: {returnUrl}", returnUrl);
+
+            // ✅ Redirect users based on role
+            var userRoles = await _userManager.GetRolesAsync(user);
+
+            if (userRoles.Contains("Admin") || userRoles.Contains("SuperAdmin"))
+            {
+                return RedirectToAction("Dashboard", "Admin");
+            }
+
+            if (userRoles.Contains("Trainer"))
+            {
+                return RedirectToAction("Dashboard", "Trainer");
+            }
+
+            if (userRoles.Contains("Trainee"))
+            {
+                return RedirectToAction("Index", "Training");
+            }
+
+            return RedirectToAction("Dashboard", "Home"); // ✅ Default fallback
         }
 
+
+        // ✅ Forgot Password - Request Reset Email
         [HttpGet]
         [AllowAnonymous]
         public IActionResult ForgotPassword()
         {
             return View();
         }
+
         [HttpPost]
         [AllowAnonymous]
         public async Task<IActionResult> ForgotPassword(ForgotPasswordViewModel viewModel)
@@ -144,22 +138,23 @@ namespace Intl.Realty.Firm.Controllers
 
             var user = await _userManager.FindByEmailAsync(viewModel.Email);
 
-            // Prevent user enumeration by always returning the same response
+            // ✅ Prevent user enumeration by always returning the same response
             if (user == null || !await _userManager.IsEmailConfirmedAsync(user))
             {
                 _logger.LogWarning("Password reset attempted for non-existent or unconfirmed email: {Email}", viewModel.Email);
-                return View("ForgotPasswordConfirmation");
+                return RedirectToAction("ForgotPasswordConfirmation");
             }
 
+            // ✅ Generate reset token & encode safely
             var token = await _userManager.GeneratePasswordResetTokenAsync(user);
-            var encodedToken = System.Web.HttpUtility.UrlEncode(token); // Ensure the token is URL-safe
+            var encodedToken = WebUtility.UrlEncode(token);
 
             var passwordResetLink = Url.Action("ResetPassword", "Account",
                 new { email = viewModel.Email, token = encodedToken }, Request.Scheme);
 
             try
             {
-                var mailRequest = EmailRequest.CreateResetPasswordEmailRequest(user, passwordResetLink!);
+                var mailRequest = EmailRequest.CreateResetPasswordEmailRequest(user, passwordResetLink);
                 await _emailService.SendEmailAsync(mailRequest);
                 _logger.LogInformation("Password reset email sent to user: {Email}", viewModel.Email);
             }
@@ -168,10 +163,18 @@ namespace Intl.Realty.Firm.Controllers
                 _logger.LogError(ex, "Failed to send password reset email to {Email}", viewModel.Email);
             }
 
-            // Always return ForgotPasswordConfirmation view, regardless of email existence
-            return View("ForgotPasswordConfirmation");
+            return RedirectToAction("ForgotPasswordConfirmation");
         }
 
+        // ✅ Forgot Password Confirmation Page
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult ForgotPasswordConfirmation()
+        {
+            return View();
+        }
+
+        // ✅ Reset Password - Show Reset Form
         [HttpGet]
         [AllowAnonymous]
         public IActionResult ResetPassword(string email, string token)
@@ -190,14 +193,15 @@ namespace Intl.Realty.Firm.Controllers
             return View(model);
         }
 
-
+        // ✅ Reset Password - Handle Submission
         [HttpPost]
+        [AllowAnonymous]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ResetPassword(ResetPasswordViewModel model)
         {
             if (!ModelState.IsValid)
             {
-                return View(model); // Ensure validation errors are returned
+                return View(model); // ✅ Ensure validation errors are returned
             }
 
             var user = await _userManager.FindByEmailAsync(model.Email);
@@ -207,17 +211,22 @@ namespace Intl.Realty.Firm.Controllers
                 return RedirectToAction("ForgotPassword");
             }
 
-            var decodedToken = System.Web.HttpUtility.UrlDecode(model.Token);
+            // ✅ Decode the token safely
+            var decodedToken = WebUtility.UrlDecode(model.Token);
+            _logger.LogInformation("Decoded Token for {Email}: {Token}", model.Email, decodedToken); // ✅ Debugging
+
             var resetResult = await _userManager.ResetPasswordAsync(user, decodedToken, model.Password);
 
             if (!resetResult.Succeeded)
             {
+                _logger.LogError("Password reset failed for user: {Email}. Errors: {Errors}",
+                    model.Email, string.Join(", ", resetResult.Errors.Select(e => e.Description)));
+
                 foreach (var error in resetResult.Errors)
                 {
-                    Console.WriteLine($"Error: {error.Description}"); // Debugging logs
-                    ModelState.AddModelError(string.Empty, error.Description); // ✅ Add errors to ModelState
+                    ModelState.AddModelError(string.Empty, error.Description);
                 }
-                return View(model); // ✅ Return the same view with errors
+                return View(model);
             }
 
             TempData["SuccessMessage"] = "Your password has been reset successfully. Please log in.";
