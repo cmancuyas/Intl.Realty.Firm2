@@ -1,5 +1,6 @@
 ﻿using Intl.Realty.Firm.Model.Helper;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using System.ComponentModel.DataAnnotations;
 
 namespace Intl.Realty.Firm.Model.ViewModel.AccountVM
@@ -53,5 +54,10 @@ namespace Intl.Realty.Firm.Model.ViewModel.AccountVM
         /// </summary>
         [Display(Name = "Sign in after registration")]
         public bool AutoSignInAfterRegister { get; set; } = false;
+        // 🔹 New properties for TeamLeader selection
+        [Display(Name = "Assign Team Leader")]
+        public Guid? TeamLeaderId { get; set; } // Stores the selected TeamLeader ID
+
+        public List<SelectListItem>? TeamLeaders { get; set; } // Stores the list of TeamLeaders
     }
 }

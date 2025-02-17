@@ -7,15 +7,27 @@ namespace Intl.Realty.Firm.Model.Model
     {
         public string FirstName { get; set; } = string.Empty;
         public string LastName { get; set; } = string.Empty;
+
         [ForeignKey("Department")]
         public int? DepartmentId { get; set; }
+
         [ForeignKey("EmploymentStatus")]
         public int EmploymentStatusId { get; set; }
+
         public int? ProfilePictureId { get; set; }
         public bool UserAgreement { get; set; }
         public DateTime RegistrationDate { get; set; }
+
         public virtual Department? Department { get; set; }
         public virtual EmploymentStatus? EmploymentStatus { get; set; }
 
+        // 🔹 Self-referencing foreign key to link an Agent to a TeamLeader
+        public Guid? TeamLeaderId { get; set; } // Nullable in case the user is not an Agent
+
+        [ForeignKey("TeamLeaderId")]
+        public virtual ApplicationUser? TeamLeader { get; set; } // Navigation property
+
+        public virtual ICollection<ApplicationUser>? Agents { get; set; } // TeamLeader's Agents
     }
+
 }

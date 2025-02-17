@@ -5,6 +5,7 @@ using Intl.Realty.Firm.Utility.Mapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace Intl.Realty.Firm.Controllers
 {
@@ -39,8 +40,8 @@ namespace Intl.Realty.Firm.Controllers
             {
                 viewModel.DepartmentName = "No Department Assigned";
             }
-            var employmentStatus = await _unitOfWork.EmploymentStatus.GetAsync(x => x.Id == userModel.EmploymentStatusId);
 
+            var employmentStatus = await _unitOfWork.EmploymentStatus.GetAsync(x => x.Id == userModel.EmploymentStatusId);
             viewModel.EmploymentStatusName = employmentStatus.Description;
 
             var userRoles = await _userManager.GetRolesAsync(userModel);
@@ -48,7 +49,46 @@ namespace Intl.Realty.Firm.Controllers
             viewModel.Roles = userRoles.ToList();
             viewModel.Claims = userClaims.Select(x => x.Type + " : " + x.Value).ToList();
 
+            // 🔹 Fetch all users with the "TeamLeader" role
+            var teamLeaders = await _userManager.GetUsersInRoleAsync("TeamLeader");
+
+            // 🔹 Populate the dropdown list
+            viewModel.TeamLeaders = teamLeaders.Select(tl => new SelectListItem
+            {
+                Value = tl.Id.ToString(),
+                Text = $"{tl.FirstName} {tl.LastName}"
+            }).ToList();
+
+            // 🔹 Assign the current TeamLeader (if any)
+            viewModel.TeamLeaderId = userModel.TeamLeaderId;
+
             return View(viewModel);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> UpdateTeamLeader(Guid userId, Guid? teamLeaderId)
+        {
+            var user = await _userManager.FindByIdAsync(userId.ToString());
+
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            user.TeamLeaderId = teamLeaderId; // Update the TeamLeader ID
+
+            var result = await _userManager.UpdateAsync(user);
+
+            if (result.Succeeded)
+            {
+                TempData["SuccessMessage"] = "Team Leader updated successfully!";
+            }
+            else
+            {
+                TempData["ErrorMessage"] = "Failed to update Team Leader.";
+            }
+
+            return RedirectToAction("Index", new { id = userId }); // Redirect back to the profile page
         }
 
         [HttpGet]
@@ -125,15 +165,21 @@ namespace Intl.Realty.Firm.Controllers
                     {
                         ModelState.AddModelError(string.Empty, error.Description);
                     }
-
-                    return View();
+                    return View(viewModel);
                 }
 
                 await _signInManager.RefreshSignInAsync(user);
 
-                return View("ChangePasswordConfirmation");
+                // Redirect to ChangePasswordConfirmation and pass the user ID
+                return RedirectToAction("ChangePasswordConfirmation", new { userId = user.Id });
             }
             return View(viewModel);
+        }
+        [HttpGet]
+        public IActionResult ChangePasswordConfirmation(Guid userId)
+        {
+            ViewBag.UserId = userId; // Pass the user ID to the view
+            return View();
         }
         public async Task<IActionResult> ResetPassword(ResetPasswordViewModel viewModel)
         {

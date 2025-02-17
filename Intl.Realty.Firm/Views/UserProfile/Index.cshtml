@@ -5,10 +5,8 @@
     ViewData["Title"] = "Preview";
     Layout = "~/Views/Shared/_LayoutAfterLogin.cshtml";
 }
+
 <div class="c-content">
-@*     <a href="@Url.Action("Index","User")" class="text-decoration-none text-blue d-flex mb-4">
-        <i data-feather="chevron-left"></i><span>Back</span>
-    </a> *@
     <a href="##" class="back" onClick="history.go(-1); return false;">
         <i data-feather="chevron-left"></i><span>Back</span>
     </a>
@@ -38,8 +36,7 @@
                 <div class="preview-page-header">
                     <h2 class="text-blue">@Model.FirstName @Model.LastName</h2>
                     <button type="button" class="btn btn-secondary preview-change-pw"
-                            onclick="location.href='@Url.Action("ChangePassword", "UserProfile", new { id = Model.Id,})'"
-                            '">
+                            onclick="location.href='@Url.Action("ChangePassword", "UserProfile", new { id = Model.Id })'">
                         Change Password
                     </button>
                 </div>
@@ -81,38 +78,62 @@
                     <div class="col-md-6">
                         <div class="form-group">
                             <label class="control-label fw-bolder">Department</label>
-
-                            @{
-                                if (Model.DepartmentName != null)
-                                {
-                                   <p> @Model.DepartmentName</p>
-                                }
-                                else
-                                {
-                                  <p>No Department Assigned yet</p>
-                                }
-                            }
+                            <p>@(Model.DepartmentName ?? "No Department Assigned yet")</p>
                         </div>
                     </div>
 
                     <div class="col-md-6">
                         <div class="form-group">
                             <label class="control-label fw-bolder">Email Confirmation</label>
-
-                            @{
-                                if (Model.EmailConfirmed == true)
+                            <p>
+                                @if (Model.EmailConfirmed)
                                 {
-                                  <p><label class="status-ongoing pe-cursor">Confirmed</label></p>
+                                    <label class="status-ongoing pe-cursor">Confirmed</label>
                                 }
                                 else
                                 {
-                                 <p><label class="status-pending pe-cursor">Not yet confirmed</label></p>
+                                    <label class="status-pending pe-cursor">Not yet confirmed</label>
                                 }
-                    }
+                            </p>
                         </div>
                     </div>
-
                 </div>
+
+                <hr>
+
+                <!-- Success/Error Messages -->
+                @if (TempData["SuccessMessage"] != null)
+                {
+                    <div class="alert alert-success">@TempData["SuccessMessage"]</div>
+                }
+                @if (TempData["ErrorMessage"] != null)
+                {
+                    <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
+                }
+
+                <h4 class="text-blue mb-1">Assign Team Leader</h4>
+                <div class="row my-2">
+                    <div class="col-md-6">
+                        <form method="post" asp-action="UpdateTeamLeader" asp-controller="UserProfile">
+                            <input type="hidden" name="userId" value="@Model.Id" />
+
+                            <div class="form-group">
+                                <label class="fw-bolder">Select Team Leader</label>
+                                <div class="d-flex">
+                                    @Html.DropDownListFor(m => m.TeamLeaderId,
+                                             new SelectList(Model.TeamLeaders, "Value", "Text"),
+                                             "Select a Team Leader",
+                                             new { @class = "form-control rounded" })
+
+                                    <button type="submit" class="btn btn-primary ms-2 rounded">Save</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+
+
 
                 <h4 class="text-blue mb-1 roles-header">Roles associated with this user</h4>
                 <div class="row my-2">
@@ -124,25 +145,21 @@
                                 </tr>
                             </thead>
                             <tbody>
-                    @{
-                        @if (Model.Roles!.Count > 0)
-                        {
-                            @foreach (var item in Model.Roles)
-                            {
-                                            <tr>
-                                                <td>@item</td>
-                                            </tr>
-                            }
-
-                        }
-                        else
-                        {
+                                @if (Model.Roles!.Count > 0)
+                                {
+                                    @foreach (var item in Model.Roles)
+                                    {
                                         <tr>
-                                            <td>No Roles Found</td>
+                                            <td>@item</td>
                                         </tr>
-                        }
-                    }
-
+                                    }
+                                }
+                                else
+                                {
+                                    <tr>
+                                        <td>No Roles Found</td>
+                                    </tr>
+                                }
                             </tbody>
                         </table>
                     </div>
@@ -158,25 +175,21 @@
                                 </tr>
                             </thead>
                             <tbody>
-                    @{
-                        @if (Model.Claims!.Count > 0)
-                        {
-                            @foreach (var item in Model.Claims)
-                            {
-                                            <tr>
-                                                <td>@item</td>
-                                            </tr>
-                            }
-
-                        }
-                        else
-                        {
+                                @if (Model.Claims!.Count > 0)
+                                {
+                                    @foreach (var item in Model.Claims)
+                                    {
                                         <tr>
-                                            <td>No Claims Found</td>
+                                            <td>@item</td>
                                         </tr>
-                        }
-                    }
-
+                                    }
+                                }
+                                else
+                                {
+                                    <tr>
+                                        <td>No Claims Found</td>
+                                    </tr>
+                                }
                             </tbody>
                         </table>
                     </div>
@@ -195,11 +208,13 @@
     tfoot {
         display: table-header-group;
     }
-
 </style>
 
 <script>
     $(document).ready(function () {
-
+        // Optional: Show success message for a few seconds
+        setTimeout(function () {
+            $(".alert").fadeOut("slow");
+        }, 3000);
     });
 </script>
