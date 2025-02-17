@@ -27,21 +27,42 @@
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
     @* Load reCAPTCHA only when required *@
-    @if (ViewData["Title"]?.ToString() == "Login")
+    @if (ViewData["Title"]?.ToString() == "Login" || ViewData["Title"]?.ToString() == "Register")
     {
         <script src="https://www.google.com/recaptcha/api.js?render=@GoogleCaptchaConfig.Value.SiteKey"></script>
         <script>
             document.addEventListener("DOMContentLoaded", function () {
+                let submitButton = document.getElementById("submitBtn");
+
                 function getToken() {
                     grecaptcha.ready(function () {
                         grecaptcha.execute('@GoogleCaptchaConfig.Value.SiteKey', { action: 'submit' })
                             .then(function (token) {
-                                let tokenField = document.getElementById("LoginViewModelToken");
-                                if (tokenField) tokenField.value = token;
+                                let tokenField = document.getElementById("RegisterViewModelToken");
+
+                                if (tokenField) {
+                                    tokenField.value = token;
+                                    console.log("✅ reCAPTCHA Token Generated:", token);
+                                    submitButton.disabled = false; // Enable submit button
+                                }
                             })
                             .catch(function (error) {
-                                console.error("reCAPTCHA error:", error);
+                                console.error("❌ reCAPTCHA error:", error);
+                                submitButton.disabled = true; // Disable button if error occurs
                             });
+                    });
+                }
+
+                // Ensure the token is set before form submission
+                if (submitButton) {
+                    submitButton.addEventListener("click", function (event) {
+                        let tokenField = document.getElementById("RegisterViewModelToken");
+
+                        if (!tokenField.value) {
+                            event.preventDefault();
+                            alert("⚠️ Please wait for reCAPTCHA verification.");
+                            getToken(); // Try fetching token again
+                        }
                     });
                 }
 
@@ -52,6 +73,8 @@
         </script>
     }
 
+
+
     <script>
         document.addEventListener("DOMContentLoaded", function () {
             feather.replace();
@@ -60,6 +83,35 @@
             document.querySelectorAll(".required").forEach(el => {
                 el.insertAdjacentHTML('beforeend', '<span class="text-danger ms-1" aria-label="Required">*</span>');
             });
+        });
+    </script>
+
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            let form = document.querySelector("form");
+            let successMessage = document.getElementById("successMessage");
+
+            if (form) {
+                form.addEventListener("submit", function (event) {
+                    event.preventDefault(); // Prevent default form submission
+
+                    let submitButton = document.getElementById("submitBtn");
+                    submitButton.disabled = true; // Disable button
+                    submitButton.innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Processing...`;
+
+                    // Simulate form submission (Remove this delay in actual implementation)
+                    setTimeout(function () {
+                        successMessage.classList.remove("d-none"); // Show success message
+                        submitButton.innerHTML = "Redirecting...";
+
+                        // Redirect after 3 seconds
+                        setTimeout(function () {
+                            window.location.href = "/Home/Dashboard"; // Change to the desired URL
+                        }, 3000);
+                    }, 2000); // Simulating backend response delay
+                });
+            }
         });
     </script>
 

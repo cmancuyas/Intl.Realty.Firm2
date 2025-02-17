@@ -6,6 +6,7 @@ using Intl.Realty.Firm.Service.IService;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Net;
 using System.Security.Claims;
 
@@ -246,21 +247,38 @@ namespace Intl.Realty.Firm.Controllers
         }
         [HttpGet]
         [AllowAnonymous]
-        public IActionResult Register()
+        public async Task<IActionResult> Register()
         {
+            var teamLeaders = await _userManager.GetUsersInRoleAsync("TeamLeader");
 
-            return View();
+            var model = new RegisterViewModel
+            {
+                TeamLeaders = teamLeaders.Select(tl => new SelectListItem
+                {
+                    Value = tl.Id.ToString(),
+                    Text = $"{tl.FirstName} {tl.LastName}"
+                }).ToList()
+            };
+
+            return View(model);
         }
+
+
         [HttpPost]
         [AllowAnonymous]
         public async Task<IActionResult> Register(RegisterViewModel viewModel)
         {
+            _logger.LogInformation("🔍 Received reCAPTCHA Token: {Token}", viewModel.Token);
+
             var captchaResult = await _googleCaptchaService.VerifyToken(viewModel.Token);
             if (!captchaResult)
             {
+                _logger.LogError("❌ reCAPTCHA verification failed for user: {Email}", viewModel.Email);
                 ModelState.AddModelError("", "Captcha verification failed. Please try again.");
                 return View(viewModel);
             }
+
+            _logger.LogInformation("✅ reCAPTCHA verification successful for user: {Email}", viewModel.Email);
 
             if (!viewModel.UserAgreement)
             {
@@ -275,6 +293,15 @@ namespace Intl.Realty.Firm.Controllers
                     _logger.LogWarning("Register: Defaulting DepartmentId to 1 for user {Email}", viewModel.Email);
                 }
 
+                // 🔹 Capture TeamLeader ID from the form dropdown
+                Guid? teamLeaderId = viewModel.TeamLeaderId;
+
+                // 🔹 If the current user is a TeamLeader, override the dropdown selection
+                if (User.Identity.IsAuthenticated && User.IsInRole("TeamLeader"))
+                {
+                    teamLeaderId = Guid.Parse(_userManager.GetUserId(User));
+                }
+
                 var applicationUser = new ApplicationUser
                 {
                     UserName = viewModel.Email,
@@ -284,7 +311,9 @@ namespace Intl.Realty.Firm.Controllers
                     DepartmentId = (viewModel.DepartmentId == 0) ? 1 : viewModel.DepartmentId,
                     EmploymentStatusId = 1,
                     ProfilePictureId = viewModel.ProfilePictureId ?? 0,
-                    UserAgreement = viewModel.UserAgreement
+                    UserAgreement = viewModel.UserAgreement,
+                    RegistrationDate = DateTime.UtcNow,
+                    TeamLeaderId = teamLeaderId // ✅ Assign the selected TeamLeader
                 };
 
                 var result = await _userManager.CreateAsync(applicationUser, viewModel.Password);
@@ -321,8 +350,17 @@ namespace Intl.Realty.Firm.Controllers
                 }
             }
 
+            // 🔹 Reload TeamLeaders for the dropdown before returning the view
+            viewModel.TeamLeaders = (await _userManager.GetUsersInRoleAsync("TeamLeader"))
+                .Select(tl => new SelectListItem
+                {
+                    Value = tl.Id.ToString(),
+                    Text = $"{tl.FirstName} {tl.LastName}"
+                }).ToList();
+
             return View(viewModel);
         }
+
 
         [HttpGet]
         [AllowAnonymous]
