@@ -45,8 +45,8 @@ namespace Intl.Realty.Firm.Model.ViewModel.AccountVM
         [MustBeTrue(ErrorMessage = "You must accept the terms and conditions.")]
         public bool UserAgreement { get; set; } = false;
 
-        [Required(ErrorMessage = "Token is required for verification.")]
-        public string Token { get; set; } = string.Empty;
+        //[Required(ErrorMessage = "Token is required for verification.")]
+        public string? Token { get; set; } = string.Empty;
 
         /// <summary>
         /// Determines if the user should be automatically signed in after registration.

@@ -2,7 +2,7 @@
 {
     public class DeleteUserViewModel
     {
-        public int Id { get; set; }
+        public Guid Id { get; set; }
         public Guid? DeletedBy { get; set; }
         public DateTime? DeletedAt { get; set; }
     }

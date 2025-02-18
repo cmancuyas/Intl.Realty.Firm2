@@ -104,6 +104,35 @@ function OpenDeleteModal(id, controllerName) {
         $("#deleteConfirmModal").modal("show");
     });
 }
+function OpenMultipleDeleteModalAsJson(controllerName) {
+    const selectedRows = getSelectedRows();
+    const selectedIds = getIdsFromSelectedRows(selectedRows);
+
+    console.log("🔎 Selected IDs:", selectedIds); // Check if IDs exist
+
+    if (selectedIds.length === 0) {
+        alert("Please select at least one user to delete.");
+        return;
+    }
+
+    // Convert array to properly formatted query parameters (ids=id1&ids=id2)
+    let queryString = selectedIds.map(id => `ids=${encodeURIComponent(id)}`).join("&");
+
+    console.log("🔗 Final API Call URL:", `/${controllerName}/DeleteMultipleModal/?${queryString}`);
+
+    $.ajax({
+        url: `/${controllerName}/DeleteMultipleModal/?${queryString}`,
+        type: "GET",
+        success: function (response) {
+            console.log("✅ Success: Modal Loaded");
+            $('#DeleteMultipleModalContainer').html(response);
+            $("#deleteConfirmModal").modal("show");
+        },
+        error: function (xhr, status, error) {
+            console.error("❌ Failed to load delete modal:", error);
+        }
+    });
+}
 
 function MultipleDelete() {
     $('#modelTable').on('change', '.row-checkbox, .column-checkbox', function () {

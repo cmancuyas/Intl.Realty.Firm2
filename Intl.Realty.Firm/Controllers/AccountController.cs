@@ -1,4 +1,5 @@
-﻿using Intl.Realty.Firm.Helper;
+﻿using Intl.Realty.Firm.DataAccess;
+using Intl.Realty.Firm.Helper;
 using Intl.Realty.Firm.Model.Model;
 using Intl.Realty.Firm.Model.ViewModel;
 using Intl.Realty.Firm.Model.ViewModel.AccountVM;
@@ -101,17 +102,15 @@ namespace Intl.Realty.Firm.Controllers
             // ✅ Redirect users based on role
             var userRoles = await _userManager.GetRolesAsync(user);
 
-            if (userRoles.Contains("Admin") || userRoles.Contains("SuperAdmin") || userRoles.Contains("DealAdmin"))
+            var hasRole = userRoles.Any(); // ✅ Check if the user has any role
+
+            if (hasRole)
             {
                 return RedirectToAction("Dashboard", "Home");
             }
 
-            if (userRoles.Contains("Agent"))
-            {
-                return RedirectToAction("Dashboard", "Home");
-            }
+            return RedirectToAction("Index", "Training"); // ✅ Default fallback if no roles assigned
 
-            return RedirectToAction("Index", "Training"); // ✅ Default fallback
         }
 
 
@@ -264,21 +263,23 @@ namespace Intl.Realty.Firm.Controllers
         }
 
 
+
+
         [HttpPost]
         [AllowAnonymous]
         public async Task<IActionResult> Register(RegisterViewModel viewModel)
         {
-            _logger.LogInformation("🔍 Received reCAPTCHA Token: {Token}", viewModel.Token);
+            //_logger.LogInformation("🔍 Received reCAPTCHA Token: {Token}", viewModel.Token);
 
-            var captchaResult = await _googleCaptchaService.VerifyToken(viewModel.Token);
-            if (!captchaResult)
-            {
-                _logger.LogError("❌ reCAPTCHA verification failed for user: {Email}", viewModel.Email);
-                ModelState.AddModelError("", "Captcha verification failed. Please try again.");
-                return View(viewModel);
-            }
+            //var captchaResult = await _googleCaptchaService.VerifyToken(viewModel.Token);
+            //if (!captchaResult)
+            //{
+            //    _logger.LogError("❌ reCAPTCHA verification failed for user: {Email}", viewModel.Email);
+            //    ModelState.AddModelError("", "Captcha verification failed. Please try again.");
+            //    return View(viewModel);
+            //}
 
-            _logger.LogInformation("✅ reCAPTCHA verification successful for user: {Email}", viewModel.Email);
+            //_logger.LogInformation("✅ reCAPTCHA verification successful for user: {Email}", viewModel.Email);
 
             if (!viewModel.UserAgreement)
             {

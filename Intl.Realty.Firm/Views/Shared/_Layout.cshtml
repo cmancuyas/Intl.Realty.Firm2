@@ -32,43 +32,43 @@
         <script src="https://www.google.com/recaptcha/api.js?render=@GoogleCaptchaConfig.Value.SiteKey"></script>
         <script>
             document.addEventListener("DOMContentLoaded", function () {
-                let submitButton = document.getElementById("submitBtn");
+            let submitButton = document.getElementById("submitBtn");
 
-                function getToken() {
-                    grecaptcha.ready(function () {
-                        grecaptcha.execute('@GoogleCaptchaConfig.Value.SiteKey', { action: 'submit' })
-                            .then(function (token) {
-                                let tokenField = document.getElementById("RegisterViewModelToken");
+            function getToken() {
+            grecaptcha.ready(function () {
+            grecaptcha.execute('@GoogleCaptchaConfig.Value.SiteKey', { action: 'submit' })
+            .then(function (token) {
+            let tokenField = document.getElementById("RegisterViewModelToken");
 
-                                if (tokenField) {
-                                    tokenField.value = token;
-                                    console.log("✅ reCAPTCHA Token Generated:", token);
-                                    submitButton.disabled = false; // Enable submit button
-                                }
-                            })
-                            .catch(function (error) {
-                                console.error("❌ reCAPTCHA error:", error);
-                                submitButton.disabled = true; // Disable button if error occurs
-                            });
-                    });
-                }
+            if (tokenField) {
+            tokenField.value = token;
+            console.log("✅ reCAPTCHA Token Generated:", token);
+            submitButton.disabled = false; // Enable submit button
+            }
+            })
+            .catch(function (error) {
+            console.error("❌ reCAPTCHA error:", error);
+            submitButton.disabled = true; // Disable button if error occurs
+            });
+            });
+            }
 
-                // Ensure the token is set before form submission
-                if (submitButton) {
-                    submitButton.addEventListener("click", function (event) {
-                        let tokenField = document.getElementById("RegisterViewModelToken");
+            // Ensure the token is set before form submission
+            if (submitButton) {
+            submitButton.addEventListener("click", function (event) {
+            let tokenField = document.getElementById("RegisterViewModelToken");
 
-                        if (!tokenField.value) {
-                            event.preventDefault();
-                            alert("⚠️ Please wait for reCAPTCHA verification.");
-                            getToken(); // Try fetching token again
-                        }
-                    });
-                }
+            if (!tokenField.value) {
+            event.preventDefault();
+            alert("⚠️ Please wait for reCAPTCHA verification.");
+            getToken(); // Try fetching token again
+            }
+            });
+            }
 
-                // Refresh token every 115 seconds
-                setInterval(getToken, 115000);
-                getToken();
+            // Refresh token every 115 seconds
+            setInterval(getToken, 115000);
+            getToken();
             });
         </script>
     }
@@ -77,18 +77,19 @@
 
     <script>
         document.addEventListener("DOMContentLoaded", function () {
-            feather.replace();
+        feather.replace();
 
-            // Add required indicators
-            document.querySelectorAll(".required").forEach(el => {
-                el.insertAdjacentHTML('beforeend', '<span class="text-danger ms-1" aria-label="Required">*</span>');
-            });
+        // Add required indicators
+        document.querySelectorAll(".required").forEach(el => {
+        el.insertAdjacentHTML('beforeend', '<span class="text-danger ms-1" aria-label="Required">*</span>');
+        });
         });
     </script>
 
-
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
+    @if (ViewData["Title"]?.ToString() == "Register")
+    {
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
             let form = document.querySelector("form");
             let successMessage = document.getElementById("successMessage");
 
@@ -114,7 +115,7 @@
             }
         });
     </script>
-
+    }
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

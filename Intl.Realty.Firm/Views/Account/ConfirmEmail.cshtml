@@ -1,5 +1,30 @@
-﻿<h3>Thank you for confirming your email</h3>
+﻿@{
+    ViewData["Title"] = "Email Confirmed";
+    Layout = "_Layout";
+}
 
-<a asp-action="Login" asp-controller="Account" class="btn btn-primary w-25 ms-3">
-    Click here to Login
-</a>
+<container>
+    <div class="row m-0 p-0 page-login">
+        <div class="col-md-6 col-sm-12 page-login-container left-part">
+            <img src="~/files/img/logo-irf-default.jpg" alt="Logo" class="img-fluid logo-login" />
+        </div>
+        <div class="col-md-6 col-sm-12 page-login-container right-part">
+            <h2 class="fw-bolder text-center mb-md-5 mb-4 text-success">
+                Thank You for Confirming Your Email!
+            </h2>
+            <p class="fw-medium text-center w-75 mx-auto">
+                Your email has been successfully verified. You can now log in to your account and start using our services.
+            </p>
+            <hr />
+            <div class="container-fluid w-75 px-0">
+                <div class="row">
+                    <div class="col-md-12 text-center">
+                        <a asp-action="Login" asp-controller="Account" class="btn btn-primary cta">
+                            Click Here to Log In
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</container>

@@ -13,20 +13,6 @@
     <div class="row mt-4">
         <div class="col-md-12 d-flex justify-content-between align-items-center">
             <h1 class="text-blue mb-0">User Details</h1>
-            <div class="d-flex gap-4">
-                <button type="button" id="btnMultipleDelete"
-                        class="btn btn-danger d-none align-items-center"
-                        data-toggle="tooltip"
-                        data-bs-placement="left"
-                        title="Delete"
-                        onclick="OpenMultipleDeleteModal('User')">
-                    <i data-feather="trash-2"></i>
-                </button>
-                <a asp-action="Create"
-                   class="btn btn-primary d-flex align-items-center">
-                    <i data-feather="plus" class="w-15px h-auto me-1"></i>Add New
-                </a>
-            </div>
         </div>
     </div>
 
@@ -59,6 +45,7 @@
                         </div>
                     </div>
                 </div>
+
                 <div class="row my-2">
                     <div class="col-md-6">
                         <div class="form-group">
@@ -71,30 +58,6 @@
                         <div class="form-group">
                             <label class="control-label fw-bolder">Employment Status</label>
                             <p>@Model.EmploymentStatusName</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="row my-2">
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <label class="control-label fw-bolder">Department</label>
-                            <p>@(Model.DepartmentName ?? "No Department Assigned yet")</p>
-                        </div>
-                    </div>
-
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <label class="control-label fw-bolder">Email Confirmation</label>
-                            <p>
-                                @if (Model.EmailConfirmed)
-                                {
-                                    <label class="status-ongoing pe-cursor">Confirmed</label>
-                                }
-                                else
-                                {
-                                    <label class="status-pending pe-cursor">Not yet confirmed</label>
-                                }
-                            </p>
                         </div>
                     </div>
                 </div>
@@ -111,34 +74,71 @@
                     <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
                 }
 
-                <h4 class="text-blue mb-1">Assign Team Leader</h4>
-                <div class="row my-2">
-                    <div class="col-md-6">
-                        <form method="post" asp-action="UpdateTeamLeader" asp-controller="UserProfile">
-                            <input type="hidden" name="userId" value="@Model.Id" />
-
+                @if (Model.Roles.Contains("Agent"))
+                {
+                    @* <!-- Only Agents Can Change Team Leader --> *@
+                    <h4 class="text-blue mb-1 roles-header">Select Team Leader</h4>
+                    <div class="row my-2">
+                        <div class="col-md-6">
                             <div class="form-group">
-                                <label class="fw-bolder">Select Team Leader</label>
                                 <div class="d-flex">
                                     @Html.DropDownListFor(m => m.TeamLeaderId,
                                              new SelectList(Model.TeamLeaders, "Value", "Text"),
                                              "Select a Team Leader",
-                                             new { @class = "form-control rounded" })
+                                             new { @class = "form-control rounded", id = "teamLeaderDropdown" })
 
-                                    <button type="submit" class="btn btn-primary ms-2 rounded">Save</button>
+                                    <button type="button" class="btn btn-primary ms-2 rounded" id="saveTeamLeaderBtn">
+                                        Save
+                                    </button>
                                 </div>
                             </div>
-                        </form>
+                        </div>
                     </div>
-                </div>
+                }
+                else if (Model.Roles.Contains("TeamLeader"))
+                {
+                    @* <!-- Team Leaders Cannot Assign a Team Leader, Instead Show Their Members --> *@
+                    <h4 class="text-blue mb-1 roles-header">Team Members</h4>
+                    <div class="row my-2">
+                        <div class="table-responsive table-no-border">
+                            <table class="data-table table w-100">
+                                <thead>
+                                    <tr>
+                                        <th class="text-start">First Name</th>
+                                        <th class="text-start">Last Name</th>
+                                        <th class="text-start">Email</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @if (Model.TeamMembers!.Count > 0)
+                                    {
+                                        @foreach (var member in Model.TeamMembers)
+                                        {
+                                            <tr>
+                                                <td>@member.FirstName</td>
+                                                <td>@member.LastName</td>
+                                                <td>@member.Email</td>
+                                            </tr>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <tr>
+                                            <td colspan="3">No Team Members Found</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
 
 
-
+                }
 
                 <h4 class="text-blue mb-1 roles-header">Roles associated with this user</h4>
                 <div class="row my-2">
                     <div class="table-responsive table-no-border">
-                        <table id="modelTable" class="data-table table w-100">
+                        <table class="data-table table w-100">
                             <thead>
                                 <tr>
                                     <th class="text-start">Role Name</th>
@@ -165,36 +165,6 @@
                     </div>
                 </div>
 
-                <h4 class="text-blue mb-1 roles-header">Claims associated with this user</h4>
-                <div class="row my-2">
-                    <div class="table-responsive table-no-border">
-                        <table id="modelTable" class="data-table table w-100">
-                            <thead>
-                                <tr>
-                                    <th class="text-start">Claim Name</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @if (Model.Claims!.Count > 0)
-                                {
-                                    @foreach (var item in Model.Claims)
-                                    {
-                                        <tr>
-                                            <td>@item</td>
-                                        </tr>
-                                    }
-                                }
-                                else
-                                {
-                                    <tr>
-                                        <td>No Claims Found</td>
-                                    </tr>
-                                }
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
             </div>
         </div>
     </div>
@@ -204,17 +174,72 @@
     .blurry {
         filter: blur(3px);
     }
-
-    tfoot {
-        display: table-header-group;
-    }
 </style>
+
+<!-- Include SweetAlert2 -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <script>
     $(document).ready(function () {
-        // Optional: Show success message for a few seconds
+        // Hide success messages after 3 seconds
         setTimeout(function () {
             $(".alert").fadeOut("slow");
         }, 3000);
+
+        // Handle Team Leader Assignment with SweetAlert2
+        $("#saveTeamLeaderBtn").click(function () {
+            var selectedTeamLeader = $("#teamLeaderDropdown").val();
+            if (!selectedTeamLeader) {
+                Swal.fire({
+                    icon: "warning",
+                    title: "No Team Leader Selected",
+                    text: "Please select a team leader before saving.",
+                    confirmButtonColor: "#3085d6",
+                    confirmButtonText: "OK"
+                });
+                return;
+            }
+
+            Swal.fire({
+                title: "Are you sure?",
+                text: "You are about to assign a new team leader.",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Yes, Assign"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: '@Url.Action("UpdateTeamLeader", "UserProfile")',
+                        type: 'POST',
+                        data: {
+                            userId: '@Model.Id',
+                            teamLeaderId: selectedTeamLeader
+                        },
+                        success: function (response) {
+                            console.log("✅ Success Response:", response);
+                            Swal.fire({
+                                icon: "success",
+                                title: "Success",
+                                text: response.message,
+                                confirmButtonColor: "#3085d6"
+                            }).then(() => {
+                                location.reload();
+                            });
+                        },
+                        error: function (xhr, status, error) {
+                            console.error("❌ AJAX Error:", xhr.responseText);
+                            Swal.fire({
+                                icon: "error",
+                                title: "Error",
+                                text: "Something went wrong. Please try again.",
+                                confirmButtonColor: "#d33"
+                            });
+                        }
+                    });
+                }
+            });
+        });
     });
 </script>
