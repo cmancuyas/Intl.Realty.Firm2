@@ -765,74 +765,84 @@ namespace Intl.Realty.Firm.Controllers
         {
             var searchBy = dtParameters.Search?.Value;
 
-            // Default order criteria
+            // Default sorting
             var orderCriteria = "Id";
             var orderAscendingDirection = true;
-
-            // Initialize order criteria
             (orderCriteria, orderAscendingDirection) = InitializeOrderCriteria(dtParameters, orderCriteria, orderAscendingDirection);
 
-            // to get current user ID
+            // Get current user
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-            // to get current user info
             var user = await _userManager.FindByIdAsync(userId!);
 
-            // Query initialization
+            // Get user roles
             var isAdmin = await _userManager.IsInRoleAsync(user!, "Admin");
             var isSuperAdmin = await _userManager.IsInRoleAsync(user!, "SuperAdmin");
             var isAgent = await _userManager.IsInRoleAsync(user!, "Agent");
             var isDealAdmin = await _userManager.IsInRoleAsync(user!, "DealAdmin");
-            var result = await _unitOfWork.SaleCoop.AsQueryableAsync(x => x.IsDeleted == false, includeProperties: "IRFDeal,TransactionType,DealStatus");
-            if (isAdmin || isSuperAdmin)
-            {
-                // Do nothing
-            }
-            else
-            {
-                // Filter by current user
+            var isTeamLeader = await _userManager.IsInRoleAsync(user!, "TeamLeader");
 
+            // Initialize query
+            var result = await _unitOfWork.SaleCoop.AsQueryableAsync(
+                x => !x.IsDeleted,
+                includeProperties: "IRFDeal,TransactionType,DealStatus"
+            );
 
+            // 🔹 Apply role-based filtering
+            if (!(isAdmin || isSuperAdmin))
+            {
                 if (isAgent)
                 {
-                    result = result.Where(x => x.CreatedBy == user!.Id);
-                    result = result.Where(x => x.DealStatus!.Id == 2); // Saved
+                    result = result.Where(x => x.CreatedBy == user!.Id && x.DealStatus!.Id == 2); // Saved
                 }
-
-                if (isDealAdmin)
+                else if (isDealAdmin)
                 {
                     result = result.Where(x => x.DealStatus!.Id == 1); // Submitted
+                }
+                else if (isTeamLeader)
+                {
+                    // Get team members of the TeamLeader
+                    var teamMemberIds = await _userManager.Users
+                        .Where(u => u.TeamLeaderId == user!.Id)
+                        .Select(u => u.Id)
+                        .ToListAsync();
+
+                    if (teamMemberIds.Any())
+                    {
+                        result = result.Where(x => teamMemberIds.Contains(x.CreatedBy));
+                    }
                 }
             }
 
             var totalResultsCount = result.Count();
 
-            if (searchBy!.Contains(":") || searchBy.Contains("+"))
-            {
-                result = FilterSearchWithParameters(result, searchBy);
-            }
-            else
-            {
-                result = DefaultFilterSearch(result, searchBy);
-            }
+            // 🔹 Apply search filtering
+            result = searchBy!.Contains(":") || searchBy.Contains("+")
+                ? FilterSearchWithParameters(result, searchBy)
+                : DefaultFilterSearch(result, searchBy);
 
-            // Apply ordering
-            result = orderAscendingDirection ? result.OrderByDynamic(orderCriteria!, DtOrderDir.Asc) : result.OrderByDynamic(orderCriteria!, DtOrderDir.Desc);
+            // 🔹 Apply ordering
+            result = orderAscendingDirection
+                ? result.OrderByDynamic(orderCriteria!, DtOrderDir.Asc)
+                : result.OrderByDynamic(orderCriteria!, DtOrderDir.Desc);
 
-            // Get the count of filtered and total results
             var filteredResultsCount = result.Count();
 
+            // Convert results to ViewModel
             var resultList = result.ToSaleCoopListViewModel();
 
-            var users = _userManager.Users;
+            // Optimize user lookup
+            var usersDictionary = await _userManager.Users
+                .ToDictionaryAsync(u => u.Id);
 
             foreach (var item in resultList)
             {
-                user = users.Where(x => x.Id == item.CreatedBy).FirstOrDefault();
-                item.CreatedByFullName = user!.FirstName + " " + user.LastName;
+                if (usersDictionary.TryGetValue(item.CreatedBy, out var createdByUser))
+                {
+                    item.CreatedByFullName = $"{createdByUser.FirstName} {createdByUser.LastName}";
+                }
             }
 
-            // Prepare the result for DataTables
+            // 🔹 Prepare JSON response for DataTables
             var jsonResult = new DtResult<SaleCoop>
             {
                 Draw = dtParameters.Draw,

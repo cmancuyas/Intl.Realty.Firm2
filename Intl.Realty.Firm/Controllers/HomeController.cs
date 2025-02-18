@@ -17,6 +17,7 @@ using Microsoft.AspNetCore.Mvc.ViewEngines;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Intl.Realty.Firm.Models.Pagination;
+using Microsoft.EntityFrameworkCore;
 
 namespace Intl.Realty.Firm.Controllers
 {
@@ -253,6 +254,7 @@ namespace Intl.Realty.Firm.Controllers
             var isDealAdmin = await _userManager.IsInRoleAsync(user!, "DealAdmin");
             var isAdmin = await _userManager.IsInRoleAsync(user!, "Admin");
             var isSuperAdmin = await _userManager.IsInRoleAsync(user!, "SuperAdmin");
+            var isTeamLeader = await _userManager.IsInRoleAsync(user!, "TeamLeader");
 
             DashboardViewModel viewModel = new DashboardViewModel();
 
@@ -268,7 +270,22 @@ namespace Intl.Realty.Firm.Controllers
                 leaseListingIEnum = leaseListingIEnum.Where(x => x.CreatedBy == user!.Id);
                 leaseCoopIEnum = leaseCoopIEnum.Where(x => x.CreatedBy == user!.Id);
             }
+            // ? If the user is a Team Leader, show deals created by their team members
+            if (isTeamLeader)
+            {
+                var teamMembers = await _userManager.Users
+                    .Where(u => u.TeamLeaderId == user!.Id) // ?? Fetch all team members
+                    .Select(u => u.Id) // ?? Get their IDs
+                    .ToListAsync();
 
+                if (teamMembers.Any()) // Ensure they have team members
+                {
+                    saleListingIEnum = saleListingIEnum.Where(x => teamMembers.Contains(x.CreatedBy));
+                    saleCoopIEnum = saleCoopIEnum.Where(x => teamMembers.Contains(x.CreatedBy));
+                    leaseListingIEnum = leaseListingIEnum.Where(x => teamMembers.Contains(x.CreatedBy));
+                    leaseCoopIEnum = leaseCoopIEnum.Where(x => teamMembers.Contains(x.CreatedBy));
+                }
+            }
             saleListingIEnum = saleListingIEnum.OrderByDescending(x => x.CreatedAt);
             saleCoopIEnum = saleCoopIEnum.OrderByDescending(x => x.CreatedAt);
             leaseListingIEnum = leaseListingIEnum.OrderByDescending(x => x.CreatedAt);

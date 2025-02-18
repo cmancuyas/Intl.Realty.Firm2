@@ -16,6 +16,7 @@ using Intl.Realty.Firm.Model.ViewModel.AccountVM;
 using Intl.Realty.Firm.Model.Model.Identity;
 using System.Security.Claims;
 using Intl.Realty.Firm.Model.ViewModel;
+using Intl.Realty.Firm.Model.ViewModel.CustomerVM;
 
 namespace Intl.Realty.Firm.Controllers
 {
@@ -162,6 +163,91 @@ namespace Intl.Realty.Firm.Controllers
 
             return View(viewModel);
         }
+        [HttpGet]
+        public async Task<IActionResult> DeleteMultipleModal([FromQuery] List<Guid> ids)
+        {
+            if (ids == null || !ids.Any())
+            {
+                return BadRequest("No users selected.");
+            }
+
+            // Fetch current user (optional)
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var currentUser = await _userManager.FindByIdAsync(userId!);
+
+            // Fetch users using UserManager
+            var users = await Task.WhenAll(ids.Select(async id => await _userManager.FindByIdAsync(id.ToString())));
+            users = users.Where(u => u != null).ToArray();
+
+            if (!users.Any())  // Ensure data is present
+            {
+                string controllerName = this.ControllerContext.RouteData.Values["controller"]!.ToString()!;
+                var notFoundViewModel = new NotFoundViewModel
+                {
+                    ErrorTitle = $"{controllerName} not found",
+                    ErrorMessage = $"{controllerName} cannot be found!",
+                    ControllerName = controllerName,
+                    ControllerAction = "Index"
+                };
+
+                return View("NotFound", notFoundViewModel);
+            }
+
+            // Convert users to ViewModel
+            var deleteUserViewModelList = users.Select(u => new DeleteUserViewModel
+            {
+                Id = u!.Id,
+                DeletedAt = DateTime.Now,
+                DeletedBy = currentUser!.Id
+            }).ToList();
+
+            return PartialView("~/Views/User/Modal/DeleteMultipleModal.cshtml", deleteUserViewModelList);
+        }
+
+
+        [HttpPost]
+        public async Task<IActionResult> DeleteMultipleModal(IEnumerable<DeleteUserViewModel> viewModelList)
+        {
+            if (viewModelList == null || !viewModelList.Any())
+            {
+                return Json(new { success = false, message = "No users selected for deletion." });
+            }
+
+            try
+            {
+                var errors = new List<string>();
+
+                foreach (var viewModel in viewModelList)
+                {
+                    var user = await _userManager.FindByIdAsync(viewModel.Id.ToString());
+                    if (user != null)
+                    {
+                        var result = await _userManager.DeleteAsync(user);
+                        if (!result.Succeeded)
+                        {
+                            errors.Add($"Failed to delete user {user.Email}: {string.Join(", ", result.Errors.Select(e => e.Description))}");
+                        }
+                    }
+                    else
+                    {
+                        errors.Add($"User with ID {viewModel.Id} not found.");
+                    }
+                }
+
+                if (errors.Any())
+                {
+                    return Json(new { success = false, message = "Some users could not be deleted.", errors });
+                }
+
+                return Json(new { success = true, message = "Selected users have been deleted successfully." });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error deleting users");
+                return Json(new { success = false, message = "An error occurred while deleting users.", error = ex.Message });
+            }
+        }
+
         [HttpGet]
         //[Authorize(Policy = "EditRolePolicy")]
         public async Task<IActionResult> ManageUserRoles(Guid id)

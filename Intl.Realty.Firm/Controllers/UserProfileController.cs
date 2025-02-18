@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 
 namespace Intl.Realty.Firm.Controllers
 {
@@ -35,35 +36,54 @@ namespace Intl.Realty.Firm.Controllers
 
             var viewModel = userModel.ToUserProfileViewModel();
 
+            // 🔹 Fetch Department Info
             var department = await _unitOfWork.Department.GetAsync(x => x.Id == userModel.DepartmentId);
-            if (department == null)
-            {
-                viewModel.DepartmentName = "No Department Assigned";
-            }
+            viewModel.DepartmentName = department?.Description ?? "No Department Assigned";
 
+            // 🔹 Fetch Employment Status
             var employmentStatus = await _unitOfWork.EmploymentStatus.GetAsync(x => x.Id == userModel.EmploymentStatusId);
-            viewModel.EmploymentStatusName = employmentStatus.Description;
+            viewModel.EmploymentStatusName = employmentStatus?.Description ?? "Not Specified";
 
+            // 🔹 Fetch User Roles & Claims
             var userRoles = await _userManager.GetRolesAsync(userModel);
             var userClaims = await _userManager.GetClaimsAsync(userModel);
             viewModel.Roles = userRoles.ToList();
-            viewModel.Claims = userClaims.Select(x => x.Type + " : " + x.Value).ToList();
+            viewModel.Claims = userClaims.Select(x => $"{x.Type} : {x.Value}").ToList();
 
-            // 🔹 Fetch all users with the "TeamLeader" role
+            // 🔹 Fetch all users with the "TeamLeader" role for the dropdown
             var teamLeaders = await _userManager.GetUsersInRoleAsync("TeamLeader");
-
-            // 🔹 Populate the dropdown list
             viewModel.TeamLeaders = teamLeaders.Select(tl => new SelectListItem
             {
                 Value = tl.Id.ToString(),
-                Text = $"{tl.FirstName} {tl.LastName}"
+                Text = $"{tl.FirstName} {tl.LastName} ({tl.Email})"
             }).ToList();
 
             // 🔹 Assign the current TeamLeader (if any)
             viewModel.TeamLeaderId = userModel.TeamLeaderId;
 
+            // 🔹 Fetch Team Members if the user is a TeamLeader
+            if (userRoles.Contains("TeamLeader"))
+            {
+                var teamMembers = await _userManager.Users
+                    .Where(u => u.TeamLeaderId == userModel.Id)
+                    .Select(u => new TeamMemberViewModel
+                    {
+                        Id = u.Id,
+                        FirstName = u.FirstName,
+                        LastName = u.LastName,
+                        Email = u.Email
+                    }).ToListAsync();
+
+                viewModel.TeamMembers = teamMembers;
+            }
+            else
+            {
+                viewModel.TeamMembers = new List<TeamMemberViewModel>(); // Ensure it's not null
+            }
+
             return View(viewModel);
         }
+
 
         [HttpPost]
         public async Task<IActionResult> UpdateTeamLeader(Guid userId, Guid? teamLeaderId)
