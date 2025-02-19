@@ -89,6 +89,10 @@ u-none {
     float: right !important;
 }
 
+.tc {
+    text-align: center !important;
+}
+
 .m-p-0 {
     padding: 0 !important;
 }
@@ -1262,6 +1266,33 @@ input.form-control {
 .dashboard-lists .card-body {
     min-height: 25vh;
 }
+    .dashboard-lists .card-body .text-eur {
+        border-radius: 4px;
+        background-color: #198754;
+        color: white;
+        font-size: 12px;
+        font-weight: 400;
+        padding: 4px 12px;
+        display: flex;
+        align-items: center;
+    }
+
+
+.dashboard-all-deals .all-deals-ctas .all-deal-edit {
+    width: 100%;
+    margin-bottom: 6px;
+    border: 1px solid #e5e5e5;
+}
+.dashboard-all-deals .all-deals-ctas .all-deal-edit svg {
+    width: 13px;
+}
+.dashboard-all-deals .all-deals-ctas .all-deal-preview {
+    width: 100%;
+}
+    .dashboard-all-deals .all-deals-ctas .all-deal-preview svg {
+        width: 16px;
+        margin-top: -6px;
+    }
 
 #current-month-top-bar .search-cta {
     width: 50%;
@@ -1435,6 +1466,9 @@ input.form-control {
         }
 
 @media screen and (min-width: 101px) and (max-width: 768px) {
+    .dashboard-all-deals {
+        padding: 0 !important;
+    }
     .preview-page {
         justify-content: center;
     }
@@ -1955,4 +1989,10 @@ input.form-control {
 .training .accordion-collapse .alert-info {
     background: #ececec;
     border-color: #CCC;
+}
+
+/* IRF BRANDED WEBSITE */
+.brand-website {
+    margin: 2rem 0;
+    background: #FFF;
 }

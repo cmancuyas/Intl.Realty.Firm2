@@ -28,11 +28,11 @@
 
 
         </td>
-        <td>
-            <a class="btn btn-cta" type="button" asp-action="Edit" asp-controller="@item.TransactionTypeName" asp-route-id="@item.Id">
-                Edit
+        <td class="all-deals-ctas">
+            <a class="btn btn-cta all-deal-edit" type="button" asp-action="Edit" asp-controller="@item.TransactionTypeName" asp-route-id="@item.Id">
+                <i data-feather="edit" data-toggle="tooltip" data-bs-placement="left" title="Edit"></i> Edit
             </a>
-            <a class="btn btn-primary" type="button" asp-action="Preview" asp-controller="@item.TransactionTypeName" asp-route-id="@item.Id">
+            <a class="btn btn-primary all-deal-preview" type="button" asp-action="Preview" asp-controller="@item.TransactionTypeName" asp-route-id="@item.Id">
                 Preview
             </a>
         </td>
