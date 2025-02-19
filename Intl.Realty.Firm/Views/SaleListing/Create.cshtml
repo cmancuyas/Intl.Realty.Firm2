@@ -1,4 +1,4 @@
-@using Intl.Realty.Firm.Model.Model
+﻿@using Intl.Realty.Firm.Model.Model
 @using Intl.Realty.Firm.Model.ViewModel.SaleListingVM
 
 @model CreateSaleListingWithTabMenuViewModel
@@ -28,7 +28,7 @@
                 <div asp-validation-summary="All" class="text-danger"></div>
                 <input asp-for="CreateSaleListing.DealTransactionNumber" hidden/>
                 <div class="tab-page">
-                    <ul class="nav nav-tabs" id="consultantStatusManagementTab" role="tablist" style="border:none">
+                    <ul class="nav nav-tabs" id="saleListingTab" role="tablist" style="border:none">
                         @foreach (var item in Model.Menus)
                         {
                             <li class="nav-item mx-0">
@@ -326,8 +326,8 @@
                 </div>
 
                 <hr class="my-5" />
-                <div class="form-group d-flex justify-content-end gap-4">
-                    <input type="button" value="Cancel" class="btn btn-secondary w-15" onclick="window.location.href='@Url.Action("Index", "SaleListing")'" />
+                <div class="form-group d-flex justify-content-center gap-4">
+                    <input type="button" value="Cancel" class="btn btn-secondary w-15" onclick="window.location.href='@Url.Action("Index", "LeaseCoop")'" />
                     @* <button type="reset" class="btn btn-secondary w-15" onclick="$('.text-danger').hide();">Reset</button> *@
                     <button type="submit"
                             id="btnSubmit"
@@ -347,14 +347,65 @@
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
      <script src="~/js/viewDataTableUtility.js" asp-append-version="true"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script type="text/javascript">
+
         $(document).ready(function () {
+            function validateAllTabs() {
+                let hasErrors = false;
+                let firstErrorTab = null;
 
-            // onBtnSubmitCreate();
+                // ✅ Loop through all tab panes and check validation
+                $(".tab-pane").each(function () {
+                    let tabId = $(this).attr("id"); // Get the tab ID
+                    let invalidFields = $(this).find("input, textarea, select").filter(function () {
+                        let isRequired = $(this).attr("data-val-required") !== undefined; // Check if it's required
+                        let isEmpty = !$(this).val().trim(); // Check if empty
 
-            // confirmSubmitModal();
+                        return isRequired && isEmpty;
+                    });
 
-        })
+                    if (invalidFields.length > 0) {
+                        hasErrors = true;
+                        invalidFields.addClass("border-danger"); // Highlight empty fields
+
+                        if (!firstErrorTab) {
+                            firstErrorTab = tabId;
+                        }
+                    }
+                });
+
+                if (firstErrorTab) {
+                    $('.nav-tabs button[data-bs-target="#' + firstErrorTab + '"]').tab("show");
+                }
+
+                return hasErrors;
+            }
+
+            $("#btnSubmit").click(function (event) {
+                let hasErrors = validateAllTabs();
+
+                if (hasErrors) {
+                    event.preventDefault();
+
+                    Swal.fire({
+                        icon: "error",
+                        title: "Form Incomplete",
+                        text: "Please complete all required fields before submitting.",
+                        confirmButtonColor: "#d33"
+                    });
+
+                    return false;
+                }
+            });
+
+            // ✅ Remove error highlight when user enters valid input
+            $("input, textarea, select").on("input change", function () {
+                if ($(this).val().trim()) {
+                    $(this).removeClass("border-danger");
+                }
+            });
+        });
 
 
     </script>
