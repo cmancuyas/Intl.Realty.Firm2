@@ -1996,3 +1996,211 @@ input.form-control {
     margin: 2rem 0;
     background: #FFF;
 }
+    .brand-website .gold {
+        color: #c4ad87;
+        font-weight: bold;
+    }
+    .brand-website h2 {
+        font-size: 2em;
+    }
+    .brand-website h4 {
+        font-size: 1.5em;
+        letter-spacing: 0.5px;
+    }
+    .brand-website p {
+        font-size: 1.25em;
+    }
+    .brand-website p span {
+        display: block;
+        width: 100%;
+    }
+    .brand-website .included, .brand-website .sales {
+        list-style: none;
+        padding-left: 1em;
+    }
+        .brand-website .included li {
+            margin-bottom: 1em;
+            font-size: 1.5em;
+            font-weight: bold;
+        }
+        .brand-website .included li::before, .brand-website .sales li::before {
+            content: "\2713"; /* Unicode checkmark */
+            color: green;
+            font-weight: bold;
+            margin-right: 20px;
+        }
+
+.pricing-banner {
+    background-color: #c4ad87;
+    padding: 15px;
+    text-align: center;
+    font-weight: bold;
+    position: relative;
+}
+    .pricing-banner h2 {
+        font-size: 2.5rem
+    }
+    .pricing-banner small {
+        position: absolute;
+        right: 10px;
+        bottom: 5px;
+        font-weight: 400;
+    }
+    .setup-fee {
+        font-size: 1.25rem;
+        text-decoration: line-through;
+        color: #000;
+    }
+    .bonus-text {
+        font-size: 2rem;
+        color: #c00;
+        font-weight: bold;
+        margin: 0;
+    }
+    .intro-text {
+        font-size: 0.85rem;
+        color: #666;
+    }
+
+.features {
+    list-style: none;
+    padding-left: 1em;
+}
+.features li {
+    margin-bottom: 1.25em;
+    font-size: 1.1em;
+}
+    .feature-highlight {
+        color: #c4ad87;
+        margin-bottom: 0.5em;
+        font-size: 1.5em;
+    }
+
+
+
+    /* LEADS CRM PROGRAMS */
+.leads-program .leads-pack ul {
+    padding: 20px 30px; /* Remove default padding */
+    list-style: none; /* Remove default bullets */
+}
+
+    .leads-program .leads-pack ul li {
+        display: flex;
+        align-items: flex-start; /* Align the checkmark with the text */
+        gap: 10px; /* Space between checkmark and text */
+        font-size: 1.25em;
+        margin-bottom: 1em;
+    }
+
+        .leads-program .leads-pack ul li::before {
+            content: "\2713"; /* Unicode checkmark */
+            color: black; /* Adjust color if needed */
+            font-size: 1.25em; /* Match text size */
+            display: inline-block;
+            flex-shrink: 0; /* Prevents the icon from shrinking */
+        }
+.leads-program h5 {
+    text-align: center;
+    font-weight: 500;
+    color: #beac86;
+    margin: 1em auto;
+    min-height: 20px;
+}
+.leads-program h3 {
+    text-align: center;
+    padding: 25px 30px;
+}
+.leads-program .leads-all h3, .leads-program .leads-all .leads-price {
+    background: #000;
+    color: #FFF;
+}
+.leads-program .leads-all {
+    background: #FFF;
+    position: relative;
+    padding: 0 0 150px;
+}
+
+.leads-program .leads-starter h3, .leads-program .leads-starter .leads-price {
+    background: #989da1;
+    color: #000;
+}
+.leads-program .leads-starter {
+    background: #e1e1e1;
+    position: relative;
+    padding: 0 0 150px;
+}
+
+.leads-program .leads-pro h3, .leads-program .leads-pro .leads-price {
+    background: #beac86;
+    color: #000;
+}
+
+.leads-program .leads-pro {
+    background: #FFF;
+    position: relative;
+    padding: 0 0 150px;
+}
+.leads-program .leads-price {
+    padding: 15px 30px;
+    position: absolute;
+    bottom: 60px;
+    width: 100%;
+    text-align: center;
+    font-size: 2.25em;
+    font-weight: 600;
+}
+    .leads-program .leads-price span {
+        font-size: 16px !important;
+        font-weight: 300;
+    }
+.leads-program .leads-price-before {
+    width: 100%;
+    padding: 15px;
+    position: absolute;
+    bottom: 0;
+    background: #f4f4f4;
+    text-align: center;
+}
+
+.leads-features {
+    margin-top: 5em;
+}
+    .leads-features h3 {
+        text-align: center;
+        padding: 0 30px 10px;
+    }
+    .leads-features .cta-container {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background: transparent;
+        padding: 10px 0;
+        max-width: 100%;
+    }
+
+    .leads-features .cta-text {
+        color: #B19B75; /* Gold color */
+        font-size: 1.5em;
+        font-weight: bold;
+        text-transform: uppercase;
+        margin: 0;
+        white-space: nowrap; /* Prevents text wrapping */
+    }
+
+    .leads-features .cta-button {
+        background-color: #B19B75;
+        color: black;
+        font-weight: bold;
+        text-decoration: none;
+        padding: 8px 30px;
+        border-radius: 2px;
+        font-size: 1.25em;
+        text-transform: uppercase;
+        display: inline-block;
+        border: none;
+        cursor: pointer;
+    }
+
+        .leads-features .cta-button:hover {
+            background-color: #9C865E; /* Darker gold shade on hover */
+        }
