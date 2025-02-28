@@ -1048,6 +1048,10 @@ input.form-control {
 }
 
 /* LOGIN */
+.page-login .validation-summary-errors {
+    display: none;
+}
+
 .page-login, .page-registration {
     min-height: 100vh;
 }
@@ -2204,3 +2208,32 @@ input.form-control {
         .leads-features .cta-button:hover {
             background-color: #9C865E; /* Darker gold shade on hover */
         }
+
+
+        /* COMMISSION ADVANCES */
+.commission-advance a {
+    color: #203d57;
+    font-weight: 500 !important;
+}
+
+/* BUSINESS CARDS & SIGNS */
+.business-card .accordion-button {
+    border: none !important;
+    font-weight: 500;
+    color: #203d57;
+    padding: 20px 30px;
+}
+.business-card .accordion-button:not(.collapsed) {
+    background: #203d57 !important;
+    color: white !important;
+}
+.business-card a {
+    color: #203d57;
+    font-weight: 500 !important;
+}
+
+
+/* MORTGAGE PROGRAM */
+.mortgage-program {
+
+}
