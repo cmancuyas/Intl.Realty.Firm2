@@ -1048,6 +1048,10 @@ input.form-control {
 }
 
 /* LOGIN */
+.page-login .validation-summary-errors {
+    display: none;
+}
+
 .page-login, .page-registration {
     min-height: 100vh;
 }
