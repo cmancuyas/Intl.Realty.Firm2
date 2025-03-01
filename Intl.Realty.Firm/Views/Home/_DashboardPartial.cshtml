@@ -12,6 +12,7 @@
     var isDealAdmin = await _userManager.IsInRoleAsync(user!, "DealAdmin");
     var isAdmin = await _userManager.IsInRoleAsync(user!, "Admin");
     var isSuperAdmin = await _userManager.IsInRoleAsync(user!, "SuperAdmin");
+    var isTeamLead = await _userManager.IsInRoleAsync(user!, "TeamLead");
 
 }
 <style>
@@ -28,7 +29,13 @@
                     {
                         <h1 class="text-blue">Dashboard</h1>
                     }
-                    else
+
+                    else if(isTeamLead)
+                    {
+                        <h1 class="text-blue">Team Lead Dashboard</h1>
+                    }
+
+                    else 
                     {
                         <h1 class="text-blue">Admin Dashboard</h1>
                     }
