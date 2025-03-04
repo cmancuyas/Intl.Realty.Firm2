@@ -1647,6 +1647,10 @@ input.form-control {
 /*            margin-left: -15px;*/
         }
 
+        .top-bar small {
+            font-size: 0.75em;
+        }
+
         .mobile-ctas {
             flex-direction: column;
             gap: 0.6rem !important
@@ -2018,21 +2022,43 @@ input.form-control {
         display: block;
         width: 100%;
     }
+
+    .brand-website .check-list ul.included, .brand-website .check-list ul.sales {
+        padding: 0; /* Remove default padding */
+        list-style: none; /* Remove default bullets */
+    }
+
+        .brand-website .check-list ul.included li, .brand-website .check-list ul.sales li {
+            display: flex;
+            align-items: flex-start; /* Align the checkmark with the text */
+            gap: 20px; /* Space between checkmark and text */
+            font-size: 1.25em;
+            margin-bottom: 1em;
+        }
+
+            .brand-website .check-list ul.included li::before, .brand-website .check-list ul.sales li::before {
+                content: "\2713"; /* Unicode checkmark */
+                color: black; /* Adjust color if needed */
+                font-size: 1.25em; /* Match text size */
+                display: inline-block;
+                flex-shrink: 0; /* Prevents the icon from shrinking */
+            }
+
+@media screen and (min-width: 101px) and (max-width: 768px) {
+    .brand-website .brand-intro {
+        text-align: center;
+    }
+    .brand-website .brand-banner {
+        display: none;
+    }
     .brand-website .included, .brand-website .sales {
-        list-style: none;
-        padding-left: 1em;
+        padding: 0;
     }
         .brand-website .included li {
-            margin-bottom: 1em;
-            font-size: 1.5em;
-            font-weight: bold;
+            font-size: 1.1em;
+            font-weight: 400;
         }
-        .brand-website .included li::before, .brand-website .sales li::before {
-            content: "\2713"; /* Unicode checkmark */
-            color: green;
-            font-weight: bold;
-            margin-right: 20px;
-        }
+}
 
 .pricing-banner {
     background-color: #c4ad87;
@@ -2068,7 +2094,7 @@ input.form-control {
 
 .features {
     list-style: none;
-    padding-left: 1em;
+    padding-left: 0;
 }
 .features li {
     margin-bottom: 1.25em;
@@ -2181,8 +2207,7 @@ input.form-control {
         padding: 10px 0;
         max-width: 100%;
     }
-
-    .leads-features .cta-text {
+        .leads-features .cta-text {
         color: #B19B75; /* Gold color */
         font-size: 1.5em;
         font-weight: bold;
@@ -2209,31 +2234,55 @@ input.form-control {
             background-color: #9C865E; /* Darker gold shade on hover */
         }
 
+@media screen and (min-width: 101px) and (max-width: 768px) {
+    .leads-starter, .leads-pro {
+        margin-top: 2em;
+    }
+    .leads-features .cta-container {
+        display: block;
+    }
+    .leads-features .cta-container .cta-text {
+        white-space: unset;
+        text-align: center;
+        font-size: 1.2em;
+        margin-bottom: 1em;
+        font-weight: 500;
+    }
+    .leads-features .cta-button {
+        width: 100%;
+        text-align: center;
+    }
+}
 
-        /* COMMISSION ADVANCES */
-.commission-advance a {
+
+
+    /* COMMISSION ADVANCES */
+    .commission-advance a {
+        color: #203d57;
+        font-weight: 500 !important;
+    }
+
+    /* BUSINESS CARDS & SIGNS */
+    .business-card .accordion-button {
+        border: none !important;
+        font-weight: 500;
+        color: #203d57;
+        padding: 20px 30px;
+    }
+
+        .business-card .accordion-button:not(.collapsed) {
+            background: #203d57 !important;
+            color: white !important;
+        }
+
+    .business-card a {
+        color: #203d57;
+        font-weight: 500 !important;
+    }
+
+
+    /* MORTGAGE PROGRAM */
+.mortgage-program a {
     color: #203d57;
     font-weight: 500 !important;
-}
-
-/* BUSINESS CARDS & SIGNS */
-.business-card .accordion-button {
-    border: none !important;
-    font-weight: 500;
-    color: #203d57;
-    padding: 20px 30px;
-}
-.business-card .accordion-button:not(.collapsed) {
-    background: #203d57 !important;
-    color: white !important;
-}
-.business-card a {
-    color: #203d57;
-    font-weight: 500 !important;
-}
-
-
-/* MORTGAGE PROGRAM */
-.mortgage-program {
-
 }
