@@ -17,10 +17,6 @@
                         onclick="OpenMultipleDeleteModalAsJson('User')">
                     <i data-feather="trash-2"></i>
                 </button>
-                @*                 <a asp-action="Create"
-                class="btn btn-primary d-flex align-items-center">
-                <i data-feather="plus" class="w-15px h-auto me-1"></i>Add New
-                </a> *@
             </div>
         </div>
     </div>
@@ -53,7 +49,6 @@
             </ul>
         </div>
 
-
         <!-- Tab for Desktop -->
         <ul class="nav nav-tabs" id="usersManagementTab" role="tablist">
             @foreach (var item in Model.Menus)
@@ -80,8 +75,9 @@
                     <table id="modelTable" class="data-table table">
                         <thead>
                             <tr>
-                                <th class="text-center w-5"><input id="select_all" type="checkbox" class="column-checkbox no-sort no-search" data-toggle="tooltip" data-bs-placement="left" title="Select all"></th>
-                                @* <th class="text-start">@Html.DisplayNameFor(model => model.Id)</th> *@
+                                <th class="text-center w-5">
+                                    <input id="select_all" type="checkbox" class="column-checkbox no-sort no-search" data-toggle="tooltip" data-bs-placement="left" title="Select all">
+                                </th>
                                 <th class="text-start">FirstName</th>
                                 <th class="text-start">LastName</th>
                                 <th class="text-start">Email</th>
@@ -95,6 +91,7 @@
     </div>
 
 </div>
+
 <style>
     .blurry {
         filter: blur(3px);
@@ -103,28 +100,19 @@
     tfoot {
         display: table-header-group;
     }
-
 </style>
+
 <script src="~/js/viewDataTableUtility.js" asp-append-version="true"></script>
 
 <script>
     $(document).ready(function () {
-
         feather.replace();
         $('[data-toggle="tooltip"]').tooltip();
 
         BindDataTable();
-
-        document.querySelectorAll('.nav-tabs .nav-link').forEach(tab => {
-            console.log(`Tab attached: ${tab.id}`);
-        });
-
         TabSelections();
-
         MultipleDelete();
-
         SearchBoxSettings();
-
         CheckboxSelect();
 
         $('#btnConfirmDelete').click(function () {
@@ -139,64 +127,31 @@
         handleToastrNotification('addSuccess', 'New User added successfully!');
         handleToastrNotification('editSuccess', 'User updated successfully!');
         handleToastrNotification('deleteSuccess', 'Selection deleted successfully!');
-
-    }); // End of document ready
-
+    });
 
     function BindDataTable() {
-        let debounceTimer;
-
-        // Destroy previous DataTable if exists
         if ($.fn.DataTable.isDataTable('#modelTable')) {
             $('#modelTable').DataTable().destroy();
         }
 
         table = $("#modelTable").DataTable({
-            "preDrawCallback": function (settings) {
-                $('#modelTable tbody').hide();
-            },
-
-            "drawCallback": function () {
-                $('#modelTable tbody td').addClass("blurry");
-                $('#modelTable tbody').fadeIn(800);
-                setTimeout(function () {
-                    $('#modelTable tbody td').removeClass("blurry");
-                }, 400);
-            },
-
-            // Design Assets
             stateSave: true,
             autoWidth: true,
-            // ServerSide Setups
             processing: true,
             serverSide: true,
-            lengthMenu: [[5, 10, 25, 50, 100, -1], [5, 10, 25, 50, 100, "All"]],
-            pageLength: 10,
+            lengthMenu: [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]], // Default options
+            pageLength: 10, // Default pagination size
             pagingType: "full_numbers",
-            // Searching Setups
             searching: { regex: true },
             "language": {
                 "infoFiltered": "",
                 "processing": '<div class="lds-ellipsis"><div></div><div></div><div></div><div></div></div>'
             },
-            // Custom Export Buttons
             dom: 'lBfrtip',
             buttons: [
-                {
-                    text: 'Excel',
-                    action: function () {
-                        exportToExcel('User');
-                    }
-                },
-                {
-                    text: 'CSV',
-                    action: function () {
-                        exportToCsv('User');
-                    }
-                }
+                { text: 'Excel', action: function () { exportToExcel('User'); } },
+                { text: 'CSV', action: function () { exportToCsv('User'); } }
             ],
-
-            // Ajax Filter
             ajax: {
                 url: "/User/GetUserList",
                 type: "POST",
@@ -206,174 +161,72 @@
                     return JSON.stringify(data);
                 }
             },
-
-            // Columns Setups
             columns: [
                 {
                     targets: 0,
-                    data: null,
+                    data: "id",
                     className: 'text-center',
-                    sortable: false,
-                    searchable: false,
-                    orderable: false,
-                    render: function (data, type, full, meta) {
-
-                        return '<input type="checkbox" class="row-checkbox no-sort no-search" name="selectedRows" id="selectedRows" value="' + full.id + '">';
+                    render: function (data) {
+                        return data ? `<input type="checkbox" class="row-checkbox" value="${data}">` : "";
                     },
-                },
-                { data: "firstName" },
-                { data: "lastName" },
-
-                { data: "email", title: "Email" }
-
-                // {
-                //     data: "createdAt",
-                //     render: function (data, type, row) {
-                //         if (type === "display" || type === "filter") {
-                //             return moment(data).format("ddd MM/DD/YYYY HH:mm:ss");
-                //         }
-                //         return data;
-                //     }
-                // }
-            ],
-
-            // Column Definitions
-            columnDefs: [
-                { targets: "no-sort", orderable: false },
-                { targets: "no-search", searchable: false },
-                {
-                    targets: "trim",
-                    render: function (data, type, full, meta) {
-                        if (type === "display") {
-                            data = strtrunc(data, 10);
-                        }
-                        return data;
-                    }
-                },
-                { targets: "date-type", type: "date-eu" },
-
-                {
-                    targets: 4,
-                    data: null,
-                    defaultContent: 
-                    `
-                    <a class='btn btn-secondary' role='button' href='#' onclick='preview(this)'>Preview</a> 
-                    <a class='btn btn-secondary' role='button' href='#' onclick='edit(this)'>Edit</a>
-                    <a class='btn btn-secondary' role='button' href='#' onclick='manageUserRoles(this)'>Manage Roles</a>
-                    <a class='btn btn-secondary' role='button' href='#' onclick='manageUserClaims(this)'>Manage Claims</a>
-                   `
-                    ,
                     orderable: false
                 },
+                { data: "firstName", title: "Firstname", render: data => data && data !== "N/A" ? data : "-" },
+                { data: "lastName", title: "Lastname", render: data => data && data !== "N/A" ? data : "-" },
+                { data: "email", title: "Email", render: data => data && data !== "N/A" ? data : "-" },
+                {
+                    targets: 4,
+                    data: "id",
+                    render: function (data) {
+                        return data ? `
+                            <a class='btn btn-secondary' href='#' onclick='preview(this)'>Preview</a>
+                            <a class='btn btn-secondary' href='#' onclick='edit(this)'>Edit</a>
+                            <a class='btn btn-secondary' href='#' onclick='manageUserRoles(this)'>Manage Roles</a>
+                            <a class='btn btn-secondary' href='#' onclick='manageUserClaims(this)'>Manage Claims</a>
+                        ` : "-";
+                    },
+                    orderable: false
+                }
             ]
         });
-
-        // Apply debounced search
-        $('#search-input').on('input', function () {
-            clearTimeout(debounceTimer);
-            debounceTimer = setTimeout(function () {
-                table.search($('#search-input').val()).draw();
-            }, 300); // 300ms debounce delay
-        });
     }
 
 
-
-    function strtrunc(str, num) {
-        if (str.length > num) {
-            return str.slice(0, num) + "...";
-        }
-        else {
-            return str;
-        }
-    }
-
+    // Functions for User Actions
     function edit(rowContext) {
-        if (table) {
-            var data = table.row($(rowContext).parents("tr")).data();
-            // alert("Example showing row edit with id: " + data["id"] + ", name: " + data["name"]);
-
-            var id = data["id"];
-            let parameters = { id: id };
-            $.ajax({
-                url: '/User/Edit/' + id,
-                type: 'GET',
-                data: parameters,
-                contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
-                success: function (data) {
-                    window.location.href = "@Url.Action("Edit", "User")" + "/" + id;
-                }
-            });
-
+        var data = table.row($(rowContext).parents("tr")).data();
+        if (!data || !data.id) {
+            console.error("Edit action failed: No valid user ID found");
+            return;
         }
+        window.location.href = "/User/Edit/" + data.id;
     }
 
     function preview(rowContext) {
-        if (table) {
-            var data = table.row($(rowContext).parents("tr")).data();
-            // alert("Example showing row edit with id: " + data["id"] + ", name: " + data["name"]);
-
-            var id = data["id"];
-            let parameters = { id: id };
-            $.ajax({
-                url: '/User/Preview/' + id,
-                type: 'GET',
-                data: parameters,
-                contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
-                success: function (data) {
-                    window.location.href = "@Url.Action("Preview", "User")" + "/" + id;
-                }
-            });
-
+        var data = table.row($(rowContext).parents("tr")).data();
+        if (!data || !data.id) {
+            console.error("Preview action failed: No valid user ID found");
+            return;
         }
+        window.location.href = "/User/Preview/" + data.id;
     }
+
     function manageUserRoles(rowContext) {
-        if (table) {
-            var data = table.row($(rowContext).parents("tr")).data();
-            console.log("Row Data:", data);
-            if (!data || !data["id"]) {
-                console.error("No data or ID found for row");
-                return;
-            }
-            var id = data["id"];
-            let parameters = { id: id };
-            console.log("Calling URL: /User/ManageUserRoles/" + id);
-            $.ajax({
-                url: '/User/ManageUserRoles/' + id,
-                type: 'GET',
-                data: parameters,
-                contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
-                success: function (data) {
-                    console.log("Success response:", data);
-                    window.location.href = "@Url.Action("ManageUserRoles", "User")" + "/" + id;
-                },
-                error: function (xhr, status, error) {
-                    console.error("AJAX Error:", status, error);
-                }
-            });
+        var data = table.row($(rowContext).parents("tr")).data();
+        if (!data || !data.id) {
+            console.error("Manage Roles action failed: No valid user ID found");
+            return;
         }
+        window.location.href = "/User/ManageUserRoles/" + data.id;
     }
 
     function manageUserClaims(rowContext) {
-        if (table) {
-            var data = table.row($(rowContext).parents("tr")).data();
-            // alert("Example showing row edit with id: " + data["id"] + ", name: " + data["name"]);
-
-            var id = data["id"];
-            let parameters = { id: id };
-            $.ajax({
-                url: '/User/ManageUserClaims/' + id,
-                type: 'GET',
-                data: parameters,
-                contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
-                success: function (data) {
-                    window.location.href = "@Url.Action("ManageUserClaims", "User")" + "/" + id;
-                }
-            });
-
+        var data = table.row($(rowContext).parents("tr")).data();
+        if (!data || !data.id) {
+            console.error("Manage Claims action failed: No valid user ID found");
+            return;
         }
+        window.location.href = "/User/ManageUserClaims/" + data.id;
     }
-
-
 
 </script>

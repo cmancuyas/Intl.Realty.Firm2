@@ -22,9 +22,8 @@ namespace Intl.Realty.Firm.Model.Model
         public virtual EmploymentStatus? EmploymentStatus { get; set; }
 
         // 🔹 Self-referencing foreign key to link an Agent to a TeamLeader
+        [ForeignKey("TeamLeader")]
         public Guid? TeamLeaderId { get; set; } // Nullable in case the user is not an Agent
-
-        [ForeignKey("TeamLeaderId")]
         public virtual ApplicationUser? TeamLeader { get; set; } // Navigation property
 
         public virtual ICollection<ApplicationUser>? Agents { get; set; } // TeamLeader's Agents

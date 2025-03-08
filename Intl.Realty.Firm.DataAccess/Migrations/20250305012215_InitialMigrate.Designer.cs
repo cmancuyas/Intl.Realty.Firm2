@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Intl.Realty.Firm.DataAccess.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20241008125813_InitialMigrate")]
+    [Migration("20250305012215_InitialMigrate")]
     partial class InitialMigrate
     {
         /// <inheritdoc />
@@ -20,7 +20,7 @@ namespace Intl.Realty.Firm.DataAccess.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.8")
+                .HasAnnotation("ProductVersion", "9.0.0")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -145,6 +145,9 @@ namespace Intl.Realty.Firm.DataAccess.Migrations
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<Guid?>("TeamLeaderId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<bool>("TwoFactorEnabled")
                         .HasColumnType("bit");
 
@@ -169,6 +172,8 @@ namespace Intl.Realty.Firm.DataAccess.Migrations
                         .HasDatabaseName("UserNameIndex")
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
+                    b.HasIndex("TeamLeaderId");
+
                     b.ToTable("AspNetUsers", (string)null);
 
                     b.HasData(
@@ -176,7 +181,7 @@ namespace Intl.Realty.Firm.DataAccess.Migrations
                         {
                             Id = new Guid("74b7ddfa-9c71-4b95-84e2-9b5fcdef884c"),
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "4b952d11-bec3-49b1-8f53-6f67658cb877",
+                            ConcurrencyStamp = "54535f62-eeec-4780-9145-0840c97e698e",
                             Email = "superadmin@internationalrealtyfirm.com",
                             EmailConfirmed = true,
                             EmploymentStatusId = 1,
@@ -185,14 +190,130 @@ namespace Intl.Realty.Firm.DataAccess.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "SUPERADMIN@INTERNATIONALREALTYFIRM.COM",
                             NormalizedUserName = "SUPERADMIN@INTERNATIONALREALTYFIRM.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEKdQIge6HeKlQMUiRLvoYl3uYFPyW/tHxkMlB+/djp+VDwehc/M8aC7JBEhJ8F5kjw==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEKarZQbdL2baywShaDIiiATQS24lPQ7jpPAAWSxf1+ejzXHERnHr+eq7wwZYQrXRgw==",
                             PhoneNumberConfirmed = false,
-                            RegistrationDate = new DateTime(2024, 10, 8, 20, 58, 11, 475, DateTimeKind.Local).AddTicks(3864),
-                            SecurityStamp = "91014eab-5b96-4067-af9d-11d79a62d9e9",
+                            RegistrationDate = new DateTime(2025, 3, 5, 9, 22, 14, 634, DateTimeKind.Local).AddTicks(728),
+                            SecurityStamp = "d311dd10-d00f-47ce-9d21-550597299ab8",
                             TwoFactorEnabled = false,
                             UserAgreement = false,
                             UserName = "superadmin@internationalrealtyfirm.com"
                         });
+                });
+
+            modelBuilder.Entity("Intl.Realty.Firm.Model.Model.ContactEmail", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("CreatedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("DeletedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<int>("EmailCategoryId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("FirstName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("LastName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("UpdatedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EmailCategoryId");
+
+                    b.ToTable("ContactEmails");
+                });
+
+            modelBuilder.Entity("Intl.Realty.Firm.Model.Model.Customer", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Address")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("CreatedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("DeletedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FirstName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("LastName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("TelephoneNumber")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("UpdatedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Customers");
                 });
 
             modelBuilder.Entity("Intl.Realty.Firm.Model.Model.DealStatus", b =>
@@ -320,7 +441,7 @@ namespace Intl.Realty.Firm.DataAccess.Migrations
                             IsActive = true,
                             IsDeleted = false,
                             NumberRange = "1000000",
-                            Year = 2024
+                            Year = 2025
                         },
                         new
                         {
@@ -331,7 +452,7 @@ namespace Intl.Realty.Firm.DataAccess.Migrations
                             IsActive = true,
                             IsDeleted = false,
                             NumberRange = "1000000",
-                            Year = 2025
+                            Year = 2026
                         },
                         new
                         {
@@ -342,7 +463,7 @@ namespace Intl.Realty.Firm.DataAccess.Migrations
                             IsActive = true,
                             IsDeleted = false,
                             NumberRange = "1000000",
-                            Year = 2026
+                            Year = 2027
                         },
                         new
                         {
@@ -353,7 +474,7 @@ namespace Intl.Realty.Firm.DataAccess.Migrations
                             IsActive = true,
                             IsDeleted = false,
                             NumberRange = "1000000",
-                            Year = 2027
+                            Year = 2028
                         });
                 });
 
@@ -685,6 +806,52 @@ namespace Intl.Realty.Firm.DataAccess.Migrations
                             IsDeleted = false,
                             TransactionTypeId = 4
                         });
+                });
+
+            modelBuilder.Entity("Intl.Realty.Firm.Model.Model.EmailCategory", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("CreatedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("DeletedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("UpdatedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("EmailCategories");
                 });
 
             modelBuilder.Entity("Intl.Realty.Firm.Model.Model.EmploymentStatus", b =>
@@ -1562,9 +1729,26 @@ namespace Intl.Realty.Firm.DataAccess.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Intl.Realty.Firm.Model.Model.ApplicationUser", "TeamLeader")
+                        .WithMany("Agents")
+                        .HasForeignKey("TeamLeaderId");
+
                     b.Navigation("Department");
 
                     b.Navigation("EmploymentStatus");
+
+                    b.Navigation("TeamLeader");
+                });
+
+            modelBuilder.Entity("Intl.Realty.Firm.Model.Model.ContactEmail", b =>
+                {
+                    b.HasOne("Intl.Realty.Firm.Model.Model.EmailCategory", "EmailCategory")
+                        .WithMany()
+                        .HasForeignKey("EmailCategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("EmailCategory");
                 });
 
             modelBuilder.Entity("Intl.Realty.Firm.Model.Model.DocumentTypeAssignment", b =>
@@ -1786,6 +1970,11 @@ namespace Intl.Realty.Firm.DataAccess.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("Intl.Realty.Firm.Model.Model.ApplicationUser", b =>
+                {
+                    b.Navigation("Agents");
                 });
 
             modelBuilder.Entity("Intl.Realty.Firm.Model.Model.LeaseCoop", b =>

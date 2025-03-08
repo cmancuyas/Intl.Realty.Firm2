@@ -142,6 +142,9 @@ namespace Intl.Realty.Firm.DataAccess.Migrations
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<Guid?>("TeamLeaderId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<bool>("TwoFactorEnabled")
                         .HasColumnType("bit");
 
@@ -166,6 +169,8 @@ namespace Intl.Realty.Firm.DataAccess.Migrations
                         .HasDatabaseName("UserNameIndex")
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
+                    b.HasIndex("TeamLeaderId");
+
                     b.ToTable("AspNetUsers", (string)null);
 
                     b.HasData(
@@ -173,7 +178,7 @@ namespace Intl.Realty.Firm.DataAccess.Migrations
                         {
                             Id = new Guid("74b7ddfa-9c71-4b95-84e2-9b5fcdef884c"),
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "80f7a0bd-f11d-4b68-95cc-8c98166d8ee6",
+                            ConcurrencyStamp = "54535f62-eeec-4780-9145-0840c97e698e",
                             Email = "superadmin@internationalrealtyfirm.com",
                             EmailConfirmed = true,
                             EmploymentStatusId = 1,
@@ -182,10 +187,10 @@ namespace Intl.Realty.Firm.DataAccess.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "SUPERADMIN@INTERNATIONALREALTYFIRM.COM",
                             NormalizedUserName = "SUPERADMIN@INTERNATIONALREALTYFIRM.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAED7qWi68AWS47EU4nqa5Afqj7EgGFe8H9VfZ1TO9Ndijm0v3a9RFeCLj2ZNrgvONTA==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEKarZQbdL2baywShaDIiiATQS24lPQ7jpPAAWSxf1+ejzXHERnHr+eq7wwZYQrXRgw==",
                             PhoneNumberConfirmed = false,
-                            RegistrationDate = new DateTime(2025, 1, 11, 3, 8, 27, 571, DateTimeKind.Local).AddTicks(5364),
-                            SecurityStamp = "8254c61b-efc6-4747-9586-c2916b3190a2",
+                            RegistrationDate = new DateTime(2025, 3, 5, 9, 22, 14, 634, DateTimeKind.Local).AddTicks(728),
+                            SecurityStamp = "d311dd10-d00f-47ce-9d21-550597299ab8",
                             TwoFactorEnabled = false,
                             UserAgreement = false,
                             UserName = "superadmin@internationalrealtyfirm.com"
@@ -214,17 +219,27 @@ namespace Intl.Realty.Firm.DataAccess.Migrations
 
                     b.Property<string>("Email")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<int>("EmailCategoryId")
-                        .HasMaxLength(100)
                         .HasColumnType("int");
+
+                    b.Property<string>("FirstName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
+
+                    b.Property<string>("LastName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
@@ -1711,9 +1726,15 @@ namespace Intl.Realty.Firm.DataAccess.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Intl.Realty.Firm.Model.Model.ApplicationUser", "TeamLeader")
+                        .WithMany("Agents")
+                        .HasForeignKey("TeamLeaderId");
+
                     b.Navigation("Department");
 
                     b.Navigation("EmploymentStatus");
+
+                    b.Navigation("TeamLeader");
                 });
 
             modelBuilder.Entity("Intl.Realty.Firm.Model.Model.ContactEmail", b =>
@@ -1946,6 +1967,11 @@ namespace Intl.Realty.Firm.DataAccess.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("Intl.Realty.Firm.Model.Model.ApplicationUser", b =>
+                {
+                    b.Navigation("Agents");
                 });
 
             modelBuilder.Entity("Intl.Realty.Firm.Model.Model.LeaseCoop", b =>

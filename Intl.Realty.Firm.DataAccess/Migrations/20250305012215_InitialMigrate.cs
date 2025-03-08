@@ -28,6 +28,31 @@ namespace Intl.Realty.Firm.DataAccess.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Customers",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    FirstName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    LastName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    TelephoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Address = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    CreatedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    DeletedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    DeletedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Customers", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "DealStatuses",
                 columns: table => new
                 {
@@ -115,6 +140,28 @@ namespace Intl.Realty.Firm.DataAccess.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_DocumentTypes", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "EmailCategories",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Code = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    CreatedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    DeletedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    DeletedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_EmailCategories", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -269,6 +316,36 @@ namespace Intl.Realty.Firm.DataAccess.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "ContactEmails",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    EmailCategoryId = table.Column<int>(type: "int", nullable: false),
+                    FirstName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    LastName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    Email = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    CreatedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    DeletedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    DeletedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ContactEmails", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ContactEmails_EmailCategories_EmailCategoryId",
+                        column: x => x.EmailCategoryId,
+                        principalTable: "EmailCategories",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "AspNetUsers",
                 columns: table => new
                 {
@@ -280,6 +357,7 @@ namespace Intl.Realty.Firm.DataAccess.Migrations
                     ProfilePictureId = table.Column<int>(type: "int", nullable: true),
                     UserAgreement = table.Column<bool>(type: "bit", nullable: false),
                     RegistrationDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    TeamLeaderId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
@@ -298,6 +376,11 @@ namespace Intl.Realty.Firm.DataAccess.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_AspNetUsers", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_AspNetUsers_AspNetUsers_TeamLeaderId",
+                        column: x => x.TeamLeaderId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_AspNetUsers_Departments_DepartmentId",
                         column: x => x.DepartmentId,
@@ -695,10 +778,10 @@ namespace Intl.Realty.Firm.DataAccess.Migrations
                 columns: new[] { "Id", "CreatedAt", "CreatedBy", "CurrentNumber", "DeletedAt", "DeletedBy", "IsActive", "IsDeleted", "NumberRange", "UpdatedAt", "UpdatedBy", "Year" },
                 values: new object[,]
                 {
-                    { 1, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new Guid("00000000-0000-0000-0000-000000000000"), 0, null, null, true, false, "1000000", null, null, 2024 },
-                    { 2, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new Guid("00000000-0000-0000-0000-000000000000"), 0, null, null, true, false, "1000000", null, null, 2025 },
-                    { 3, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new Guid("00000000-0000-0000-0000-000000000000"), 0, null, null, true, false, "1000000", null, null, 2026 },
-                    { 4, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new Guid("00000000-0000-0000-0000-000000000000"), 0, null, null, true, false, "1000000", null, null, 2027 }
+                    { 1, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new Guid("00000000-0000-0000-0000-000000000000"), 0, null, null, true, false, "1000000", null, null, 2025 },
+                    { 2, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new Guid("00000000-0000-0000-0000-000000000000"), 0, null, null, true, false, "1000000", null, null, 2026 },
+                    { 3, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new Guid("00000000-0000-0000-0000-000000000000"), 0, null, null, true, false, "1000000", null, null, 2027 },
+                    { 4, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new Guid("00000000-0000-0000-0000-000000000000"), 0, null, null, true, false, "1000000", null, null, 2028 }
                 });
 
             migrationBuilder.InsertData(
@@ -744,8 +827,8 @@ namespace Intl.Realty.Firm.DataAccess.Migrations
 
             migrationBuilder.InsertData(
                 table: "AspNetUsers",
-                columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "DepartmentId", "Email", "EmailConfirmed", "EmploymentStatusId", "FirstName", "LastName", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "ProfilePictureId", "RegistrationDate", "SecurityStamp", "TwoFactorEnabled", "UserAgreement", "UserName" },
-                values: new object[] { new Guid("74b7ddfa-9c71-4b95-84e2-9b5fcdef884c"), 0, "4b952d11-bec3-49b1-8f53-6f67658cb877", null, "superadmin@internationalrealtyfirm.com", true, 1, "Christopher", "Mancuyas", false, null, "SUPERADMIN@INTERNATIONALREALTYFIRM.COM", "SUPERADMIN@INTERNATIONALREALTYFIRM.COM", "AQAAAAIAAYagAAAAEKdQIge6HeKlQMUiRLvoYl3uYFPyW/tHxkMlB+/djp+VDwehc/M8aC7JBEhJ8F5kjw==", null, false, null, new DateTime(2024, 10, 8, 20, 58, 11, 475, DateTimeKind.Local).AddTicks(3864), "91014eab-5b96-4067-af9d-11d79a62d9e9", false, false, "superadmin@internationalrealtyfirm.com" });
+                columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "DepartmentId", "Email", "EmailConfirmed", "EmploymentStatusId", "FirstName", "LastName", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "ProfilePictureId", "RegistrationDate", "SecurityStamp", "TeamLeaderId", "TwoFactorEnabled", "UserAgreement", "UserName" },
+                values: new object[] { new Guid("74b7ddfa-9c71-4b95-84e2-9b5fcdef884c"), 0, "54535f62-eeec-4780-9145-0840c97e698e", null, "superadmin@internationalrealtyfirm.com", true, 1, "Christopher", "Mancuyas", false, null, "SUPERADMIN@INTERNATIONALREALTYFIRM.COM", "SUPERADMIN@INTERNATIONALREALTYFIRM.COM", "AQAAAAIAAYagAAAAEKarZQbdL2baywShaDIiiATQS24lPQ7jpPAAWSxf1+ejzXHERnHr+eq7wwZYQrXRgw==", null, false, null, new DateTime(2025, 3, 5, 9, 22, 14, 634, DateTimeKind.Local).AddTicks(728), "d311dd10-d00f-47ce-9d21-550597299ab8", null, false, false, "superadmin@internationalrealtyfirm.com" });
 
             migrationBuilder.InsertData(
                 table: "DocumentTypeAssignments",
@@ -814,11 +897,21 @@ namespace Intl.Realty.Firm.DataAccess.Migrations
                 column: "EmploymentStatusId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_AspNetUsers_TeamLeaderId",
+                table: "AspNetUsers",
+                column: "TeamLeaderId");
+
+            migrationBuilder.CreateIndex(
                 name: "UserNameIndex",
                 table: "AspNetUsers",
                 column: "NormalizedUserName",
                 unique: true,
                 filter: "[NormalizedUserName] IS NOT NULL");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ContactEmails_EmailCategoryId",
+                table: "ContactEmails",
+                column: "EmailCategoryId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_DocumentTypeAssignments_DocumentTypeId",
@@ -940,6 +1033,12 @@ namespace Intl.Realty.Firm.DataAccess.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
+                name: "ContactEmails");
+
+            migrationBuilder.DropTable(
+                name: "Customers");
+
+            migrationBuilder.DropTable(
                 name: "DealTransactionNumberRanges");
 
             migrationBuilder.DropTable(
@@ -959,6 +1058,9 @@ namespace Intl.Realty.Firm.DataAccess.Migrations
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");
+
+            migrationBuilder.DropTable(
+                name: "EmailCategories");
 
             migrationBuilder.DropTable(
                 name: "DocumentTypes");
