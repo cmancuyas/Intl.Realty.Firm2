@@ -17,6 +17,7 @@ using Intl.Realty.Firm.Model.Model.Identity;
 using System.Security.Claims;
 using Intl.Realty.Firm.Model.ViewModel;
 using Intl.Realty.Firm.Model.ViewModel.CustomerVM;
+using Microsoft.IdentityModel.Tokens;
 
 namespace Intl.Realty.Firm.Controllers
 {
@@ -431,47 +432,61 @@ namespace Intl.Realty.Firm.Controllers
         public async Task<IActionResult> GetUserList([FromBody] DtParameters dtParameters)
         {
             var searchBy = dtParameters.Search?.Value;
-
-            // Default order criteria
             var orderCriteria = "Id";
             var orderAscendingDirection = true;
 
-            // Initialize order criteria
+            // Ensure default pagination size is 10
+            if (dtParameters.Length <= 0) dtParameters.Length = 10;
+
             (orderCriteria, orderAscendingDirection) = InitializeOrderCriteria(dtParameters, orderCriteria, orderAscendingDirection);
 
-            // Query initialization
-            var result = _userManager.Users;
+            var query = _userManager.Users.AsQueryable();
 
-            if (searchBy!.Contains(":") || searchBy.Contains("+"))
+            Console.WriteLine($"Initial Total Users: {query.Count()}");
+
+            if (!string.IsNullOrEmpty(searchBy))
             {
-                result = FilterSearchWithParameters(result, searchBy);
-            }
-            else
-            {
-                result = DefaultFilterSearch(result, searchBy);
+                query = searchBy.Contains(":") || searchBy.Contains("+")
+                    ? FilterSearchWithParameters(query, searchBy)
+                    : DefaultFilterSearch(query, searchBy);
             }
 
-            // Apply ordering
-            result = orderAscendingDirection ? result.OrderByDynamic(orderCriteria!, DtOrderDir.Asc) : result.OrderByDynamic(orderCriteria!, DtOrderDir.Desc);
+            Console.WriteLine($"After Filtering: {query.Count()} records remain.");
 
-            // Get the count of filtered and total results
-            var filteredResultsCount = result.Count();
-            var totalResultsCount = _userManager.Users.Count();
+            query = orderAscendingDirection
+                ? query.OrderByDynamic(orderCriteria!, DtOrderDir.Asc)
+                : query.OrderByDynamic(orderCriteria!, DtOrderDir.Desc);
 
-            // Prepare the result for DataTables
-            var jsonResult = new DtResult<ApplicationUser>
+            var totalResultsCount = await _userManager.Users.CountAsync();
+            var filteredResultsCount = await query.CountAsync();
+
+            var paginatedUsers = await query
+                .Skip(dtParameters.Start)
+                .Take(dtParameters.Length)
+                .Where(u => !string.IsNullOrEmpty(u.Id.ToString()))
+                .Select(u => new
+                {
+                    id = u.Id,
+                    firstName = u.FirstName ?? "N/A",
+                    lastName = u.LastName ?? "N/A",
+                    email = u.Email ?? "N/A"
+                })
+                .ToListAsync();
+
+            Console.WriteLine($"Pagination: Start={dtParameters.Start}, Length={dtParameters.Length}, Returned={paginatedUsers.Count}");
+
+            var jsonResult = new DtResult<object>
             {
                 Draw = dtParameters.Draw,
                 RecordsTotal = totalResultsCount,
                 RecordsFiltered = filteredResultsCount,
-                Data = await result
-                    .Skip(dtParameters.Start)
-                    .Take(dtParameters.Length)
-                    .ToListAsync()
+                Data = paginatedUsers
             };
 
             return Json(jsonResult);
         }
+
+
 
         private IQueryable<ApplicationUser> DefaultFilterSearch(IQueryable<ApplicationUser> result, string searchBy)
         {
