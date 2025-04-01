@@ -14,7 +14,7 @@ namespace Intl.Realty.Firm.Model.ViewModel.LeaseListingVM
         public DateTime DateSubmitted { get; set; }
         public string PropertyAddress { get; set; } = string.Empty;
         [Column(TypeName = "decimal(18,4)")]
-        public decimal FinalSalePrice { get; set; }
+        public decimal FinalLeasePrice { get; set; }
         public DateTime FinalClosingDate { get; set; }
         [Column(TypeName = "decimal(18,4)")]
         public decimal DepositAmount { get; set; }

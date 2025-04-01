@@ -14,7 +14,7 @@
     </a>
     <div class="row">
         <div class="col-md-12 d-flex justify-content-between align-items-center">
-            <h1 class="text-blue mb-0">LeaseListing</h1>
+            <h1 class="text-blue mb-0">Lease Listing</h1>
             <div class="d-flex gap-4">
                 <button type="button" id="btnMultipleDelete"
                         class="btn btn-danger d-none align-items-center"
@@ -94,7 +94,7 @@
                     <div class="col-md-3">
                         <div class="form-group">
                             <label class="control-label fw-bolder">Final Sale Price</label>
-                            <p>@Model.IRFDeal.FinalSalePrice</p>
+                            <p>@Model.IRFDeal.FinalLeasePrice</p>
                         </div>
                     </div>
                     <div class="col-md-3">
@@ -106,7 +106,7 @@
                     <div class="col-md-3">
                         <div class="form-group">
                             <label class="control-label fw-bolder">Deposit Amount</label>
-                            <p>@Model.IRFDeal.DepositAmount</p>
+                            <p>@Model.IRFDeal.DepositAmount.ToString("N2")</p>
                         </div>
                     </div>
                 </div>
@@ -121,20 +121,20 @@
 
                     <div class="col-md-3">
                         <div class="form-group">
-                            <label class="control-label fw-bolder">Buyers Name</label>
-                            <p>@Model.IRFDeal.BuyerName</p>
+                            <label class="control-label fw-bolder">Tenant's Name</label>
+                            <p>@Model.IRFDeal.TenantName</p>
                         </div>
                     </div>
                     <div class="col-md-3">
                         <div class="form-group">
-                            <label class="control-label fw-bolder">LandLord Name</label>
+                            <label class="control-label fw-bolder">LandLord's Name</label>
                             <p>@Model.IRFDeal.LandLordName</p>
                         </div>
                     </div>
                     <div class="col-md-3">
                         <div class="form-group">
                             <label class="control-label fw-bolder">Listing Commission Percentage</label>
-                            <p>@Model.IRFDeal.ListingCommissionPercentage</p>
+                            <p>@Model.IRFDeal.ListingCommissionPercentage.ToString("N2")</p>
                         </div>
                     </div>
                 </div>
@@ -143,7 +143,7 @@
                     <div class="col-md-3">
                         <div class="form-group">
                             <label class="control-label fw-bolder">Buying Commission Percentage</label>
-                            <p>@Model.IRFDeal.BuyingCommissionPercentage</p>
+                            <p>@Model.IRFDeal.BuyingCommissionPercentage.ToString("N2")</p>
                         </div>
                     </div>
 
@@ -170,55 +170,44 @@
                 <div class="row my-2">
                     <div class="col-md-3">
                         <div class="form-group">
-                            <label class="control-label fw-bolder">Buyer Agent Name</label>
-                            <p>@Model.IRFDeal.BuyerAgentName</p>
+                            <label class="control-label fw-bolder">Tenant's Agent Name</label>
+                            <p>@Model.IRFDeal.TenantAgentName</p>
                         </div>
                     </div>
 
                     <div class="col-md-3">
                         <div class="form-group">
-                            <label class="control-label fw-bolder">Buyer Brokerage</label>
-                            <p>@Model.IRFDeal.BuyerBrokerage</p>
+                            <label class="control-label fw-bolder">Tenant Brokerage</label>
+                            <p>@Model.IRFDeal.TenantBrokerage</p>
                         </div>
                     </div>
                     <div class="col-md-3">
                         <div class="form-group">
-                            <label class="control-label fw-bolder">Sellers Lawyer</label>
-                            <p>@Model.IRFDeal.SellersLawyer</p>
+                            <label class="control-label fw-bolder">Tenant Brokerage Fax</label>
+                            <p>@Model.IRFDeal.TenantBrokerageFax</p>
                         </div>
                     </div>
                     <div class="col-md-3">
                         <div class="form-group">
-                            <label class="control-label fw-bolder">Sellers Lawyer Address</label>
-                            <p>@Model.IRFDeal.SellersLawyerAddress</p>
+                            <label class="control-label fw-bolder">Tenant's PhoneNumber</label>
+                            <p>@Model.IRFDeal.TenantPhoneNumber</p>
                         </div>
                     </div>
                 </div>
 
                 <div class="row my-2">
-                    <div class="col-md-3">
-                        <div class="form-group">
-                            <label class="control-label fw-bolder">Sellers PhoneNumber</label>
-                            <p>@Model.IRFDeal.SellersPhoneNumber</p>
-                        </div>
-                    </div>
+
 
                     <div class="col-md-3">
                         <div class="form-group">
-                            <label class="control-label fw-bolder">Buyers Lawyer</label>
-                            <p>@Model.IRFDeal.BuyersLawyer</p>
+                            <label class="control-label fw-bolder">LandLord's PhoneNumber</label>
+                            <p>@Model.IRFDeal.LandLordPhoneNumber</p>
                         </div>
                     </div>
                     <div class="col-md-3">
                         <div class="form-group">
-                            <label class="control-label fw-bolder">Buyers Lawyer Address</label>
-                            <p>@Model.IRFDeal.BuyersLawyerAddress</p>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="form-group">
-                            <label class="control-label fw-bolder">Buyers PhoneNumber</label>
-                            <p>@Model.IRFDeal.BuyersPhoneNumber</p>
+                            <label class="control-label fw-bolder">LandLord's EmailAddress</label>
+                            <p>@Model.IRFDeal.LandLordEmailAddress</p>
                         </div>
                     </div>
                 </div>
@@ -264,7 +253,7 @@
                 <hr />
                 <div class="row my-2">
                     <div class="form-group">
-                        <label asp-for="EditLeaseListing.Notes" class="control-label fw-bolder">Notes</label>
+                        <label asp-for="Notes" class="control-label fw-bolder">Notes</label>
                     @Html.TextAreaFor(model => model.Notes, 10, 100, new { @class = "form-control", disabled = "disabled" })
 
                     </div>

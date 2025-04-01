@@ -178,7 +178,7 @@ namespace Intl.Realty.Firm.DataAccess.Migrations
                         {
                             Id = new Guid("74b7ddfa-9c71-4b95-84e2-9b5fcdef884c"),
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "54535f62-eeec-4780-9145-0840c97e698e",
+                            ConcurrencyStamp = "828f7d22-264e-41cd-b0e8-4d714fc4d8ee",
                             Email = "superadmin@internationalrealtyfirm.com",
                             EmailConfirmed = true,
                             EmploymentStatusId = 1,
@@ -187,10 +187,10 @@ namespace Intl.Realty.Firm.DataAccess.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "SUPERADMIN@INTERNATIONALREALTYFIRM.COM",
                             NormalizedUserName = "SUPERADMIN@INTERNATIONALREALTYFIRM.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEKarZQbdL2baywShaDIiiATQS24lPQ7jpPAAWSxf1+ejzXHERnHr+eq7wwZYQrXRgw==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEMjuLWp1rtP7iAn7H/oYaMc7G1tKodVZTimIh+2bW9+AehR6roIx8/cXsH+twVNh0A==",
                             PhoneNumberConfirmed = false,
-                            RegistrationDate = new DateTime(2025, 3, 5, 9, 22, 14, 634, DateTimeKind.Local).AddTicks(728),
-                            SecurityStamp = "d311dd10-d00f-47ce-9d21-550597299ab8",
+                            RegistrationDate = new DateTime(2025, 4, 1, 21, 2, 36, 21, DateTimeKind.Local).AddTicks(5369),
+                            SecurityStamp = "1a86e2b2-de02-429b-85f2-11e5b794a46a",
                             TwoFactorEnabled = false,
                             UserAgreement = false,
                             UserName = "superadmin@internationalrealtyfirm.com"
@@ -1029,15 +1029,12 @@ namespace Intl.Realty.Firm.DataAccess.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("BuyerAgentName")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("BuyerBrokerage")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("BuyerBrokerageFax")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("BuyerName")
@@ -1045,15 +1042,12 @@ namespace Intl.Realty.Firm.DataAccess.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("BuyersLawyer")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("BuyersLawyerAddress")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("BuyersPhoneNumber")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<decimal>("BuyingCommissionPercentage")
@@ -1080,7 +1074,10 @@ namespace Intl.Realty.Firm.DataAccess.Migrations
                     b.Property<DateTime>("FinalClosingDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<decimal>("FinalSalePrice")
+                    b.Property<decimal?>("FinalLeasePrice")
+                        .HasColumnType("decimal(18,4)");
+
+                    b.Property<decimal?>("FinalSalePrice")
                         .HasColumnType("decimal(18,4)");
 
                     b.Property<bool>("IsActive")
@@ -1089,20 +1086,23 @@ namespace Intl.Realty.Firm.DataAccess.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
+                    b.Property<string>("LandLordEmailAddress")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("LandLordName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("LandLordPhoneNumber")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("ListingAgentName")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ListingBrokerage")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ListingBrokerageFax")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<decimal>("ListingCommissionPercentage")
@@ -1113,15 +1113,30 @@ namespace Intl.Realty.Firm.DataAccess.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("SellersLawyer")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("SellersLawyerAddress")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("SellersPhoneNumber")
-                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("TenantAgentName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("TenantBrokerage")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("TenantBrokerageFax")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("TenantEmailAddress")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("TenantName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("TenantPhoneNumber")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime?>("UpdatedAt")
