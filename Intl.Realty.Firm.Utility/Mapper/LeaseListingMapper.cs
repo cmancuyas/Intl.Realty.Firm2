@@ -35,7 +35,7 @@ namespace Intl.Realty.Firm.Utility.Mapper
                 Notes = model.Notes,
 
                 TransactionType = model.TransactionType,
-                EditIRFDealViewModel = model.IRFDeal!.ToEditIRFDealViewModel(),
+                EditIRFDealLeaseViewModel = model.IRFDeal!.ToEditIRFDealLeaseViewModel(),
                 DealStatus = model.DealStatus,  
 
                 IsActive = model.IsActive,
@@ -129,7 +129,7 @@ namespace Intl.Realty.Firm.Utility.Mapper
                     DateCreated = x.CreatedAt,
                     DateSubmitted = x.DateSubmitted??DateTime.MinValue,
                     PropertyAddress = x.IRFDeal!.PropertyAddress,
-                    FinalSalePrice = x.IRFDeal!.FinalSalePrice,
+                    FinalLeasePrice = x.IRFDeal.FinalLeasePrice ?? 0,
                     FinalClosingDate = x.IRFDeal.FinalClosingDate,
                     DepositAmount = x.IRFDeal.DepositAmount,
                     DepositDate = x.IRFDeal.DepositDate,

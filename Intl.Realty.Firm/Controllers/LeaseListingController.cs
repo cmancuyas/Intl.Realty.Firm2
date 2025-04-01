@@ -133,131 +133,80 @@ namespace Intl.Realty.Firm.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(CreateLeaseListingWithTabMenuViewModel viewModel)
         {
-            // to get current user ID
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-            // to get current user info
             var user = await _userManager.FindByIdAsync(userId!);
+            var transactionTypeName = _transactionTypeName;
 
-            string transactionTypeName = _transactionTypeName; // 1 = Sale Listing
-
-            var transactionType = await _unitOfWork.TransactionType.GetAsync(x => x.Description == _transactionTypeName); //Sale Listing
+            var transactionType = await _unitOfWork.TransactionType.GetAsync(x => x.Description == transactionTypeName);
             viewModel.CreateLeaseListing.TransactionType = await _unitOfWork.TransactionType.GetByNameAsync(transactionType.Description);
             viewModel.CreateLeaseListing.TransactionTypeId = transactionType.Id;
+            viewModel.CreateLeaseListing.CreatedByFullName = $"{user!.FirstName} {user.LastName}";
 
-            var yearValidation = LinqExtensions.AndAlso<DealTransactionNumberRange>(x => x.IsDeleted == false, x => x.Year == DateTime.Now.Year);
+            await UpdateTransactionNumberAsync();
 
-            var numberRange = await _unitOfWork.DealTransactionNumberRange.GetAsync(yearValidation);
-            numberRange.CurrentNumber += 1;
-            if (numberRange != null)
+            await PopulateDocumentTypesAsync(viewModel, transactionTypeName);
+            ApplyTabMenu(viewModel, "IRFDetails1");
+
+            if (!ModelState.IsValid)
             {
-                await _unitOfWork.DealTransactionNumberRange.UpdateAsync(numberRange);
-                _unitOfWork.SaveAsync();
+                var notification = _notificationService.Notify(
+                    "Please review the form for errors. All required fields must be filled correctly.",
+                    "Validation Failed",
+                    NotificationType.error
+                );
+                TempData["Message"] = JsonConvert.SerializeObject(notification);
+
+                return View("Index", viewModel);
             }
 
+            // Create IRF Deal
+            var createIRFDealModel = viewModel.CreateLeaseListing.CreateIRFDealLeaseViewModel?.ToIRFDealModel();
+            createIRFDealModel!.CreatedAt = DateTime.Now;
+            createIRFDealModel.CreatedBy = user.Id;
+            createIRFDealModel.IsActive = true;
+            createIRFDealModel.IsDeleted = false;
 
-            var documentTypeAssignmentIEnum = await _unitOfWork.DocumentTypeAssignment.GetAllAsync(x => x.IsDeleted == false, includeProperties: "TransactionType,DocumentType");
-            var documentTypeIEnum = await _unitOfWork.DocumentType.GetAllAsync(x => x.IsDeleted == false);
-            var documentTypeAssignmentList = documentTypeAssignmentIEnum.ToList();
-            var documentTypeList = documentTypeIEnum.ToList();
-            viewModel.CreateLeaseListing.DocumentTypeList = _documentTransactionService
-                                                            .GetDocumentTypesFromDocumentTypeAssignment(transactionTypeName,
-                                                                                                        documentTypeAssignmentList,
-                                                                                                        documentTypeList);
-            viewModel.CreateLeaseListing.CreatedByFullName = user!.FirstName + " " + user.LastName;
+            await _unitOfWork.IRFDeal.AddAsync(createIRFDealModel);
+            var newIRFDeal = await _unitOfWork.IRFDeal.GetAsync(x => x.Id == createIRFDealModel.Id);
 
-            var menus = CreateDealTransactionTabMenuData.GetCreateDealTransactionTabMenuData();
+            // Sync IRF deal info to viewModel
+            viewModel.CreateLeaseListing.IRFDealId = newIRFDeal!.Id;
+            viewModel.CreateLeaseListing.CreateIRFDealLeaseViewModel!.IsActive = newIRFDeal.IsActive;
+            viewModel.CreateLeaseListing.CreateIRFDealLeaseViewModel.CreatedBy = newIRFDeal.CreatedBy;
+            viewModel.CreateLeaseListing.CreateIRFDealLeaseViewModel.CreatedAt = newIRFDeal.CreatedAt;
 
-            string controllerName = "IRFDetails1";
+            // Create Lease Listing
+            viewModel.CreateLeaseListing.DealStatusId = viewModel.CreateLeaseListing.DealStatusId == 0 ? 1 : viewModel.CreateLeaseListing.DealStatusId;
+            viewModel.CreateLeaseListing.IsActive = true;
+            viewModel.CreateLeaseListing.IsDeleted = false;
+            viewModel.CreateLeaseListing.CreatedBy = user.Id;
+            viewModel.CreateLeaseListing.CreatedAt = DateTime.Now;
 
-            foreach (var menu in menus.Where(x => x.Menu == controllerName))
+            var leaseListingModel = viewModel.CreateLeaseListing.ToLeaseListingModel();
+            await _unitOfWork.LeaseListing.AddAsync(leaseListingModel);
+
+            // Handle File Uploads
+            if (viewModel.CreateLeaseListing.CreateFileUploadListViewModel?.CreateFileUploadsViewModel != null)
             {
-                menu.IsActive = "active";
-                menu.IsSelected = "true";
+                var uploadPath = CreateFilePath(leaseListingModel.Id);
+                await CreateFileUploadData(
+                    viewModel.CreateLeaseListing.CreateFileUploadListViewModel.CreateFileUploadsViewModel,
+                    leaseListingModel.Id,
+                    transactionType.Id,
+                    viewModel.CreateLeaseListing.DocumentTypeList,
+                    uploadPath
+                );
             }
 
-            viewModel.Menus = menus;
-
-            if (ModelState.IsValid)
+            // Send email to Deal Admin if submitted
+            if (viewModel.CreateLeaseListing.DealStatusId == 1)
             {
-                // Create IRF Deal Data
-                viewModel.CreateLeaseListing.TransactionType = transactionType;
-
-                var createIRFDealModel = viewModel.CreateLeaseListing.CreateIRFDealViewModel?.ToIRFDealModel();
-                createIRFDealModel!.CreatedAt = DateTime.Now;
-                createIRFDealModel.CreatedBy = user!.Id;
-                createIRFDealModel.IsActive = true;
-                createIRFDealModel.IsDeleted = false;
-                await _unitOfWork.IRFDeal.AddAsync(createIRFDealModel);
-
-                var NewIRFDeal = await _unitOfWork.IRFDeal.GetAsync(x => x.Id == createIRFDealModel.Id);
-
-                // Get IRF Deal Data
-                viewModel.CreateLeaseListing.TransactionTypeId = transactionType.Id;
-                viewModel.CreateLeaseListing.TransactionType = transactionType;
-                viewModel.CreateLeaseListing.IRFDealId = NewIRFDeal.Id;
-                if (NewIRFDeal != null)
-                {
-                    viewModel.CreateLeaseListing.CreateIRFDealViewModel!.IsActive = NewIRFDeal.IsActive;
-                    viewModel.CreateLeaseListing.CreateIRFDealViewModel.CreatedBy = NewIRFDeal.CreatedBy;
-                    viewModel.CreateLeaseListing.CreateIRFDealViewModel.CreatedAt = NewIRFDeal.CreatedAt;
-                }
-
-                // Create LeaseListing Data
-                viewModel.CreateLeaseListing.TransactionTypeId = transactionType.Id;
-                viewModel.CreateLeaseListing.IRFDealId = NewIRFDeal!.Id;
-                if (viewModel.CreateLeaseListing.DealStatusId == 0)
-                {
-                    viewModel.CreateLeaseListing.DealStatusId = 1; // Submitted
-
-                }
-                viewModel.CreateLeaseListing.IsActive = true;
-                viewModel.CreateLeaseListing.IsDeleted = false;
-                viewModel.CreateLeaseListing.CreatedBy = user!.Id;
-                viewModel.CreateLeaseListing.CreatedAt = DateTime.Now;
-
-                var leaseListingModel = viewModel.CreateLeaseListing.ToLeaseListingModel();
-                await _unitOfWork.LeaseListing.AddAsync(leaseListingModel);
-
-                // Create FileUploadData
-                if (viewModel.CreateLeaseListing.CreateFileUploadListViewModel?.CreateFileUploadsViewModel != null)
-                {
-                    var uploadPath = CreateFilePath(leaseListingModel.Id);
-
-                    await CreateFileUploadData(viewModel.CreateLeaseListing.CreateFileUploadListViewModel.CreateFileUploadsViewModel,
-                                                leaseListingModel.Id,
-                                                transactionType.Id,
-                                                viewModel.CreateLeaseListing.DocumentTypeList,
-                                                uploadPath);
-
-                }
-
-                if (viewModel.CreateLeaseListing.DealStatusId == 1) // If Submitted, send email to DealAdmin
-                {
-                    var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-
-                    var dealLink = Url.Action("Login", "Account",
-                                                                new { id = leaseListingModel.Id, token = token }, Request.Scheme);
-
-                    var dealAdminEmails = await GetDealAdminEmails();
-
-                    var userRoles = await _userManager.GetRolesAsync(user);
-
-                    var mailRequest = EmailRequest.SendNotificationWhenDealIsSubmitted(user,
-                                                                                   userRoles,
-                                                                                   viewModel.CreateLeaseListing.TransactionType.Description,
-                                                                                   dealAdminEmails,
-                                                                                   leaseListingModel.DealTransactionNumber,
-                                                                                   dealLink!);
-
-                    await _emailService.SendEmailAsync(mailRequest);
-                }
-
-                return RedirectToAction(nameof(Index), new { addSuccess = true });
+                await NotifyDealAdminAsync(user, leaseListingModel);
             }
 
-            return View("Index");
+            return RedirectToAction(nameof(Index), new { addSuccess = true });
         }
+
         private async Task<List<InternalEmail>> GetDealAdminEmails()
         {
             List<InternalEmail> internalEmails = new List<InternalEmail>();
@@ -489,7 +438,7 @@ namespace Intl.Realty.Firm.Controllers
 
                 var irfDealModel = await _unitOfWork.IRFDeal.GetAsync(x => x.Id == leaseListingModel.IRFDealId, tracked: true);
 
-                leaseListingModel.IRFDeal = viewModel.EditLeaseListing.EditIRFDealViewModel?.ToIRFDealModel();
+                leaseListingModel.IRFDeal = viewModel.EditLeaseListing.EditIRFDealLeaseViewModel?.ToIRFDealModel();
                 leaseListingModel.IRFDeal!.CreatedAt = irfDealModel.CreatedAt;
                 leaseListingModel.IRFDeal.CreatedBy = irfDealModel.CreatedBy;
                 leaseListingModel.IRFDeal.UpdatedAt = DateTime.Now;
@@ -1069,5 +1018,69 @@ namespace Intl.Realty.Firm.Controllers
             }
             return null!;
         }
+
+        #region Helper Methods
+        private async Task UpdateTransactionNumberAsync()
+        {
+            var yearValidation = LinqExtensions.AndAlso<DealTransactionNumberRange>(
+                x => x.IsDeleted == false,
+                x => x.Year == DateTime.Now.Year
+            );
+
+            var numberRange = await _unitOfWork.DealTransactionNumberRange.GetAsync(yearValidation);
+            if (numberRange != null)
+            {
+                numberRange.CurrentNumber += 1;
+                await _unitOfWork.DealTransactionNumberRange.UpdateAsync(numberRange);
+                await _unitOfWork.SaveAsync();
+            }
+        }
+
+        private async Task PopulateDocumentTypesAsync(CreateLeaseListingWithTabMenuViewModel viewModel, string transactionTypeName)
+        {
+            var assignments = await _unitOfWork.DocumentTypeAssignment.GetAllAsync(x => !x.IsDeleted, includeProperties: "TransactionType,DocumentType");
+            var types = await _unitOfWork.DocumentType.GetAllAsync(x => !x.IsDeleted);
+
+            viewModel.CreateLeaseListing.DocumentTypeList =
+                _documentTransactionService.GetDocumentTypesFromDocumentTypeAssignment(
+                    transactionTypeName,
+                    assignments.ToList(),
+                    types.ToList()
+                );
+        }
+
+        private void ApplyTabMenu(CreateLeaseListingWithTabMenuViewModel viewModel, string controllerName)
+        {
+            var menus = CreateDealTransactionTabMenuData.GetCreateDealTransactionTabMenuData();
+
+            foreach (var menu in menus.Where(x => x.Menu == controllerName))
+            {
+                menu.IsActive = "active";
+                menu.IsSelected = "true";
+            }
+
+            viewModel.Menus = menus;
+        }
+
+        private async Task NotifyDealAdminAsync(ApplicationUser user, LeaseListing leaseListing)
+        {
+            var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+            var dealLink = Url.Action("Login", "Account", new { id = leaseListing.Id, token }, Request.Scheme);
+            var dealAdminEmails = await GetDealAdminEmails();
+            var userRoles = await _userManager.GetRolesAsync(user);
+
+            var emailRequest = EmailRequest.SendNotificationWhenDealIsSubmitted(
+                user,
+                userRoles,
+                leaseListing.TransactionType.Description,
+                dealAdminEmails,
+                leaseListing.DealTransactionNumber,
+                dealLink!
+            );
+
+            await _emailService.SendEmailAsync(emailRequest);
+        }
+
+        #endregion
     }
 }

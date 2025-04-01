@@ -1,16 +1,26 @@
 ﻿<script>
-    var msg = @(TempData["Message"] != null? Html.Raw(TempData["Message"]) : Html.Raw("undefined"));
-    console.log(msg)
-    if (msg) {
-        if (msg.Provider == "sweetAlert") {
-            swal.fire({
+    var msg = @(TempData["Message"] != null
+        ? Html.Raw(System.Text.Json.JsonSerializer.Serialize(TempData["Message"]))
+        : "undefined");
+
+    console.log("Message from TempData:", msg);
+
+    if (msg && msg !== "undefined") {
+        if (msg.Provider === "sweetAlert") {
+            Swal.fire({
                 title: msg.Title,
                 text: msg.Message,
                 icon: msg.Icon
-            })
-        } else {
-            toastr[msg.Type](msg.Text, msg.Message)
+            });
+        } else if (msg.Provider === "toastr") {
+            const validTypes = ["success", "error", "info", "warning"];
+            const type = msg.Type?.toLowerCase();
+
+            if (validTypes.includes(type)) {
+                toastr[type](msg.Text, msg.Message);
+            } else {
+                console.warn("Invalid toastr type:", msg.Type);
+            }
         }
     }
-
 </script>
