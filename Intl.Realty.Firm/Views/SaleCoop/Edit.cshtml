@@ -2,6 +2,7 @@
 @using Intl.Realty.Firm.Model.ViewModel.SaleCoopVM
 @using Microsoft.AspNetCore.Identity
 @using System.Security.Claims
+@using Newtonsoft.Json
 
 @inject UserManager<ApplicationUser> _userManager;
 
@@ -182,9 +183,6 @@
                                     <span asp-validation-for="EditSaleCoop.EditIRFDealSaleCoopViewModel.BuyingCommissionPercentage" class="text-danger"></span>
                                 </div>
                             </div>
-
-                        </div>
-                        <div class="row">
                             <div class="col-md-6 mt-4">
                                 <div class="form-group">
                                     <label asp-for="EditSaleCoop.EditIRFDealSaleCoopViewModel.ListingAgentName" class="control-label fw-bolder">Listing Agent Name</label>
@@ -192,6 +190,9 @@
                                     <span asp-validation-for="EditSaleCoop.EditIRFDealSaleCoopViewModel.ListingAgentName" class="text-danger"></span>
                                 </div>
                             </div>
+                        </div>
+                        <div class="row">
+
                             <div class="col-md-6 mt-4">
                                 <div class="form-group">
                                     <label asp-for="EditSaleCoop.EditIRFDealSaleCoopViewModel.ListingBrokerage" class="control-label fw-bolder">Listing Brokerage</label>
@@ -200,10 +201,6 @@
                                 </div>
                             </div>
 
-                        </div>
-                        <div class="row">
-
-
                             <div class="col-md-6 mt-4">
                                 <div class="form-group">
                                     <label asp-for="EditSaleCoop.EditIRFDealSaleCoopViewModel.ListingBrokerageFax" class="control-label fw-bolder">Listing Brokerage Fax</label>
@@ -211,8 +208,6 @@
                                     <span asp-validation-for="EditSaleCoop.EditIRFDealSaleCoopViewModel.ListingBrokerageFax" class="text-danger"></span>
                                 </div>
                             </div>
-
-
                         </div>
 
                     </div>
@@ -498,6 +493,7 @@
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
     <script src="~/js/viewdatatableutility.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script type="text/javascript">
         $(document).ready(function () {
             onBtnSave();
@@ -523,6 +519,7 @@
 
         function onBtnSubmit() {
             $('#btnSubmit').on('click', function () {
+
                 if (filesValidation()) {
                     $('#DealStatusId').val(1); // Set deal status to "Saved" when submitting
                     $('#confirmSubmitModal').modal('show');
@@ -536,14 +533,15 @@
 
 
         function filesValidation() {
+              
             var SaleCoopId = '@Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.EditSaleCoop.Id))';
-            var documentTypeListSerialized = '@Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.EditSaleCoop.DocumentTypeList))';
+            var documentTypeList = @Html.Raw(JsonConvert.SerializeObject(Model.EditSaleCoop.DocumentTypeList));
             var openModalFlag = true;
-
-            var documentTypeList = JSON.parse(documentTypeListSerialized);
             var error = [];
 
             var documentTypesWithFileUploads = [];
+
+            // Synchronously fetch uploaded documents
             $.ajax({
                 url: '/SaleCoop/GetDocumentTypesThatHasFileUploads/',
                 type: 'GET',
@@ -554,28 +552,26 @@
                 }
             });
 
+            // Validate each document type
             documentTypeList.forEach(function (item, index) {
-                var formFiles = document.forms['ListFormId']['EditSaleCoop.CreateFileUploadListViewModel.CreateFileUploadsViewModel[' + index + '].Files'];
-                var documentType = documentTypesWithFileUploads.find(x => x == item.Id);
+             
+                var inputName = 'EditSaleCoop.CreateFileUploadListViewModel.CreateFileUploadsViewModel[' + index + '].Files';
+                var formFiles = document.forms['ListFormId'][inputName];
+                var hasExistingUpload = documentTypesWithFileUploads.includes(item.Id);
 
-                if (
-                    (item.IsRequired && formFiles.value !== "") ||
-                    (!item.IsRequired && formFiles.value === "") ||
-                    (!item.IsRequired && formFiles.value !== "") ||
-                    (documentType && item.IsRequired)
-                ) {
-                    // valid
-                } else {
+                var isRequired = item.IsRequired === true;
+                var fileProvided = formFiles && formFiles.files && formFiles.files.length > 0;
+
+                if (isRequired && !fileProvided && !hasExistingUpload) {
                     openModalFlag = false;
-                    var title = item.Description + " is required.";
-                    error.push(title);
+                    error.push(`${item.Description} is required.`);
                 }
             });
 
             if (error.length > 0) {
                 Swal.fire({
-                    title: error[0],
-                    text: "Please upload the required documents to proceed with the application.",
+                    title: "Missing Required Document",
+                    text: error[0], // Show the first error (you could also show all in a loop if needed)
                     icon: "error",
                     confirmButtonColor: '#203D57'
                 });
@@ -583,6 +579,7 @@
 
             return openModalFlag;
         }
+
 
     </script>
 }
