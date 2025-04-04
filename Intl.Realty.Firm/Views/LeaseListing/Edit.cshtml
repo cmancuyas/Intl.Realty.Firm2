@@ -2,6 +2,7 @@
 @using Intl.Realty.Firm.Model.ViewModel.LeaseListingVM
 @using Microsoft.AspNetCore.Identity
 @using System.Security.Claims
+@using Newtonsoft.Json
 
 @inject UserManager<ApplicationUser> _userManager;
 
@@ -492,6 +493,7 @@
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
     <script src="~/js/viewdatatableutility.js"></script>
+            <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script type="text/javascript">
         $(document).ready(function () {
             onBtnSave();
@@ -531,10 +533,9 @@
 
         function filesValidation() {
             var LeaseListingId = '@Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.EditLeaseListing.Id))';
-            var documentTypeListSerialized = '@Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.EditLeaseListing.DocumentTypeList))';
+            var documentTypeList = @Html.Raw(JsonConvert.SerializeObject(Model.EditLeaseListing.DocumentTypeList));
             var openModalFlag = true;
 
-            var documentTypeList = JSON.parse(documentTypeListSerialized);
             var error = [];
 
             var documentTypesWithFileUploads = [];

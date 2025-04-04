@@ -35,8 +35,6 @@
 }
 
 function loadTopBarPaginationCurrentMonth(action, pageIndex, pageSize, searchText, sortExpression, tableName) {
-    debugger;
-
     $.ajax({
         url: '/Home/LoadDashboardData', // Adjust this URL to match your handler
         data: {

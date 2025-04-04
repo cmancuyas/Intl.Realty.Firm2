@@ -490,7 +490,7 @@ namespace Intl.Realty.Firm.Controllers
 
             // Role-specific logic
             var isAgent = await _userManager.IsInRoleAsync(user, "Agent");
-            saleCoopModel.DealStatusId = isAgent ? dealStatusId : viewModel.EditSaleCoop.DealStatusId;
+            saleCoopModel.DealStatusId = dealStatusId;
 
             // Update SaleCoop properties
             saleCoopModel.Notes = viewModel.EditSaleCoop.Notes;
