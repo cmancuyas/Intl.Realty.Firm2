@@ -105,7 +105,7 @@ namespace Intl.Realty.Firm.Controllers
 
                 // Add and save
                 await _unitOfWork.ContactEmail.AddAsync(newContactEmail);
-                await _unitOfWork.SaveAsync();
+                await _unitOfWork.SaveChangesAsync();
 
                 return RedirectToAction(nameof(Index), new { addSuccess = true });
             }

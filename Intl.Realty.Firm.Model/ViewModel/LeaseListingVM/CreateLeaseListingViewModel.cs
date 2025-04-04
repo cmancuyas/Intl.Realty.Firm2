@@ -11,7 +11,7 @@ namespace Intl.Realty.Firm.Model.ViewModel.LeaseListingVM
         public string DealTransactionNumber { get; set; } = string.Empty;
         public int TransactionTypeId { get; set; }
         public int IRFDealId { get; set; }
-        public CreateIRFDealLeaseViewModel CreateIRFDealLeaseViewModel { get; set; } = new CreateIRFDealLeaseViewModel();
+        public CreateIRFDealLeaseListingViewModel CreateIRFDealLeaseListingViewModel { get; set; } = new CreateIRFDealLeaseListingViewModel();
         public CreateFileUploadListViewModel CreateFileUploadListViewModel { get; set; } = new CreateFileUploadListViewModel();
         public int DealStatusId { get; set; }
         public DateTime? DateSubmitted { get; set; }

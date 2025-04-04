@@ -14,7 +14,7 @@ namespace Intl.Realty.Firm.Model.ViewModel.LeaseListingVM
         public int TransactionTypeId { get; set; }
         public int IRFDealId { get; set; }
         public DateTime? DateSubmitted { get; set; }
-        public EditIRFDealLeaseViewModel EditIRFDealLeaseViewModel { get; set; } = new EditIRFDealLeaseViewModel();
+        public EditIRFDealLeaseListingViewModel EditIRFDealLeaseListingViewModel { get; set; } = new EditIRFDealLeaseListingViewModel();
         public CreateFileUploadListViewModel? CreateFileUploadListViewModel { get; set; }
         public List<FileUpload>? FileUploads { get; set; }
         public string? Notes { get; set; }

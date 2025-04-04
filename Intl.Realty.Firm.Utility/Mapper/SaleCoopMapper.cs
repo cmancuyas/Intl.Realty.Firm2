@@ -35,7 +35,7 @@ namespace Intl.Realty.Firm.Utility.Mapper
                 Notes = model.Notes,
 
                 TransactionType = model.TransactionType,
-                EditIRFDealViewModel = model.IRFDeal!.ToEditIRFDealSaleViewModel(),
+                EditIRFDealSaleCoopViewModel = model.IRFDeal!.ToEditIRFDealSaleCoopViewModel(),
                 DealStatus = model.DealStatus,  
 
                 IsActive = model.IsActive,

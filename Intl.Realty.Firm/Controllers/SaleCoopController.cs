@@ -153,7 +153,7 @@ namespace Intl.Realty.Firm.Controllers
             if (numberRange != null)
             {
                 await _unitOfWork.DealTransactionNumberRange.UpdateAsync(numberRange);
-                _unitOfWork.Save();
+                _unitOfWork.SaveChanges();
             }
 
 
@@ -184,7 +184,7 @@ namespace Intl.Realty.Firm.Controllers
                 // Create IRF Deal Data
                 viewModel.CreateSaleCoop.TransactionType = transactionType;
 
-                var createIRFDealModel = viewModel.CreateSaleCoop.CreateIRFDealViewModel?.ToIRFDealModel();
+                var createIRFDealModel = viewModel.CreateSaleCoop.CreateIRFDealSaleCoopViewModel?.ToIRFDealModel();
                 createIRFDealModel!.CreatedAt = DateTime.Now;
                 createIRFDealModel.CreatedBy = user!.Id;
                 createIRFDealModel.IsActive = true;
@@ -199,9 +199,9 @@ namespace Intl.Realty.Firm.Controllers
                 viewModel.CreateSaleCoop.IRFDealId = NewIRFDeal.Id;
                 if (NewIRFDeal != null)
                 {
-                    viewModel.CreateSaleCoop.CreateIRFDealViewModel!.IsActive = NewIRFDeal.IsActive;
-                    viewModel.CreateSaleCoop.CreateIRFDealViewModel.CreatedBy = NewIRFDeal.CreatedBy;
-                    viewModel.CreateSaleCoop.CreateIRFDealViewModel.CreatedAt = NewIRFDeal.CreatedAt;
+                    viewModel.CreateSaleCoop.CreateIRFDealSaleCoopViewModel!.IsActive = NewIRFDeal.IsActive;
+                    viewModel.CreateSaleCoop.CreateIRFDealSaleCoopViewModel.CreatedBy = NewIRFDeal.CreatedBy;
+                    viewModel.CreateSaleCoop.CreateIRFDealSaleCoopViewModel.CreatedAt = NewIRFDeal.CreatedAt;
                 }
 
                 // Create SaleCoop Data
@@ -431,116 +431,107 @@ namespace Intl.Realty.Firm.Controllers
 
             return View(viewModel);
         }
-
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, int dealStatusId, EditSaleCoopWithTabMenuViewModel viewModel)
         {
             if (id == 0)
-            {
-                string controllerName = this.ControllerContext.RouteData.Values["controller"]!.ToString()!;
-                NotFoundViewModel notFoundViewModel = new NotFoundViewModel();
-                notFoundViewModel.ErrorTitle = ($"{controllerName} not found");
-                notFoundViewModel.ErrorMessage = ($"{controllerName} with {id} cannot be found!");
-                notFoundViewModel.ControllerName = controllerName;
-                notFoundViewModel.ControllerAction = "Index";
+                return NotFoundResultWithMessage("SaleCoop", id);
 
-                return View("NotFound", notFoundViewModel);
+            if (!ModelState.IsValid)
+                return View(viewModel);
+
+            // Get current user and validate ID
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (!Guid.TryParse(userId, out Guid parsedUserId))
+                throw new InvalidOperationException("Invalid user ID - cannot convert to GUID.");
+
+            var user = await _userManager.FindByIdAsync(userId!);
+
+            // Load SaleCoop model (EF-tracked)
+            var saleCoopModel = await _unitOfWork.SaleCoop.GetAsync(
+                x => x.Id == id,
+                includeProperties: "IRFDeal,TransactionType,DealStatus",
+                tracked:true);
+
+            if (saleCoopModel == null)
+                return NotFoundResultWithMessage("SaleCoop", id);
+
+            // Load transaction type
+            var transactionType = await _unitOfWork.TransactionType.GetAsync(x => x.Id == saleCoopModel.TransactionTypeId);
+            viewModel.EditSaleCoop.TransactionType = transactionType;
+            viewModel.EditSaleCoop.TransactionTypeId = transactionType.Id;
+
+            // Rebuild document type list
+            var documentTypeAssignments = await _unitOfWork.DocumentTypeAssignment
+                .GetAllAsync(x => !x.IsDeleted, includeProperties: "TransactionType,DocumentType",
+                tracked:true);
+
+            var documentTypes = await _unitOfWork.DocumentType.GetAllAsync(x => !x.IsDeleted);
+
+            viewModel.EditSaleCoop.DocumentTypeList = _documentTransactionService
+                .GetDocumentTypesFromDocumentTypeAssignment(
+                    transactionType.Description,
+                    documentTypeAssignments.ToList(),
+                    documentTypes.ToList());
+
+            // Filter file uploads
+            saleCoopModel.FileUploads = FilterFileUploadsWithFilesOnly(saleCoopModel.FileUploads);
+
+            // Update IRFDeal (handled independently)
+            var irfDealDb = await _unitOfWork.IRFDeal.GetAsync(x => x.Id == saleCoopModel.IRFDealId, tracked: true);
+            var editedData = viewModel.EditSaleCoop.EditIRFDealSaleCoopViewModel;
+
+            if (irfDealDb != null && editedData != null)
+            {
+                irfDealDb.UpdateFromViewModel(editedData, parsedUserId);
+                await _unitOfWork.IRFDeal.UpdateAsync(irfDealDb);
             }
 
-            if (ModelState.IsValid)
+            // Role-specific logic
+            var isAgent = await _userManager.IsInRoleAsync(user, "Agent");
+            saleCoopModel.DealStatusId = isAgent ? dealStatusId : viewModel.EditSaleCoop.DealStatusId;
+
+            // Update SaleCoop properties
+            saleCoopModel.Notes = viewModel.EditSaleCoop.Notes;
+            saleCoopModel.DateSubmitted = DateTime.Now;
+            saleCoopModel.IsActive = true;
+            saleCoopModel.UpdatedAt = DateTime.Now;
+            saleCoopModel.UpdatedBy = parsedUserId;
+            //saleCoopModel.IRFDeal = null; // Prevent EF circular/tracking issues
+
+            // Entity is tracked — no need to call UpdateAsync
+            await _unitOfWork.SaveChangesAsync();
+
+            // Handle file uploads
+            var uploadPath = CreateFilePath(saleCoopModel.Id);
+            var fileUploadVM = viewModel.EditSaleCoop.CreateFileUploadListViewModel?.CreateFileUploadsViewModel;
+
+            if (fileUploadVM != null)
             {
-                // to get current user ID
-                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-                // to get current user info
-                var user = await _userManager.FindByIdAsync(userId!);
-
-                var modelFromDb = await _unitOfWork.SaleCoop.GetAsync(x => x.Id == viewModel.EditSaleCoop.Id, includeProperties: "IRFDeal,TransactionType,DealStatus");
-
-                string controllerName = this.ControllerContext.RouteData.Values["controller"]!.ToString()!;
-
-                var transactionType = await _unitOfWork.TransactionType.GetAsync(x => x.Id == modelFromDb.TransactionTypeId); //Sale Listing
-                viewModel.EditSaleCoop.TransactionType = transactionType;
-
-                viewModel.EditSaleCoop.TransactionTypeId = viewModel.EditSaleCoop.TransactionType.Id;
-
-                var documentTypeAssignmentIEnum = await _unitOfWork.DocumentTypeAssignment.GetAllAsync(x => x.IsDeleted == false, includeProperties: "TransactionType,DocumentType");
-                var documentTypeIEnum = await _unitOfWork.DocumentType.GetAllAsync(x => x.IsDeleted == false);
-                var documentTypeAssignmentList = documentTypeAssignmentIEnum.ToList();
-                var documentTypeList = documentTypeIEnum.ToList();
-                viewModel.EditSaleCoop.DocumentTypeList = _documentTransactionService
-                                                                .GetDocumentTypesFromDocumentTypeAssignment(modelFromDb.TransactionType!.Description,
-                                                                                                            documentTypeAssignmentList,
-                                                                                                            documentTypeList);
-
-                var saleCoopModel = await _unitOfWork.SaleCoop.GetAsync(x => x.Id == id, includeProperties: "IRFDeal");
-                if (saleCoopModel == null)
-                {
-                    NotFoundViewModel notFoundViewModel = new NotFoundViewModel();
-                    notFoundViewModel.ErrorTitle = ($"{controllerName} not found");
-                    notFoundViewModel.ErrorMessage = ($"{controllerName} with {id} cannot be found!");
-                    notFoundViewModel.ControllerName = controllerName;
-                    notFoundViewModel.ControllerAction = "Index";
-
-                    return View("NotFound", notFoundViewModel);
-                }
-                var fileUploadsWithFiles = FilterFileUploadsWithFilesOnly(saleCoopModel.FileUploads);
-                saleCoopModel.FileUploads = fileUploadsWithFiles;
-
-                var irfDealModel = await _unitOfWork.IRFDeal.GetAsync(x => x.Id == saleCoopModel.IRFDealId, tracked: true);
-
-                saleCoopModel.IRFDeal = viewModel.EditSaleCoop.EditIRFDealViewModel?.ToIRFDealModel();
-                saleCoopModel.IRFDeal!.CreatedAt = irfDealModel.CreatedAt;
-                saleCoopModel.IRFDeal.CreatedBy = irfDealModel.CreatedBy;
-                saleCoopModel.IRFDeal.UpdatedAt = DateTime.Now;
-                saleCoopModel.IRFDeal.UpdatedBy = user!.Id;
-                saleCoopModel.Notes = viewModel.EditSaleCoop.Notes;
-                if (saleCoopModel.IRFDeal != null)
-                {
-                    //saleCoopModel.IRFDeal.SaleCoopId = saleCoopModel.Id;
-                    await _unitOfWork.IRFDeal.UpdateAsync(saleCoopModel.IRFDeal);
-                }
-
-                var isAgent = await _userManager.IsInRoleAsync(user, "Agent");
-                if (isAgent)
-                {
-                    saleCoopModel.DealStatusId = dealStatusId;
-                }
-                else
-                {
-                    saleCoopModel.DealStatusId = viewModel.EditSaleCoop.DealStatusId;
-                }
-
-                saleCoopModel.DateSubmitted = DateTime.Now;
-                // Update IRF Deal
-
-                saleCoopModel.IsActive = true;
-                saleCoopModel.UpdatedBy = user!.Id;
-                saleCoopModel.UpdatedAt = DateTime.Now;
-
-                // Update other properties as needed
-
-                await _unitOfWork.SaleCoop.UpdateAsync(saleCoopModel);
-
-
-                // Create FileUploadData
-
-                var uploadPath = CreateFilePath(saleCoopModel.Id);
-
-                if (viewModel.EditSaleCoop.CreateFileUploadListViewModel?.CreateFileUploadsViewModel != null)
-                {
-                    await CreateFileUploadData(viewModel.EditSaleCoop.CreateFileUploadListViewModel.CreateFileUploadsViewModel,
-                                                 saleCoopModel.Id,
-                                                 transactionType.Id,
-                                                 viewModel.EditSaleCoop.DocumentTypeList,
-                                                 uploadPath);
-                }
-
-                return RedirectToAction(nameof(Index), new { addSuccess = true });
-
+                await CreateFileUploadData(
+                    fileUploadVM,
+                    saleCoopModel.Id,
+                    transactionType.Id,
+                    viewModel.EditSaleCoop.DocumentTypeList,
+                    uploadPath
+                );
             }
-            return View(viewModel);
+
+            return RedirectToAction(nameof(Index), new { editSuccess = true });
+        }
+
+
+        private IActionResult NotFoundResultWithMessage(string entityName, int id)
+        {
+            var viewModel = new NotFoundViewModel
+            {
+                ErrorTitle = $"{entityName} not found",
+                ErrorMessage = $"{entityName} with ID {id} cannot be found!",
+                ControllerName = entityName,
+                ControllerAction = "Index"
+            };
+            return View("NotFound", viewModel);
         }
         private List<FileUpload>? FilterFileUploadsWithFilesOnly(List<FileUpload>? fileUploads)
         {

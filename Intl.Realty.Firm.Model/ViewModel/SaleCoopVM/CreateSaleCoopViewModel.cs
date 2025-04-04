@@ -11,7 +11,7 @@ namespace Intl.Realty.Firm.Model.ViewModel.SaleCoopVM
         public string DealTransactionNumber { get; set; } = string.Empty;
         public int TransactionTypeId { get; set; }
         public int IRFDealId { get; set; }
-        public CreateIRFDealSaleViewModel CreateIRFDealViewModel { get; set; } = new CreateIRFDealSaleViewModel();
+        public CreateIRFDealSaleCoopViewModel CreateIRFDealSaleCoopViewModel { get; set; } = new CreateIRFDealSaleCoopViewModel();
         public CreateFileUploadListViewModel CreateFileUploadListViewModel { get; set; } = new CreateFileUploadListViewModel();
         public int DealStatusId { get; set; }
         public DateTime? DateSubmitted { get; set; }

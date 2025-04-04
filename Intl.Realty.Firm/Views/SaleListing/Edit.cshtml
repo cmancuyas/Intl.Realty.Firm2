@@ -109,9 +109,9 @@
                         <div class="row">
                             <div class="col-md-6 mt-4">
                                 <div class="form-group">
-                                    <label asp-for="EditSaleListing.EditIRFDealViewModel.PropertyAddress" class="control-label fw-bolder">Property Address</label>
-                                    <input asp-for="EditSaleListing.EditIRFDealViewModel.PropertyAddress" class="form-control" />
-                                    <span asp-validation-for="EditSaleListing.EditIRFDealViewModel.PropertyAddress" class="text-danger"></span>
+                                    <label asp-for="EditSaleListing.EditIRFDealSaleListingViewModel.PropertyAddress" class="control-label fw-bolder">Property Address</label>
+                                    <input asp-for="EditSaleListing.EditIRFDealSaleListingViewModel.PropertyAddress" class="form-control" />
+                                    <span asp-validation-for="EditSaleListing.EditIRFDealSaleListingViewModel.PropertyAddress" class="text-danger"></span>
                                 </div>
                             </div>
                             <div class="col-md-6 mt-4">
@@ -126,67 +126,32 @@
                         <div class="row">
                             <div class="col-md-6 mt-4">
                                 <div class="form-group">
-                                    <label asp-for="EditSaleListing.EditIRFDealViewModel.FinalSalePrice" class="control-label fw-bolder">FinalSalePrice</label>
-                                    <input asp-for="EditSaleListing.EditIRFDealViewModel.FinalSalePrice" class="form-control" />
-                                    <span asp-validation-for="EditSaleListing.EditIRFDealViewModel.FinalSalePrice" class="text-danger"></span>
+                                    <label asp-for="EditSaleListing.EditIRFDealSaleListingViewModel.FinalSalePrice" class="control-label fw-bolder">FinalSalePrice</label>
+                                    <input asp-for="EditSaleListing.EditIRFDealSaleListingViewModel.FinalSalePrice" class="form-control" />
+                                    <span asp-validation-for="EditSaleListing.EditIRFDealSaleListingViewModel.FinalSalePrice" class="text-danger"></span>
                                 </div>
                             </div>
                             <div class="col-md-6 mt-4">
                                 <div class="form-group">
-                                    <label asp-for="EditSaleListing.EditIRFDealViewModel.FinalClosingDate" class="control-label fw-bolder">Final ClosingDate</label>
-                                    <input asp-for="EditSaleListing.EditIRFDealViewModel.FinalClosingDate" class="form-control" />
-                                    <span asp-validation-for="EditSaleListing.EditIRFDealViewModel.FinalClosingDate" class="text-danger"></span>
+                                    <label asp-for="EditSaleListing.EditIRFDealSaleListingViewModel.FinalClosingDate" class="control-label fw-bolder">Final ClosingDate</label>
+                                    <input asp-for="EditSaleListing.EditIRFDealSaleListingViewModel.FinalClosingDate" class="form-control" />
+                                    <span asp-validation-for="EditSaleListing.EditIRFDealSaleListingViewModel.FinalClosingDate" class="text-danger"></span>
                                 </div>
                             </div>
                         </div>
                         <div class="row">
                             <div class="col-md-6 mt-4">
                                 <div class="form-group">
-                                    <label asp-for="EditSaleListing.EditIRFDealViewModel.DepositAmount" class="control-label fw-bolder">Deposit Amount</label>
-                                    <input asp-for="EditSaleListing.EditIRFDealViewModel.DepositAmount" class="form-control" />
-                                    <span asp-validation-for="EditSaleListing.EditIRFDealViewModel.DepositAmount" class="text-danger"></span>
+                                    <label asp-for="EditSaleListing.EditIRFDealSaleListingViewModel.DepositAmount" class="control-label fw-bolder">Deposit Amount</label>
+                                    <input asp-for="EditSaleListing.EditIRFDealSaleListingViewModel.DepositAmount" class="form-control" />
+                                    <span asp-validation-for="EditSaleListing.EditIRFDealSaleListingViewModel.DepositAmount" class="text-danger"></span>
                                 </div>
                             </div>
                             <div class="col-md-6 mt-4">
                                 <div class="form-group">
-                                    <label asp-for="EditSaleListing.EditIRFDealViewModel.DepositDate" class="control-label fw-bolder">Deposit Date</label>
-                                    <input asp-for="EditSaleListing.EditIRFDealViewModel.DepositDate" class="form-control" />
-                                    <span asp-validation-for="EditSaleListing.EditIRFDealViewModel.DepositDate" class="text-danger"></span>
-                                </div>
-                            </div>
-
-                        </div>
-                        <div class="row">
-                            <div class="col-md-6 mt-4">
-                                <div class="form-group">
-                                    <label asp-for="EditSaleListing.EditIRFDealViewModel.BuyerName" class="control-label fw-bolder">Buyers Name</label>
-                                    <input asp-for="EditSaleListing.EditIRFDealViewModel.BuyerName" class="form-control" />
-                                    <span asp-validation-for="EditSaleListing.EditIRFDealViewModel.BuyerName" class="text-danger"></span>
-                                </div>
-                            </div>
-                            <div class="col-md-6 mt-4">
-                                <div class="form-group">
-                                    <label asp-for="EditSaleListing.EditIRFDealViewModel.LandLordName" class="control-label fw-bolder">LandLords Name</label>
-                                    <input asp-for="EditSaleListing.EditIRFDealViewModel.LandLordName" class="form-control" />
-                                    <span asp-validation-for="EditSaleListing.EditIRFDealViewModel.LandLordName" class="text-danger"></span>
-                                </div>
-                            </div>
-
-                        </div>
-
-                        <div class="row">
-                            <div class="col-md-6 mt-4">
-                                <div class="form-group">
-                                    <label asp-for="EditSaleListing.EditIRFDealViewModel.ListingCommissionPercentage" class="control-label fw-bolder">Listing Commission Percentage</label>
-                                    <input asp-for="EditSaleListing.EditIRFDealViewModel.ListingCommissionPercentage" class="form-control" />
-                                    <span asp-validation-for="EditSaleListing.EditIRFDealViewModel.ListingCommissionPercentage" class="text-danger"></span>
-                                </div>
-                            </div>
-                            <div class="col-md-6 mt-4">
-                                <div class="form-group">
-                                    <label asp-for="EditSaleListing.EditIRFDealViewModel.BuyingCommissionPercentage" class="control-label fw-bolder">Buying Commission Percentage</label>
-                                    <input asp-for="EditSaleListing.EditIRFDealViewModel.BuyingCommissionPercentage" class="form-control" />
-                                    <span asp-validation-for="EditSaleListing.EditIRFDealViewModel.BuyingCommissionPercentage" class="text-danger"></span>
+                                    <label asp-for="EditSaleListing.EditIRFDealSaleListingViewModel.DepositDate" class="control-label fw-bolder">Deposit Date</label>
+                                    <input asp-for="EditSaleListing.EditIRFDealSaleListingViewModel.DepositDate" class="form-control" />
+                                    <span asp-validation-for="EditSaleListing.EditIRFDealSaleListingViewModel.DepositDate" class="text-danger"></span>
                                 </div>
                             </div>
 
@@ -194,16 +159,51 @@
                         <div class="row">
                             <div class="col-md-6 mt-4">
                                 <div class="form-group">
-                                    <label asp-for="EditSaleListing.EditIRFDealViewModel.ListingAgentName" class="control-label fw-bolder">Listing Agent Name</label>
-                                    <input asp-for="EditSaleListing.EditIRFDealViewModel.ListingAgentName" class="form-control" />
-                                    <span asp-validation-for="EditSaleListing.EditIRFDealViewModel.ListingAgentName" class="text-danger"></span>
+                                    <label asp-for="EditSaleListing.EditIRFDealSaleListingViewModel.BuyerName" class="control-label fw-bolder">Buyers Name</label>
+                                    <input asp-for="EditSaleListing.EditIRFDealSaleListingViewModel.BuyerName" class="form-control" />
+                                    <span asp-validation-for="EditSaleListing.EditIRFDealSaleListingViewModel.BuyerName" class="text-danger"></span>
                                 </div>
                             </div>
                             <div class="col-md-6 mt-4">
                                 <div class="form-group">
-                                    <label asp-for="EditSaleListing.EditIRFDealViewModel.ListingBrokerage" class="control-label fw-bolder">Listing Brokerage</label>
-                                    <input asp-for="EditSaleListing.EditIRFDealViewModel.ListingBrokerage" class="form-control" />
-                                    <span asp-validation-for="EditSaleListing.EditIRFDealViewModel.ListingBrokerage" class="text-danger"></span>
+                                    <label asp-for="EditSaleListing.EditIRFDealSaleListingViewModel.LandLordName" class="control-label fw-bolder">LandLords Name</label>
+                                    <input asp-for="EditSaleListing.EditIRFDealSaleListingViewModel.LandLordName" class="form-control" />
+                                    <span asp-validation-for="EditSaleListing.EditIRFDealSaleListingViewModel.LandLordName" class="text-danger"></span>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mt-4">
+                                <div class="form-group">
+                                    <label asp-for="EditSaleListing.EditIRFDealSaleListingViewModel.ListingCommissionPercentage" class="control-label fw-bolder">Listing Commission Percentage</label>
+                                    <input asp-for="EditSaleListing.EditIRFDealSaleListingViewModel.ListingCommissionPercentage" class="form-control" />
+                                    <span asp-validation-for="EditSaleListing.EditIRFDealSaleListingViewModel.ListingCommissionPercentage" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mt-4">
+                                <div class="form-group">
+                                    <label asp-for="EditSaleListing.EditIRFDealSaleListingViewModel.BuyingCommissionPercentage" class="control-label fw-bolder">Buying Commission Percentage</label>
+                                    <input asp-for="EditSaleListing.EditIRFDealSaleListingViewModel.BuyingCommissionPercentage" class="form-control" />
+                                    <span asp-validation-for="EditSaleListing.EditIRFDealSaleListingViewModel.BuyingCommissionPercentage" class="text-danger"></span>
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mt-4">
+                                <div class="form-group">
+                                    <label asp-for="EditSaleListing.EditIRFDealSaleListingViewModel.ListingAgentName" class="control-label fw-bolder">Listing Agent Name</label>
+                                    <input asp-for="EditSaleListing.EditIRFDealSaleListingViewModel.ListingAgentName" class="form-control" />
+                                    <span asp-validation-for="EditSaleListing.EditIRFDealSaleListingViewModel.ListingAgentName" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mt-4">
+                                <div class="form-group">
+                                    <label asp-for="EditSaleListing.EditIRFDealSaleListingViewModel.ListingBrokerage" class="control-label fw-bolder">Listing Brokerage</label>
+                                    <input asp-for="EditSaleListing.EditIRFDealSaleListingViewModel.ListingBrokerage" class="form-control" />
+                                    <span asp-validation-for="EditSaleListing.EditIRFDealSaleListingViewModel.ListingBrokerage" class="text-danger"></span>
                                 </div>
                             </div>
 
@@ -213,9 +213,9 @@
 
                             <div class="col-md-6 mt-4">
                                 <div class="form-group">
-                                    <label asp-for="EditSaleListing.EditIRFDealViewModel.ListingBrokerageFax" class="control-label fw-bolder">Listing Brokerage Fax</label>
-                                    <input asp-for="EditSaleListing.EditIRFDealViewModel.ListingBrokerageFax" class="form-control" />
-                                    <span asp-validation-for="EditSaleListing.EditIRFDealViewModel.ListingBrokerageFax" class="text-danger"></span>
+                                    <label asp-for="EditSaleListing.EditIRFDealSaleListingViewModel.ListingBrokerageFax" class="control-label fw-bolder">Listing Brokerage Fax</label>
+                                    <input asp-for="EditSaleListing.EditIRFDealSaleListingViewModel.ListingBrokerageFax" class="form-control" />
+                                    <span asp-validation-for="EditSaleListing.EditIRFDealSaleListingViewModel.ListingBrokerageFax" class="text-danger"></span>
                                 </div>
                             </div>
 
@@ -230,9 +230,9 @@
 
                             <div class="col-md-6 mt-4">
                                 <div class="form-group">
-                                    <label asp-for="EditSaleListing.EditIRFDealViewModel.BuyerAgentName" class="control-label fw-bolder">Buyers Agent Name</label>
-                                    <input asp-for="EditSaleListing.EditIRFDealViewModel.BuyerAgentName" class="form-control" />
-                                    <span asp-validation-for="EditSaleListing.EditIRFDealViewModel.BuyerAgentName" class="text-danger"></span>
+                                    <label asp-for="EditSaleListing.EditIRFDealSaleListingViewModel.BuyerAgentName" class="control-label fw-bolder">Buyers Agent Name</label>
+                                    <input asp-for="EditSaleListing.EditIRFDealSaleListingViewModel.BuyerAgentName" class="form-control" />
+                                    <span asp-validation-for="EditSaleListing.EditIRFDealSaleListingViewModel.BuyerAgentName" class="text-danger"></span>
                                 </div>
                             </div>
 
@@ -240,33 +240,16 @@
                         <div class="row">
                             <div class="col-md-6 mt-4">
                                 <div class="form-group">
-                                    <label asp-for="EditSaleListing.EditIRFDealViewModel.BuyerBrokerage" class="control-label fw-bolder">Buyers Brokerage</label>
-                                    <input asp-for="EditSaleListing.EditIRFDealViewModel.BuyerBrokerage" class="form-control" />
-                                    <span asp-validation-for="EditSaleListing.EditIRFDealViewModel.BuyerBrokerage" class="text-danger"></span>
+                                    <label asp-for="EditSaleListing.EditIRFDealSaleListingViewModel.BuyerBrokerage" class="control-label fw-bolder">Buyers Brokerage</label>
+                                    <input asp-for="EditSaleListing.EditIRFDealSaleListingViewModel.BuyerBrokerage" class="form-control" />
+                                    <span asp-validation-for="EditSaleListing.EditIRFDealSaleListingViewModel.BuyerBrokerage" class="text-danger"></span>
                                 </div>
                             </div>
                             <div class="col-md-6 mt-4">
                                 <div class="form-group">
-                                    <label asp-for="EditSaleListing.EditIRFDealViewModel.BuyerBrokerageFax" class="control-label fw-bolder">Buyers Brokerage Fax</label>
-                                    <input asp-for="EditSaleListing.EditIRFDealViewModel.BuyerBrokerageFax" class="form-control" />
-                                    <span asp-validation-for="EditSaleListing.EditIRFDealViewModel.BuyerBrokerageFax" class="text-danger"></span>
-                                </div>
-                            </div>
-
-                        </div>
-                        <div class="row">
-                            <div class="col-md-6 mt-4">
-                                <div class="form-group">
-                                    <label asp-for="EditSaleListing.EditIRFDealViewModel.SellersLawyer" class="control-label fw-bolder">Sellers Lawyer</label>
-                                    <input asp-for="EditSaleListing.EditIRFDealViewModel.SellersLawyer" class="form-control" />
-                                    <span asp-validation-for="EditSaleListing.EditIRFDealViewModel.SellersLawyer" class="text-danger"></span>
-                                </div>
-                            </div>
-                            <div class="col-md-6 mt-4">
-                                <div class="form-group">
-                                    <label asp-for="EditSaleListing.EditIRFDealViewModel.SellersLawyerAddress" class="control-label fw-bolder">Sellers Lawyer Address</label>
-                                    <input asp-for="EditSaleListing.EditIRFDealViewModel.SellersLawyerAddress" class="form-control" />
-                                    <span asp-validation-for="EditSaleListing.EditIRFDealViewModel.SellersLawyerAddress" class="text-danger"></span>
+                                    <label asp-for="EditSaleListing.EditIRFDealSaleListingViewModel.BuyerBrokerageFax" class="control-label fw-bolder">Buyers Brokerage Fax</label>
+                                    <input asp-for="EditSaleListing.EditIRFDealSaleListingViewModel.BuyerBrokerageFax" class="form-control" />
+                                    <span asp-validation-for="EditSaleListing.EditIRFDealSaleListingViewModel.BuyerBrokerageFax" class="text-danger"></span>
                                 </div>
                             </div>
 
@@ -274,16 +257,16 @@
                         <div class="row">
                             <div class="col-md-6 mt-4">
                                 <div class="form-group">
-                                    <label asp-for="EditSaleListing.EditIRFDealViewModel.SellersPhoneNumber" class="control-label fw-bolder">Sellers PhoneNumber</label>
-                                    <input asp-for="EditSaleListing.EditIRFDealViewModel.SellersPhoneNumber" class="form-control" />
-                                    <span asp-validation-for="EditSaleListing.EditIRFDealViewModel.SellersPhoneNumber" class="text-danger"></span>
+                                    <label asp-for="EditSaleListing.EditIRFDealSaleListingViewModel.SellersLawyer" class="control-label fw-bolder">Sellers Lawyer</label>
+                                    <input asp-for="EditSaleListing.EditIRFDealSaleListingViewModel.SellersLawyer" class="form-control" />
+                                    <span asp-validation-for="EditSaleListing.EditIRFDealSaleListingViewModel.SellersLawyer" class="text-danger"></span>
                                 </div>
                             </div>
                             <div class="col-md-6 mt-4">
                                 <div class="form-group">
-                                    <label asp-for="EditSaleListing.EditIRFDealViewModel.BuyersLawyer" class="control-label fw-bolder">Buyers Lawyer</label>
-                                    <input asp-for="EditSaleListing.EditIRFDealViewModel.BuyersLawyer" class="form-control" />
-                                    <span asp-validation-for="EditSaleListing.EditIRFDealViewModel.BuyersLawyer" class="text-danger"></span>
+                                    <label asp-for="EditSaleListing.EditIRFDealSaleListingViewModel.SellersLawyerAddress" class="control-label fw-bolder">Sellers Lawyer Address</label>
+                                    <input asp-for="EditSaleListing.EditIRFDealSaleListingViewModel.SellersLawyerAddress" class="form-control" />
+                                    <span asp-validation-for="EditSaleListing.EditIRFDealSaleListingViewModel.SellersLawyerAddress" class="text-danger"></span>
                                 </div>
                             </div>
 
@@ -291,16 +274,33 @@
                         <div class="row">
                             <div class="col-md-6 mt-4">
                                 <div class="form-group">
-                                    <label asp-for="EditSaleListing.EditIRFDealViewModel.BuyersLawyerAddress" class="control-label fw-bolder">Buyers Lawyer Address</label>
-                                    <input asp-for="EditSaleListing.EditIRFDealViewModel.BuyersLawyerAddress" class="form-control" />
-                                    <span asp-validation-for="EditSaleListing.EditIRFDealViewModel.BuyersLawyerAddress" class="text-danger"></span>
+                                    <label asp-for="EditSaleListing.EditIRFDealSaleListingViewModel.SellersPhoneNumber" class="control-label fw-bolder">Sellers PhoneNumber</label>
+                                    <input asp-for="EditSaleListing.EditIRFDealSaleListingViewModel.SellersPhoneNumber" class="form-control" />
+                                    <span asp-validation-for="EditSaleListing.EditIRFDealSaleListingViewModel.SellersPhoneNumber" class="text-danger"></span>
                                 </div>
                             </div>
                             <div class="col-md-6 mt-4">
                                 <div class="form-group">
-                                    <label asp-for="EditSaleListing.EditIRFDealViewModel.BuyersPhoneNumber" class="control-label fw-bolder">Buyers PhoneNumber</label>
-                                    <input asp-for="EditSaleListing.EditIRFDealViewModel.BuyersPhoneNumber" class="form-control" />
-                                    <span asp-validation-for="EditSaleListing.EditIRFDealViewModel.BuyersPhoneNumber" class="text-danger"></span>
+                                    <label asp-for="EditSaleListing.EditIRFDealSaleListingViewModel.BuyersLawyer" class="control-label fw-bolder">Buyers Lawyer</label>
+                                    <input asp-for="EditSaleListing.EditIRFDealSaleListingViewModel.BuyersLawyer" class="form-control" />
+                                    <span asp-validation-for="EditSaleListing.EditIRFDealSaleListingViewModel.BuyersLawyer" class="text-danger"></span>
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mt-4">
+                                <div class="form-group">
+                                    <label asp-for="EditSaleListing.EditIRFDealSaleListingViewModel.BuyersLawyerAddress" class="control-label fw-bolder">Buyers Lawyer Address</label>
+                                    <input asp-for="EditSaleListing.EditIRFDealSaleListingViewModel.BuyersLawyerAddress" class="form-control" />
+                                    <span asp-validation-for="EditSaleListing.EditIRFDealSaleListingViewModel.BuyersLawyerAddress" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mt-4">
+                                <div class="form-group">
+                                    <label asp-for="EditSaleListing.EditIRFDealSaleListingViewModel.BuyersPhoneNumber" class="control-label fw-bolder">Buyers PhoneNumber</label>
+                                    <input asp-for="EditSaleListing.EditIRFDealSaleListingViewModel.BuyersPhoneNumber" class="form-control" />
+                                    <span asp-validation-for="EditSaleListing.EditIRFDealSaleListingViewModel.BuyersPhoneNumber" class="text-danger"></span>
                                 </div>
                             </div>
 
@@ -507,11 +507,8 @@
     <script src="~/js/viewdatatableutility.js"></script>
     <script type="text/javascript">
         $(document).ready(function () {
-
-            onBtnSubmit();
             onBtnSave();
-            confirmSubmitModal();
-            confirmSaveModal();
+            onBtnSubmit();
 
             $('#isActiveCheckbox').on('click', toggleStatusLabels);
             $('#isDeletedCheckbox').on('click', toggleStatusLabelSoftDelete);
@@ -520,40 +517,69 @@
             toggleStatusLabelSoftDelete();
         });
 
+        function onBtnSave() {
+            $('#btnSave').on('click', function () {
+                $('#DealStatusId').val(2); // Set deal status to "Submitted" when saving
+                $('#confirmSaveModal').modal('show');
+            });
+
+            $(document).on('click', '#btnConfirmSave', function () {
+                $('#ListFormId').submit();
+            });
+        }
+
+        function onBtnSubmit() {
+            $('#btnSubmit').on('click', function () {
+                if (filesValidation()) {
+                    $('#DealStatusId').val(1); // Set deal status to "Saved" when submitting
+                    $('#confirmSubmitModal').modal('show');
+                }
+            });
+
+            $(document).on('click', '#btnConfirmSubmit', function () {
+                $('#ListFormId').submit();
+            });
+        }
+
+
         function filesValidation() {
-            var saleListingId = '@Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.EditSaleListing.Id))';
+            var SaleListingId = '@Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.EditSaleListing.Id))';
             var documentTypeListSerialized = '@Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.EditSaleListing.DocumentTypeList))';
-            var documentTypesWithFileUploads = getFileUploads(saleListingId);
-            var documentTypeList = JSON.parse(documentTypeListSerialized);
             var openModalFlag = true;
 
+            var documentTypeList = JSON.parse(documentTypeListSerialized);
             var error = [];
+
+            var documentTypesWithFileUploads = [];
+            $.ajax({
+                url: '/SaleListing/GetDocumentTypesThatHasFileUploads/',
+                type: 'GET',
+                async: false,
+                data: { saleListingId: SaleListingId },
+                success: function (data) {
+                    documentTypesWithFileUploads = data;
+                }
+            });
+
             documentTypeList.forEach(function (item, index) {
-
                 var formFiles = document.forms['ListFormId']['EditSaleListing.CreateFileUploadListViewModel.CreateFileUploadsViewModel[' + index + '].Files'];
-
                 var documentType = documentTypesWithFileUploads.find(x => x == item.Id);
 
-                if (item.IsRequired == true && formFiles.value != "") {
-                    // Do nothing - means valid
-                } else if (item.IsRequired != true && formFiles.value == "") {
-                    // Do nothing - means valid
-                } else if (item.IsRequired != true && formFiles.value != "") {
-                    // Do nothing - means valid
-                } else if (documentType && item.IsRequired == true) {
-                    // Do nothing - means valid
-                }
-                else {
+                if (
+                    (item.IsRequired && formFiles.value !== "") ||
+                    (!item.IsRequired && formFiles.value === "") ||
+                    (!item.IsRequired && formFiles.value !== "") ||
+                    (documentType && item.IsRequired)
+                ) {
+                    // valid
+                } else {
                     openModalFlag = false;
-
                     var title = item.Description + " is required.";
                     error.push(title);
                 }
-            })
+            });
+
             if (error.length > 0) {
-
-                debugger;
-
                 Swal.fire({
                     title: error[0],
                     text: "Please upload the required documents to proceed with the application.",
@@ -564,6 +590,7 @@
 
             return openModalFlag;
         }
-    </script>
 
+    </script>
 }
+

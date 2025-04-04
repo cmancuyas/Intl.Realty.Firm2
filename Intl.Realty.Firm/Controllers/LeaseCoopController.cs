@@ -15,6 +15,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
+using System.Data.Entity;
 using System.Security.Claims;
 
 namespace Intl.Realty.Firm.Controllers
@@ -67,7 +68,7 @@ namespace Intl.Realty.Firm.Controllers
             // to get current user info
             var user = await _userManager.FindByIdAsync(userId!);
 
-            viewModel.CreateLeaseCoop.CreatedByFullName = user!.FirstName + " " + user.LastName;
+            viewModel.CreateLeaseCoopViewModel.CreatedByFullName = user!.FirstName + " " + user.LastName;
 
             string transactionTypeName = _transactionTypeName; // 1 = Sale Listing
 
@@ -92,8 +93,8 @@ namespace Intl.Realty.Firm.Controllers
             }
 
             var transactionType = await _unitOfWork.TransactionType.GetAsync(x => x.Description == transactionTypeName);
-            viewModel.CreateLeaseCoop.TransactionType = transactionType;
-            viewModel.CreateLeaseCoop.TransactionTypeId = transactionType.Id;
+            viewModel.CreateLeaseCoopViewModel.TransactionType = transactionType;
+            viewModel.CreateLeaseCoopViewModel.TransactionTypeId = transactionType.Id;
 
             var paddedTransactionType = transactionType.Id.ToString().PadLeft(2, '0');
 
@@ -103,13 +104,13 @@ namespace Intl.Realty.Firm.Controllers
             var paddedCurrentNumber = (numberRange.CurrentNumber + 1).ToString().PadLeft(5, '0');
             var paddedNumberRange = currentYear + currentMonth + currentDay + "-" + paddedTransactionType + "-" + paddedCurrentNumber;
 
-            viewModel.CreateLeaseCoop.DealTransactionNumber = paddedNumberRange;
+            viewModel.CreateLeaseCoopViewModel.DealTransactionNumber = paddedNumberRange;
 
             var documentTypeAssignmentIEnum = await _unitOfWork.DocumentTypeAssignment.GetAllAsync(x => x.IsDeleted == false, includeProperties: "TransactionType,DocumentType");
             var documentTypeIEnum = await _unitOfWork.DocumentType.GetAllAsync(x => x.IsDeleted == false);
             var documentTypeAssignmentList = documentTypeAssignmentIEnum.ToList();
             var documentTypeList = documentTypeIEnum.ToList();
-            viewModel.CreateLeaseCoop.DocumentTypeList = _documentTransactionService
+            viewModel.CreateLeaseCoopViewModel.DocumentTypeList = _documentTransactionService
                                                             .GetDocumentTypesFromDocumentTypeAssignment(transactionTypeName,
                                                                                                         documentTypeAssignmentList,
                                                                                                         documentTypeList);
@@ -139,9 +140,9 @@ namespace Intl.Realty.Firm.Controllers
             var transactionTypeName = _transactionTypeName;
 
             var transactionType = await _unitOfWork.TransactionType.GetAsync(x => x.Description == transactionTypeName);
-            viewModel.CreateLeaseCoop.TransactionType = await _unitOfWork.TransactionType.GetByNameAsync(transactionType.Description);
-            viewModel.CreateLeaseCoop.TransactionTypeId = transactionType.Id;
-            viewModel.CreateLeaseCoop.CreatedByFullName = $"{user.FirstName} {user.LastName}";
+            viewModel.CreateLeaseCoopViewModel.TransactionType = await _unitOfWork.TransactionType.GetByNameAsync(transactionType.Description);
+            viewModel.CreateLeaseCoopViewModel.TransactionTypeId = transactionType.Id;
+            viewModel.CreateLeaseCoopViewModel.CreatedByFullName = $"{user.FirstName} {user.LastName}";
 
             await UpdateTransactionNumber();
             await PopulateDocumentTypesAsync(viewModel, transactionTypeName);
@@ -159,7 +160,7 @@ namespace Intl.Realty.Firm.Controllers
                 return View("Index", viewModel);
             }
 
-            var irfDealModel = viewModel.CreateLeaseCoop.CreateIRFDealLeaseViewModel?.ToIRFDealModel();
+            var irfDealModel = viewModel.CreateLeaseCoopViewModel.CreateIRFDealLeaseCoopViewModel?.ToIRFDealModel();
             irfDealModel!.CreatedAt = DateTime.Now;
             irfDealModel.CreatedBy = user.Id;
             irfDealModel.IsActive = true;
@@ -168,33 +169,33 @@ namespace Intl.Realty.Firm.Controllers
             await _unitOfWork.IRFDeal.AddAsync(irfDealModel);
             var newIRFDeal = await _unitOfWork.IRFDeal.GetAsync(x => x.Id == irfDealModel.Id);
 
-            viewModel.CreateLeaseCoop.IRFDealId = newIRFDeal!.Id;
-            viewModel.CreateLeaseCoop.CreateIRFDealLeaseViewModel!.IsActive = newIRFDeal.IsActive;
-            viewModel.CreateLeaseCoop.CreateIRFDealLeaseViewModel.CreatedBy = newIRFDeal.CreatedBy;
-            viewModel.CreateLeaseCoop.CreateIRFDealLeaseViewModel.CreatedAt = newIRFDeal.CreatedAt;
+            viewModel.CreateLeaseCoopViewModel.IRFDealId = newIRFDeal!.Id;
+            viewModel.CreateLeaseCoopViewModel.CreateIRFDealLeaseCoopViewModel!.IsActive = newIRFDeal.IsActive;
+            viewModel.CreateLeaseCoopViewModel.CreateIRFDealLeaseCoopViewModel.CreatedBy = newIRFDeal.CreatedBy;
+            viewModel.CreateLeaseCoopViewModel.CreateIRFDealLeaseCoopViewModel.CreatedAt = newIRFDeal.CreatedAt;
 
-            viewModel.CreateLeaseCoop.DealStatusId = viewModel.CreateLeaseCoop.DealStatusId == 0 ? 1 : viewModel.CreateLeaseCoop.DealStatusId;
-            viewModel.CreateLeaseCoop.IsActive = true;
-            viewModel.CreateLeaseCoop.IsDeleted = false;
-            viewModel.CreateLeaseCoop.CreatedBy = user.Id;
-            viewModel.CreateLeaseCoop.CreatedAt = DateTime.Now;
+            viewModel.CreateLeaseCoopViewModel.DealStatusId = viewModel.CreateLeaseCoopViewModel.DealStatusId == 0 ? 1 : viewModel.CreateLeaseCoopViewModel.DealStatusId;
+            viewModel.CreateLeaseCoopViewModel.IsActive = true;
+            viewModel.CreateLeaseCoopViewModel.IsDeleted = false;
+            viewModel.CreateLeaseCoopViewModel.CreatedBy = user.Id;
+            viewModel.CreateLeaseCoopViewModel.CreatedAt = DateTime.Now;
 
-            var leaseCoopModel = viewModel.CreateLeaseCoop.ToLeaseCoopModel();
+            var leaseCoopModel = viewModel.CreateLeaseCoopViewModel.ToLeaseCoopModel();
             await _unitOfWork.LeaseCoop.AddAsync(leaseCoopModel);
 
-            if (viewModel.CreateLeaseCoop.CreateFileUploadListViewModel?.CreateFileUploadsViewModel != null)
+            if (viewModel.CreateLeaseCoopViewModel.CreateFileUploadListViewModel?.CreateFileUploadsViewModel != null)
             {
                 var uploadPath = CreateFilePath(leaseCoopModel.Id);
                 await CreateFileUploadData(
-                    viewModel.CreateLeaseCoop.CreateFileUploadListViewModel.CreateFileUploadsViewModel,
+                    viewModel.CreateLeaseCoopViewModel.CreateFileUploadListViewModel.CreateFileUploadsViewModel,
                     leaseCoopModel.Id,
                     transactionType.Id,
-                    viewModel.CreateLeaseCoop.DocumentTypeList,
+                    viewModel.CreateLeaseCoopViewModel.DocumentTypeList,
                     uploadPath
                 );
             }
 
-            if (viewModel.CreateLeaseCoop.DealStatusId == 1)
+            if (viewModel.CreateLeaseCoopViewModel.DealStatusId == 1)
             {
                 await SendDealAdminNotification(user, leaseCoopModel);
             }
@@ -374,117 +375,108 @@ namespace Intl.Realty.Firm.Controllers
 
             return View(viewModel);
         }
-
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, int dealStatusId, EditLeaseCoopWithTabMenuViewModel viewModel)
         {
             if (id == 0)
-            {
-                string controllerName = this.ControllerContext.RouteData.Values["controller"]!.ToString()!;
-                NotFoundViewModel notFoundViewModel = new NotFoundViewModel();
-                notFoundViewModel.ErrorTitle = ($"{controllerName} not found");
-                notFoundViewModel.ErrorMessage = ($"{controllerName} with {id} cannot be found!");
-                notFoundViewModel.ControllerName = controllerName;
-                notFoundViewModel.ControllerAction = "Index";
+                return NotFoundResultWithMessage("LeaseCoop", id);
 
-                return View("NotFound", notFoundViewModel);
+            if (!ModelState.IsValid)
+                return View(viewModel);
+
+            // ✅ Get current user ID and parse to GUID
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (!Guid.TryParse(userId, out Guid parsedUserId))
+                throw new InvalidOperationException("Invalid user ID - cannot convert to GUID.");
+
+            var user = await _userManager.FindByIdAsync(userId!);
+
+            // ✅ Load LeaseCoop model (EF-tracked)
+            var leaseCoopModel = await _unitOfWork.LeaseCoop.GetAsync(
+                x => x.Id == id,
+                includeProperties: "IRFDeal,TransactionType,DealStatus",
+                tracked: true);
+
+
+            if (leaseCoopModel == null)
+                return NotFoundResultWithMessage("LeaseCoop", id);
+
+            // ✅ Load transaction type
+            var transactionType = await _unitOfWork.TransactionType.GetAsync(x => x.Id == leaseCoopModel.TransactionTypeId);
+            viewModel.EditLeaseCoop.TransactionType = transactionType;
+            viewModel.EditLeaseCoop.TransactionTypeId = transactionType.Id;
+
+            // ✅ Rebuild document type list
+            var documentTypeAssignments = await _unitOfWork.DocumentTypeAssignment
+                .GetAllAsync(x => !x.IsDeleted, includeProperties: "TransactionType,DocumentType");
+
+            var documentTypes = await _unitOfWork.DocumentType.GetAllAsync(x => !x.IsDeleted);
+
+            viewModel.EditLeaseCoop.DocumentTypeList = _documentTransactionService
+                .GetDocumentTypesFromDocumentTypeAssignment(
+                    transactionType.Description,
+                    documentTypeAssignments.ToList(),
+                    documentTypes.ToList());
+
+            // ✅ Filter file uploads
+            leaseCoopModel.FileUploads = FilterFileUploadsWithFilesOnly(leaseCoopModel.FileUploads);
+
+            // ✅ Update IRFDeal (independently)
+            var irfDealDb = await _unitOfWork.IRFDeal.GetAsync(x => x.Id == leaseCoopModel.IRFDealId, tracked: true);
+            var editedData = viewModel.EditLeaseCoop.EditIRFDealLeaseCoopViewModel;
+
+            if (irfDealDb != null && editedData != null)
+            {
+                irfDealDb.UpdateFromViewModel(editedData, parsedUserId);
+                await _unitOfWork.IRFDeal.UpdateAsync(irfDealDb);
             }
 
-            if (ModelState.IsValid)
+            // ✅ Update main LeaseCoop properties
+            var isAgent = await _userManager.IsInRoleAsync(user, "Agent");
+            leaseCoopModel.DealStatusId = dealStatusId;
+            leaseCoopModel.Notes = viewModel.EditLeaseCoop.Notes;
+            leaseCoopModel.DateSubmitted = DateTime.Now;
+            leaseCoopModel.IsActive = true;
+            leaseCoopModel.UpdatedAt = DateTime.Now;
+            leaseCoopModel.UpdatedBy = parsedUserId;
+
+            //leaseCoopModel.IRFDeal = null; // optional: avoid nav re-persisting
+
+            // ✅ Persist changes (entity is tracked)
+            await _unitOfWork.SaveChangesAsync();
+
+            // ✅ Handle file uploads
+            var uploadPath = CreateFilePath(leaseCoopModel.Id);
+            var fileUploadVM = viewModel.EditLeaseCoop.CreateFileUploadListViewModel?.CreateFileUploadsViewModel;
+
+            if (fileUploadVM != null)
             {
-                // to get current user ID
-                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-                // to get current user info
-                var user = await _userManager.FindByIdAsync(userId!);
-
-                var modelFromDb = await _unitOfWork.LeaseCoop.GetAsync(x => x.Id == viewModel.EditLeaseCoop.Id, includeProperties: "IRFDeal,TransactionType,DealStatus");
-
-                string controllerName = this.ControllerContext.RouteData.Values["controller"]!.ToString()!;
-
-                var transactionType = await _unitOfWork.TransactionType.GetAsync(x => x.Id == modelFromDb.TransactionTypeId); //Sale Listing
-                viewModel.EditLeaseCoop.TransactionType = transactionType;
-
-                viewModel.EditLeaseCoop.TransactionTypeId = viewModel.EditLeaseCoop.TransactionType.Id;
-
-                var documentTypeAssignmentIEnum = await _unitOfWork.DocumentTypeAssignment.GetAllAsync(x => x.IsDeleted == false, includeProperties: "TransactionType,DocumentType");
-                var documentTypeIEnum = await _unitOfWork.DocumentType.GetAllAsync(x => x.IsDeleted == false);
-                var documentTypeAssignmentList = documentTypeAssignmentIEnum.ToList();
-                var documentTypeList = documentTypeIEnum.ToList();
-                viewModel.EditLeaseCoop.DocumentTypeList = _documentTransactionService
-                                                                .GetDocumentTypesFromDocumentTypeAssignment(modelFromDb.TransactionType!.Description,
-                                                                                                            documentTypeAssignmentList,
-                                                                                                            documentTypeList);
-
-                var leaseCoopModel = await _unitOfWork.LeaseCoop.GetAsync(x => x.Id == id, includeProperties: "IRFDeal");
-                if (leaseCoopModel == null)
-                {
-                    NotFoundViewModel notFoundViewModel = new NotFoundViewModel();
-                    notFoundViewModel.ErrorTitle = ($"{controllerName} not found");
-                    notFoundViewModel.ErrorMessage = ($"{controllerName} with {id} cannot be found!");
-                    notFoundViewModel.ControllerName = controllerName;
-                    notFoundViewModel.ControllerAction = "Index";
-
-                    return View("NotFound", notFoundViewModel);
-                }
-                var fileUploadsWithFiles = FilterFileUploadsWithFilesOnly(leaseCoopModel.FileUploads);
-                leaseCoopModel.FileUploads = fileUploadsWithFiles;
-
-                var irfDealModel = await _unitOfWork.IRFDeal.GetAsync(x => x.Id == leaseCoopModel.IRFDealId, tracked: true);
-
-                leaseCoopModel.IRFDeal = viewModel.EditLeaseCoop.EditIRFDealLeaseViewModel?.ToIRFDealModel();
-                leaseCoopModel.IRFDeal!.CreatedAt = irfDealModel.CreatedAt;
-                leaseCoopModel.IRFDeal.CreatedBy = irfDealModel.CreatedBy;
-                leaseCoopModel.IRFDeal.UpdatedAt = DateTime.Now;
-                leaseCoopModel.IRFDeal.UpdatedBy = user!.Id;
-                leaseCoopModel.Notes = viewModel.EditLeaseCoop.Notes;
-                if (leaseCoopModel.IRFDeal != null)
-                {
-                    //leaseCoopModel.IRFDeal.LeaseCoopId = leaseCoopModel.Id;
-                    await _unitOfWork.IRFDeal.UpdateAsync(leaseCoopModel.IRFDeal);
-                }
-
-                var isAgent = await _userManager.IsInRoleAsync(user, "Agent");
-                if (isAgent)
-                {
-                    leaseCoopModel.DealStatusId = dealStatusId;
-                }
-                else
-                {
-                    leaseCoopModel.DealStatusId = viewModel.EditLeaseCoop.DealStatusId;
-                }
-
-                leaseCoopModel.DateSubmitted = DateTime.Now;
-                // Update IRF Deal
-
-                leaseCoopModel.IsActive = true;
-                leaseCoopModel.UpdatedBy = user!.Id;
-                leaseCoopModel.UpdatedAt = DateTime.Now;
-
-                // Update other properties as needed
-
-                await _unitOfWork.LeaseCoop.UpdateAsync(leaseCoopModel);
-
-
-                // Create FileUploadData
-
-                var uploadPath = CreateFilePath(leaseCoopModel.Id);
-
-                if (viewModel.EditLeaseCoop.CreateFileUploadListViewModel?.CreateFileUploadsViewModel != null)
-                {
-                    await CreateFileUploadData(viewModel.EditLeaseCoop.CreateFileUploadListViewModel.CreateFileUploadsViewModel,
-                                                 leaseCoopModel.Id,
-                                                 transactionType.Id,
-                                                 viewModel.EditLeaseCoop.DocumentTypeList,
-                                                 uploadPath);
-                }
-
-                return RedirectToAction(nameof(Index), new { addSuccess = true });
-
+                await CreateFileUploadData(
+                    fileUploadVM,
+                    leaseCoopModel.Id,
+                    transactionType.Id,
+                    viewModel.EditLeaseCoop.DocumentTypeList,
+                    uploadPath
+                );
             }
-            return View(viewModel);
+
+            return RedirectToAction(nameof(Index), new { editSuccess = true });
         }
+
+
+        private IActionResult NotFoundResultWithMessage(string entityName, int id)
+        {
+            var viewModel = new NotFoundViewModel
+            {
+                ErrorTitle = $"{entityName} not found",
+                ErrorMessage = $"{entityName} with ID {id} cannot be found!",
+                ControllerName = entityName,
+                ControllerAction = "Index"
+            };
+            return View("NotFound", viewModel);
+        }
+
         private List<FileUpload>? FilterFileUploadsWithFilesOnly(List<FileUpload>? fileUploads)
         {
             List<FileUpload> fileUploadsWithFiles = new List<FileUpload>();
@@ -693,6 +685,7 @@ namespace Intl.Realty.Firm.Controllers
 
             return Json(documentTypeIds);
         }
+
         [HttpPost]
         public async Task<IActionResult> GetLeaseCoopList([FromBody] DtParameters dtParameters)
         {
@@ -714,13 +707,13 @@ namespace Intl.Realty.Firm.Controllers
             var isDealAdmin = await _userManager.IsInRoleAsync(user!, "DealAdmin");
             var isTeamLeader = await _userManager.IsInRoleAsync(user!, "TeamLeader");
 
-            // Initialize query
-            var result = await _unitOfWork.LeaseCoop.AsQueryableAsync(
+            // EF-backed query
+            var result = _unitOfWork.LeaseCoop.AsQueryable(
                 x => !x.IsDeleted,
                 includeProperties: "IRFDeal,TransactionType,DealStatus"
             );
 
-            // 🔹 Apply role-based filtering
+            // Role-based filtering
             if (!(isAdmin || isSuperAdmin))
             {
                 if (isAgent)
@@ -733,11 +726,10 @@ namespace Intl.Realty.Firm.Controllers
                 }
                 else if (isTeamLeader)
                 {
-                    // Get team members of the TeamLeader
-                    var teamMemberIds = await _userManager.Users
+                    var teamMemberIds = _userManager.Users
                         .Where(u => u.TeamLeaderId == user!.Id)
                         .Select(u => u.Id)
-                        .ToListAsync();
+                        .ToList(); // ✅ Sync, safe
 
                     if (teamMemberIds.Any())
                     {
@@ -748,24 +740,34 @@ namespace Intl.Realty.Firm.Controllers
 
             var totalResultsCount = result.Count();
 
-            // 🔹 Apply search filtering
+            // Search filtering
             result = searchBy!.Contains(":") || searchBy.Contains("+")
                 ? FilterSearchWithParameters(result, searchBy)
                 : DefaultFilterSearch(result, searchBy);
 
-            // 🔹 Apply ordering
+            // Sorting
             result = orderAscendingDirection
                 ? result.OrderByDynamic(orderCriteria!, DtOrderDir.Asc)
                 : result.OrderByDynamic(orderCriteria!, DtOrderDir.Desc);
 
             var filteredResultsCount = result.Count();
 
-            // Convert results to ViewModel
-            var resultList = result.ToLeaseCoopListViewModel();
+            // Paging
+            var pagedData = result
+                .Skip(dtParameters.Start)
+                .Take(dtParameters.Length)
+                .ToList();
 
-            // Optimize user lookup
-            var usersDictionary = await _userManager.Users
-                .ToDictionaryAsync(u => u.Id);
+            var resultList = pagedData;
+
+            // Safe user lookup using _userManager (sync)
+            var createdByIds = resultList.Select(x => x.CreatedBy).Distinct().ToList();
+
+            var usersList = _userManager.Users
+                .Where(u => createdByIds.Contains(u.Id)) // runs in-memory
+                .ToList(); // ✅ Safe
+
+            var usersDictionary = usersList.ToDictionary(u => u.Id);
 
             foreach (var item in resultList)
             {
@@ -775,20 +777,15 @@ namespace Intl.Realty.Firm.Controllers
                 }
             }
 
-            // 🔹 Prepare JSON response for DataTables
-            var jsonResult = new DtResult<LeaseCoop>
+            return Json(new DtResult<LeaseCoop>
             {
                 Draw = dtParameters.Draw,
                 RecordsTotal = totalResultsCount,
                 RecordsFiltered = filteredResultsCount,
-                Data = await result
-                    .Skip(dtParameters.Start)
-                    .Take(dtParameters.Length)
-                    .ToListAsync()
-            };
-
-            return Json(jsonResult);
+                Data = resultList
+            });
         }
+
 
         private IQueryable<LeaseCoop> DefaultFilterSearch(IQueryable<LeaseCoop> result, string searchBy)
         {
@@ -1027,7 +1024,7 @@ namespace Intl.Realty.Firm.Controllers
             {
                 numberRange.CurrentNumber += 1;
                 await _unitOfWork.DealTransactionNumberRange.UpdateAsync(numberRange);
-                await _unitOfWork.SaveAsync();
+                await _unitOfWork.SaveChangesAsync();
             }
         }
 
@@ -1039,7 +1036,7 @@ namespace Intl.Realty.Firm.Controllers
 
             var docTypes = await _unitOfWork.DocumentType.GetAllAsync(x => !x.IsDeleted);
 
-            viewModel.CreateLeaseCoop.DocumentTypeList =
+            viewModel.CreateLeaseCoopViewModel.DocumentTypeList =
                 _documentTransactionService.GetDocumentTypesFromDocumentTypeAssignment(
                     transactionTypeName,
                     assignments.ToList(),
