@@ -30,10 +30,6 @@ namespace Intl.Realty.Firm.Model.ViewModel.TransactionTypeDetailsBaseVM
         [Required(ErrorMessage = "The Landlord's Name field is required.")]
         public string LandLordName { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "The Listing Commission Percentage field is required.")]
-        [Column(TypeName = "decimal(18,4)")]
-        public decimal ListingCommissionPercentage { get; set; }
-
         [Required(ErrorMessage = "The Buying Commission Percentage field is required.")]
         [Column(TypeName = "decimal(18,4)")]
         public decimal BuyingCommissionPercentage { get; set; }

@@ -9,7 +9,7 @@ namespace Intl.Realty.Firm.Model.ViewModel.LeaseCoopVM
         public string DealTransactionNumber { get; set; } = string.Empty;
         public int TransactionTypeId { get; set; }
         public int IRFDealId { get; set; }
-        public CreateIRFDealLeaseViewModel CreateIRFDealLeaseViewModel { get; set; } = new CreateIRFDealLeaseViewModel();
+        public CreateIRFDealLeaseCoopViewModel CreateIRFDealLeaseCoopViewModel { get; set; } = new CreateIRFDealLeaseCoopViewModel();
         public CreateFileUploadListViewModel CreateFileUploadListViewModel { get; set; } = new CreateFileUploadListViewModel();
         public int DealStatusId { get; set; }
         public DateTime? DateSubmitted { get; set; }

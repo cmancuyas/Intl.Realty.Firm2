@@ -20,7 +20,7 @@
         ICustomerRepository Customer { get; }
         IEmailCategoryRepository EmailCategory { get; }
         IContactEmailRepository ContactEmail { get; }
-        Task SaveAsync();
-        void Save();
+        Task SaveChangesAsync();
+        void SaveChanges();
     }
 }

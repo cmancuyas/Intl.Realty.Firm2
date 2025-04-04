@@ -29,10 +29,6 @@ namespace Intl.Realty.Firm.Model.ViewModel.TransactionTypeDetailsBaseVM
         [Required(ErrorMessage = "The Landlord's Name field is required.")]
         public string LandLordName { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "The Listing Commission Percentage field is required.")]
-        [Column(TypeName = "decimal(18,4)")]
-        public decimal ListingCommissionPercentage { get; set; }
-
         [Required(ErrorMessage = "The Buying Commission Percentage field is required.")]
         [Column(TypeName = "decimal(18,4)")]
         public decimal BuyingCommissionPercentage { get; set; }
@@ -68,7 +64,7 @@ namespace Intl.Realty.Firm.Model.ViewModel.TransactionTypeDetailsBaseVM
         public string TenantEmailAddress { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "The Landlord's Email Address field is required.")]
-        [RegularExpression(@"^[^@\s]+@[^@\s]+\.[^@\s]+$", ErrorMessage = "The Tenant's Email Address must be in a valid email format.")]
+        [RegularExpression(@"^[^@\s]+@[^@\s]+\.[^@\s]+$", ErrorMessage = "The Landlord's Email Address must be in a valid email format.")]
         public string LandLordEmailAddress { get; set; } = string.Empty;
         [Required]
         public bool IsActive { get; set; }

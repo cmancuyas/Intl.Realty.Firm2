@@ -47,12 +47,12 @@ namespace Intl.Realty.Firm.Repository
             EmailCategory = new EmailCategoryRepository(_db);
             ContactEmail = new ContactEmailRepository(_db);
         }
-        public async Task SaveAsync()
+        public async Task SaveChangesAsync()
         {
             await _db.SaveChangesAsync();
         }
 
-        public void Save()
+        public void SaveChanges()
         {
             _db.SaveChanges();
         }
