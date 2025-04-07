@@ -129,6 +129,16 @@ u-none {
         margin-left: -5px;
     }
 
+@media screen and (min-width: 101px) and (max-width: 768px) {
+    .page-controller > a {
+        margin-left: -15px;
+    }
+        .page-controller a > span {
+            top: 2px;
+            position: relative;
+        }
+}
+
 body {
     background: url('../files/img/bg-wavy.png') no-repeat;
     background-size: cover;
@@ -1658,6 +1668,7 @@ input.form-control {
 
             .mobile-ctas .cta-button {
                 width: 100%;
+                padding: 0.75em;
             }
 
         .tab-content .form-group input.form-control {

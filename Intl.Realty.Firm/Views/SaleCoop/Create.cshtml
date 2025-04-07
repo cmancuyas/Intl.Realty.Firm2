@@ -29,6 +29,31 @@
                 <div asp-validation-summary="All" class="text-danger"></div>
 
                 <div class="tab-page">
+                    <!-- Dropdown for Mobile -->
+                    <div class="dropdown d-md-none mb-3">
+                        <button class="btn btn-primary dropdown-toggle"
+                                type="button"
+                                id="tabDropdown"
+                                data-bs-toggle="dropdown"
+                                aria-expanded="false">
+                            @Model.Menus.FirstOrDefault(m => m.IsTrue)?.Description Menu
+                        </button>
+                        <ul class="dropdown-menu" aria-labelledby="tabDropdown">
+                            @foreach (var item in Model.Menus)
+                            {
+                                <li>
+                                    <button class="dropdown-item"
+                                            data-bs-target="#@item.Control"
+                                            data-tab-id="@item.Tab"
+                                            data-route="@item.Control">
+                                        @item.Description
+                                    </button>
+                                </li>
+                            }
+                        </ul>
+                    </div>
+
+                    <!-- Tab for Desktop -->
                     <ul class="nav nav-tabs" id="consultantStatusManagementTab" role="tablist" style="border:none">
                         @foreach (var item in Model.Menus)
                         {
@@ -47,6 +72,25 @@
                             </li>
                         }
                     </ul>
+
+                    @* <ul class="nav nav-tabs" id="consultantStatusManagementTab" role="tablist" style="border:none"> *@
+                    @*     @foreach (var item in Model.Menus) *@
+                    @*     { *@
+                    @*         <li class="nav-item mx-0"> *@
+                    @*             <input type="hidden" id="menuId" name="menuId" value="@item.Id" /> *@
+                    @*             <button class="nav-link @item.IsActive" *@
+                    @*                     id="@item.Tab" *@
+                    @*                     data-bs-toggle="tab" *@
+                    @*                     data-bs-target="#@item.Control" *@
+                    @*                     type="button" *@
+                    @*                     role="tab" *@
+                    @*                     aria-controls="@item.Control" *@
+                    @*                     aria-selected="@item.IsSelected"> *@
+                    @*                 @item.Description *@
+                    @*             </button> *@
+                    @*         </li> *@
+                    @*     } *@
+                    @* </ul> *@
                 </div>
                 <div class="tab-content" style="background-color:white;">
 
@@ -313,12 +357,12 @@
                 </div>
 
                 <hr class="my-5" />
-                <div class="form-group d-flex justify-content-center gap-4">
-                    <input type="button" value="Cancel" class="btn btn-secondary w-15" onclick="window.location.href='@Url.Action("Index", "SaleCoop")'" />
+                <div class="form-group d-flex justify-content-center mobile-ctas gap-4">
+                    <input type="button" value="Cancel" class="btn btn-secondary cta-button w-15" onclick="window.location.href='@Url.Action("Index", "SaleCoop")'" />
                     @* <button type="reset" class="btn btn-secondary w-15" onclick="$('.text-danger').hide();">Reset</button> *@
                     <button type="submit"
                             id="btnSubmit"
-                            class="btn btn-primary w-15" onclick="$('.text-danger').show();">
+                            class="btn btn-primary cta-button w-15" onclick="$('.text-danger').show();">
                         Submit
                     </button>
                 </div>
