@@ -10,14 +10,19 @@ namespace Intl.Realty.Firm.Service
     {
         private readonly EmailSettings _mailSettings;
         private readonly IConfigurationService _configurationService;
+        private readonly ILogger<EmailService> _logger;
 
-        public EmailService(IOptions<EmailSettings> mailSettings, IConfigurationService configurationService)
+        public EmailService(
+            IOptions<EmailSettings> mailSettings,
+            IConfigurationService configurationService,
+            ILogger<EmailService> logger)
         {
             _mailSettings = mailSettings.Value;
             _configurationService = configurationService;
+            _logger = logger;
         }
 
-        public Task SendEmailAsync(MailRequest mailRequest)
+        public async Task SendEmailAsync(MailRequest mailRequest)
         {
             var emailAddress = _configurationService.GetEmail();
             var password = _configurationService.GetPassword();
@@ -26,7 +31,7 @@ namespace Intl.Realty.Firm.Service
             var port = _configurationService.GetPort();
 
             var emailToSend = new MimeMessage();
-            emailToSend.From.Add(MailboxAddress.Parse(emailAddress));
+            emailToSend.From.Add(new MailboxAddress(displayName, emailAddress));
             emailToSend.To.Add(MailboxAddress.Parse(mailRequest.ToEmail));
             emailToSend.Subject = mailRequest.Subject;
             emailToSend.Body = new TextPart(MimeKit.Text.TextFormat.Html)
@@ -34,23 +39,25 @@ namespace Intl.Realty.Firm.Service
                 Text = mailRequest.Body
             };
 
-            using (var emailClient = new SmtpClient())
+            try
             {
-                emailClient.Connect(host, Convert.ToInt32(port), MailKit.Security.SecureSocketOptions.StartTls);
-                emailClient.Authenticate(emailAddress, password);
-                emailClient.Send(emailToSend);
-                emailClient.Disconnect(true);
+                using var emailClient = new SmtpClient();
+                _logger.LogInformation("Connecting to SMTP server {Host}:{Port}...", host, port);
+
+                await emailClient.ConnectAsync(host, Convert.ToInt32(port), MailKit.Security.SecureSocketOptions.StartTls);
+                await emailClient.AuthenticateAsync(emailAddress, password);
+
+                _logger.LogInformation("Sending email to {Recipient}", mailRequest.ToEmail);
+                await emailClient.SendAsync(emailToSend);
+                await emailClient.DisconnectAsync(true);
+
+                _logger.LogInformation("Email successfully sent to {Recipient}", mailRequest.ToEmail);
             }
-
-            return Task.CompletedTask;
-
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error sending email to {Recipient}", mailRequest.ToEmail);
+                throw; // Let the caller handle it or bubble it up
+            }
         }
-
-        //private SmtpClient CreateSmtpCredentials => new SmtpClient(_mailSettings.Host, _mailSettings.Port)
-        //{
-        //    EnableSsl = true,
-        //    DeliveryMethod = SmtpDeliveryMethod.Network,
-        //    Credentials = new NetworkCredential(_mailSettings.Email, _mailSettings.Password)
-        //};
     }
 }

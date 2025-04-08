@@ -1,4 +1,4 @@
-using Intl.Realty.Firm.DataAccess;
+﻿using Intl.Realty.Firm.DataAccess;
 using Intl.Realty.Firm.Models.Auxiliary;
 using Intl.Realty.Firm.Repository;
 using Intl.Realty.Firm.Repository.IRepository;
@@ -17,8 +17,18 @@ using Newtonsoft.Json.Serialization;
 using Intl.Realty.Firm.Model.Model;
 using Intl.Realty.Firm.Models;
 
+using Serilog;
+using Serilog.Events;
+
+Log.Logger = new LoggerConfiguration()
+    .MinimumLevel.Debug()
+    .WriteTo.Console()
+    .WriteTo.File("Logs/log-.txt", rollingInterval: RollingInterval.Day)
+    .CreateLogger();
+
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Host.UseSerilog();
 // Add services to the container.
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString(name: "DefaultConnection")));
