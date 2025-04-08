@@ -469,7 +469,8 @@ namespace Intl.Realty.Firm.Controllers
                     id = u.Id,
                     firstName = u.FirstName ?? "N/A",
                     lastName = u.LastName ?? "N/A",
-                    email = u.Email ?? "N/A"
+                    email = u.Email ?? "N/A",
+                    emailConfirmed = u.EmailConfirmed,
                 })
                 .ToListAsync();
 
@@ -490,40 +491,68 @@ namespace Intl.Realty.Firm.Controllers
 
         private IQueryable<ApplicationUser> DefaultFilterSearch(IQueryable<ApplicationUser> result, string searchBy)
         {
-            result = result.Where(r => r.FirstName != null && r.FirstName.ToUpper().Contains(searchBy.ToUpper()) ||
-                   r.LastName! != null && r.LastName.ToUpper().Contains(searchBy.ToUpper()) ||
-                   r.Email! != null && r.Email.ToUpper().Contains(searchBy.ToUpper())
-                   );
+            var upperSearch = searchBy.ToUpper();
+
+            result = result.Where(r =>
+                (r.FirstName != null && r.FirstName.ToUpper().Contains(upperSearch)) ||
+                (r.LastName != null && r.LastName.ToUpper().Contains(upperSearch)) ||
+                (r.Email != null && r.Email.ToUpper().Contains(upperSearch)) ||
+                (r.EmailConfirmed && "CONFIRMED".Contains(upperSearch)) ||
+                (!r.EmailConfirmed && "NOT YET CONFIRMED".Contains(upperSearch))
+            );
+
             return result;
         }
+
         private IQueryable<ApplicationUser> FilterSearchWithParameters(IQueryable<ApplicationUser> query, string searchBy)
         {
-            var filters = searchBy.Split('+'); // Split the input by '+'
+            if (string.IsNullOrWhiteSpace(searchBy))
+                return query;
+
+            var filters = searchBy.Split('+', StringSplitOptions.RemoveEmptyEntries);
 
             foreach (var filter in filters)
             {
-                var keyValue = filter.Split(':'); // Split each filter by ':'
+                var keyValue = filter.Split(':', 2); // split on the first ':' only
                 if (keyValue.Length != 2) continue;
 
                 var key = keyValue[0].Trim().ToLower();
-                var value = keyValue[1].Trim().ToUpper();
+                var value = keyValue[1].Trim().ToUpperInvariant();
 
                 switch (key)
                 {
                     case "firstname":
                         query = query.Where(r => r.FirstName != null && r.FirstName.ToUpper().Contains(value));
                         break;
+
                     case "lastname":
                         query = query.Where(r => r.LastName != null && r.LastName.ToUpper().Contains(value));
                         break;
+
+                    case "email":
+                        query = query.Where(r => r.Email != null && r.Email.ToUpper().Contains(value));
+                        break;
+
+                    case "emailconfirmed":
+                        if (value == "CONFIRMED")
+                        {
+                            query = query.Where(r => r.EmailConfirmed == true);
+                        }
+                        else if (value == "NOT YET CONFIRMED" || value == "NOT CONFIRMED" || value == "UNCONFIRMED")
+                        {
+                            query = query.Where(r => r.EmailConfirmed == false);
+                        }
+                        break;
+
                     default:
-                        // If there's an unrecognized filter key, you can choose to ignore it or handle it as needed
+                        // Optionally handle unknown keys
                         break;
                 }
             }
 
             return query;
         }
+
 
         private (string, bool) InitializeOrderCriteria(DtParameters dtParameters, string orderCriteria, bool orderAscendingDirection)
         {
