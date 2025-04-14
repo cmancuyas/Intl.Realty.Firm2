@@ -406,29 +406,43 @@ namespace Intl.Realty.Firm.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> ConfirmEmail(string userId, string token)
         {
-            if (userId == null || token == null)
+            if (string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(token))
             {
-                return RedirectToAction("Index", "Home");
+                _logger.LogWarning("ConfirmEmail: Missing userId or token.");
+                return View("Error");
             }
 
             var user = await _userManager.FindByIdAsync(userId);
             if (user == null)
             {
-                ViewBag.ErrorMessage = ($"The USER ID {userId} is invalid");
-                return View("NotFound");
+                _logger.LogWarning("ConfirmEmail: User not found. ID: {UserId}", userId);
+                return View("Error");
             }
+
+            if (await _userManager.IsEmailConfirmedAsync(user))
+            {
+                _logger.LogInformation("ConfirmEmail: Email already confirmed for user {Email}.", user.Email);
+                return View("ConfirmEmailAlreadyConfirmed");
+            }
+
+            // Optional: decode the token (ASP.NET Core usually handles this automatically)
+            token = WebUtility.UrlDecode(token);
 
             var result = await _userManager.ConfirmEmailAsync(user, token);
-
             if (result.Succeeded)
             {
-                return View();
+                _logger.LogInformation("ConfirmEmail: Email successfully confirmed for user {Email}.", user.Email);
+                return View("ConfirmEmailSuccess");
             }
 
-            ErrorViewModel errorViewModel = new ErrorViewModel();
-            errorViewModel.ErrorTitle = "Email cannot be confirmed";
-            return View("Error", errorViewModel);
+            // Log errors if any
+            _logger.LogWarning("ConfirmEmail: Failed for user {Email}. Errors: {Errors}",
+                user.Email, string.Join(", ", result.Errors.Select(e => e.Description)));
+
+            return View("ConfirmEmailFailed");
         }
+
+
         [AllowAnonymous]
         [HttpPost]
         public IActionResult ExternalLogin(string provider, string returnUrl)
