@@ -69,7 +69,7 @@ namespace Intl.Realty.Firm.Controllers
             if (user == null || !await _userManager.CheckPasswordAsync(user, viewModel.Password))
             {
                 ModelState.AddModelError(string.Empty, "Invalid email or password");
-                return View(viewModel);
+                return View(viewModel); // ✅ Must return the view — not redirect
             }
 
             // ✅ Use SignInManager to check if email is confirmed
@@ -133,14 +133,26 @@ namespace Intl.Realty.Firm.Controllers
 
             var user = await _userManager.FindByEmailAsync(viewModel.Email);
 
-            // ✅ Prevent user enumeration by always returning the same response
-            if (user == null || !await _userManager.IsEmailConfirmedAsync(user))
+            // If user doesn't exist, redirect silently to avoid user enumeration
+            if (user == null)
             {
-                _logger.LogWarning("Password reset attempted for non-existent or unconfirmed email: {Email}", viewModel.Email);
+                _logger.LogWarning("Password reset attempted for non-existent email: {Email}", viewModel.Email);
                 return RedirectToAction("ForgotPasswordConfirmation");
             }
 
-            // ✅ Generate reset token & encode safely
+            // If email is not confirmed, show custom view or error
+            if (!await _userManager.IsEmailConfirmedAsync(user))
+            {
+                _logger.LogWarning("Password reset attempted for unconfirmed email: {Email}", viewModel.Email);
+
+                // You could return a view with the option to resend confirmation
+                return View("EmailNotConfirmed", new ResendConfirmationViewModel
+                {
+                    Email = viewModel.Email
+                });
+            }
+
+            // Generate reset token
             var token = await _userManager.GeneratePasswordResetTokenAsync(user);
             var encodedToken = WebUtility.UrlEncode(token);
 
@@ -161,12 +173,39 @@ namespace Intl.Realty.Firm.Controllers
             return RedirectToAction("ForgotPasswordConfirmation");
         }
 
+
         // ✅ Forgot Password Confirmation Page
         [HttpGet]
         [AllowAnonymous]
         public IActionResult ForgotPasswordConfirmation()
         {
             return View();
+        }
+        [HttpPost]
+        [AllowAnonymous]
+        public async Task<IActionResult> ResendEmailConfirmation(ResendConfirmationViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View("EmailNotConfirmed", model);
+            }
+
+            var user = await _userManager.FindByEmailAsync(model.Email);
+            if (user == null || await _userManager.IsEmailConfirmedAsync(user))
+            {
+                return RedirectToAction("ForgotPasswordConfirmation");
+            }
+
+            var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+            var encodedToken = WebUtility.UrlEncode(token);
+
+            var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = user.Id, token = encodedToken }, protocol: Request.Scheme);
+            var mailRequest = EmailRequest.CreateEmailConfirmationRequest(user, callbackUrl);
+            await _emailService.SendEmailAsync(mailRequest);
+
+            _logger.LogInformation("Confirmation email resent to: {Email}", user.Email);
+
+            return RedirectToAction("ConfirmationEmailSent");
         }
 
         // ✅ Reset Password - Show Reset Form

@@ -1,0 +1,32 @@
+﻿@using Intl.Realty.Firm.Model.ViewModel.AccountVM
+@model ResendConfirmationViewModel
+
+@{
+    ViewData["Title"] = "Email Not Confirmed";
+}
+
+<div class="row m-0 p-0 page-login">
+    <div class="col-md-6 col-sm-12 page-login-container left-part">
+        <img src="~/files/img/logo-irf-default.jpg" alt="Logo" class="img-fluid logo-login" />
+    </div>
+    <div class="col-md-6 col-sm-12 page-login-container right-part">
+        <h2 class="fw-bolder text-center mb-md-5 mb-4">Email Not Confirmed</h2>
+        <p class="fw-medium text-center w-75 mx-auto">
+            Your email address has not yet been confirmed. Would you like us to resend the confirmation link?
+        </p>
+        <hr />
+        <div class="container-fluid w-75 px-0">
+            <form asp-action="ResendEmailConfirmation" method="post">
+                <input type="hidden" asp-for="Email" />
+                <div class="d-flex gap-3">
+                    <button type="submit" class="btn btn-primary cta">
+                        Resend Confirmation Email
+                    </button>
+                    <button type="button" class="btn btn-secondary cta" onclick="window.location.href='@Url.Action("Login", "Account")'">
+                        Back to Login
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
