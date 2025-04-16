@@ -73,24 +73,6 @@
                         }
                     </ul>
 
-                    @* <ul class="nav nav-tabs" id="consultantStatusManagementTab" role="tablist" style="border:none"> *@
-                    @*     @foreach (var item in Model.Menus) *@
-                    @*     { *@
-                    @*         <li class="nav-item mx-0"> *@
-                    @*             <input type="hidden" id="menuId" name="menuId" value="@item.Id" /> *@
-                    @*             <button class="nav-link @item.IsActive" *@
-                    @*                     id="@item.Tab" *@
-                    @*                     data-bs-toggle="tab" *@
-                    @*                     data-bs-target="#@item.Control" *@
-                    @*                     type="button" *@
-                    @*                     role="tab" *@
-                    @*                     aria-controls="@item.Control" *@
-                    @*                     aria-selected="@item.IsSelected"> *@
-                    @*                 @item.Description *@
-                    @*             </button> *@
-                    @*         </li> *@
-                    @*     } *@
-                    @* </ul> *@
                 </div>
                 <div class="tab-content" style="background-color:white;">
 
@@ -148,16 +130,16 @@
                         <div class="row">
                             <div class="col-md-6 mt-4">
                                 <div class="form-group">
-                                    <label asp-for="CreateLeaseCoopViewModel.CreateIRFDealLeaseCoopViewModel.TenantName" class="control-label fw-bolder">Tenant's Name</label>
-                                    <input asp-for="CreateLeaseCoopViewModel.CreateIRFDealLeaseCoopViewModel.TenantName" class="form-control" />
-                                    <span asp-validation-for="CreateLeaseCoopViewModel.CreateIRFDealLeaseCoopViewModel.TenantName" class="text-danger"></span>
+                                    <label asp-for="CreateLeaseCoopViewModel.CreateIRFDealLeaseCoopViewModel.TenantDetails.TenantName" class="control-label fw-bolder">Tenant's Name</label>
+                                    <input asp-for="CreateLeaseCoopViewModel.CreateIRFDealLeaseCoopViewModel.TenantDetails.TenantName" class="form-control" />
+                                    <span asp-validation-for="CreateLeaseCoopViewModel.CreateIRFDealLeaseCoopViewModel.TenantDetails.TenantName" class="text-danger"></span>
                                 </div>
                             </div>
                             <div class="col-md-6 mt-4">
                                 <div class="form-group">
-                                    <label asp-for="CreateLeaseCoopViewModel.CreateIRFDealLeaseCoopViewModel.TenantEmailAddress" class="control-label fw-bolder">Tenant's Email Address</label>
-                                    <input asp-for="CreateLeaseCoopViewModel.CreateIRFDealLeaseCoopViewModel.TenantEmailAddress" class="form-control" />
-                                    <span asp-validation-for="CreateLeaseCoopViewModel.CreateIRFDealLeaseCoopViewModel.TenantEmailAddress" class="text-danger"></span>
+                                    <label asp-for="CreateLeaseCoopViewModel.CreateIRFDealLeaseCoopViewModel.TenantDetails.TenantEmailAddress" class="control-label fw-bolder">Tenant's Email Address</label>
+                                    <input asp-for="CreateLeaseCoopViewModel.CreateIRFDealLeaseCoopViewModel.TenantDetails.TenantEmailAddress" class="form-control" />
+                                    <span asp-validation-for="CreateLeaseCoopViewModel.CreateIRFDealLeaseCoopViewModel.TenantDetails.TenantEmailAddress" class="text-danger"></span>
                                 </div>
                             </div>
 
@@ -167,16 +149,16 @@
                         <div class="row">
                             <div class="col-md-6 mt-4">
                                 <div class="form-group">
-                                    <label asp-for="CreateLeaseCoopViewModel.CreateIRFDealLeaseCoopViewModel.LandLordName" class="control-label fw-bolder">LandLord's Name</label>
-                                    <input asp-for="CreateLeaseCoopViewModel.CreateIRFDealLeaseCoopViewModel.LandLordName" class="form-control" />
-                                    <span asp-validation-for="CreateLeaseCoopViewModel.CreateIRFDealLeaseCoopViewModel.LandLordName" class="text-danger"></span>
+                                    <label asp-for="CreateLeaseCoopViewModel.CreateIRFDealLeaseCoopViewModel.LandLordDetails.LandLordName" class="control-label fw-bolder">LandLord's Name</label>
+                                    <input asp-for="CreateLeaseCoopViewModel.CreateIRFDealLeaseCoopViewModel.LandLordDetails.LandLordName" class="form-control" />
+                                    <span asp-validation-for="CreateLeaseCoopViewModel.CreateIRFDealLeaseCoopViewModel.LandLordDetails.LandLordName" class="text-danger"></span>
                                 </div>
                             </div>
                             <div class="col-md-6 mt-4">
                                 <div class="form-group">
-                                    <label asp-for="CreateLeaseCoopViewModel.CreateIRFDealLeaseCoopViewModel.BuyingCommissionPercentage" class="control-label fw-bolder">Buying Commission Percentage</label>
-                                    <input asp-for="CreateLeaseCoopViewModel.CreateIRFDealLeaseCoopViewModel.BuyingCommissionPercentage" class="form-control" />
-                                    <span asp-validation-for="CreateLeaseCoopViewModel.CreateIRFDealLeaseCoopViewModel.BuyingCommissionPercentage" class="text-danger"></span>
+                                    <label asp-for="CreateLeaseCoopViewModel.CreateIRFDealLeaseCoopViewModel.Commission.BuyingCommissionPercentage" class="control-label fw-bolder">Buying Commission Percentage</label>
+                                    <input asp-for="CreateLeaseCoopViewModel.CreateIRFDealLeaseCoopViewModel.Commission.BuyingCommissionPercentage" class="form-control" />
+                                    <span asp-validation-for="CreateLeaseCoopViewModel.CreateIRFDealLeaseCoopViewModel.Commission.BuyingCommissionPercentage" class="text-danger"></span>
                                 </div>
                             </div>
                         </div>
@@ -185,16 +167,16 @@
 
                             <div class="col-md-6 mt-4">
                                 <div class="form-group">
-                                    <label asp-for="CreateLeaseCoopViewModel.CreateIRFDealLeaseCoopViewModel.ListingAgentName" class="control-label fw-bolder">Listing Agent Name</label>
-                                    <input asp-for="CreateLeaseCoopViewModel.CreateIRFDealLeaseCoopViewModel.ListingAgentName" class="form-control" />
-                                    <span asp-validation-for="CreateLeaseCoopViewModel.CreateIRFDealLeaseCoopViewModel.ListingAgentName" class="text-danger"></span>
+                                    <label asp-for="CreateLeaseCoopViewModel.CreateIRFDealLeaseCoopViewModel.ListingInfo.ListingAgentName" class="control-label fw-bolder">Listing Agent Name</label>
+                                    <input asp-for="CreateLeaseCoopViewModel.CreateIRFDealLeaseCoopViewModel.ListingInfo.ListingAgentName" class="form-control" />
+                                    <span asp-validation-for="CreateLeaseCoopViewModel.CreateIRFDealLeaseCoopViewModel.ListingInfo.ListingAgentName" class="text-danger"></span>
                                 </div>
                             </div>
                             <div class="col-md-6 mt-4">
                                 <div class="form-group">
-                                    <label asp-for="CreateLeaseCoopViewModel.CreateIRFDealLeaseCoopViewModel.ListingBrokerage" class="control-label fw-bolder">Listing Brokerage</label>
-                                    <input asp-for="CreateLeaseCoopViewModel.CreateIRFDealLeaseCoopViewModel.ListingBrokerage" class="form-control" />
-                                    <span asp-validation-for="CreateLeaseCoopViewModel.CreateIRFDealLeaseCoopViewModel.ListingBrokerage" class="text-danger"></span>
+                                    <label asp-for="CreateLeaseCoopViewModel.CreateIRFDealLeaseCoopViewModel.ListingInfo.ListingBrokerage" class="control-label fw-bolder">Listing Brokerage</label>
+                                    <input asp-for="CreateLeaseCoopViewModel.CreateIRFDealLeaseCoopViewModel.ListingInfo.ListingBrokerage" class="form-control" />
+                                    <span asp-validation-for="CreateLeaseCoopViewModel.CreateIRFDealLeaseCoopViewModel.ListingInfo.ListingBrokerage" class="text-danger"></span>
                                 </div>
                             </div>
 
@@ -202,9 +184,9 @@
                         <div class="row">
                             <div class="col-md-6 mt-4">
                                 <div class="form-group">
-                                    <label asp-for="CreateLeaseCoopViewModel.CreateIRFDealLeaseCoopViewModel.ListingBrokerageFax" class="control-label fw-bolder">Listing Brokerage Fax</label>
-                                    <input asp-for="CreateLeaseCoopViewModel.CreateIRFDealLeaseCoopViewModel.ListingBrokerageFax" class="form-control" />
-                                    <span asp-validation-for="CreateLeaseCoopViewModel.CreateIRFDealLeaseCoopViewModel.ListingBrokerageFax" class="text-danger"></span>
+                                    <label asp-for="CreateLeaseCoopViewModel.CreateIRFDealLeaseCoopViewModel.ListingInfo.ListingBrokerageFax" class="control-label fw-bolder">Listing Brokerage Fax</label>
+                                    <input asp-for="CreateLeaseCoopViewModel.CreateIRFDealLeaseCoopViewModel.ListingInfo.ListingBrokerageFax" class="form-control" />
+                                    <span asp-validation-for="CreateLeaseCoopViewModel.CreateIRFDealLeaseCoopViewModel.ListingInfo.ListingBrokerageFax" class="text-danger"></span>
                                 </div>
                             </div>
                         </div>
@@ -216,16 +198,16 @@
 
                             <div class="col-md-6 mt-4">
                                 <div class="form-group">
-                                    <label asp-for="CreateLeaseCoopViewModel.CreateIRFDealLeaseCoopViewModel.TenantAgentName" class="control-label fw-bolder">Tenant's Agent Name</label>
-                                    <input asp-for="CreateLeaseCoopViewModel.CreateIRFDealLeaseCoopViewModel.TenantAgentName" class="form-control" />
-                                    <span asp-validation-for="CreateLeaseCoopViewModel.CreateIRFDealLeaseCoopViewModel.TenantAgentName" class="text-danger"></span>
+                                    <label asp-for="CreateLeaseCoopViewModel.CreateIRFDealLeaseCoopViewModel.TenantDetails.TenantAgentName" class="control-label fw-bolder">Tenant's Agent Name</label>
+                                    <input asp-for="CreateLeaseCoopViewModel.CreateIRFDealLeaseCoopViewModel.TenantDetails.TenantAgentName" class="form-control" />
+                                    <span asp-validation-for="CreateLeaseCoopViewModel.CreateIRFDealLeaseCoopViewModel.TenantDetails.TenantAgentName" class="text-danger"></span>
                                 </div>
                             </div>
                             <div class="col-md-6 mt-4">
                                 <div class="form-group">
-                                    <label asp-for="CreateLeaseCoopViewModel.CreateIRFDealLeaseCoopViewModel.TenantBrokerage" class="control-label fw-bolder">Tenant Brokerage</label>
-                                    <input asp-for="CreateLeaseCoopViewModel.CreateIRFDealLeaseCoopViewModel.TenantBrokerage" class="form-control" />
-                                    <span asp-validation-for="CreateLeaseCoopViewModel.CreateIRFDealLeaseCoopViewModel.TenantBrokerage" class="text-danger"></span>
+                                    <label asp-for="CreateLeaseCoopViewModel.CreateIRFDealLeaseCoopViewModel.TenantDetails.TenantBrokerage" class="control-label fw-bolder">Tenant Brokerage</label>
+                                    <input asp-for="CreateLeaseCoopViewModel.CreateIRFDealLeaseCoopViewModel.TenantDetails.TenantBrokerage" class="form-control" />
+                                    <span asp-validation-for="CreateLeaseCoopViewModel.CreateIRFDealLeaseCoopViewModel.TenantDetails.TenantBrokerage" class="text-danger"></span>
                                 </div>
                             </div>
                         </div>
@@ -233,16 +215,16 @@
 
                             <div class="col-md-6 mt-4">
                                 <div class="form-group">
-                                    <label asp-for="CreateLeaseCoopViewModel.CreateIRFDealLeaseCoopViewModel.TenantBrokerageFax" class="control-label fw-bolder">Tenant Brokerage Fax</label>
-                                    <input asp-for="CreateLeaseCoopViewModel.CreateIRFDealLeaseCoopViewModel.TenantBrokerageFax" class="form-control" />
-                                    <span asp-validation-for="CreateLeaseCoopViewModel.CreateIRFDealLeaseCoopViewModel.TenantBrokerageFax" class="text-danger"></span>
+                                    <label asp-for="CreateLeaseCoopViewModel.CreateIRFDealLeaseCoopViewModel.TenantDetails.TenantBrokerageFax" class="control-label fw-bolder">Tenant Brokerage Fax</label>
+                                    <input asp-for="CreateLeaseCoopViewModel.CreateIRFDealLeaseCoopViewModel.TenantDetails.TenantBrokerageFax" class="form-control" />
+                                    <span asp-validation-for="CreateLeaseCoopViewModel.CreateIRFDealLeaseCoopViewModel.TenantDetails.TenantBrokerageFax" class="text-danger"></span>
                                 </div>
                             </div>
                             <div class="col-md-6 mt-4">
                                 <div class="form-group">
-                                    <label asp-for="CreateLeaseCoopViewModel.CreateIRFDealLeaseCoopViewModel.LandLordPhoneNumber" class="control-label fw-bolder">LandLord's Phone Number</label>
-                                    <input asp-for="CreateLeaseCoopViewModel.CreateIRFDealLeaseCoopViewModel.LandLordPhoneNumber" class="form-control" />
-                                    <span asp-validation-for="CreateLeaseCoopViewModel.CreateIRFDealLeaseCoopViewModel.LandLordPhoneNumber" class="text-danger"></span>
+                                    <label asp-for="CreateLeaseCoopViewModel.CreateIRFDealLeaseCoopViewModel.LandLordDetails.LandLordPhoneNumber" class="control-label fw-bolder">LandLord's Phone Number</label>
+                                    <input asp-for="CreateLeaseCoopViewModel.CreateIRFDealLeaseCoopViewModel.LandLordDetails.LandLordPhoneNumber" class="form-control" />
+                                    <span asp-validation-for="CreateLeaseCoopViewModel.CreateIRFDealLeaseCoopViewModel.LandLordDetails.LandLordPhoneNumber" class="text-danger"></span>
                                 </div>
                             </div>
                         </div>
@@ -251,16 +233,16 @@
 
                             <div class="col-md-6 mt-4">
                                 <div class="form-group">
-                                    <label asp-for="CreateLeaseCoopViewModel.CreateIRFDealLeaseCoopViewModel.TenantPhoneNumber" class="control-label fw-bolder">Tenant's Phone Number</label>
-                                    <input asp-for="CreateLeaseCoopViewModel.CreateIRFDealLeaseCoopViewModel.TenantPhoneNumber" class="form-control" />
-                                    <span asp-validation-for="CreateLeaseCoopViewModel.CreateIRFDealLeaseCoopViewModel.TenantPhoneNumber" class="text-danger"></span>
+                                    <label asp-for="CreateLeaseCoopViewModel.CreateIRFDealLeaseCoopViewModel.TenantDetails.TenantPhoneNumber" class="control-label fw-bolder">Tenant's Phone Number</label>
+                                    <input asp-for="CreateLeaseCoopViewModel.CreateIRFDealLeaseCoopViewModel.TenantDetails.TenantPhoneNumber" class="form-control" />
+                                    <span asp-validation-for="CreateLeaseCoopViewModel.CreateIRFDealLeaseCoopViewModel.TenantDetails.TenantPhoneNumber" class="text-danger"></span>
                                 </div>
                             </div>
                             <div class="col-md-6 mt-4">
                                 <div class="form-group">
-                                    <label asp-for="CreateLeaseCoopViewModel.CreateIRFDealLeaseCoopViewModel.LandLordEmailAddress" class="control-label fw-bolder">Landlord's Email Address</label>
-                                    <input asp-for="CreateLeaseCoopViewModel.CreateIRFDealLeaseCoopViewModel.LandLordEmailAddress" class="form-control" />
-                                    <span asp-validation-for="CreateLeaseCoopViewModel.CreateIRFDealLeaseCoopViewModel.LandLordEmailAddress" class="text-danger"></span>
+                                    <label asp-for="CreateLeaseCoopViewModel.CreateIRFDealLeaseCoopViewModel.LandLordDetails.LandLordEmailAddress" class="control-label fw-bolder">Landlord's Email Address</label>
+                                    <input asp-for="CreateLeaseCoopViewModel.CreateIRFDealLeaseCoopViewModel.LandLordDetails.LandLordEmailAddress" class="form-control" />
+                                    <span asp-validation-for="CreateLeaseCoopViewModel.CreateIRFDealLeaseCoopViewModel.LandLordDetails.LandLordEmailAddress" class="text-danger"></span>
                                 </div>
                             </div>
                         </div>

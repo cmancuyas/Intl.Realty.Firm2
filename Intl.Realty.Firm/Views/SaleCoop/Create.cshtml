@@ -11,9 +11,7 @@
 <partial name="~/Views/Shared/Modal/_ConfirmSuccessModal.cshtml" />
 <partial name="~/Views/Shared/Modal/_ConfirmSaveModal.cshtml" />
 <div class="page-controller mb-5">
-    @*     <a href="@Url.Action("Index","SaleCoop")" class="text-decoration-none text-blue d-flex mb-4">
-    <i data-feather="chevron-left"></i><span>Back</span>
-    </a> *@
+
     <a href="##" class="back" onClick="history.go(-1); return false;">
         <i data-feather="chevron-left"></i><span>Back</span>
     </a>
@@ -73,24 +71,6 @@
                         }
                     </ul>
 
-                    @* <ul class="nav nav-tabs" id="consultantStatusManagementTab" role="tablist" style="border:none"> *@
-                    @*     @foreach (var item in Model.Menus) *@
-                    @*     { *@
-                    @*         <li class="nav-item mx-0"> *@
-                    @*             <input type="hidden" id="menuId" name="menuId" value="@item.Id" /> *@
-                    @*             <button class="nav-link @item.IsActive" *@
-                    @*                     id="@item.Tab" *@
-                    @*                     data-bs-toggle="tab" *@
-                    @*                     data-bs-target="#@item.Control" *@
-                    @*                     type="button" *@
-                    @*                     role="tab" *@
-                    @*                     aria-controls="@item.Control" *@
-                    @*                     aria-selected="@item.IsSelected"> *@
-                    @*                 @item.Description *@
-                    @*             </button> *@
-                    @*         </li> *@
-                    @*     } *@
-                    @* </ul> *@
                 </div>
                 <div class="tab-content" style="background-color:white;">
 
@@ -148,16 +128,9 @@
                         <div class="row">
                             <div class="col-md-6 mt-4">
                                 <div class="form-group">
-                                    <label asp-for="CreateSaleCoop.CreateIRFDealSaleCoopViewModel.BuyerName" class="control-label fw-bolder">Buyer's Name</label>
-                                    <input asp-for="CreateSaleCoop.CreateIRFDealSaleCoopViewModel.BuyerName" class="form-control" />
-                                    <span asp-validation-for="CreateSaleCoop.CreateIRFDealSaleCoopViewModel.BuyerName" class="text-danger"></span>
-                                </div>
-                            </div>
-                            <div class="col-md-6 mt-4">
-                                <div class="form-group">
-                                    <label asp-for="CreateSaleCoop.CreateIRFDealSaleCoopViewModel.LandLordName" class="control-label fw-bolder">LandLord's Name</label>
-                                    <input asp-for="CreateSaleCoop.CreateIRFDealSaleCoopViewModel.LandLordName" class="form-control" />
-                                    <span asp-validation-for="CreateSaleCoop.CreateIRFDealSaleCoopViewModel.LandLordName" class="text-danger"></span>
+                                    <label asp-for="CreateSaleCoop.CreateIRFDealSaleCoopViewModel.BuyerDetails.BuyerName" class="control-label fw-bolder">Buyer's Name</label>
+                                    <input asp-for="CreateSaleCoop.CreateIRFDealSaleCoopViewModel.BuyerDetails.BuyerName" class="form-control" />
+                                    <span asp-validation-for="CreateSaleCoop.CreateIRFDealSaleCoopViewModel.BuyerDetails.BuyerName" class="text-danger"></span>
                                 </div>
                             </div>
 
@@ -166,36 +139,13 @@
                         <div class="row">
                             <div class="col-md-6 mt-4">
                                 <div class="form-group">
-                                    <label asp-for="CreateSaleCoop.CreateIRFDealSaleCoopViewModel.BuyingCommissionPercentage" class="control-label fw-bolder">Buying Commission Percentage</label>
-                                    <input asp-for="CreateSaleCoop.CreateIRFDealSaleCoopViewModel.BuyingCommissionPercentage" class="form-control" />
-                                    <span asp-validation-for="CreateSaleCoop.CreateIRFDealSaleCoopViewModel.BuyingCommissionPercentage" class="text-danger"></span>
-                                </div>
-                            </div>
-                            <div class="col-md-6 mt-4">
-                                <div class="form-group">
-                                    <label asp-for="CreateSaleCoop.CreateIRFDealSaleCoopViewModel.ListingAgentName" class="control-label fw-bolder">Listing Agent Name</label>
-                                    <input asp-for="CreateSaleCoop.CreateIRFDealSaleCoopViewModel.ListingAgentName" class="form-control" />
-                                    <span asp-validation-for="CreateSaleCoop.CreateIRFDealSaleCoopViewModel.ListingAgentName" class="text-danger"></span>
+                                    <label asp-for="CreateSaleCoop.CreateIRFDealSaleCoopViewModel.Commission.BuyingCommissionPercentage" class="control-label fw-bolder">Buying Commission Percentage</label>
+                                    <input asp-for="CreateSaleCoop.CreateIRFDealSaleCoopViewModel.Commission.BuyingCommissionPercentage" class="form-control" />
+                                    <span asp-validation-for="CreateSaleCoop.CreateIRFDealSaleCoopViewModel.Commission.BuyingCommissionPercentage" class="text-danger"></span>
                                 </div>
                             </div>
                         </div>
-                        <div class="row">
 
-                            <div class="col-md-6 mt-4">
-                                <div class="form-group">
-                                    <label asp-for="CreateSaleCoop.CreateIRFDealSaleCoopViewModel.ListingBrokerage" class="control-label fw-bolder">Listing Brokerage</label>
-                                    <input asp-for="CreateSaleCoop.CreateIRFDealSaleCoopViewModel.ListingBrokerage" class="form-control" />
-                                    <span asp-validation-for="CreateSaleCoop.CreateIRFDealSaleCoopViewModel.ListingBrokerage" class="text-danger"></span>
-                                </div>
-                            </div>
-                            <div class="col-md-6 mt-4">
-                                <div class="form-group">
-                                    <label asp-for="CreateSaleCoop.CreateIRFDealSaleCoopViewModel.ListingBrokerageFax" class="control-label fw-bolder">Listing Brokerage Fax</label>
-                                    <input asp-for="CreateSaleCoop.CreateIRFDealSaleCoopViewModel.ListingBrokerageFax" class="form-control" />
-                                    <span asp-validation-for="CreateSaleCoop.CreateIRFDealSaleCoopViewModel.ListingBrokerageFax" class="text-danger"></span>
-                                </div>
-                            </div>
-                        </div>
 
                     </div>
 
@@ -205,33 +155,16 @@
 
                             <div class="col-md-6 mt-4">
                                 <div class="form-group">
-                                    <label asp-for="CreateSaleCoop.CreateIRFDealSaleCoopViewModel.BuyerAgentName" class="control-label fw-bolder">Buyer Agent Name</label>
-                                    <input asp-for="CreateSaleCoop.CreateIRFDealSaleCoopViewModel.BuyerAgentName" class="form-control" />
-                                    <span asp-validation-for="CreateSaleCoop.CreateIRFDealSaleCoopViewModel.BuyerAgentName" class="text-danger"></span>
+                                    <label asp-for="CreateSaleCoop.CreateIRFDealSaleCoopViewModel.BuyerDetails.BuyerAgentName" class="control-label fw-bolder">Buyer Agent Name</label>
+                                    <input asp-for="CreateSaleCoop.CreateIRFDealSaleCoopViewModel.BuyerDetails.BuyerAgentName" class="form-control" />
+                                    <span asp-validation-for="CreateSaleCoop.CreateIRFDealSaleCoopViewModel.BuyerDetails.BuyerAgentName" class="text-danger"></span>
                                 </div>
                             </div>
                             <div class="col-md-6 mt-4">
                                 <div class="form-group">
-                                    <label asp-for="CreateSaleCoop.CreateIRFDealSaleCoopViewModel.BuyerBrokerage" class="control-label fw-bolder">Buyer Brokerage</label>
-                                    <input asp-for="CreateSaleCoop.CreateIRFDealSaleCoopViewModel.BuyerBrokerage" class="form-control" />
-                                    <span asp-validation-for="CreateSaleCoop.CreateIRFDealSaleCoopViewModel.BuyerBrokerage" class="text-danger"></span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row">
-
-                            <div class="col-md-6 mt-4">
-                                <div class="form-group">
-                                    <label asp-for="CreateSaleCoop.CreateIRFDealSaleCoopViewModel.BuyerBrokerageFax" class="control-label fw-bolder">Buyer Brokerage Fax</label>
-                                    <input asp-for="CreateSaleCoop.CreateIRFDealSaleCoopViewModel.BuyerBrokerageFax" class="form-control" />
-                                    <span asp-validation-for="CreateSaleCoop.CreateIRFDealSaleCoopViewModel.BuyerBrokerageFax" class="text-danger"></span>
-                                </div>
-                            </div>
-                            <div class="col-md-6 mt-4">
-                                <div class="form-group">
-                                    <label asp-for="CreateSaleCoop.CreateIRFDealSaleCoopViewModel.SellersLawyer" class="control-label fw-bolder">Seller's Lawyer</label>
-                                    <input asp-for="CreateSaleCoop.CreateIRFDealSaleCoopViewModel.SellersLawyer" class="form-control" />
-                                    <span asp-validation-for="CreateSaleCoop.CreateIRFDealSaleCoopViewModel.SellersLawyer" class="text-danger"></span>
+                                    <label asp-for="CreateSaleCoop.CreateIRFDealSaleCoopViewModel.BuyerDetails.BuyerBrokerage" class="control-label fw-bolder">Buyer Brokerage</label>
+                                    <input asp-for="CreateSaleCoop.CreateIRFDealSaleCoopViewModel.BuyerDetails.BuyerBrokerage" class="form-control" />
+                                    <span asp-validation-for="CreateSaleCoop.CreateIRFDealSaleCoopViewModel.BuyerDetails.BuyerBrokerage" class="text-danger"></span>
                                 </div>
                             </div>
                         </div>
@@ -239,34 +172,33 @@
 
                             <div class="col-md-6 mt-4">
                                 <div class="form-group">
-                                    <label asp-for="CreateSaleCoop.CreateIRFDealSaleCoopViewModel.SellersLawyerAddress" class="control-label fw-bolder">Seller's Lawyer Address</label>
-                                    <input asp-for="CreateSaleCoop.CreateIRFDealSaleCoopViewModel.SellersLawyerAddress" class="form-control" />
-                                    <span asp-validation-for="CreateSaleCoop.CreateIRFDealSaleCoopViewModel.SellersLawyerAddress" class="text-danger"></span>
+                                    <label asp-for="CreateSaleCoop.CreateIRFDealSaleCoopViewModel.BuyerDetails.BuyerBrokerageFax" class="control-label fw-bolder">Buyer Brokerage Fax</label>
+                                    <input asp-for="CreateSaleCoop.CreateIRFDealSaleCoopViewModel.BuyerDetails.BuyerBrokerageFax" class="form-control" />
+                                    <span asp-validation-for="CreateSaleCoop.CreateIRFDealSaleCoopViewModel.BuyerDetails.BuyerBrokerageFax" class="text-danger"></span>
                                 </div>
                             </div>
                             <div class="col-md-6 mt-4">
                                 <div class="form-group">
-                                    <label asp-for="CreateSaleCoop.CreateIRFDealSaleCoopViewModel.BuyersLawyer" class="control-label fw-bolder">Buyer's Lawyer</label>
-                                    <input asp-for="CreateSaleCoop.CreateIRFDealSaleCoopViewModel.BuyersLawyer" class="form-control" />
-                                    <span asp-validation-for="CreateSaleCoop.CreateIRFDealSaleCoopViewModel.BuyersLawyer" class="text-danger"></span>
+                                    <label asp-for="CreateSaleCoop.CreateIRFDealSaleCoopViewModel.SellerDetails.SellersLawyer" class="control-label fw-bolder">Seller's Lawyer</label>
+                                    <input asp-for="CreateSaleCoop.CreateIRFDealSaleCoopViewModel.SellerDetails.SellersLawyer" class="form-control" />
+                                    <span asp-validation-for="CreateSaleCoop.CreateIRFDealSaleCoopViewModel.SellerDetails.SellersLawyer" class="text-danger"></span>
                                 </div>
                             </div>
                         </div>
                         <div class="row">
 
-
                             <div class="col-md-6 mt-4">
                                 <div class="form-group">
-                                    <label asp-for="CreateSaleCoop.CreateIRFDealSaleCoopViewModel.SellersPhoneNumber" class="control-label fw-bolder">Seller's Phone Number</label>
-                                    <input asp-for="CreateSaleCoop.CreateIRFDealSaleCoopViewModel.SellersPhoneNumber" class="form-control" />
-                                    <span asp-validation-for="CreateSaleCoop.CreateIRFDealSaleCoopViewModel.SellersPhoneNumber" class="text-danger"></span>
+                                    <label asp-for="CreateSaleCoop.CreateIRFDealSaleCoopViewModel.SellerDetails.SellersLawyerAddress" class="control-label fw-bolder">Seller's Lawyer Address</label>
+                                    <input asp-for="CreateSaleCoop.CreateIRFDealSaleCoopViewModel.SellerDetails.SellersLawyerAddress" class="form-control" />
+                                    <span asp-validation-for="CreateSaleCoop.CreateIRFDealSaleCoopViewModel.SellerDetails.SellersLawyerAddress" class="text-danger"></span>
                                 </div>
                             </div>
                             <div class="col-md-6 mt-4">
                                 <div class="form-group">
-                                    <label asp-for="CreateSaleCoop.CreateIRFDealSaleCoopViewModel.BuyersLawyerAddress" class="control-label fw-bolder">Buyer's Lawyer Address</label>
-                                    <input asp-for="CreateSaleCoop.CreateIRFDealSaleCoopViewModel.BuyersLawyerAddress" class="form-control" />
-                                    <span asp-validation-for="CreateSaleCoop.CreateIRFDealSaleCoopViewModel.BuyersLawyerAddress" class="text-danger"></span>
+                                    <label asp-for="CreateSaleCoop.CreateIRFDealSaleCoopViewModel.BuyerDetails.BuyersLawyer" class="control-label fw-bolder">Buyer's Lawyer</label>
+                                    <input asp-for="CreateSaleCoop.CreateIRFDealSaleCoopViewModel.BuyerDetails.BuyersLawyer" class="form-control" />
+                                    <span asp-validation-for="CreateSaleCoop.CreateIRFDealSaleCoopViewModel.BuyerDetails.BuyersLawyer" class="text-danger"></span>
                                 </div>
                             </div>
                         </div>
@@ -275,9 +207,27 @@
 
                             <div class="col-md-6 mt-4">
                                 <div class="form-group">
-                                    <label asp-for="CreateSaleCoop.CreateIRFDealSaleCoopViewModel.BuyersPhoneNumber" class="control-label fw-bolder">Buyer's Phone Number</label>
-                                    <input asp-for="CreateSaleCoop.CreateIRFDealSaleCoopViewModel.BuyersPhoneNumber" class="form-control" />
-                                    <span asp-validation-for="CreateSaleCoop.CreateIRFDealSaleCoopViewModel.BuyersPhoneNumber" class="text-danger"></span>
+                                    <label asp-for="CreateSaleCoop.CreateIRFDealSaleCoopViewModel.SellerDetails.SellersPhoneNumber" class="control-label fw-bolder">Seller's Phone Number</label>
+                                    <input asp-for="CreateSaleCoop.CreateIRFDealSaleCoopViewModel.SellerDetails.SellersPhoneNumber" class="form-control" />
+                                    <span asp-validation-for="CreateSaleCoop.CreateIRFDealSaleCoopViewModel.SellerDetails.SellersPhoneNumber" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mt-4">
+                                <div class="form-group">
+                                    <label asp-for="CreateSaleCoop.CreateIRFDealSaleCoopViewModel.BuyerDetails.BuyerLawyerAddress" class="control-label fw-bolder">Buyer's Lawyer Address</label>
+                                    <input asp-for="CreateSaleCoop.CreateIRFDealSaleCoopViewModel.BuyerDetails.BuyerLawyerAddress" class="form-control" />
+                                    <span asp-validation-for="CreateSaleCoop.CreateIRFDealSaleCoopViewModel.BuyerDetails.BuyerLawyerAddress" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+
+
+                            <div class="col-md-6 mt-4">
+                                <div class="form-group">
+                                    <label asp-for="CreateSaleCoop.CreateIRFDealSaleCoopViewModel.BuyerDetails.BuyersPhoneNumber" class="control-label fw-bolder">Buyer's Phone Number</label>
+                                    <input asp-for="CreateSaleCoop.CreateIRFDealSaleCoopViewModel.BuyerDetails.BuyersPhoneNumber" class="form-control" />
+                                    <span asp-validation-for="CreateSaleCoop.CreateIRFDealSaleCoopViewModel.BuyerDetails.BuyersPhoneNumber" class="text-danger"></span>
                                 </div>
                             </div>
                         </div>
