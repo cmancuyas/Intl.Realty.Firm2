@@ -6,6 +6,16 @@ namespace Intl.Realty.Firm.Helper
 {
     public class EmailTemplate
     {
+        public static string UserEmailConfirmationTemplate(ApplicationUser user, string confirmationLink)
+        {
+            return $@"
+        <p>Hello {user.FirstName},</p>
+        <p>Thank you for registering with us! Please confirm your email by clicking the link below:</p>
+        <p><a href=""{confirmationLink}"">Confirm Email</a></p>
+        <p>If you did not sign up, you can safely ignore this email.</p>
+        <p>— The Intl Realty Firm Team</p>";
+        }
+
         public static string UserRegistrationTemplate(RegisterViewModel registerViewModel, string confirmationLink)
         {
             string template =

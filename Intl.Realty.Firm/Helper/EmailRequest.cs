@@ -7,6 +7,20 @@ namespace Intl.Realty.Firm.Helper
 {
     public class EmailRequest
     {
+        public static MailRequest CreateEmailConfirmationRequest(ApplicationUser user, string confirmationLink)
+        {
+            var template = EmailTemplate.UserEmailConfirmationTemplate(user, confirmationLink);
+
+            var mailRequest = new MailRequest
+            {
+                ToEmail = user.Email!,
+                Subject = "do not reply - Confirm Your Email",
+                Body = template
+            };
+
+            return mailRequest;
+        }
+
         public static MailRequest CreateRegistrationVerification(RegisterViewModel registerViewModel, string confirmationLink)
         {
             var template = EmailTemplate.UserRegistrationTemplate(registerViewModel, confirmationLink);

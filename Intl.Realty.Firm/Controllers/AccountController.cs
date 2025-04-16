@@ -69,7 +69,7 @@ namespace Intl.Realty.Firm.Controllers
             if (user == null || !await _userManager.CheckPasswordAsync(user, viewModel.Password))
             {
                 ModelState.AddModelError(string.Empty, "Invalid email or password");
-                return View(viewModel);
+                return View(viewModel); // ✅ Must return the view — not redirect
             }
 
             // ✅ Use SignInManager to check if email is confirmed
@@ -133,14 +133,26 @@ namespace Intl.Realty.Firm.Controllers
 
             var user = await _userManager.FindByEmailAsync(viewModel.Email);
 
-            // ✅ Prevent user enumeration by always returning the same response
-            if (user == null || !await _userManager.IsEmailConfirmedAsync(user))
+            // If user doesn't exist, redirect silently to avoid user enumeration
+            if (user == null)
             {
-                _logger.LogWarning("Password reset attempted for non-existent or unconfirmed email: {Email}", viewModel.Email);
+                _logger.LogWarning("Password reset attempted for non-existent email: {Email}", viewModel.Email);
                 return RedirectToAction("ForgotPasswordConfirmation");
             }
 
-            // ✅ Generate reset token & encode safely
+            // If email is not confirmed, show custom view or error
+            if (!await _userManager.IsEmailConfirmedAsync(user))
+            {
+                _logger.LogWarning("Password reset attempted for unconfirmed email: {Email}", viewModel.Email);
+
+                // You could return a view with the option to resend confirmation
+                return View("EmailNotConfirmed", new ResendConfirmationViewModel
+                {
+                    Email = viewModel.Email
+                });
+            }
+
+            // Generate reset token
             var token = await _userManager.GeneratePasswordResetTokenAsync(user);
             var encodedToken = WebUtility.UrlEncode(token);
 
@@ -161,12 +173,39 @@ namespace Intl.Realty.Firm.Controllers
             return RedirectToAction("ForgotPasswordConfirmation");
         }
 
+
         // ✅ Forgot Password Confirmation Page
         [HttpGet]
         [AllowAnonymous]
         public IActionResult ForgotPasswordConfirmation()
         {
             return View();
+        }
+        [HttpPost]
+        [AllowAnonymous]
+        public async Task<IActionResult> ResendEmailConfirmation(ResendConfirmationViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View("EmailNotConfirmed", model);
+            }
+
+            var user = await _userManager.FindByEmailAsync(model.Email);
+            if (user == null || await _userManager.IsEmailConfirmedAsync(user))
+            {
+                return RedirectToAction("ForgotPasswordConfirmation");
+            }
+
+            var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+            var encodedToken = WebUtility.UrlEncode(token);
+
+            var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = user.Id, token = encodedToken }, protocol: Request.Scheme);
+            var mailRequest = EmailRequest.CreateEmailConfirmationRequest(user, callbackUrl);
+            await _emailService.SendEmailAsync(mailRequest);
+
+            _logger.LogInformation("Confirmation email resent to: {Email}", user.Email);
+
+            return RedirectToAction("ConfirmationEmailSent");
         }
 
         // ✅ Reset Password - Show Reset Form
@@ -367,29 +406,43 @@ namespace Intl.Realty.Firm.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> ConfirmEmail(string userId, string token)
         {
-            if (userId == null || token == null)
+            if (string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(token))
             {
-                return RedirectToAction("Index", "Home");
+                _logger.LogWarning("ConfirmEmail: Missing userId or token.");
+                return View("Error");
             }
 
             var user = await _userManager.FindByIdAsync(userId);
             if (user == null)
             {
-                ViewBag.ErrorMessage = ($"The USER ID {userId} is invalid");
-                return View("NotFound");
+                _logger.LogWarning("ConfirmEmail: User not found. ID: {UserId}", userId);
+                return View("Error");
             }
+
+            if (await _userManager.IsEmailConfirmedAsync(user))
+            {
+                _logger.LogInformation("ConfirmEmail: Email already confirmed for user {Email}.", user.Email);
+                return View("ConfirmEmailAlreadyConfirmed");
+            }
+
+            // Optional: decode the token (ASP.NET Core usually handles this automatically)
+            token = WebUtility.UrlDecode(token);
 
             var result = await _userManager.ConfirmEmailAsync(user, token);
-
             if (result.Succeeded)
             {
-                return View();
+                _logger.LogInformation("ConfirmEmail: Email successfully confirmed for user {Email}.", user.Email);
+                return View("ConfirmEmailSuccess");
             }
 
-            ErrorViewModel errorViewModel = new ErrorViewModel();
-            errorViewModel.ErrorTitle = "Email cannot be confirmed";
-            return View("Error", errorViewModel);
+            // Log errors if any
+            _logger.LogWarning("ConfirmEmail: Failed for user {Email}. Errors: {Errors}",
+                user.Email, string.Join(", ", result.Errors.Select(e => e.Description)));
+
+            return View("ConfirmEmailFailed");
         }
+
+
         [AllowAnonymous]
         [HttpPost]
         public IActionResult ExternalLogin(string provider, string returnUrl)
