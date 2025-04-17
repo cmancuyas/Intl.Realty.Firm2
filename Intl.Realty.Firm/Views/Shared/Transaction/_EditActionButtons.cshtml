@@ -1,0 +1,38 @@
+﻿@using Intl.Realty.Firm.Model.Model
+@using Microsoft.AspNetCore.Identity
+@model int? // DealStatusId
+
+@inject UserManager<ApplicationUser> _userManager
+@{
+    var user = await _userManager.GetUserAsync(User);
+    var isAgent = await _userManager.IsInRoleAsync(user!, "Agent");
+    var isDealAdmin = await _userManager.IsInRoleAsync(user!, "DealAdmin");
+    var isAdmin = await _userManager.IsInRoleAsync(user!, "Admin");
+    var isSuperAdmin = await _userManager.IsInRoleAsync(user!, "SuperAdmin");
+
+    bool isSubmittedStatus = Model == 2;
+    bool isSavedStatus = Model == 1;
+}
+
+<div class="form-group d-flex justify-content-center gap-4">
+    <a href="##" onClick="history.go(-1); return false;" class="btn btn-outline-secondary w-15">
+        Back
+    </a>
+
+    <!-- ✅ Save: for everyone -->
+    <button type="submit" id="btnSave" class="btn btn-primary w-15">Save as Draft</button>
+
+    <!-- ✅ Edit Request: Admins & Agents when status is "Saved" -->
+    @if ((isAdmin || isSuperAdmin || isAgent) && isSavedStatus)
+    {
+        <button type="button" id="btnEditRequest" data-bs-toggle="modal" data-bs-target="#sendEditRequestModal" class="btn btn-primary w-15">
+            Edit Request
+        </button>
+    }
+
+    <!-- ✅ Submit: Admins & Agents when status is "Submitted" -->
+    @if ((isAdmin || isSuperAdmin || isAgent) && isSubmittedStatus)
+    {
+        <button type="submit" id="btnSubmit" class="btn btn-primary w-15">Submit</button>
+    }
+</div>

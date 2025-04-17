@@ -32,7 +32,7 @@
     </a>
     <div class="row justify-content-center">
         <div class="col-md-12 card mt-4 p-4 b-none bg-none">
-            <h1 class="text-blue mb-0">Edit Sale Listing - Deal Id: @Model.EditSaleListing.DealTransactionNumber - @Model.EditSaleListing.DealStatus!.Description</h1>
+            <h1 class="text-blue mb-0">Edit Sale Listing - Deal Id: @Model.EditSaleListingViewModel.DealTransactionNumber - @Model.EditSaleListingViewModel.DealStatus!.Description</h1>
             <hr class="my-4" />
             <form id="ListFormId"
                   asp-action="Edit"
@@ -40,8 +40,8 @@
                   method="post"
                   enctype="multipart/form-data">
 
-                <input type="hidden" asp-for="EditSaleListing.Id" />
-                <input type="hidden" asp-for="EditSaleListing.DealTransactionNumber" />
+                <input type="hidden" asp-for="EditSaleListingViewModel.Id" />
+                <input type="hidden" asp-for="EditSaleListingViewModel.DealTransactionNumber" />
                 <input hidden id="DealStatusId" name="DealStatusId" value="1" />
 
                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
@@ -69,6 +69,7 @@
 
                 <div class="tab-content" style="border-bottom:none;background-color:white;">
 
+
                     <div class="tab-pane active" id="irfDetails1" aria-labelledby="irfDetails1-tab" style="background-color:white;">
 
                         @* Section: Deal Status for Admin *@
@@ -80,13 +81,13 @@
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label class="control-label fw-bolder">Deal Status</label>
-                                            <select id="EditSaleListing.DealStatusId" name="EditSaleListing.DealStatusId" class="form-select">
+                                            <select id="EditSaleListingViewModel.DealStatusId" name="EditSaleListingViewModel.DealStatusId" class="form-select">
                                                 @{
-                                                    @if (Model.EditSaleListing.DealStatusList != null)
+                                                    @if (Model.EditSaleListingViewModel.DealStatusList != null)
                                                     {
-                                                        @foreach (var dealStatus in Model.EditSaleListing.DealStatusList)
+                                                        @foreach (var dealStatus in Model.EditSaleListingViewModel.DealStatusList)
                                                         {
-                                                            if (dealStatus.Id == Model.EditSaleListing.DealStatusId)
+                                                            if (dealStatus.Id == Model.EditSaleListingViewModel.DealStatusId)
                                                             {
                                                                 <option value="@dealStatus.Id" selected>@dealStatus.Description</option>
                                                             }
@@ -99,7 +100,7 @@
                                                 }
                                             </select>
 
-                                            @Html.ValidationMessageFor(m => m.EditSaleListing.DealStatusId, "", new { @class = "text-danger" })
+                                            @Html.ValidationMessageFor(m => m.EditSaleListingViewModel.DealStatusId, "", new { @class = "text-danger" })
 
                                         </div>
                                     </div>
@@ -107,68 +108,154 @@
                             }
                         }
 
-                        @* Section: Property Info *@
-                        <h4 class="mt-5 text-blue">Property & Deal Details</h4>
+                        <!-- Section: Property & Deal Info -->
+                        <h4 class="mt-4 text-blue">Property & Deal Information</h4>
                         <div class="row">
                             <div class="col-md-6 mt-3">
-                                <label asp-for="EditSaleListing.EditIRFDealSaleListingViewModel.PropertyAddress" class="fw-bolder">Property Address</label>
-                                <input asp-for="EditSaleListing.EditIRFDealSaleListingViewModel.PropertyAddress" class="form-control" />
-                                <span asp-validation-for="EditSaleListing.EditIRFDealSaleListingViewModel.PropertyAddress" class="text-danger"></span>
+                                <label asp-for="EditSaleListingViewModel.EditIRFDealSaleListingViewModel.PropertyAddress" class="fw-bolder">Property Address</label>
+                                <input asp-for="EditSaleListingViewModel.EditIRFDealSaleListingViewModel.PropertyAddress" class="form-control" />
+                                <span asp-validation-for="EditSaleListingViewModel.EditIRFDealSaleListingViewModel.PropertyAddress" class="text-danger"></span>
                             </div>
                             <div class="col-md-6 mt-3">
-                                <label asp-for="EditSaleListing.UpdatedByFullName" class="fw-bolder">Updated By</label>
-                                <input asp-for="EditSaleListing.UpdatedByFullName" disabled class="form-control" />
+                                <label asp-for="EditSaleListingViewModel.UpdatedByFullName" class="fw-bolder">Updated By</label>
+                                <input asp-for="EditSaleListingViewModel.UpdatedByFullName" class="form-control" disabled />
+                                <span asp-validation-for="EditSaleListingViewModel.UpdatedByFullName" class="text-danger"></span>
                             </div>
                         </div>
 
-                        @* Section: Financial Info *@
+                        <!-- Section: Financials -->
                         <h4 class="mt-5 text-blue">Financial Details</h4>
                         <div class="row">
                             <div class="col-md-6 mt-3">
-                                <label asp-for="EditSaleListing.EditIRFDealSaleListingViewModel.FinalSalePrice" class="fw-bolder">Final Sale Price</label>
-                                <input asp-for="EditSaleListing.EditIRFDealSaleListingViewModel.FinalSalePrice" class="form-control" />
-                                <span asp-validation-for="EditSaleListing.EditIRFDealSaleListingViewModel.FinalSalePrice" class="text-danger"></span>
+                                <label asp-for="EditSaleListingViewModel.EditIRFDealSaleListingViewModel.FinalSalePrice" class="fw-bolder">Final Sale Price</label>
+                                <input asp-for="EditSaleListingViewModel.EditIRFDealSaleListingViewModel.FinalSalePrice" class="form-control" type="number" />
+                                <span asp-validation-for="EditSaleListingViewModel.EditIRFDealSaleListingViewModel.FinalSalePrice" class="text-danger"></span>
                             </div>
                             <div class="col-md-6 mt-3">
-                                <label asp-for="EditSaleListing.EditIRFDealSaleListingViewModel.FinalClosingDate" class="fw-bolder">Final Closing Date</label>
-                                <input asp-for="EditSaleListing.EditIRFDealSaleListingViewModel.FinalClosingDate" class="form-control" />
-                                <span asp-validation-for="EditSaleListing.EditIRFDealSaleListingViewModel.FinalClosingDate" class="text-danger"></span>
+                                <label asp-for="EditSaleListingViewModel.EditIRFDealSaleListingViewModel.FinalClosingDate" class="fw-bolder">Final Closing Date</label>
+                                <input asp-for="EditSaleListingViewModel.EditIRFDealSaleListingViewModel.FinalClosingDate" class="form-control" type="date" />
+                                <span asp-validation-for="EditSaleListingViewModel.EditIRFDealSaleListingViewModel.FinalClosingDate" class="text-danger"></span>
                             </div>
                             <div class="col-md-6 mt-3">
-                                <label asp-for="EditSaleListing.EditIRFDealSaleListingViewModel.DepositAmount" class="fw-bolder">Deposit Amount</label>
-                                <input asp-for="EditSaleListing.EditIRFDealSaleListingViewModel.DepositAmount" class="form-control" />
-                                <span asp-validation-for="EditSaleListing.EditIRFDealSaleListingViewModel.DepositAmount" class="text-danger"></span>
+                                <label asp-for="EditSaleListingViewModel.EditIRFDealSaleListingViewModel.DepositAmount" class="fw-bolder">Deposit Amount</label>
+                                <input asp-for="EditSaleListingViewModel.EditIRFDealSaleListingViewModel.DepositAmount" class="form-control" type="number" />
+                                <span asp-validation-for="EditSaleListingViewModel.EditIRFDealSaleListingViewModel.DepositAmount" class="text-danger"></span>
                             </div>
                             <div class="col-md-6 mt-3">
-                                <label asp-for="EditSaleListing.EditIRFDealSaleListingViewModel.DepositDate" class="fw-bolder">Deposit Date</label>
-                                <input asp-for="EditSaleListing.EditIRFDealSaleListingViewModel.DepositDate" class="form-control" />
-                                <span asp-validation-for="EditSaleListing.EditIRFDealSaleListingViewModel.DepositDate" class="text-danger"></span>
+                                <label asp-for="EditSaleListingViewModel.EditIRFDealSaleListingViewModel.DepositDate" class="fw-bolder">Deposit Date</label>
+                                <input asp-for="EditSaleListingViewModel.EditIRFDealSaleListingViewModel.DepositDate" class="form-control" type="date" />
+                                <span asp-validation-for="EditSaleListingViewModel.EditIRFDealSaleListingViewModel.DepositDate" class="text-danger"></span>
                             </div>
                         </div>
 
-                        @* Section: Buyer & Seller *@
-                        <h4 class="mt-5 text-blue">Buyer & Seller Information</h4>
+                        <!-- Section: Buyer -->
+                        <h4 class="mt-5 text-blue">Buyer Details</h4>
                         <div class="row">
                             <div class="col-md-6 mt-3">
-                                <label asp-for="EditSaleListing.EditIRFDealSaleListingViewModel.BuyerDetails.BuyerName" class="fw-bolder">Buyer's Name</label>
-                                <input asp-for="EditSaleListing.EditIRFDealSaleListingViewModel.BuyerDetails.BuyerName" class="form-control" />
-                                <span asp-validation-for="EditSaleListing.EditIRFDealSaleListingViewModel.BuyerDetails.BuyerName" class="text-danger"></span>
+                                <label asp-for="EditSaleListingViewModel.EditIRFDealSaleListingViewModel.BuyerDetails.BuyerName" class="fw-bolder">Buyer’s Name</label>
+                                <input asp-for="EditSaleListingViewModel.EditIRFDealSaleListingViewModel.BuyerDetails.BuyerName" class="form-control" />
+                                <span asp-validation-for="EditSaleListingViewModel.EditIRFDealSaleListingViewModel.BuyerDetails.BuyerName" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 mt-3">
+                                <label asp-for="EditSaleListingViewModel.EditIRFDealSaleListingViewModel.BuyerDetails.BuyersPhoneNumber" class="fw-bolder">Buyer’s Phone Number</label>
+                                <input asp-for="EditSaleListingViewModel.EditIRFDealSaleListingViewModel.BuyerDetails.BuyersPhoneNumber" class="form-control" />
+                                <span asp-validation-for="EditSaleListingViewModel.EditIRFDealSaleListingViewModel.BuyerDetails.BuyersPhoneNumber" class="text-danger"></span>
                             </div>
                         </div>
 
-                        @* Section: Commission *@
+                        <!-- Section: Commissions -->
                         <h4 class="mt-5 text-blue">Commission</h4>
                         <div class="row">
-
                             <div class="col-md-6 mt-3">
-                                <label asp-for="EditSaleListing.EditIRFDealSaleListingViewModel.Commission.BuyingCommissionPercentage" class="fw-bolder">Buying Commission %</label>
-                                <input asp-for="EditSaleListing.EditIRFDealSaleListingViewModel.Commission.BuyingCommissionPercentage" class="form-control" />
-                                <span asp-validation-for="EditSaleListing.EditIRFDealSaleListingViewModel.Commission.BuyingCommissionPercentage" class="text-danger"></span>
+                                <label asp-for="EditSaleListingViewModel.EditIRFDealSaleListingViewModel.Commission.ListingCommissionPercentage" class="fw-bolder">Listing Commission %</label>
+                                <input asp-for="EditSaleListingViewModel.EditIRFDealSaleListingViewModel.Commission.ListingCommissionPercentage" class="form-control" type="number" />
+                                <span asp-validation-for="EditSaleListingViewModel.EditIRFDealSaleListingViewModel.Commission.ListingCommissionPercentage" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 mt-3">
+                                <label asp-for="EditSaleListingViewModel.EditIRFDealSaleListingViewModel.Commission.BuyingCommissionPercentage" class="fw-bolder">Buying Commission %</label>
+                                <input asp-for="EditSaleListingViewModel.EditIRFDealSaleListingViewModel.Commission.BuyingCommissionPercentage" class="form-control" type="number" />
+                                <span asp-validation-for="EditSaleListingViewModel.EditIRFDealSaleListingViewModel.Commission.BuyingCommissionPercentage" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tab-pane" id="irfDetails2" aria-labelledby="irfDetails2-tab" style="background-color:white;">
+
+                        <!-- Buyer Agent & Brokerage Info -->
+                        <h4 class="mt-4 text-blue">Buyer’s Agent & Brokerage Info</h4>
+                        <div class="row">
+                            <div class="col-md-6 mt-3">
+                                <label asp-for="EditSaleListingViewModel.EditIRFDealSaleListingViewModel.BuyerDetails.BuyerAgentName" class="fw-bolder">Buyer Agent Name</label>
+                                <input asp-for="EditSaleListingViewModel.EditIRFDealSaleListingViewModel.BuyerDetails.BuyerAgentName" class="form-control" />
+                                <span asp-validation-for="EditSaleListingViewModel.EditIRFDealSaleListingViewModel.BuyerDetails.BuyerAgentName" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 mt-3">
+                                <label asp-for="EditSaleListingViewModel.EditIRFDealSaleListingViewModel.BuyerDetails.BuyerBrokerage" class="fw-bolder">Buyer Brokerage</label>
+                                <input asp-for="EditSaleListingViewModel.EditIRFDealSaleListingViewModel.BuyerDetails.BuyerBrokerage" class="form-control" />
+                                <span asp-validation-for="EditSaleListingViewModel.EditIRFDealSaleListingViewModel.BuyerDetails.BuyerBrokerage" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 mt-3">
+                                <label asp-for="EditSaleListingViewModel.EditIRFDealSaleListingViewModel.BuyerDetails.BuyerBrokerageFax" class="fw-bolder">Buyer Brokerage Fax</label>
+                                <input asp-for="EditSaleListingViewModel.EditIRFDealSaleListingViewModel.BuyerDetails.BuyerBrokerageFax" class="form-control" />
+                                <span asp-validation-for="EditSaleListingViewModel.EditIRFDealSaleListingViewModel.BuyerDetails.BuyerBrokerageFax" class="text-danger"></span>
                             </div>
                         </div>
 
-                    </div>
+                        <!-- Seller Info -->
+                        <h4 class="mt-5 text-blue">Seller & Legal Info</h4>
+                        <div class="row">
+                            <div class="col-md-6 mt-3">
+                                <label asp-for="EditSaleListingViewModel.EditIRFDealSaleListingViewModel.SellerDetails.SellersLawyer" class="fw-bolder">Seller's Lawyer</label>
+                                <input asp-for="EditSaleListingViewModel.EditIRFDealSaleListingViewModel.SellerDetails.SellersLawyer" class="form-control" />
+                                <span asp-validation-for="EditSaleListingViewModel.EditIRFDealSaleListingViewModel.SellerDetails.SellersLawyer" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 mt-3">
+                                <label asp-for="EditSaleListingViewModel.EditIRFDealSaleListingViewModel.SellerDetails.SellersPhoneNumber" class="fw-bolder">Seller's Phone Number</label>
+                                <input asp-for="EditSaleListingViewModel.EditIRFDealSaleListingViewModel.SellerDetails.SellersPhoneNumber" class="form-control" />
+                                <span asp-validation-for="EditSaleListingViewModel.EditIRFDealSaleListingViewModel.SellerDetails.SellersPhoneNumber" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 mt-3">
+                                <label asp-for="EditSaleListingViewModel.EditIRFDealSaleListingViewModel.SellerDetails.SellersLawyerAddress" class="fw-bolder">Seller's Lawyer Address</label>
+                                <input asp-for="EditSaleListingViewModel.EditIRFDealSaleListingViewModel.SellerDetails.SellersLawyerAddress" class="form-control" />
+                                <span asp-validation-for="EditSaleListingViewModel.EditIRFDealSaleListingViewModel.SellerDetails.SellersLawyerAddress" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 mt-3">
+                                <label asp-for="EditSaleListingViewModel.EditIRFDealSaleListingViewModel.SellerDetails.SellerLawyerPhone" class="fw-bolder">Seller's Lawyer Phone Number</label>
+                                <input asp-for="EditSaleListingViewModel.EditIRFDealSaleListingViewModel.SellerDetails.SellerLawyerPhone" class="form-control" />
+                                <span asp-validation-for="EditSaleListingViewModel.EditIRFDealSaleListingViewModel.SellerDetails.SellerLawyerPhone" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 mt-3">
+                                <label asp-for="EditSaleListingViewModel.EditIRFDealSaleListingViewModel.SellerDetails.SellerLawyerEmail" class="fw-bolder">Seller's Lawyer Email</label>
+                                <input asp-for="EditSaleListingViewModel.EditIRFDealSaleListingViewModel.SellerDetails.SellerLawyerEmail" class="form-control" />
+                                <span asp-validation-for="EditSaleListingViewModel.EditIRFDealSaleListingViewModel.SellerDetails.SellerLawyerEmail" class="text-danger"></span>
+                            </div>
+                        </div>
 
+                        <!-- Buyer Legal Info -->
+                        <h4 class="mt-5 text-blue">Buyer’s Legal Info</h4>
+                        <div class="row">
+                            <div class="col-md-6 mt-3">
+                                <label asp-for="EditSaleListingViewModel.EditIRFDealSaleListingViewModel.BuyerDetails.BuyersLawyer" class="fw-bolder">Buyer's Lawyer</label>
+                                <input asp-for="EditSaleListingViewModel.EditIRFDealSaleListingViewModel.BuyerDetails.BuyersLawyer" class="form-control" />
+                                <span asp-validation-for="EditSaleListingViewModel.EditIRFDealSaleListingViewModel.BuyerDetails.BuyersLawyer" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 mt-3">
+                                <label asp-for="EditSaleListingViewModel.EditIRFDealSaleListingViewModel.BuyerDetails.BuyerLawyerAddress" class="fw-bolder">Lawyer Address</label>
+                                <input asp-for="EditSaleListingViewModel.EditIRFDealSaleListingViewModel.BuyerDetails.BuyerLawyerAddress" class="form-control" />
+                                <span asp-validation-for="EditSaleListingViewModel.EditIRFDealSaleListingViewModel.BuyerDetails.BuyerLawyerAddress" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 mt-3">
+                                <label asp-for="EditSaleListingViewModel.EditIRFDealSaleListingViewModel.BuyerDetails.BuyerLawyerPhone" class="fw-bolder">Lawyer Phone</label>
+                                <input asp-for="EditSaleListingViewModel.EditIRFDealSaleListingViewModel.BuyerDetails.BuyerLawyerPhone" class="form-control" />
+                                <span asp-validation-for="EditSaleListingViewModel.EditIRFDealSaleListingViewModel.BuyerDetails.BuyerLawyerPhone" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 mt-3">
+                                <label asp-for="EditSaleListingViewModel.EditIRFDealSaleListingViewModel.BuyerDetails.BuyerLawyerEmail" class="fw-bolder">Lawyer Email</label>
+                                <input asp-for="EditSaleListingViewModel.EditIRFDealSaleListingViewModel.BuyerDetails.BuyerLawyerEmail" class="form-control" />
+                                <span asp-validation-for="EditSaleListingViewModel.EditIRFDealSaleListingViewModel.BuyerDetails.BuyerLawyerEmail" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
 
                     <div class="tab-pane" id="viewFileUploads" aria-labelledby="viewFileUploads-tab" style="background-color:white;">
                         <div class="row">
@@ -185,14 +272,14 @@
                                             </thead>
                                             <tbody id="fileTableBody">
 
-                                                @foreach (DocumentType item in Model.EditSaleListing.DocumentTypeList!)
+                                                @foreach (DocumentType item in Model.EditSaleListingViewModel.DocumentTypeList!)
                                                 {
                                                     <tr class="border-bottom">
                                                         <td class="p-2">
                                                             <span class="mt-3 ms-2 mb-1">@item.Description</span>
                                                         </td>
                                                         @{
-                                                            var filesWithDocumentTypeId = Model.EditSaleListing.FileUploads!.Where(x => x.DocumentTypeId == item.Id);
+                                                            var filesWithDocumentTypeId = Model.EditSaleListingViewModel.FileUploads!.Where(x => x.DocumentTypeId == item.Id);
 
                                                             if (filesWithDocumentTypeId != null)
                                                             {
@@ -245,14 +332,14 @@
                                         @{
                                             int i = 0;
                                         }
-                                        @foreach (DocumentType item in Model.EditSaleListing.DocumentTypeList!)
+                                        @foreach (DocumentType item in Model.EditSaleListingViewModel.DocumentTypeList!)
                                         {
                                             <tr>
                                                 <td style="width: 30%">
                                                     @Html.DisplayFor(modelItem => item.Description)
                                                 </td>
                                                 <input type="hidden"
-                                                       asp-for="EditSaleListing.CreateFileUploadListViewModel.CreateFileUploadsViewModel[i].DocumentTypeId"
+                                                       asp-for="EditSaleListingViewModel.CreateFileUploadListViewModel.CreateFileUploadsViewModel[i].DocumentTypeId"
                                                        value="@item.Id" />
                                                 <td id="isRequired">
                                                     @if (item.IsRequired == true)
@@ -265,7 +352,7 @@
                                                     }
                                                 </td>
                                                 <td>
-                                                    <input asp-for="EditSaleListing.CreateFileUploadListViewModel.CreateFileUploadsViewModel[i].Files"
+                                                    <input asp-for="EditSaleListingViewModel.CreateFileUploadListViewModel.CreateFileUploadsViewModel[i].Files"
                                                            id="fileListDropDown_@i"
                                                            type="file"
                                                            class="file"
@@ -293,8 +380,8 @@
                     <div class="tab-pane" id="notes" aria-labelledby="notes-tab" style="background-color:white;">
                         <div class="col-md-12 mt-4">
                             <div class="form-group">
-                                <label asp-for="EditSaleListing.Notes" class="control-label fw-bolder">Notes</label>
-                                @Html.TextAreaFor(model => model.EditSaleListing.Notes, 10, 100, new { @class = "form-control" })
+                                <label asp-for="EditSaleListingViewModel.Notes" class="control-label fw-bolder">Notes</label>
+                                @Html.TextAreaFor(model => model.EditSaleListingViewModel.Notes, 10, 100, new { @class = "form-control" })
 
                             </div>
                         </div>
@@ -310,57 +397,22 @@
                 </div>
                 </div> *@
                 <hr class="my-5" />
-                <div class="form-group d-flex justify-content-center gap-4">
-                    <a href="##" onClick="history.go(-1); return false;" class="btn btn-outline-secondary w-15">
-                        Back
-                    </a>
-                    @* <button type="reset" class="btn btn-secondary w-15" onclick="$('.text-danger').hide();">Reset</button> *@
-                    @{
-                        @if (isAdmin || isSuperAdmin || isDealAdmin || isAgent && Model.EditSaleListing.DealStatus!.Id == 2) //Submitted
-                        {
-                            <button type="button" id="btnSave" class="btn btn-primary w-15" onclick="$('.text-danger').show();">Save</button>
-                        }
-                        @if (isAdmin || isSuperAdmin || isAgent && Model.EditSaleListing.DealStatus!.Id == 1) //Saved
-                        {
-                            <button type="button" id="btnEditRequest" data-bs-toggle="modal" data-bs-target="#sendEditRequestModal" class="btn btn-primary w-15">Edit Request</button>
-                            <!-- Button trigger modal -->
-                        }
-                    }
-
-                    @{
-                        @if (isAdmin || isSuperAdmin || isAgent && Model.EditSaleListing.DealStatus!.Id == 2) //Saved
-                        {
-
-                            <button type="button" id="btnSubmit" class="btn btn-primary w-15" onclick="$('.text-danger').show();">Submit</button>
-                        }
-                    }
-
+                <input type="hidden" id="ActionTypeHidden" name="actionType" value="" />
+                <div id="submitSpinner" style="display:none;" class="text-center me-4">
+                    <div class="spinner-border text-primary" role="status"></div>
                 </div>
+                @if (Model.EditSaleListingViewModel.DealStatus != null)
+                {
+                    @await Html.PartialAsync("~/Views/Shared/Transaction/_EditActionButtons.cshtml", Model.EditSaleListingViewModel.DealStatusId)
+                }
+
+
             </form>
         </div>
     </div>
 </div>
 
-<!-- Modal -->
-<div class="modal fade" id="sendEditRequestModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Are you sure you want to edit this Deal?</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                Click continue to request editing this deal to DealAdmin
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary" onclick="window.location.href='@Url.Action("SendRequestToDealAdmin", "SaleListing", new{ dealId = @Model.EditSaleListing.Id})'">Continue</button>
-            </div>
-        </div>
-    </div>
-</div>
+<partial name="~/Views/Shared/Modal/_ConfirmSaveModal.cshtml" />
 
 
 @section Scripts {
@@ -369,10 +421,10 @@
     }
     <script src="~/js/viewdatatableutility.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <script type="text/javascript">
         $(document).ready(function () {
-            onBtnSave();
-            onBtnSubmit();
+            setupButtonHandlers();
 
             $('#isActiveCheckbox').on('click', toggleStatusLabels);
             $('#isDeletedCheckbox').on('click', toggleStatusLabelSoftDelete);
@@ -381,79 +433,142 @@
             toggleStatusLabelSoftDelete();
         });
 
-        function onBtnSave() {
-            $('#btnSave').on('click', function () {
-                $('#DealStatusId').val(2); // Set deal status to "Submitted" when saving
-                $('#confirmSaveModal').modal('show');
-            });
+        function setupButtonHandlers() {
+            // Track which button was clicked
+            $('#btnSave').click(() => $('#ActionTypeHidden').val('save'));
+            $('#btnSubmit').click(() => $('#ActionTypeHidden').val('submit'));
 
-            $(document).on('click', '#btnConfirmSave', function () {
-                $('#ListFormId').submit();
-            });
-        }
+            $('#ListFormId').on('submit', function (e) {
+                const actionType = $('#ActionTypeHidden').val();
+                const hasFieldErrors = validateAllTabs();
 
-        function onBtnSubmit() {
-            $('#btnSubmit').on('click', function () {
-                if (filesValidation()) {
-                    $('#DealStatusId').val(1); // Set deal status to "Saved" when submitting
-                    $('#confirmSubmitModal').modal('show');
+                if (hasFieldErrors) {
+                    e.preventDefault();
+                    Swal.fire({
+                        icon: "error",
+                        title: "Form Incomplete",
+                        text: "Please complete all required fields.",
+                        confirmButtonColor: "#d33"
+                    });
+                    return false;
+                }
+
+                if (actionType === 'submit') {
+                    const fileValidation = validateFiles();
+                    if (!fileValidation.success) {
+                        e.preventDefault();
+                        Swal.fire({
+                            icon: "error",
+                            title: "Missing Required Documents",
+                            html: fileValidation.message,
+                            confirmButtonColor: "#d33"
+                        });
+                        return false;
+                    }
+
+                    $('#DealStatusId').val(1); // Submitted
+                    const submitModal = new bootstrap.Modal(document.getElementById('confirmSubmitModal'));
+                    submitModal.show();
+                    e.preventDefault();
+                }
+
+                if (actionType === 'save') {
+                    $('#DealStatusId').val(2); // Saved
+                    const saveModal = new bootstrap.Modal(document.getElementById('confirmSaveModal'));
+                    saveModal.show();
+                    e.preventDefault();
                 }
             });
 
+            // Confirm Save
+            $(document).on('click', '#btnConfirmSave', function () {
+                $('#ListFormId').off('submit').submit();
+            });
+
+            // Confirm Submit
             $(document).on('click', '#btnConfirmSubmit', function () {
-                $('#ListFormId').submit();
+                $("#submitSpinner").show();
+                $('#btnSubmit').prop('disabled', true).html('<span class="spinner-border spinner-border-sm me-2"></span>Submitting...');
+                $('#ListFormId').off('submit').submit();
             });
         }
 
+        function validateAllTabs() {
+            let hasErrors = false;
+            let firstErrorTab = null;
 
-        function filesValidation() {
-            var SaleListingId = '@Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.EditSaleListing.Id))';
-            var documentTypeList = @Html.Raw(JsonConvert.SerializeObject(Model.EditSaleListing.DocumentTypeList));
-            var openModalFlag = true;
+            $(".tab-pane").each(function () {
+                const tabId = $(this).attr("id");
 
-            var error = [];
+                $(this).find("input, textarea, select").each(function () {
+                    const isRequired = $(this).attr("data-val-required") !== undefined;
+                    const isEmpty = !$(this).val()?.trim();
 
-            var documentTypesWithFileUploads = [];
+                    if (isRequired && isEmpty) {
+                        $(this).addClass("border-danger");
+                        hasErrors = true;
+
+                        if (!firstErrorTab) firstErrorTab = tabId;
+                    } else {
+                        $(this).removeClass("border-danger");
+                    }
+                });
+            });
+
+            if (firstErrorTab) {
+                $('.nav-tabs button[data-bs-target="#' + firstErrorTab + '"]').tab("show");
+            }
+
+            return hasErrors;
+        }
+
+        function validateFiles() {
+            const saleListingId = '@Html.Raw(JsonConvert.SerializeObject(Model.EditSaleListingViewModel.Id))';
+            const documentTypes = @Html.Raw(JsonConvert.SerializeObject(Model.EditSaleListingViewModel.DocumentTypeList));
+
+            let uploadedDocs = [];
+            let missing = [];
+
             $.ajax({
                 url: '/SaleListing/GetDocumentTypesThatHasFileUploads/',
                 type: 'GET',
+                data: { saleListingId },
                 async: false,
-                data: { saleListingId: SaleListingId },
                 success: function (data) {
-                    documentTypesWithFileUploads = data;
+                    uploadedDocs = data;
                 }
             });
 
-            documentTypeList.forEach(function (item, index) {
-                var formFiles = document.forms['ListFormId']['EditSaleListing.CreateFileUploadListViewModel.CreateFileUploadsViewModel[' + index + '].Files'];
-                var documentType = documentTypesWithFileUploads.find(x => x == item.Id);
+            documentTypes.forEach((doc, i) => {
+                const isRequired = doc.IsRequired;
+                const hasUploaded = uploadedDocs.includes(doc.Id);
+                const inputName = `EditSaleListingViewModel.CreateFileUploadListViewModel.CreateFileUploadsViewModel[${i}].Files`;
+                const input = document.forms['ListFormId'][inputName];
+                const hasNewFile = input && input.files && input.files.length > 0;
 
-                if (
-                    (item.IsRequired && formFiles.value !== "") ||
-                    (!item.IsRequired && formFiles.value === "") ||
-                    (!item.IsRequired && formFiles.value !== "") ||
-                    (documentType && item.IsRequired)
-                ) {
-                    // valid
-                } else {
-                    openModalFlag = false;
-                    var title = item.Description + " is required.";
-                    error.push(title);
+                if (isRequired && !hasUploaded && !hasNewFile) {
+                    missing.push(`<li>${doc.Description}</li>`);
                 }
             });
 
-            if (error.length > 0) {
-                Swal.fire({
-                    title: error[0],
-                    text: "Please upload the required documents to proceed with the application.",
-                    icon: "error",
-                    confirmButtonColor: '#203D57'
-                });
+            if (missing.length > 0) {
+                return {
+                    success: false,
+                    message: `<b>The following required documents are missing:</b><ul>${missing.join("")}</ul>`
+                };
             }
 
-            return openModalFlag;
+            return { success: true, message: "" };
         }
 
+        function toggleStatusLabels() {
+            const isActive = $('#isActiveCheckbox').is(':checked');
+            $('#lblStatusActive').text(isActive ? 'Active' : 'Inactive');
+        }
+
+        function toggleStatusLabelSoftDelete() {
+            const isDeleted = $('#isDeletedCheckbox').is(':checked');
+            $('#lblStatusSoftDelete').text(isDeleted ? 'Deleted' : 'Not Deleted');
+        }
     </script>
 }
-

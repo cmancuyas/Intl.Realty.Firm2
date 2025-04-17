@@ -4,15 +4,14 @@ namespace Intl.Realty.Firm.Model.ViewModel.Base.Concrete
 {
     public class LandLordDetails
     {
-        // Landlord
-        [Required(ErrorMessage = "The Landlord's Name field is required.")]
+        [Required(ErrorMessage = "Landlord's name is required.")]
         public string LandLordName { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "The Landlord's Phone Number field is required.")]
+        [Required(ErrorMessage = "Landlord's phone number is required.")]
         public string LandLordPhoneNumber { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "The Landlord's Email Address field is required.")]
-        [EmailAddress(ErrorMessage = "Invalid Email Address format.")]
+        [Required(ErrorMessage = "Landlord's email address is required.")]
+        [EmailAddress(ErrorMessage = "Enter a valid email address for the landlord.")]
         public string LandLordEmailAddress { get; set; } = string.Empty;
     }
 }

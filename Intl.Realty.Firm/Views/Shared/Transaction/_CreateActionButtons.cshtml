@@ -1,0 +1,38 @@
+﻿@using Intl.Realty.Firm.Model.ViewModel.Shared
+@model CreateActionButtonsViewModel
+
+<div class="form-group d-flex justify-content-center mobile-ctas gap-4">
+    <!-- Spinner -->
+    <div id="submitSpinner" style="display:none;" class="text-center me-4">
+        <div class="spinner-border text-primary" role="status"></div>
+    </div>
+
+    <!-- Cancel -->
+    @if (Model.ShowCancel)
+    {
+        <input type="button"
+               value="Cancel"
+               class="btn btn-secondary cta-button w-15"
+               onclick="window.location.href='@Url.Action("Index", Model.ControllerName)'" />
+    }
+
+    <!-- Save -->
+    @if (Model.ShowSave)
+    {
+        <button type="submit"
+                id="btnSave"
+                class="btn btn-outline-primary cta-button w-15">
+            Save as Draft
+        </button>
+    }
+
+    <!-- Submit -->
+    @if (Model.ShowSubmit)
+    {
+        <button type="submit"
+                id="btnSubmit"
+                class="btn btn-primary cta-button w-15">
+            Submit
+        </button>
+    }
+</div>

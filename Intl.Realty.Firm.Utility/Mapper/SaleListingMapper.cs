@@ -78,12 +78,19 @@ namespace Intl.Realty.Firm.Utility.Mapper
         }
         public static SaleListing ToSaleListingModel(this CreateSaleListingViewModel viewModel)
         {
+            if (viewModel == null)
+                throw new ArgumentNullException(nameof(viewModel), "CreateSaleListingViewModel cannot be null.");
+
+            // Defensive defaulting (optional, but you may want to validate this earlier instead)
+            if (viewModel.DealStatusId <= 0)
+                throw new InvalidOperationException("DealStatusId must be set before mapping to the model.");
+
             return new SaleListing
             {
                 TransactionTypeId = viewModel.TransactionTypeId,
                 IRFDealId = viewModel.IRFDealId,
-                DealStatusId = viewModel.DealStatusId,
-                DateSubmitted = viewModel.DateSubmitted,
+                DealStatusId = viewModel.DealStatusId, // Make sure this ID exists in DealStatuses table
+                DateSubmitted = viewModel.DateSubmitted ?? DateTime.Now, // Optional: fallback if needed
                 DealTransactionNumber = viewModel.DealTransactionNumber,
                 CreatedByFullName = viewModel.CreatedByFullName,
                 Notes = viewModel.Notes,
@@ -91,9 +98,10 @@ namespace Intl.Realty.Firm.Utility.Mapper
                 IsActive = viewModel.IsActive,
                 IsDeleted = viewModel.IsDeleted,
                 CreatedAt = viewModel.CreatedAt,
-                CreatedBy = viewModel.CreatedBy,
+                CreatedBy = viewModel.CreatedBy
             };
         }
+
         public static SaleListing ToSaleListingModel(this EditSaleListingViewModel viewModel)
         {
             return new SaleListing

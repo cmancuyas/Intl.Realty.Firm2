@@ -34,16 +34,6 @@ namespace Intl.Realty.Firm.Model.ViewModel.TransactionTypeDetailsBaseVM.Base
         // Commission
         public CommissionBase Commission { get; set; } = new CommissionWithListing();
 
-        // Listing Info
-        [Required(ErrorMessage = "The Listing Agent Name field is required.")]
-        public string ListingAgentName { get; set; } = string.Empty;
-
-        [Required(ErrorMessage = "The Listing Brokerage field is required.")]
-        public string ListingBrokerage { get; set; } = string.Empty;
-
-        [Required(ErrorMessage = "The Listing Brokerage Fax field is required.")]
-        public string ListingBrokerageFax { get; set; } = string.Empty;
-
         // Audit
         [Required]
         public bool IsActive { get; set; }
