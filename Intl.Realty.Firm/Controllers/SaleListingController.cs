@@ -431,7 +431,7 @@ namespace Intl.Realty.Firm.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, int dealStatusId, EditSaleListingWithTabMenuViewModel viewModel)
+        public async Task<IActionResult> Edit(int id, EditSaleListingWithTabMenuViewModel viewModel)
         {
             if (id == 0)
                 return NotFoundResultWithMessage("SaleListing", id);
@@ -488,7 +488,7 @@ namespace Intl.Realty.Firm.Controllers
                 await _unitOfWork.IRFDeal.UpdateAsync(irfDealDb);
             }
             // Update SaleListing model (EF is tracking it)
-            saleListingModel.DealStatusId = dealStatusId;
+            saleListingModel.DealStatusId = viewModel.EditSaleListingViewModel.DealStatusId;
             saleListingModel.Notes = viewModel.EditSaleListingViewModel.Notes;
             saleListingModel.DateSubmitted = DateTime.Now;
             saleListingModel.IsActive = true;
@@ -563,7 +563,7 @@ namespace Intl.Realty.Firm.Controllers
             }
 
             var viewModel = model.ToPreviewSaleListingViewModel();
-            var fileUploadIEnum = await _unitOfWork.FileUpload.GetAllAsync(x => x.SaleListingId == model.Id);
+            var fileUploadIEnum = await _unitOfWork.FileUpload.GetAllAsync(x => x.SaleListingId == model.Id && x.IsActive == true && !x.IsDeleted);
             viewModel.FileUploads = fileUploadIEnum.ToList();
             var users = _userManager.Users;
 

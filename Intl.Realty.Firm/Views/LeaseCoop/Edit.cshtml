@@ -70,6 +70,45 @@
 
                     <div class="tab-pane active" id="irfDetails1" aria-labelledby="irfDetails1-tab" style="background-color:white;">
 
+                        @{
+                            if (isAdmin || isSuperAdmin || isDealAdmin)
+                            {
+                                @* Deal Status *@
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="control-label fw-bolder">Deal Status</label>
+                                            <select id="EditLeaseCoopViewModel.DealStatusId" name="EditLeaseCoopViewModel.DealStatusId" class="form-select">
+                                                @{
+                                                    @if (Model.EditLeaseCoopViewModel.DealStatusList != null)
+                                                    {
+                                                        @foreach (var dealStatus in Model.EditLeaseCoopViewModel.DealStatusList)
+                                                        {
+                                                            if (dealStatus.Id == Model.EditLeaseCoopViewModel.DealStatusId)
+                                                            {
+                                                                <option value="@dealStatus.Id" selected>@dealStatus.Description</option>
+                                                            }
+                                                            else
+                                                            {
+                                                                <option value="@dealStatus.Id">@dealStatus.Description</option>
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            </select>
+
+                                            @Html.ValidationMessageFor(m => m.EditLeaseCoopViewModel.DealStatusId, "", new { @class = "text-danger" })
+
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                            else
+                            {
+                                <input type="hidden" name="EditLeaseCoopViewModel.DealStatusId" value="1" />
+                            }
+                        }
+
                         <!-- Property & Deal Info -->
                         <h4 class="mt-4 text-blue">Property & Deal Info</h4>
                         <div class="row">

@@ -2,75 +2,45 @@
 @using Microsoft.AspNetCore.Identity
 @inject SignInManager<ApplicationUser> _signInManager;
 @inject UserManager<ApplicationUser> _userManager;
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - Intl.Realty.Firm</title>
 
-    <!-- Custom CSS -->
+    <!-- Stylesheets -->
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    @* <link href="~/css/datatable.min.css" rel="stylesheet" /> *@
-
-    <!-- Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdn.datatables.net/buttons/3.0.2/css/buttons.bootstrap.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kartik-v/bootstrap-fileinput/css/fileinput.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.15.2/css/selectize.default.min.css" />
 
-    <!-- External Libraries -->
-    <link href="https://cdn.datatables.net/buttons/3.0.2/css/buttons.bootstrap.css" rel="stylesheet" />
-    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-    <link href="https://cdn.jsdelivr.net/gh/kartik-v/bootstrap-fileinput/css/fileinput.min.css" rel="stylesheet" />
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.15.2/css/selectize.default.min.css" rel="stylesheet" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css" />
-
-    <!-- Scripts -->
-    <script src="~/lib/jquery/jquery.min.js" asp-append-version="true"></script>
-    <!-- Bootstrap 5.3 (CSS and JS Bundle with Popper) -->
+    <!-- Bootstrap 5 CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" crossorigin="anonymous" />
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
 
-    <script src="~/js/site.js" asp-append-version="true"></script>
-    <script src="~/js/feather.min.js" type="text/javascript"></script>
-
-    <!-- DataTables -->
-    <script src="https://cdn.datatables.net/2.0.5/js/dataTables.min.js"></script>
-    <script src="https://cdn.datatables.net/2.0.5/js/dataTables.bootstrap5.min.js"></script>
-    <script src="https://cdn.datatables.net/buttons/3.0.2/js/dataTables.buttons.min.js"></script>
-    <script src="https://cdn.datatables.net/buttons/3.0.2/js/buttons.html5.js"></script>
-    <script src="https://cdn.datatables.net/buttons/3.0.2/js/buttons.print.min.js"></script>
-    @* <script src="https://cdn.datatables.net/plug-ins/2.0.8/sorting/datetime-moment.js"></script> *@
-
-    <!-- External Libraries -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.15.2/js/selectize.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/knockout/3.5.1/knockout-latest.js"></script>
-    @* <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.30.1/moment.min.js"></script> *@
-
-    <!-- PDFObject -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfobject/2.2.8/pdfobject.min.js"></script>
+    <!-- Toastr (Load after Bootstrap) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" />
 </head>
 
 <body>
-
     <!-- Mobile Menu Button -->
     <button id="menu-toggle" class="menu-toggle">
-        <span></span>
-        <span></span>
-        <span></span>
-        <span></span>
-        @* <i data-feather="menu" type="button"></i> *@
+        <span></span><span></span><span></span><span></span>
     </button>
 
-    <partial name="~/Views/Shared/_SidebarItems.cshtml" />
+    @await Html.PartialAsync("_SidebarItems")
 
     <!-- Overlay -->
     <div id="menu-overlay" class="menu-overlay"></div>
 
+    <!-- Top Bar -->
     <div class="top-bar">
         <div class="top-bar-container shadow-sm d-flex">
             <div class="d-flex align-items-center justify-content-between mx-4 w-100">
-                <div class="d-flex flex-row align-items-center gap-2">
-                </div>
+                <div class="d-flex flex-row align-items-center gap-2"></div>
                 <div class="d-flex align-items-center gap-4">
                     <a id="notification" href="#" class="text-decoration-none">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-bell-fill text-blue" viewBox="0 0 16 16">
@@ -78,39 +48,25 @@
                             <circle cx="12" cy="4" r="2" fill="red" />
                         </svg>
                     </a>
+
                     <div class="d-flex flex-column justify-content-end roles">
                         @{
                             var user = await _userManager.GetUserAsync(User);
                             var roles = await _userManager.GetRolesAsync(user!);
-                            <span id="DisplayFullName" class="fw-bolder u-none text-end name-role">@user.FirstName @user.LastName</span>
-                            <span id="DisplayName" class="small u-none text-end">@user!.Email</span>
-                            <span id="DisplayRole" class="small u-none text-end">
-                                @foreach (var item in roles)
-                                {
-                                    if (item == "SuperAdmin")
-                                    {
-                                        <span class="badge badge-danger" style="background-color:red">@item</span>
-                                    }
-                                    if (item == "Admin")
-                                    {
-                                        <span class="badge badge-pill badge-primary" style="background-color:blue">@item</span>
-                                    }
-                                    if (item == "TeamLeader")
-                                    {
-                                        <span class="badge badge-pill badge-primary" style="background-color:brown">@item</span>
-                                    }
-                                    if (item == "Agent")
-                                    {
-                                        <span class="badge badge-pill badge-success" style="background-color:orange">@item</span>
-                                    }
-                                    if (item == "DealAdmin")
-                                    {
-                                        <span class="badge badge-pill badge-success" style="background-color:green">@item</span>
-                                    }
-                                }
-                            </span>
                         }
-
+                        <span class="fw-bolder text-end name-role">@user.FirstName @user.LastName</span>
+                        <span class="small text-end">@user.Email</span>
+                        <span class="small text-end">
+                            @foreach (var item in roles)
+                            {
+                                <span class="badge
+                                    @(item == "SuperAdmin" ? "bg-danger" :
+                                      item == "Admin" ? "bg-primary rounded-pill" :
+                                      item == "TeamLeader" ? "bg-primary rounded-pill" :
+                                      item == "Agent" ? "bg-warning text-dark rounded-pill" :
+                                      item == "DealAdmin" ? "bg-success rounded-pill" : "")">@item</span>
+                            }
+                        </span>
                     </div>
 
                     <div class="d-flex align-items-center dropdown ms-3">
@@ -120,82 +76,92 @@
                                 data-bs-toggle="dropdown"
                                 aria-expanded="false">
                             <img src="/files/img/avatar-blank.png" class="avatar rounded-circle" width="40" height="40" alt="User Avatar" />
-
                         </button>
-
                         <ul class="dropdown-menu dropdown-menu-end text-secondary" aria-labelledby="userDropdown">
-                            <li>
-                                <a class="dropdown-item py-1" href="@Url.Action("Index", "UserProfile", new { id = user!.Id })">
-                                    View Profile
-                                </a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item py-1" asp-action="Logout" asp-controller="Account">
-                                    Sign Out
-                                </a>
-                            </li>
+                            <li><a class="dropdown-item py-1" href="@Url.Action("Index", "UserProfile", new { id = user.Id })">View Profile</a></li>
+                            <li><a class="dropdown-item py-1" asp-action="Logout" asp-controller="Account">Sign Out</a></li>
                         </ul>
                     </div>
-
-
-
                 </div>
             </div>
         </div>
     </div>
+
+    <!-- Main Content -->
     <main role="main" class="main pb-5">
         <div class="main-container px-4 pt-4 mb-5">
             @RenderBody()
         </div>
     </main>
+
+    <!-- Footer -->
     <footer class="footer text-muted pt-3 ms-4 w-75 d-flex justify-content-center">
         <div class="container text-center d-none">
             © 2024 International Realty Firm
         </div>
     </footer>
-    <style>
-        .d-md-flex {
-            display: flex !important;
-        }
 
+    <style>
+        .upload-status {
+            display: inline-block;
+            margin-left: 8px;
+            vertical-align: middle;
+        }
     </style>
+
+    <!-- Scripts at bottom for performance -->
+    <script src="~/lib/jquery/jquery.min.js" asp-append-version="true"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="~/js/feather.min.js" type="text/javascript"></script>
+
+    <!-- DataTables -->
+    <script src="https://cdn.datatables.net/2.0.5/js/dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/2.0.5/js/dataTables.bootstrap5.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/3.0.2/js/dataTables.buttons.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/3.0.2/js/buttons.html5.js"></script>
+    <script src="https://cdn.datatables.net/buttons/3.0.2/js/buttons.print.min.js"></script>
+
+    <!-- External JS Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.15.2/js/selectize.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/knockout/3.5.1/knockout-latest.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfobject/2.2.8/pdfobject.min.js"></script>
 
     <script src="/js/mainLayout.js" type="text/javascript" asp-append-version="true"></script>
     <script>
         $(document).ready(function () {
             mainPageLayout($);
-        })
+        });
+
         document.addEventListener("DOMContentLoaded", () => {
-            feather.replace(); // Initializes Feather icons
+            feather.replace();
 
             // Ensure Bootstrap dropdowns are initialized
-            var dropdownElements = [].slice.call(document.querySelectorAll('.dropdown-toggle'));
-            dropdownElements.forEach(function (dropdownToggleEl) {
-                new bootstrap.Dropdown(dropdownToggleEl);
+            document.querySelectorAll('.dropdown-toggle').forEach(el => {
+                new bootstrap.Dropdown(el);
             });
 
             const menuToggle = document.getElementById("menu-toggle");
-            const offCanvasMenu = document.getElementById("off-canvas-menu");
             const menuOverlay = document.getElementById("menu-overlay");
+            const offCanvasMenu = document.getElementById("off-canvas-menu");
 
-            // Toggle Menu
-            menuToggle.addEventListener("click", () => {
-                offCanvasMenu.classList.toggle("active");
-                menuOverlay.classList.toggle("active");
-                menuToggle.classList.toggle("open"); // Replacing jQuery toggleClass
+            menuToggle?.addEventListener("click", () => {
+                offCanvasMenu?.classList.toggle("active");
+                menuOverlay?.classList.toggle("active");
+                menuToggle.classList.toggle("open");
             });
 
-            // Close Menu on Overlay Click
-            menuOverlay.addEventListener("click", () => {
-                offCanvasMenu.classList.remove("active");
-                menuOverlay.classList.remove("active");
-                menuToggle.classList.remove("open"); // Replacing jQuery toggleClass
+            menuOverlay?.addEventListener("click", () => {
+                offCanvasMenu?.classList.remove("active");
+                menuOverlay?.classList.remove("active");
+                menuToggle.classList.remove("open");
             });
         });
-
     </script>
-    @await Html.PartialAsync("_NotificationPartial.cshtml");
-    @await RenderSectionAsync("Scripts", required: false)
 
+    @await Html.PartialAsync("_NotificationPartial.cshtml")
+    @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

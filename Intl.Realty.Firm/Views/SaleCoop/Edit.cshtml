@@ -35,10 +35,10 @@
             <h1 class="text-blue mb-0">Edit Sale Coop - Deal Id: @Model.EditSaleCoopViewModel.DealTransactionNumber - @Model.EditSaleCoopViewModel.DealStatus!.Description</h1>
             <hr class="my-4" />
             <form id="ListFormId"
-                  asp-action="Edit"
-                  asp-controller="SaleCoop"
-                  method="post"
-                  enctype="multipart/form-data">
+            asp-action="Edit"
+            asp-controller="SaleCoop"
+            method="post"
+            enctype="multipart/form-data">
 
                 <input type="hidden" asp-for="EditSaleCoopViewModel.Id" />
                 <input type="hidden" asp-for="EditSaleCoopViewModel.DealTransactionNumber" />
@@ -52,13 +52,13 @@
                             <li class="nav-item mx-0">
                                 <input type="hidden" id="menuId" name="menuId" value="@item.Id" />
                                 <button class="nav-link @item.IsActive"
-                                        id="@item.Tab"
-                                        data-bs-toggle="tab"
-                                        data-bs-target="#@item.Control"
-                                        type="button"
-                                        role="tab"
-                                        aria-controls="@item.Control"
-                                        aria-selected="@item.IsSelected">
+                                id="@item.Tab"
+                                data-bs-toggle="tab"
+                                data-bs-target="#@item.Control"
+                                type="button"
+                                role="tab"
+                                aria-controls="@item.Control"
+                                aria-selected="@item.IsSelected">
                                     @item.Description
                                 </button>
                             </li>
@@ -103,6 +103,10 @@
                                         </div>
                                     </div>
                                 </div>
+                            }
+                            else
+                            {
+                                <input type="hidden" name="EditSaleCoopViewModel.DealStatusId" value="1" />
                             }
                         }
 

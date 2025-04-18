@@ -407,7 +407,7 @@ namespace Intl.Realty.Firm.Controllers
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, int dealStatusId, EditSaleCoopWithTabMenuViewModel viewModel)
+        public async Task<IActionResult> Edit(int id, EditSaleCoopWithTabMenuViewModel viewModel)
         {
             if (id == 0)
                 return NotFoundResultWithMessage("SaleCoop", id);
@@ -467,7 +467,7 @@ namespace Intl.Realty.Firm.Controllers
 
             // Role-specific logic
             var isAgent = await _userManager.IsInRoleAsync(user, "Agent");
-            saleCoopModel.DealStatusId = dealStatusId;
+            saleCoopModel.DealStatusId = viewModel.EditSaleCoopViewModel.DealStatusId;
             // Update SaleCoop properties
             saleCoopModel.Notes = viewModel.EditSaleCoopViewModel.Notes;
             saleCoopModel.DateSubmitted = DateTime.Now;
@@ -544,7 +544,7 @@ namespace Intl.Realty.Firm.Controllers
             }
 
             var viewModel = model.ToPreviewSaleCoopViewModel();
-            var fileUploadIEnum = await _unitOfWork.FileUpload.GetAllAsync(x => x.SaleCoopId == model.Id);
+            var fileUploadIEnum = await _unitOfWork.FileUpload.GetAllAsync(x => x.SaleCoopId == model.Id && x.IsActive == true && !x.IsDeleted);
             viewModel.FileUploads = fileUploadIEnum.ToList();
             var users = _userManager.Users;
 

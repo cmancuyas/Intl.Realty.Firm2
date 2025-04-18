@@ -394,7 +394,7 @@ namespace Intl.Realty.Firm.Controllers
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, int dealStatusId, EditLeaseCoopWithTabMenuViewModel viewModel)
+        public async Task<IActionResult> Edit(int id, EditLeaseCoopWithTabMenuViewModel viewModel)
         {
             if (id == 0)
                 return NotFoundResultWithMessage("LeaseCoop", id);
@@ -454,7 +454,7 @@ namespace Intl.Realty.Firm.Controllers
 
             // ✅ Update main LeaseCoop properties
             var isAgent = await _userManager.IsInRoleAsync(user, "Agent");
-            leaseCoopModel.DealStatusId = dealStatusId;
+            leaseCoopModel.DealStatusId = viewModel.EditLeaseCoopViewModel.DealStatusId;
             leaseCoopModel.Notes = viewModel.EditLeaseCoopViewModel.Notes;
             leaseCoopModel.DateSubmitted = DateTime.Now;
             leaseCoopModel.IsActive = true;
@@ -532,7 +532,7 @@ namespace Intl.Realty.Firm.Controllers
             }
 
             var viewModel = model.ToPreviewLeaseCoopViewModel();
-            var fileUploadIEnum = await _unitOfWork.FileUpload.GetAllAsync(x => x.LeaseCoopId == model.Id);
+            var fileUploadIEnum = await _unitOfWork.FileUpload.GetAllAsync(x => x.LeaseCoopId == model.Id && x.IsActive == true && !x.IsDeleted);
             viewModel.FileUploads = fileUploadIEnum.ToList();
             var users = _userManager.Users;
 

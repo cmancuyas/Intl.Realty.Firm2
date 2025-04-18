@@ -403,7 +403,7 @@ namespace Intl.Realty.Firm.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, int dealStatusId, EditLeaseListingWithTabMenuViewModel viewModel)
+        public async Task<IActionResult> Edit(int id, EditLeaseListingWithTabMenuViewModel viewModel)
         {
             if (id == 0)
                 return NotFoundResultWithMessage("LeaseListing", id);
@@ -462,7 +462,7 @@ namespace Intl.Realty.Firm.Controllers
 
             // ✅ Update LeaseListing properties
             var isAgent = await _userManager.IsInRoleAsync(user, "Agent");
-            leaseListingModel.DealStatusId = dealStatusId;
+            leaseListingModel.DealStatusId = viewModel.EditLeaseListingViewModel.DealStatusId;
             leaseListingModel.Notes = viewModel.EditLeaseListingViewModel.Notes;
             leaseListingModel.DateSubmitted = DateTime.Now;
             leaseListingModel.IsActive = true;
@@ -537,7 +537,7 @@ namespace Intl.Realty.Firm.Controllers
             }
 
             var viewModel = model.ToPreviewLeaseListingViewModel();
-            var fileUploadIEnum = await _unitOfWork.FileUpload.GetAllAsync(x => x.LeaseListingId == model.Id);
+            var fileUploadIEnum = await _unitOfWork.FileUpload.GetAllAsync(x => x.LeaseListingId == model.Id && x.IsActive == true && !x.IsDeleted);
             viewModel.FileUploads = fileUploadIEnum.ToList();
             var users = _userManager.Users;
 

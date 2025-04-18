@@ -45,8 +45,14 @@
 
             // ✅ Agent always defaults to status = 1
             if (!isAdminLike && dealStatusDropdownSelector) {
-                $(dealStatusDropdownSelector).val("1");
+                // Fallback: manually inject hidden field if dropdown isn't present
+                if ($(dealStatusDropdownSelector).length === 0) {
+                    $('#ListFormId').append('<input type="hidden" name="EditLeaseCoopViewModel.DealStatusId" value="1" />');
+                } else {
+                    $(dealStatusDropdownSelector).val("1");
+                }
             }
+
 
             $('#confirmSubmitModal').modal('show');
             e.preventDefault();
