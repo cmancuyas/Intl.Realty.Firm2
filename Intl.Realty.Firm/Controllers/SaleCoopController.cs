@@ -132,124 +132,95 @@ namespace Intl.Realty.Firm.Controllers
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(CreateSaleCoopWithTabMenuViewModel viewModel)
+        public async Task<IActionResult> Create(CreateSaleCoopWithTabMenuViewModel viewModel, string actionType)
         {
-            // to get current user ID
+            if (actionType == "save")
+            {
+                viewModel.CreateSaleCoop.DealStatusId = 2; // Draft
+            }
+            else if (actionType == "submit")
+            {
+                viewModel.CreateSaleCoop.DealStatusId = 1; // Submitted
+            }
+
+
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-            // to get current user info
             var user = await _userManager.FindByIdAsync(userId!);
+            string transactionTypeName = _transactionTypeName;
 
-            string transactionTypeName = _transactionTypeName; // 1 = Sale Listing
-
-            var transactionType = await _unitOfWork.TransactionType.GetAsync(x => x.Description == _transactionTypeName); //Sale Listing
-            viewModel.CreateSaleCoop.TransactionType = await _unitOfWork.TransactionType.GetByNameAsync(transactionType.Description);
+            var transactionType = await _unitOfWork.TransactionType.GetAsync(x => x.Description == transactionTypeName);
+            viewModel.CreateSaleCoop.TransactionType = transactionType;
             viewModel.CreateSaleCoop.TransactionTypeId = transactionType.Id;
 
-            var yearValidation = LinqExtensions.AndAlso<DealTransactionNumberRange>(x => x.IsDeleted == false, x => x.Year == DateTime.Now.Year);
+            var numberRange = await _unitOfWork.DealTransactionNumberRange
+                .GetAsync(x => !x.IsDeleted && x.Year == DateTime.Now.Year);
 
-            var numberRange = await _unitOfWork.DealTransactionNumberRange.GetAsync(yearValidation);
-            numberRange.CurrentNumber += 1;
             if (numberRange != null)
             {
+                numberRange.CurrentNumber += 1;
                 await _unitOfWork.DealTransactionNumberRange.UpdateAsync(numberRange);
                 _unitOfWork.SaveChanges();
             }
 
+            var documentTypeAssignments = await _unitOfWork.DocumentTypeAssignment.GetAllAsync(x => !x.IsDeleted, includeProperties: "TransactionType,DocumentType");
+            var documentTypes = await _unitOfWork.DocumentType.GetAllAsync(x => !x.IsDeleted);
 
-            var documentTypeAssignmentIEnum = await _unitOfWork.DocumentTypeAssignment.GetAllAsync(x => x.IsDeleted == false, includeProperties: "TransactionType,DocumentType");
-            var documentTypeIEnum = await _unitOfWork.DocumentType.GetAllAsync(x => x.IsDeleted == false);
-            var documentTypeAssignmentList = documentTypeAssignmentIEnum.ToList();
-            var documentTypeList = documentTypeIEnum.ToList();
             viewModel.CreateSaleCoop.DocumentTypeList = _documentTransactionService
-                                                            .GetDocumentTypesFromDocumentTypeAssignment(transactionTypeName,
-                                                                                                        documentTypeAssignmentList,
-                                                                                                        documentTypeList);
-            viewModel.CreateSaleCoop.CreatedByFullName = user!.FirstName + " " + user.LastName;
+                .GetDocumentTypesFromDocumentTypeAssignment(transactionTypeName, documentTypeAssignments.ToList(), documentTypes.ToList());
 
-            var menus = CreateDealTransactionTabMenuData.GetCreateDealTransactionTabMenuData();
-
-            string controllerName = "IRFDetails1";
-
-            foreach (var menu in menus.Where(x => x.Menu == controllerName))
+            viewModel.CreateSaleCoop.CreatedByFullName = $"{user!.FirstName} {user.LastName}";
+            viewModel.Menus = CreateDealTransactionTabMenuData.GetCreateDealTransactionTabMenuData().Select(m =>
             {
-                menu.IsActive = "active";
-                menu.IsSelected = "true";
-            }
-
-            viewModel.Menus = menus;
+                m.IsActive = m.Menu == "IRFDetails1" ? "active" : "";
+                m.IsSelected = m.Menu == "IRFDetails1" ? "true" : "false";
+                return m;
+            }).ToList();
 
             if (ModelState.IsValid)
             {
-                // Create IRF Deal Data
-                viewModel.CreateSaleCoop.TransactionType = transactionType;
+                var irfDeal = viewModel.CreateSaleCoop.CreateIRFDealSaleCoopViewModel?.ToIRFDealModel();
+                irfDeal!.CreatedAt = DateTime.Now;
+                irfDeal.CreatedBy = user.Id;
+                irfDeal.IsActive = true;
+                irfDeal.IsDeleted = false;
+                await _unitOfWork.IRFDeal.AddAsync(irfDeal);
 
-                var createIRFDealModel = viewModel.CreateSaleCoop.CreateIRFDealSaleCoopViewModel?.ToIRFDealModel();
-                createIRFDealModel!.CreatedAt = DateTime.Now;
-                createIRFDealModel.CreatedBy = user!.Id;
-                createIRFDealModel.IsActive = true;
-                createIRFDealModel.IsDeleted = false;
-                await _unitOfWork.IRFDeal.AddAsync(createIRFDealModel);
+                var newIRFDeal = await _unitOfWork.IRFDeal.GetAsync(x => x.Id == irfDeal.Id);
+                viewModel.CreateSaleCoop.IRFDealId = newIRFDeal!.Id;
+                viewModel.CreateSaleCoop.CreateIRFDealSaleCoopViewModel!.CreatedAt = newIRFDeal.CreatedAt;
+                viewModel.CreateSaleCoop.CreateIRFDealSaleCoopViewModel.CreatedBy = newIRFDeal.CreatedBy;
+                viewModel.CreateSaleCoop.CreateIRFDealSaleCoopViewModel.IsActive = newIRFDeal.IsActive;
 
-                var NewIRFDeal = await _unitOfWork.IRFDeal.GetAsync(x => x.Id == createIRFDealModel.Id);
-
-                // Get IRF Deal Data
-                viewModel.CreateSaleCoop.TransactionTypeId = transactionType.Id;
-                viewModel.CreateSaleCoop.TransactionType = transactionType;
-                viewModel.CreateSaleCoop.IRFDealId = NewIRFDeal.Id;
-                if (NewIRFDeal != null)
-                {
-                    viewModel.CreateSaleCoop.CreateIRFDealSaleCoopViewModel!.IsActive = NewIRFDeal.IsActive;
-                    viewModel.CreateSaleCoop.CreateIRFDealSaleCoopViewModel.CreatedBy = NewIRFDeal.CreatedBy;
-                    viewModel.CreateSaleCoop.CreateIRFDealSaleCoopViewModel.CreatedAt = NewIRFDeal.CreatedAt;
-                }
-
-                // Create SaleCoop Data
-                viewModel.CreateSaleCoop.TransactionTypeId = transactionType.Id;
-                viewModel.CreateSaleCoop.IRFDealId = NewIRFDeal!.Id;
-                if (viewModel.CreateSaleCoop.DealStatusId == 0)
-                {
-                    viewModel.CreateSaleCoop.DealStatusId = 1; // Submitted
-
-                }
+                // Deal Status based on actionType
                 viewModel.CreateSaleCoop.IsActive = true;
                 viewModel.CreateSaleCoop.IsDeleted = false;
-                viewModel.CreateSaleCoop.CreatedBy = user!.Id;
+                viewModel.CreateSaleCoop.CreatedBy = user.Id;
                 viewModel.CreateSaleCoop.CreatedAt = DateTime.Now;
 
                 var saleCoopModel = viewModel.CreateSaleCoop.ToSaleCoopModel();
                 await _unitOfWork.SaleCoop.AddAsync(saleCoopModel);
 
-                // Create FileUploadData
                 if (viewModel.CreateSaleCoop.CreateFileUploadListViewModel?.CreateFileUploadsViewModel != null)
                 {
                     var uploadPath = CreateFilePath(saleCoopModel.Id);
-
-                    await CreateFileUploadData(viewModel.CreateSaleCoop.CreateFileUploadListViewModel.CreateFileUploadsViewModel,
-                                                saleCoopModel.Id,
-                                                transactionType.Id,
-                                                viewModel.CreateSaleCoop.DocumentTypeList,
-                                                uploadPath);
-
+                    await CreateFileUploadData(
+                        viewModel.CreateSaleCoop.CreateFileUploadListViewModel.CreateFileUploadsViewModel,
+                        saleCoopModel.Id,
+                        transactionType.Id,
+                        viewModel.CreateSaleCoop.DocumentTypeList,
+                        uploadPath);
                 }
 
-                if (viewModel.CreateSaleCoop.DealStatusId == 1) // If Submitted, send email to DealAdmin
+                if (viewModel.CreateSaleCoop.DealStatusId == 1) // Only on "Submit"
                 {
                     var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-
-                    var dealLink = Url.Action("Login", "Account",
-                                                                new { id = saleCoopModel.Id, token = token }, Request.Scheme);
-
+                    var dealLink = Url.Action("Login", "Account", new { id = saleCoopModel.Id, token }, Request.Scheme);
                     var dealAdminEmails = await GetDealAdminEmails();
-
                     var userRoles = await _userManager.GetRolesAsync(user);
 
-                    var mailRequest = EmailRequest.SendNotificationWhenDealIsSubmitted(user,
-                                                                                   userRoles,
-                                                                                   viewModel.CreateSaleCoop.TransactionType.Description,
-                                                                                   dealAdminEmails,
-                                                                                   saleCoopModel.DealTransactionNumber,
-                                                                                   dealLink!);
+                    var mailRequest = EmailRequest.SendNotificationWhenDealIsSubmitted(
+                        user, userRoles, transactionType.Description, dealAdminEmails,
+                        saleCoopModel.DealTransactionNumber, dealLink!);
 
                     await _emailService.SendEmailAsync(mailRequest);
                 }
@@ -257,8 +228,9 @@ namespace Intl.Realty.Firm.Controllers
                 return RedirectToAction(nameof(Index), new { addSuccess = true });
             }
 
-            return View("Index");
+            return View("Index", viewModel);
         }
+
         private async Task<List<InternalEmail>> GetDealAdminEmails()
         {
             List<InternalEmail> internalEmails = new List<InternalEmail>();
@@ -394,28 +366,30 @@ namespace Intl.Realty.Firm.Controllers
             // to get current user info
             var user = await _userManager.FindByIdAsync(userId!);
 
-            viewModel.EditSaleCoop = model.ToEditSaleCoopViewModel();
+            viewModel.EditSaleCoopViewModel = model.ToEditSaleCoopViewModel();
 
-            viewModel.EditSaleCoop.UpdatedByFullName = user!.FirstName + " " + user.LastName;
-            viewModel.EditSaleCoop.UpdatedBy = user!.Id;
-            viewModel.EditSaleCoop.UpdatedAt = DateTime.Now;
+            viewModel.EditSaleCoopViewModel.DealStatus = model.DealStatus;
+
+            viewModel.EditSaleCoopViewModel.UpdatedByFullName = user!.FirstName + " " + user.LastName;
+            viewModel.EditSaleCoopViewModel.UpdatedBy = user!.Id;
+            viewModel.EditSaleCoopViewModel.UpdatedAt = DateTime.Now;
 
             var fileUploads = await _unitOfWork.FileUpload.GetAllAsync(x => x.SaleCoopId == model.Id, includeProperties: "SaleCoop,TransactionType,DocumentType");
 
             var fileUploadsWithFiles = FilterFileUploadsWithFilesOnly(fileUploads.ToList());
 
-            viewModel.EditSaleCoop.FileUploads = fileUploadsWithFiles;
+            viewModel.EditSaleCoopViewModel.FileUploads = fileUploadsWithFiles;
 
             var documentTypeAssignmentIEnum = await _unitOfWork.DocumentTypeAssignment.GetAllAsync(x => x.IsDeleted == false, includeProperties: "TransactionType,DocumentType");
             var documentTypeIEnum = await _unitOfWork.DocumentType.GetAllAsync(x => x.IsDeleted == false);
             var documentTypeAssignmentList = documentTypeAssignmentIEnum.ToList();
             var documentTypeList = documentTypeIEnum.ToList();
-            viewModel.EditSaleCoop.DocumentTypeList = _documentTransactionService
+            viewModel.EditSaleCoopViewModel.DocumentTypeList = _documentTransactionService
                                                             .GetDocumentTypesFromDocumentTypeAssignment(model.TransactionType!.Description,
                                                                                                         documentTypeAssignmentList,
                                                                                                         documentTypeList);
-            var dealStatusIEnum = await _unitOfWork.DealStatus.GetAllAsync();
-            viewModel.EditSaleCoop.DealStatusList = dealStatusIEnum.ToList();
+            var dealStatusIEnum = await _unitOfWork.DealStatus.GetAllAsync(x => x.IsActive == true && !x.IsDeleted);
+            viewModel.EditSaleCoopViewModel.DealStatusList = dealStatusIEnum.ToList();
 
             var menus = EditDealTransactionTabMenuData.GetEditDealTransactionTabMenuData();
 
@@ -433,10 +407,13 @@ namespace Intl.Realty.Firm.Controllers
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, int dealStatusId, EditSaleCoopWithTabMenuViewModel viewModel)
+        public async Task<IActionResult> Edit(int id, EditSaleCoopWithTabMenuViewModel viewModel)
         {
             if (id == 0)
                 return NotFoundResultWithMessage("SaleCoop", id);
+
+            var dealStatusIEnum = await _unitOfWork.DealStatus.GetAllAsync(x => x.IsActive == true && !x.IsDeleted);
+            viewModel.EditSaleCoopViewModel.DealStatusList = dealStatusIEnum.ToList();
 
             if (!ModelState.IsValid)
                 return View(viewModel);
@@ -459,8 +436,8 @@ namespace Intl.Realty.Firm.Controllers
 
             // Load transaction type
             var transactionType = await _unitOfWork.TransactionType.GetAsync(x => x.Id == saleCoopModel.TransactionTypeId);
-            viewModel.EditSaleCoop.TransactionType = transactionType;
-            viewModel.EditSaleCoop.TransactionTypeId = transactionType.Id;
+            viewModel.EditSaleCoopViewModel.TransactionType = transactionType;
+            viewModel.EditSaleCoopViewModel.TransactionTypeId = transactionType.Id;
 
             // Rebuild document type list
             var documentTypeAssignments = await _unitOfWork.DocumentTypeAssignment
@@ -469,7 +446,7 @@ namespace Intl.Realty.Firm.Controllers
 
             var documentTypes = await _unitOfWork.DocumentType.GetAllAsync(x => !x.IsDeleted);
 
-            viewModel.EditSaleCoop.DocumentTypeList = _documentTransactionService
+            viewModel.EditSaleCoopViewModel.DocumentTypeList = _documentTransactionService
                 .GetDocumentTypesFromDocumentTypeAssignment(
                     transactionType.Description,
                     documentTypeAssignments.ToList(),
@@ -480,7 +457,7 @@ namespace Intl.Realty.Firm.Controllers
 
             // Update IRFDeal (handled independently)
             var irfDealDb = await _unitOfWork.IRFDeal.GetAsync(x => x.Id == saleCoopModel.IRFDealId, tracked: true);
-            var editedData = viewModel.EditSaleCoop.EditIRFDealSaleCoopViewModel;
+            var editedData = viewModel.EditSaleCoopViewModel.EditIRFDealSaleCoopViewModel;
 
             if (irfDealDb != null && editedData != null)
             {
@@ -490,10 +467,9 @@ namespace Intl.Realty.Firm.Controllers
 
             // Role-specific logic
             var isAgent = await _userManager.IsInRoleAsync(user, "Agent");
-            saleCoopModel.DealStatusId = dealStatusId;
-
+            saleCoopModel.DealStatusId = viewModel.EditSaleCoopViewModel.DealStatusId;
             // Update SaleCoop properties
-            saleCoopModel.Notes = viewModel.EditSaleCoop.Notes;
+            saleCoopModel.Notes = viewModel.EditSaleCoopViewModel.Notes;
             saleCoopModel.DateSubmitted = DateTime.Now;
             saleCoopModel.IsActive = true;
             saleCoopModel.UpdatedAt = DateTime.Now;
@@ -505,7 +481,7 @@ namespace Intl.Realty.Firm.Controllers
 
             // Handle file uploads
             var uploadPath = CreateFilePath(saleCoopModel.Id);
-            var fileUploadVM = viewModel.EditSaleCoop.CreateFileUploadListViewModel?.CreateFileUploadsViewModel;
+            var fileUploadVM = viewModel.EditSaleCoopViewModel.CreateFileUploadListViewModel?.CreateFileUploadsViewModel;
 
             if (fileUploadVM != null)
             {
@@ -513,7 +489,7 @@ namespace Intl.Realty.Firm.Controllers
                     fileUploadVM,
                     saleCoopModel.Id,
                     transactionType.Id,
-                    viewModel.EditSaleCoop.DocumentTypeList,
+                    viewModel.EditSaleCoopViewModel.DocumentTypeList,
                     uploadPath
                 );
             }
@@ -568,7 +544,7 @@ namespace Intl.Realty.Firm.Controllers
             }
 
             var viewModel = model.ToPreviewSaleCoopViewModel();
-            var fileUploadIEnum = await _unitOfWork.FileUpload.GetAllAsync(x => x.SaleCoopId == model.Id);
+            var fileUploadIEnum = await _unitOfWork.FileUpload.GetAllAsync(x => x.SaleCoopId == model.Id && x.IsActive == true && !x.IsDeleted);
             viewModel.FileUploads = fileUploadIEnum.ToList();
             var users = _userManager.Users;
 
@@ -749,7 +725,11 @@ namespace Intl.Realty.Firm.Controllers
             var fileUploads = await _unitOfWork.FileUpload.GetAllAsync(x => x.SaleCoopId == saleCoopId);
             var documentTypeIds = fileUploads.Select(x => x.DocumentTypeId).ToArray();
 
-            return Json(documentTypeIds);
+            var documentTypes = await _unitOfWork.DocumentType.GetAllAsync(x =>
+                documentTypeIds.Contains(x.Id) &&
+                x.IsActive &&
+                !x.IsDeleted);
+            return Json(documentTypes);
         }
         [HttpPost]
         public async Task<IActionResult> GetSaleCoopList([FromBody] DtParameters dtParameters)

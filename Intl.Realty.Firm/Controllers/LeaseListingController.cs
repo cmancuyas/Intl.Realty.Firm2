@@ -23,6 +23,7 @@ namespace Intl.Realty.Firm.Controllers
     public class LeaseListingController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;
+        private readonly ILogger<LeaseListingController> _logger;
         private readonly IExportService<LeaseListingExport> _exportService;
         private readonly IConfigurationService _configurationService;
         private readonly IFileHandlerService _fileHandlerService;
@@ -33,6 +34,7 @@ namespace Intl.Realty.Firm.Controllers
         private readonly string _backupFileDirectory = "\\wwwroot\\Files\\Uploads\\";
         private readonly string _transactionTypeName = "LeaseListing";
         public LeaseListingController(IUnitOfWork unitOfWork,
+                                    ILogger<LeaseListingController> logger,
                                     IExportService<LeaseListingExport> exportService,
                                     IConfigurationService configurationService,
                                     IFileHandlerService fileHandlerService,
@@ -43,6 +45,7 @@ namespace Intl.Realty.Firm.Controllers
                                                                         )
         {
             _unitOfWork = unitOfWork;
+            _logger = logger;
             _exportService = exportService;
             _configurationService = configurationService;
             _fileHandlerService = fileHandlerService;
@@ -131,23 +134,32 @@ namespace Intl.Realty.Firm.Controllers
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(CreateLeaseListingWithTabMenuViewModel viewModel)
+        public async Task<IActionResult> Create(CreateLeaseListingWithTabMenuViewModel viewModel, string actionType)
         {
+            if (actionType == "save")
+            {
+                viewModel.CreateLeaseListing.DealStatusId = 2; // Draft
+            }
+            else if (actionType == "submit")
+            {
+                viewModel.CreateLeaseListing.DealStatusId = 1; // Submitted
+            }
+
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var user = await _userManager.FindByIdAsync(userId!);
             var transactionTypeName = _transactionTypeName;
 
             var transactionType = await _unitOfWork.TransactionType.GetAsync(x => x.Description == transactionTypeName);
-            viewModel.CreateLeaseListing.TransactionType = await _unitOfWork.TransactionType.GetByNameAsync(transactionType.Description);
+            viewModel.CreateLeaseListing.TransactionType = transactionType;
             viewModel.CreateLeaseListing.TransactionTypeId = transactionType.Id;
-            viewModel.CreateLeaseListing.CreatedByFullName = $"{user!.FirstName} {user.LastName}";
+            viewModel.CreateLeaseListing.CreatedByFullName = $"{user.FirstName} {user.LastName}";
 
             await UpdateTransactionNumberAsync();
-
             await PopulateDocumentTypesAsync(viewModel, transactionTypeName);
             ApplyTabMenu(viewModel, "IRFDetails1");
 
-            if (!ModelState.IsValid)
+            // ✅ Run validations only if submitting
+            if (actionType == "Submit" && !ModelState.IsValid)
             {
                 var notification = _notificationService.Notify(
                     "Please review the form for errors. All required fields must be filled correctly.",
@@ -155,11 +167,10 @@ namespace Intl.Realty.Firm.Controllers
                     NotificationType.error
                 );
                 TempData["Message"] = JsonConvert.SerializeObject(notification);
-
                 return View("Index", viewModel);
             }
 
-            // Create IRF Deal
+            // ✅ Create IRF Deal
             var createIRFDealModel = viewModel.CreateLeaseListing.CreateIRFDealLeaseListingViewModel?.ToIRFDealModel();
             createIRFDealModel!.CreatedAt = DateTime.Now;
             createIRFDealModel.CreatedBy = user.Id;
@@ -169,14 +180,11 @@ namespace Intl.Realty.Firm.Controllers
             await _unitOfWork.IRFDeal.AddAsync(createIRFDealModel);
             var newIRFDeal = await _unitOfWork.IRFDeal.GetAsync(x => x.Id == createIRFDealModel.Id);
 
-            // Sync IRF deal info to viewModel
             viewModel.CreateLeaseListing.IRFDealId = newIRFDeal!.Id;
             viewModel.CreateLeaseListing.CreateIRFDealLeaseListingViewModel!.IsActive = newIRFDeal.IsActive;
             viewModel.CreateLeaseListing.CreateIRFDealLeaseListingViewModel.CreatedBy = newIRFDeal.CreatedBy;
             viewModel.CreateLeaseListing.CreateIRFDealLeaseListingViewModel.CreatedAt = newIRFDeal.CreatedAt;
 
-            // Create Lease Listing
-            viewModel.CreateLeaseListing.DealStatusId = viewModel.CreateLeaseListing.DealStatusId == 0 ? 1 : viewModel.CreateLeaseListing.DealStatusId;
             viewModel.CreateLeaseListing.IsActive = true;
             viewModel.CreateLeaseListing.IsDeleted = false;
             viewModel.CreateLeaseListing.CreatedBy = user.Id;
@@ -185,8 +193,8 @@ namespace Intl.Realty.Firm.Controllers
             var leaseListingModel = viewModel.CreateLeaseListing.ToLeaseListingModel();
             await _unitOfWork.LeaseListing.AddAsync(leaseListingModel);
 
-            // Handle File Uploads
-            if (viewModel.CreateLeaseListing.CreateFileUploadListViewModel?.CreateFileUploadsViewModel != null)
+            // ✅ Handle file upload only on submit
+            if (actionType == "Submit" && viewModel.CreateLeaseListing.CreateFileUploadListViewModel?.CreateFileUploadsViewModel != null)
             {
                 var uploadPath = CreateFilePath(leaseListingModel.Id);
                 await CreateFileUploadData(
@@ -197,8 +205,8 @@ namespace Intl.Realty.Firm.Controllers
                     uploadPath
                 );
             }
-
-            // Send email to Deal Admin if submitted
+            leaseListingModel.TransactionType = viewModel.CreateLeaseListing.TransactionType;
+            // ✅ Notify Deal Admin only if it's a submission
             if (viewModel.CreateLeaseListing.DealStatusId == 1)
             {
                 await NotifyDealAdminAsync(user, leaseListingModel);
@@ -206,6 +214,7 @@ namespace Intl.Realty.Firm.Controllers
 
             return RedirectToAction(nameof(Index), new { addSuccess = true });
         }
+
 
         private async Task<List<InternalEmail>> GetDealAdminEmails()
         {
@@ -320,6 +329,9 @@ namespace Intl.Realty.Firm.Controllers
         [HttpGet]
         public async Task<IActionResult> Edit(int? id)
         {
+            try
+            {
+
             var model = await _unitOfWork.LeaseListing.GetAsync(x => x.Id == id, includeProperties: "TransactionType,IRFDeal,DealStatus");
 
             string controllerName = this.ControllerContext.RouteData.Values["controller"]!.ToString()!;
@@ -342,28 +354,30 @@ namespace Intl.Realty.Firm.Controllers
             // to get current user info
             var user = await _userManager.FindByIdAsync(userId!);
 
-            viewModel.EditLeaseListing = model.ToEditLeaseListingViewModel();
+            viewModel.EditLeaseListingViewModel = model.ToEditLeaseListingViewModel();
 
-            viewModel.EditLeaseListing.UpdatedByFullName = user!.FirstName + " " + user.LastName;
-            viewModel.EditLeaseListing.UpdatedBy = user!.Id;
-            viewModel.EditLeaseListing.UpdatedAt = DateTime.Now;
+            viewModel.EditLeaseListingViewModel.DealStatus = model.DealStatus;
+
+            viewModel.EditLeaseListingViewModel.UpdatedByFullName = user!.FirstName + " " + user.LastName;
+            viewModel.EditLeaseListingViewModel.UpdatedBy = user!.Id;
+            viewModel.EditLeaseListingViewModel.UpdatedAt = DateTime.Now;
 
             var fileUploads = await _unitOfWork.FileUpload.GetAllAsync(x => x.LeaseListingId == model.Id, includeProperties: "LeaseListing,TransactionType,DocumentType");
 
             var fileUploadsWithFiles = FilterFileUploadsWithFilesOnly(fileUploads.ToList());
 
-            viewModel.EditLeaseListing.FileUploads = fileUploadsWithFiles;
+            viewModel.EditLeaseListingViewModel.FileUploads = fileUploadsWithFiles;
 
             var documentTypeAssignmentIEnum = await _unitOfWork.DocumentTypeAssignment.GetAllAsync(x => x.IsDeleted == false, includeProperties: "TransactionType,DocumentType");
-            var documentTypeIEnum = await _unitOfWork.DocumentType.GetAllAsync(x => x.IsDeleted == false);
+            var documentTypeIEnum = await _unitOfWork.DocumentType.GetAllAsync(x => x.IsActive==true && x.IsDeleted == false);
             var documentTypeAssignmentList = documentTypeAssignmentIEnum.ToList();
             var documentTypeList = documentTypeIEnum.ToList();
-            viewModel.EditLeaseListing.DocumentTypeList = _documentTransactionService
+            viewModel.EditLeaseListingViewModel.DocumentTypeList = _documentTransactionService
                                                             .GetDocumentTypesFromDocumentTypeAssignment(model.TransactionType!.Description,
                                                                                                         documentTypeAssignmentList,
                                                                                                         documentTypeList);
-            var dealStatusIEnum = await _unitOfWork.DealStatus.GetAllAsync();
-            viewModel.EditLeaseListing.DealStatusList = dealStatusIEnum.ToList();
+            var dealStatusIEnum = await _unitOfWork.DealStatus.GetAllAsync(x => x.IsActive == true && !x.IsDeleted);
+            viewModel.EditLeaseListingViewModel.DealStatusList = dealStatusIEnum.ToList();
 
             var menus = EditDealTransactionTabMenuData.GetEditDealTransactionTabMenuData();
 
@@ -378,14 +392,24 @@ namespace Intl.Realty.Firm.Controllers
             viewModel.Menus = menus;
 
             return View(viewModel);
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to update SaleListing");
+                return StatusCode(500, "An error occurred while saving the deal.");
+            }
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, int dealStatusId, EditLeaseListingWithTabMenuViewModel viewModel)
+        public async Task<IActionResult> Edit(int id, EditLeaseListingWithTabMenuViewModel viewModel)
         {
             if (id == 0)
                 return NotFoundResultWithMessage("LeaseListing", id);
+
+            var dealStatusIEnum = await _unitOfWork.DealStatus.GetAllAsync(x => x.IsActive == true && !x.IsDeleted);
+            viewModel.EditLeaseListingViewModel.DealStatusList = dealStatusIEnum.ToList();
 
             if (!ModelState.IsValid)
                 return View(viewModel);
@@ -408,8 +432,8 @@ namespace Intl.Realty.Firm.Controllers
 
             // ✅ Load transaction type
             var transactionType = await _unitOfWork.TransactionType.GetAsync(x => x.Id == leaseListingModel.TransactionTypeId);
-            viewModel.EditLeaseListing.TransactionType = transactionType;
-            viewModel.EditLeaseListing.TransactionTypeId = transactionType.Id;
+            viewModel.EditLeaseListingViewModel.TransactionType = transactionType;
+            viewModel.EditLeaseListingViewModel.TransactionTypeId = transactionType.Id;
 
             // ✅ Rebuild document type list
             var documentTypeAssignments = await _unitOfWork.DocumentTypeAssignment
@@ -417,7 +441,7 @@ namespace Intl.Realty.Firm.Controllers
 
             var documentTypes = await _unitOfWork.DocumentType.GetAllAsync(x => !x.IsDeleted);
 
-            viewModel.EditLeaseListing.DocumentTypeList = _documentTransactionService
+            viewModel.EditLeaseListingViewModel.DocumentTypeList = _documentTransactionService
                 .GetDocumentTypesFromDocumentTypeAssignment(
                     transactionType.Description,
                     documentTypeAssignments.ToList(),
@@ -428,7 +452,7 @@ namespace Intl.Realty.Firm.Controllers
 
             // ✅ Update IRFDeal safely
             var irfDealDb = await _unitOfWork.IRFDeal.GetAsync(x => x.Id == leaseListingModel.IRFDealId, tracked: true);
-            var editedIRFData = viewModel.EditLeaseListing.EditIRFDealLeaseListingViewModel;
+            var editedIRFData = viewModel.EditLeaseListingViewModel.EditIRFDealLeaseListingViewModel;
 
             if (irfDealDb != null && editedIRFData != null)
             {
@@ -438,8 +462,8 @@ namespace Intl.Realty.Firm.Controllers
 
             // ✅ Update LeaseListing properties
             var isAgent = await _userManager.IsInRoleAsync(user, "Agent");
-            leaseListingModel.DealStatusId = dealStatusId;
-            leaseListingModel.Notes = viewModel.EditLeaseListing.Notes;
+            leaseListingModel.DealStatusId = viewModel.EditLeaseListingViewModel.DealStatusId;
+            leaseListingModel.Notes = viewModel.EditLeaseListingViewModel.Notes;
             leaseListingModel.DateSubmitted = DateTime.Now;
             leaseListingModel.IsActive = true;
             leaseListingModel.UpdatedAt = DateTime.Now;
@@ -451,7 +475,7 @@ namespace Intl.Realty.Firm.Controllers
 
             // ✅ Handle file uploads
             var uploadPath = CreateFilePath(leaseListingModel.Id);
-            var fileUploadVM = viewModel.EditLeaseListing.CreateFileUploadListViewModel?.CreateFileUploadsViewModel;
+            var fileUploadVM = viewModel.EditLeaseListingViewModel.CreateFileUploadListViewModel?.CreateFileUploadsViewModel;
 
             if (fileUploadVM != null)
             {
@@ -459,7 +483,7 @@ namespace Intl.Realty.Firm.Controllers
                     fileUploadVM,
                     leaseListingModel.Id,
                     transactionType.Id,
-                    viewModel.EditLeaseListing.DocumentTypeList,
+                    viewModel.EditLeaseListingViewModel.DocumentTypeList,
                     uploadPath
                 );
             }
@@ -513,7 +537,7 @@ namespace Intl.Realty.Firm.Controllers
             }
 
             var viewModel = model.ToPreviewLeaseListingViewModel();
-            var fileUploadIEnum = await _unitOfWork.FileUpload.GetAllAsync(x => x.LeaseListingId == model.Id);
+            var fileUploadIEnum = await _unitOfWork.FileUpload.GetAllAsync(x => x.LeaseListingId == model.Id && x.IsActive == true && !x.IsDeleted);
             viewModel.FileUploads = fileUploadIEnum.ToList();
             var users = _userManager.Users;
 
@@ -684,7 +708,11 @@ namespace Intl.Realty.Firm.Controllers
             var fileUploads = await _unitOfWork.FileUpload.GetAllAsync(x => x.LeaseListingId == leaseListingId);
             var documentTypeIds = fileUploads.Select(x => x.DocumentTypeId).ToArray();
 
-            return Json(documentTypeIds);
+            var documentTypes = await _unitOfWork.DocumentType.GetAllAsync(x =>
+                documentTypeIds.Contains(x.Id) &&
+                x.IsActive &&
+                !x.IsDeleted);
+            return Json(documentTypes);
         }
         [HttpPost]
         public async Task<IActionResult> GetLeaseListingList([FromBody] DtParameters dtParameters)

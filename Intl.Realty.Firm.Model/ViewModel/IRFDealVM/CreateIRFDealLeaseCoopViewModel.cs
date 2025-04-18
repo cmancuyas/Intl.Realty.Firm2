@@ -2,8 +2,8 @@
 
 namespace Intl.Realty.Firm.Model.ViewModel.IRFDealVM
 {
-    public class CreateIRFDealLeaseCoopViewModel : CreateTransactionTypeDetailsBaseLeaseViewModel
+    public class CreateIRFDealLeaseCoopViewModel : CreateTransactionTypeDetailsBaseLeaseCoopViewModel
     {
-        //public int SaleListingId { get; set; }
+        // Nothing extra needed here
     }
 }

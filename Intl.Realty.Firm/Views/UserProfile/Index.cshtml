@@ -1,245 +1,221 @@
 ﻿@using Intl.Realty.Firm.Model.ViewModel.UserProfileVM
-
 @model UserProfileViewModel
+
 @{
-    ViewData["Title"] = "Preview";
+    ViewData["Title"] = "User Profile";
     Layout = "~/Views/Shared/_LayoutAfterLogin.cshtml";
 }
 
-<div class="c-content">
-    <a href="##" class="back" onClick="history.go(-1); return false;">
-        <i data-feather="chevron-left"></i><span>Back</span>
-    </a>
-    <div class="row mt-4">
-        <div class="col-md-12 d-flex justify-content-between align-items-center">
-            <h1 class="text-blue mb-0">User Details</h1>
-        </div>
-    </div>
+<div class="container mt-4">
+    <div class="row">
 
-    <div class="preview-page w-100 mt-4">
-        <div class="row justify-content-center w-100">
-            <div class="col-md-12 card p-5 mx-2">
-                <div class="preview-page-header">
-                    <h2 class="text-blue">@Model.FirstName @Model.LastName</h2>
-                    <button type="button" class="btn btn-secondary preview-change-pw"
-                            onclick="location.href='@Url.Action("ChangePassword", "UserProfile", new { id = Model.Id })'">
-                        Change Password
+        <!-- LEFT COLUMN: Profile Picture Card -->
+        <div class="col-md-4">
+            <div class="card shadow-sm text-center p-4">
+                <h5 class="text-blue mb-3">Profile Picture</h5>
+
+                <!-- Profile Picture -->
+                <img id="profileImagePreview"
+                     src="@($"{(string.IsNullOrEmpty(Model.ProfileImageUrl) ? "/files/img/avatar-blank.png" : Model.ProfileImageUrl)}?t={DateTime.UtcNow.Ticks}")"
+                     class="rounded-circle mx-auto"
+                     style="width: 150px; height: 150px; object-fit: cover;"
+                     alt="Profile Picture" />
+
+                <!-- Upload Form -->
+                <form asp-action="UploadProfilePicture"
+                      asp-controller="UserProfile"
+                      method="post"
+                      enctype="multipart/form-data"
+                      class="mt-3">
+                    <input type="hidden" name="userId" value="@Model.Id" />
+                    <input type="file"
+                           name="profileImage"
+                           id="profileImageInput"
+                           class="form-control form-control-sm mt-2"
+                           accept="image/*"
+                           required />
+                    <button type="submit" class="btn btn-primary btn-sm mt-2 w-100">
+                        Upload / Replace
                     </button>
+                </form>
+
+                <!-- Delete Button -->
+                @if (!string.IsNullOrEmpty(Model.ProfileImageUrl) && !Model.ProfileImageUrl.Contains("avatar-blank.png"))
+                {
+                    <form asp-action="DeleteProfilePicture"
+                          asp-controller="UserProfile"
+                          method="post"
+                          class="mt-2">
+                        <input type="hidden" name="userId" value="@Model.Id" />
+                        <button type="submit" class="btn btn-outline-danger btn-sm w-100">
+                            Remove Picture
+                        </button>
+                    </form>
+                }
+
+                <!-- Upload Progress (optional) -->
+                <div class="progress mt-3" style="height: 5px;">
+                    <div id="uploadProgressBar" class="progress-bar bg-success" role="progressbar" style="width: 0%;"></div>
                 </div>
 
-                <hr>
-
-                <h4 class="text-blue mb-1">Details</h4>
-                <div class="row my-2">
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <label class="control-label fw-bolder">Firstname</label>
-                            <p>@Model.FirstName</p>
-                        </div>
-                    </div>
-
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <label class="control-label fw-bolder">Lastname</label>
-                            <p>@Model.LastName</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="row my-2">
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <label class="control-label fw-bolder">Email</label>
-                            <p>@Model.Email</p>
-                        </div>
-                    </div>
-
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <label class="control-label fw-bolder">Employment Status</label>
-                            <p>@Model.EmploymentStatusName</p>
-                        </div>
-                    </div>
-                </div>
-
-                <hr>
-
-                <!-- Success/Error Messages -->
+                <!-- Flash messages -->
                 @if (TempData["SuccessMessage"] != null)
                 {
-                    <div class="alert alert-success">@TempData["SuccessMessage"]</div>
+                    <div class="alert alert-success mt-3">@TempData["SuccessMessage"]</div>
                 }
                 @if (TempData["ErrorMessage"] != null)
                 {
-                    <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
+                    <div class="alert alert-danger mt-3">@TempData["ErrorMessage"]</div>
                 }
+            </div>
+        </div>
 
-                @if (Model.Roles.Contains("Agent"))
-                {
-                    @* <!-- Only Agents Can Change Team Leader --> *@
-                    <h4 class="text-blue mb-1 roles-header">Select Team Leader</h4>
-                    <div class="row my-2">
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <div class="d-flex">
-                                    @Html.DropDownListFor(m => m.TeamLeaderId,
-                                             new SelectList(Model.TeamLeaders, "Value", "Text"),
-                                             "Select a Team Leader",
-                                             new { @class = "form-control rounded", id = "teamLeaderDropdown" })
-
-                                    <button type="button" class="btn btn-primary ms-2 rounded" id="saveTeamLeaderBtn">
-                                        Save
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
+        <!-- RIGHT COLUMN: Details, Roles, Team -->
+        <div class="col-md-8">
+            <!-- USER DETAILS -->
+            <div class="card shadow-sm p-4 mb-4">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h4 class="text-blue mb-0">@Model.FirstName @Model.LastName</h4>
+                    <a href="@Url.Action("ChangePassword", "UserProfile", new { id = Model.Id })" class="btn btn-outline-secondary btn-sm">Change Password</a>
+                </div>
+                <hr />
+                <div class="row">
+                    <div class="col-md-6">
+                        <strong>First Name:</strong>
+                        <p>@Model.FirstName</p>
                     </div>
-                }
-                else if (Model.Roles.Contains("TeamLeader"))
-                {
-                    @* <!-- Team Leaders Cannot Assign a Team Leader, Instead Show Their Members --> *@
-                    <h4 class="text-blue mb-1 roles-header">Team Members</h4>
-                    <div class="row my-2">
-                        <div class="table-responsive table-no-border">
-                            <table class="data-table table w-100">
-                                <thead>
-                                    <tr>
-                                        <th class="text-start">First Name</th>
-                                        <th class="text-start">Last Name</th>
-                                        <th class="text-start">Email</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @if (Model.TeamMembers!.Count > 0)
-                                    {
-                                        @foreach (var member in Model.TeamMembers)
-                                        {
-                                            <tr>
-                                                <td>@member.FirstName</td>
-                                                <td>@member.LastName</td>
-                                                <td>@member.Email</td>
-                                            </tr>
-                                        }
-                                    }
-                                    else
-                                    {
-                                        <tr>
-                                            <td colspan="3">No Team Members Found</td>
-                                        </tr>
-                                    }
-                                </tbody>
-                            </table>
-                        </div>
+                    <div class="col-md-6">
+                        <strong>Last Name:</strong>
+                        <p>@Model.LastName</p>
                     </div>
-
-
-                }
-
-                <h4 class="text-blue mb-1 roles-header">Roles associated with this user</h4>
-                <div class="row my-2">
-                    <div class="table-responsive table-no-border">
-                        <table class="data-table table w-100">
-                            <thead>
-                                <tr>
-                                    <th class="text-start">Role Name</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @if (Model.Roles!.Count > 0)
-                                {
-                                    @foreach (var item in Model.Roles)
-                                    {
-                                        <tr>
-                                            <td>@item</td>
-                                        </tr>
-                                    }
-                                }
-                                else
-                                {
-                                    <tr>
-                                        <td>No Roles Found</td>
-                                    </tr>
-                                }
-                            </tbody>
-                        </table>
+                    <div class="col-md-6">
+                        <strong>Email:</strong>
+                        <p>@Model.Email</p>
+                    </div>
+                    <div class="col-md-6">
+                        <strong>Employment Status:</strong>
+                        <p>@Model.EmploymentStatusName</p>
                     </div>
                 </div>
-
             </div>
+
+            <!-- ROLES CARD -->
+            <div class="card shadow-sm p-4 mb-4">
+                <h5 class="text-blue mb-3">Roles</h5>
+                @if (Model.Roles?.Any() == true)
+                {
+                    <ul class="list-group list-group-flush">
+                        @foreach (var role in Model.Roles)
+                        {
+                            <li class="list-group-item">@role</li>
+                        }
+                    </ul>
+                }
+                else
+                {
+                    <p>No roles assigned.</p>
+                }
+            </div>
+
+            @if (Model.Roles.Contains("Agent") || Model.Roles.Contains("TeamLeader"))
+            {
+                <!-- TEAM LEADER OR MEMBERS CARD -->
+                <div class="card shadow-sm p-4">
+                    @if (Model.Roles.Contains("Agent"))
+                    {
+                        <h5 class="text-blue mb-3">Assign Team Leader</h5>
+                        <form asp-action="UpdateTeamLeader" asp-controller="UserProfile" method="post">
+                            <input type="hidden" name="userId" value="@Model.Id" />
+                            <div class="d-flex gap-2">
+                                @Html.DropDownListFor(m => m.TeamLeaderId,
+                                         new SelectList(Model.TeamLeaders, "Value", "Text"),
+                                         "Select a Team Leader",
+                                         new { @class = "form-select", id = "teamLeaderDropdown" })
+                                <button type="submit" class="btn btn-success">Save</button>
+                            </div>
+                        </form>
+                    }
+                    else if (Model.Roles.Contains("TeamLeader"))
+                    {
+                        <h5 class="text-blue mb-3">Team Members</h5>
+                        @if (Model.TeamMembers?.Any() == true)
+                        {
+                            <ul class="list-group">
+                                @foreach (var member in Model.TeamMembers)
+                                {
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        <span>@member.FirstName @member.LastName</span>
+                                        <small class="text-muted">@member.Email</small>
+                                    </li>
+                                }
+                            </ul>
+                        }
+                        else
+                        {
+                            <p>No team members assigned.</p>
+                        }
+                    }
+                </div>
+            }
+
         </div>
     </div>
 </div>
 
-<style>
-    .blurry {
-        filter: blur(3px);
-    }
-</style>
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const form = document.getElementById("profileImageForm");
+            const input = document.getElementById("profileImageInput");
+            const progressBar = document.getElementById("uploadProgressBar");
+            const preview = document.getElementById("profileImagePreview");
+            const deleteBtn = document.getElementById("deleteProfileImageBtn");
 
-<!-- Include SweetAlert2 -->
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+            // Image preview before upload
+            input.addEventListener("change", function () {
+                const [file] = input.files;
+                if (file) {
+                    preview.src = URL.createObjectURL(file);
+                }
+            });
 
-<script>
-    $(document).ready(function () {
-        // Hide success messages after 3 seconds
-        setTimeout(function () {
-            $(".alert").fadeOut("slow");
-        }, 3000);
+            // Submit form with progress bar
+            form.addEventListener("submit", function (e) {
+                e.preventDefault();
+                const formData = new FormData(form);
 
-        // Handle Team Leader Assignment with SweetAlert2
-        $("#saveTeamLeaderBtn").click(function () {
-            var selectedTeamLeader = $("#teamLeaderDropdown").val();
-            if (!selectedTeamLeader) {
-                Swal.fire({
-                    icon: "warning",
-                    title: "No Team Leader Selected",
-                    text: "Please select a team leader before saving.",
-                    confirmButtonColor: "#3085d6",
-                    confirmButtonText: "OK"
+                const xhr = new XMLHttpRequest();
+                xhr.open("POST", "/UserProfile/UploadProfilePicture");
+
+                xhr.upload.addEventListener("progress", function (e) {
+                    if (e.lengthComputable) {
+                        const percent = (e.loaded / e.total) * 100;
+                        progressBar.style.width = percent + "%";
+                    }
                 });
-                return;
-            }
 
-            Swal.fire({
-                title: "Are you sure?",
-                text: "You are about to assign a new team leader.",
-                icon: "warning",
-                showCancelButton: true,
-                confirmButtonColor: "#3085d6",
-                cancelButtonColor: "#d33",
-                confirmButtonText: "Yes, Assign"
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    $.ajax({
-                        url: '@Url.Action("UpdateTeamLeader", "UserProfile")',
-                        type: 'POST',
-                        data: {
-                            userId: '@Model.Id',
-                            teamLeaderId: selectedTeamLeader
-                        },
-                        success: function (response) {
-                            console.log("✅ Success Response:", response);
-                            Swal.fire({
-                                icon: "success",
-                                title: "Success",
-                                text: response.message,
-                                confirmButtonColor: "#3085d6"
-                            }).then(() => {
-                                location.reload();
-                            });
-                        },
-                        error: function (xhr, status, error) {
-                            console.error("❌ AJAX Error:", xhr.responseText);
-                            Swal.fire({
-                                icon: "error",
-                                title: "Error",
-                                text: "Something went wrong. Please try again.",
-                                confirmButtonColor: "#d33"
-                            });
-                        }
-                    });
+                xhr.onload = function () {
+                    if (xhr.status === 200) {
+                        location.reload();
+                    } else {
+                        alert("Upload failed.");
+                    }
+                };
+
+                xhr.send(formData);
+            });
+
+            // Delete profile image
+            deleteBtn.addEventListener("click", function () {
+                if (confirm("Are you sure you want to remove your profile picture?")) {
+                    fetch("/UserProfile/DeleteProfilePicture", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ userId: "@Model.Id" })
+                    })
+                        .then(res => res.ok ? location.reload() : alert("Error removing picture."));
                 }
             });
         });
-    });
-</script>
+    </script>
+}

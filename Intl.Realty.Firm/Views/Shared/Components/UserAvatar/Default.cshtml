@@ -1,0 +1,47 @@
+﻿@using Intl.Realty.Firm.Model.ViewModel.UserAvatarVM
+
+@model UserAvatarViewModel
+<div class="d-flex align-items-center gap-4">
+    <a id="notification" href="#" class="text-decoration-none">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-bell-fill text-blue" viewBox="0 0 16 16">
+            <path d="M8 16a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2m.995-14.901a1 1 0 1 0-1.99 0A5 5 0 0 0 3 6c0 1.098-.5 6-2 7h14c-1.5-1-2-5.902-2-7 0-2.42-1.72-4.44-4.005-4.901" />
+            <circle cx="12" cy="4" r="2" fill="red" />
+        </svg>
+    </a>
+
+    <div class="d-flex flex-column justify-content-end roles">
+        <span class="fw-bolder text-end name-role">@Model.FullName</span>
+        <span class="small text-end">@Model.Email</span>
+        <span class="small text-end">
+            @foreach (var role in Model.Roles)
+            {
+                <span class="badge
+                    @(role == "SuperAdmin" ? "bg-danger" :
+                      role == "Admin" ? "bg-primary rounded-pill" :
+                      role == "TeamLeader" ? "bg-primary rounded-pill" :
+                      role == "Agent" ? "bg-warning text-dark rounded-pill" :
+                      role == "DealAdmin" ? "bg-success rounded-pill" : "")">@role</span>
+            }
+        </span>
+    </div>
+
+    <div class="d-flex align-items-center dropdown ms-3">
+        <button class="btn dropdown-toggle d-flex align-items-center p-0 border-0 bg-transparent"
+                type="button"
+                id="userDropdown"
+                data-bs-toggle="dropdown"
+                aria-expanded="false">
+            <img src="@($"{Model.ProfileImageUrl}?t={DateTime.UtcNow.Ticks}")"
+                 class="avatar rounded-circle"
+                 width="40"
+                 height="40"
+                 style="object-fit: cover;"
+                 alt="User Avatar" />
+        </button>
+
+        <ul class="dropdown-menu dropdown-menu-end text-secondary" aria-labelledby="userDropdown">
+            <li><a class="dropdown-item py-1" href="@Url.Action("Index", "UserProfile", new { id = Model.UserId })">View Profile</a></li>
+            <li><a class="dropdown-item py-1" href="@Url.Action("Logout", "Account")">Sign Out</a></li>
+        </ul>
+    </div>
+</div>

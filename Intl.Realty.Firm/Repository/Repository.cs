@@ -151,7 +151,7 @@ namespace Intl.Realty.Firm.Repository
         public async Task RemoveAsync(T entity)
         {
             dbSet.Attach(entity);
-            _context.Entry(entity).State = EntityState.Modified;
+            _context.Entry(entity).State = EntityState.Deleted;
             await _context.SaveChangesAsync();
         }
 

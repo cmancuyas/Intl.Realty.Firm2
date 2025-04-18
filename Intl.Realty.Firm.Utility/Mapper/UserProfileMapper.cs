@@ -13,7 +13,7 @@ namespace Intl.Realty.Firm.Utility.Mapper
                 LastName = model.LastName,
                 Email = model.Email!,
                 EmailConfirmed = model.EmailConfirmed,
-                ProfilePictureId = model.ProfilePictureId,
+                ProfileImageId = model.ProfileImageId,
             };
         }
     }

@@ -106,7 +106,7 @@ namespace Intl.Realty.Firm.Utility.Mapper
                 DealStatusId = viewModel.DealStatusId,
                 DateSubmitted = viewModel.DateSubmitted,
                 DealTransactionNumber = viewModel.DealTransactionNumber,
-
+                TransactionType = viewModel.TransactionType,
                 UpdatedByFullName = viewModel.UpdatedByFullName,
                 Notes = viewModel.Notes,
 

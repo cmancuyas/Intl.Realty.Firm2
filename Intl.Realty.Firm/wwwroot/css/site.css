@@ -2297,3 +2297,10 @@ input.form-control {
     color: #203d57;
     font-weight: 500 !important;
 }
+
+.upload-status {
+    display: inline-block;
+    margin-left: 8px;
+    vertical-align: middle;
+}
+

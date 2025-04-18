@@ -23,6 +23,7 @@ namespace Intl.Realty.Firm.Controllers
     public class SaleListingController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;
+        private readonly ILogger<SaleListingController> _logger;
         private readonly IExportService<SaleListingExport> _exportService;
         private readonly IConfigurationService _configurationService;
         private readonly IFileHandlerService _fileHandlerService;
@@ -33,6 +34,7 @@ namespace Intl.Realty.Firm.Controllers
         private readonly string _backupFileDirectory = "\\wwwroot\\Files\\Uploads\\";
         private readonly string _transactionTypeName = "SaleListing";
         public SaleListingController(IUnitOfWork unitOfWork,
+                                    ILogger<SaleListingController> logger,
                                     IExportService<SaleListingExport> exportService,
                                     IConfigurationService configurationService,
                                     IFileHandlerService fileHandlerService,
@@ -43,6 +45,7 @@ namespace Intl.Realty.Firm.Controllers
                                                                         )
         {
             _unitOfWork = unitOfWork;
+            _logger = logger;
             _exportService = exportService;
             _configurationService = configurationService;
             _fileHandlerService = fileHandlerService;
@@ -131,133 +134,118 @@ namespace Intl.Realty.Firm.Controllers
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(CreateSaleListingWithTabMenuViewModel viewModel)
+        public async Task<IActionResult> Create(CreateSaleListingWithTabMenuViewModel viewModel, string actionType)
         {
-            // to get current user ID
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (actionType == "save")
+            {
+                viewModel.CreateSaleListing.DealStatusId = 2; // Draft
+            }
+            else if (actionType == "submit")
+            {
+                viewModel.CreateSaleListing.DealStatusId = 1; // Submitted
+            }
 
-            // to get current user info
+
+            // Retrieve current user information
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var user = await _userManager.FindByIdAsync(userId!);
 
-            string transactionTypeName = _transactionTypeName; // 1 = Sale Listing
-
-            var transactionType = await _unitOfWork.TransactionType.GetAsync(x => x.Description == _transactionTypeName); //Sale Listing
-            viewModel.CreateSaleListing.TransactionType = await _unitOfWork.TransactionType.GetByNameAsync(transactionType.Description);
+            // Set transaction type
+            string transactionTypeName = _transactionTypeName; // e.g., "Sale Listing"
+            var transactionType = await _unitOfWork.TransactionType.GetAsync(x => x.Description == transactionTypeName);
+            viewModel.CreateSaleListing.TransactionType = transactionType;
             viewModel.CreateSaleListing.TransactionTypeId = transactionType.Id;
 
-            var yearValidation = LinqExtensions.AndAlso<DealTransactionNumberRange>(x => x.IsDeleted == false, x => x.Year == DateTime.Now.Year);
-
-            var numberRange = await _unitOfWork.DealTransactionNumberRange.GetAsync(yearValidation);
-            numberRange.CurrentNumber += 1;
+            // Update DealTransactionNumberRange
+            var numberRange = await _unitOfWork.DealTransactionNumberRange.GetAsync(x => !x.IsDeleted && x.Year == DateTime.Now.Year);
             if (numberRange != null)
             {
+                numberRange.CurrentNumber += 1;
                 await _unitOfWork.DealTransactionNumberRange.UpdateAsync(numberRange);
                 _unitOfWork.SaveChanges();
             }
 
+            // Prepare document types
+            var docAssignments = await _unitOfWork.DocumentTypeAssignment.GetAllAsync(x => !x.IsDeleted, includeProperties: "TransactionType,DocumentType");
+            var docTypes = await _unitOfWork.DocumentType.GetAllAsync(x => !x.IsDeleted);
+            viewModel.CreateSaleListing.DocumentTypeList = _documentTransactionService.GetDocumentTypesFromDocumentTypeAssignment(transactionTypeName, docAssignments.ToList(), docTypes.ToList());
 
-            var documentTypeAssignmentIEnum = await _unitOfWork.DocumentTypeAssignment.GetAllAsync(x => x.IsDeleted == false, includeProperties: "TransactionType,DocumentType");
-            var documentTypeIEnum = await _unitOfWork.DocumentType.GetAllAsync(x => x.IsDeleted == false);
-            var documentTypeAssignmentList = documentTypeAssignmentIEnum.ToList();
-            var documentTypeList = documentTypeIEnum.ToList();
-            viewModel.CreateSaleListing.DocumentTypeList = _documentTransactionService
-                                                            .GetDocumentTypesFromDocumentTypeAssignment(transactionTypeName,
-                                                                                                        documentTypeAssignmentList,
-                                                                                                        documentTypeList);
-            viewModel.CreateSaleListing.CreatedByFullName = user!.FirstName + " " + user.LastName;
+            // Set creator information
+            viewModel.CreateSaleListing.CreatedByFullName = $"{user.FirstName} {user.LastName}";
 
+            // Set up menus
             var menus = CreateDealTransactionTabMenuData.GetCreateDealTransactionTabMenuData();
-
-            string controllerName = "IRFDetails1";
-
-            foreach (var menu in menus.Where(x => x.Menu == controllerName))
+            foreach (var menu in menus.Where(x => x.Menu == "IRFDetails1"))
             {
                 menu.IsActive = "active";
                 menu.IsSelected = "true";
             }
-
             viewModel.Menus = menus;
 
-            if (ModelState.IsValid)
+            // Validate model state for 'submit' action
+            if (actionType == "submit" && !ModelState.IsValid)
             {
-                // Create IRF Deal Data
-                viewModel.CreateSaleListing.TransactionType = transactionType;
-
-                var createIRFDealModel = viewModel.CreateSaleListing.CreateIRFDealSaleListingViewModel?.ToIRFDealModel();
-                createIRFDealModel!.CreatedAt = DateTime.Now;
-                createIRFDealModel.CreatedBy = user!.Id;
-                createIRFDealModel.IsActive = true;
-                createIRFDealModel.IsDeleted = false;
-                await _unitOfWork.IRFDeal.AddAsync(createIRFDealModel);
-
-                var NewIRFDeal = await _unitOfWork.IRFDeal.GetAsync(x => x.Id == createIRFDealModel.Id);
-
-                // Get IRF Deal Data
-                viewModel.CreateSaleListing.TransactionTypeId = transactionType.Id;
-                viewModel.CreateSaleListing.TransactionType = transactionType;
-                viewModel.CreateSaleListing.IRFDealId = NewIRFDeal.Id;
-                if (NewIRFDeal != null)
-                {
-                    viewModel.CreateSaleListing.CreateIRFDealSaleListingViewModel!.IsActive = NewIRFDeal.IsActive;
-                    viewModel.CreateSaleListing.CreateIRFDealSaleListingViewModel.CreatedBy = NewIRFDeal.CreatedBy;
-                    viewModel.CreateSaleListing.CreateIRFDealSaleListingViewModel.CreatedAt = NewIRFDeal.CreatedAt;
-                }
-
-                // Create SaleListing Data
-                viewModel.CreateSaleListing.TransactionTypeId = transactionType.Id;
-                viewModel.CreateSaleListing.IRFDealId = NewIRFDeal!.Id;
-                if (viewModel.CreateSaleListing.DealStatusId == 0)
-                {
-                    viewModel.CreateSaleListing.DealStatusId = 1; // Submitted
-
-                }
-                viewModel.CreateSaleListing.IsActive = true;
-                viewModel.CreateSaleListing.IsDeleted = false;
-                viewModel.CreateSaleListing.CreatedBy = user!.Id;
-                viewModel.CreateSaleListing.CreatedAt = DateTime.Now;
-
-                var saleListingModel = viewModel.CreateSaleListing.ToSaleListingModel();
-                await _unitOfWork.SaleListing.AddAsync(saleListingModel);
-
-                // Create FileUploadData
-                if (viewModel.CreateSaleListing.CreateFileUploadListViewModel?.CreateFileUploadsViewModel != null)
-                {
-                    var uploadPath = CreateFilePath(saleListingModel.Id);
-
-                    await CreateFileUploadData(viewModel.CreateSaleListing.CreateFileUploadListViewModel.CreateFileUploadsViewModel,
-                                                saleListingModel.Id,
-                                                transactionType.Id,
-                                                viewModel.CreateSaleListing.DocumentTypeList,
-                                                uploadPath);
-
-                }
-
-                if (viewModel.CreateSaleListing.DealStatusId == 1) // If Submitted, send email to DealAdmin
-                {
-                    var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-
-                    var dealLink = Url.Action("Login", "Account",
-                                                                new { id = saleListingModel.Id, token = token }, Request.Scheme);
-
-                    var dealAdminEmails = await GetDealAdminEmails();
-
-                    var userRoles = await _userManager.GetRolesAsync(user);
-
-                    var mailRequest = EmailRequest.SendNotificationWhenDealIsSubmitted(user,
-                                                                                   userRoles,
-                                                                                   viewModel.CreateSaleListing.TransactionType.Description,
-                                                                                   dealAdminEmails,
-                                                                                   saleListingModel.DealTransactionNumber,
-                                                                                   dealLink!);
-
-                    await _emailService.SendEmailAsync(mailRequest);
-                }
-
-                return RedirectToAction(nameof(Index), new { addSuccess = true });
+                return View(viewModel);
             }
 
-            return View("Index");
+            // Create IRF Deal
+            var irfDealModel = viewModel.CreateSaleListing.CreateIRFDealSaleListingViewModel?.ToIRFDealModel();
+            if (irfDealModel != null)
+            {
+                irfDealModel.CreatedAt = DateTime.Now;
+                irfDealModel.CreatedBy = user.Id;
+                irfDealModel.IsActive = true;
+                irfDealModel.IsDeleted = false;
+                await _unitOfWork.IRFDeal.AddAsync(irfDealModel);
+            }
+
+            var newIRFDeal = await _unitOfWork.IRFDeal.GetAsync(x => x.Id == irfDealModel.Id);
+
+            // Set SaleListing properties
+            viewModel.CreateSaleListing.IRFDealId = newIRFDeal.Id;
+            viewModel.CreateSaleListing.TransactionTypeId = transactionType.Id;
+            viewModel.CreateSaleListing.TransactionType = transactionType;
+            viewModel.CreateSaleListing.IsActive = true;
+            viewModel.CreateSaleListing.IsDeleted = false;
+            viewModel.CreateSaleListing.CreatedBy = user.Id;
+            viewModel.CreateSaleListing.CreatedAt = DateTime.Now;
+
+            // Set DealStatusId based on actionType
+            if (actionType == "save")
+            {
+                viewModel.CreateSaleListing.DealStatusId = 2; // Saved
+            }
+
+            var saleListingModel = viewModel.CreateSaleListing.ToSaleListingModel();
+            await _unitOfWork.SaleListing.AddAsync(saleListingModel);
+
+            // Handle file uploads
+            if (viewModel.CreateSaleListing.CreateFileUploadListViewModel?.CreateFileUploadsViewModel != null)
+            {
+                var uploadPath = CreateFilePath(saleListingModel.Id);
+                await CreateFileUploadData(
+                    viewModel.CreateSaleListing.CreateFileUploadListViewModel.CreateFileUploadsViewModel,
+                    saleListingModel.Id,
+                    transactionType.Id,
+                    viewModel.CreateSaleListing.DocumentTypeList,
+                    uploadPath
+                );
+            }
+
+            // Send notification email if action is 'submit'
+            if (actionType == "submit")
+            {
+                var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+                var dealLink = Url.Action("Login", "Account", new { id = saleListingModel.Id, token }, Request.Scheme);
+                var dealAdminEmails = await GetDealAdminEmails();
+                var userRoles = await _userManager.GetRolesAsync(user);
+                var mailRequest = EmailRequest.SendNotificationWhenDealIsSubmitted(user, userRoles, transactionType.Description, dealAdminEmails, saleListingModel.DealTransactionNumber, dealLink);
+                await _emailService.SendEmailAsync(mailRequest);
+            }
+
+            return RedirectToAction(nameof(Index), new { addSuccess = true });
         }
+
         private async Task<List<InternalEmail>> GetDealAdminEmails()
         {
             List<InternalEmail> internalEmails = new List<InternalEmail>();
@@ -280,7 +268,7 @@ namespace Intl.Realty.Firm.Controllers
 
             var userRoles = await _userManager.GetRolesAsync(user!);
 
-            var saleListing = await _unitOfWork.SaleListing.GetAsync(x=>x.Id == dealId,includeProperties:"IRFDeal,TransactionType,DealStatus");
+            var saleListing = await _unitOfWork.SaleListing.GetAsync(x => x.Id == dealId, includeProperties: "IRFDeal,TransactionType,DealStatus");
             var transactionType = saleListing.TransactionType;
 
             var mailRequest = EmailRequest.SendRequestToEditTheDeal(user!, userRoles, transactionType!.Description, dealAdminEmails, saleListing.DealTransactionNumber, dealLink!);
@@ -371,72 +359,85 @@ namespace Intl.Realty.Firm.Controllers
         [HttpGet]
         public async Task<IActionResult> Edit(int? id)
         {
-            var model = await _unitOfWork.SaleListing.GetAsync(x => x.Id == id, includeProperties: "TransactionType,IRFDeal,DealStatus");
-
-            string controllerName = this.ControllerContext.RouteData.Values["controller"]!.ToString()!;
-
-            if (model == null)
+            try
             {
-                NotFoundViewModel notFoundViewModel = new NotFoundViewModel();
-                notFoundViewModel.ErrorTitle = ($"{controllerName} not found");
-                notFoundViewModel.ErrorMessage = ($"{controllerName} with {id} cannot be found!");
-                notFoundViewModel.ControllerName = controllerName;
-                notFoundViewModel.ControllerAction = "Index";
+                var model = await _unitOfWork.SaleListing.GetAsync(x => x.Id == id, includeProperties: "TransactionType,IRFDeal,DealStatus");
 
-                return View("NotFound", notFoundViewModel);
+                string controllerName = this.ControllerContext.RouteData.Values["controller"]!.ToString()!;
+
+                if (model == null)
+                {
+                    NotFoundViewModel notFoundViewModel = new NotFoundViewModel();
+                    notFoundViewModel.ErrorTitle = ($"{controllerName} not found");
+                    notFoundViewModel.ErrorMessage = ($"{controllerName} with {id} cannot be found!");
+                    notFoundViewModel.ControllerName = controllerName;
+                    notFoundViewModel.ControllerAction = "Index";
+
+                    return View("NotFound", notFoundViewModel);
+                }
+                EditSaleListingWithTabMenuViewModel viewModel = new EditSaleListingWithTabMenuViewModel();
+
+                // to get current user ID
+                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+                // to get current user info
+                var user = await _userManager.FindByIdAsync(userId!);
+
+                viewModel.EditSaleListingViewModel = model.ToEditSaleListingViewModel();
+
+                viewModel.EditSaleListingViewModel.DealStatus = model.DealStatus;
+
+                viewModel.EditSaleListingViewModel.UpdatedByFullName = user!.FirstName + " " + user.LastName;
+                viewModel.EditSaleListingViewModel.UpdatedBy = user!.Id;
+                viewModel.EditSaleListingViewModel.UpdatedAt = DateTime.Now;
+
+                var fileUploads = await _unitOfWork.FileUpload.GetAllAsync(x => x.SaleListingId == model.Id, includeProperties: "SaleListing,TransactionType,DocumentType");
+
+                var fileUploadsWithFiles = FilterFileUploadsWithFilesOnly(fileUploads.ToList());
+
+                viewModel.EditSaleListingViewModel.FileUploads = fileUploadsWithFiles;
+
+                var documentTypeAssignmentIEnum = await _unitOfWork.DocumentTypeAssignment.GetAllAsync(x => x.IsDeleted == false, includeProperties: "TransactionType,DocumentType");
+                var documentTypeIEnum = await _unitOfWork.DocumentType.GetAllAsync(x => x.IsActive && x.IsDeleted == false);
+                var documentTypeAssignmentList = documentTypeAssignmentIEnum.ToList();
+                var documentTypeList = documentTypeIEnum.ToList();
+                viewModel.EditSaleListingViewModel.DocumentTypeList = _documentTransactionService
+                                                                .GetDocumentTypesFromDocumentTypeAssignment(model.TransactionType!.Description,
+                                                                                                            documentTypeAssignmentList,
+                                                                                                            documentTypeList);
+                var dealStatusIEnum = await _unitOfWork.DealStatus.GetAllAsync(x => x.IsActive == true && !x.IsDeleted);
+                viewModel.EditSaleListingViewModel.DealStatusList = dealStatusIEnum.ToList();
+
+                var menus = EditDealTransactionTabMenuData.GetEditDealTransactionTabMenuData();
+
+                string menuName = "IRFDetails1";
+
+                foreach (var menu in menus.Where(x => x.Menu == menuName))
+                {
+                    menu.IsActive = "active";
+                    menu.IsSelected = "true";
+                }
+
+                viewModel.Menus = menus;
+
+                return View(viewModel);
             }
-            EditSaleListingWithTabMenuViewModel viewModel = new EditSaleListingWithTabMenuViewModel();
-
-            // to get current user ID
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-            // to get current user info
-            var user = await _userManager.FindByIdAsync(userId!);
-
-            viewModel.EditSaleListing = model.ToEditSaleListingViewModel();
-
-            viewModel.EditSaleListing.UpdatedByFullName = user!.FirstName + " " + user.LastName;
-            viewModel.EditSaleListing.UpdatedBy = user!.Id;
-            viewModel.EditSaleListing.UpdatedAt = DateTime.Now;
-
-            var fileUploads = await _unitOfWork.FileUpload.GetAllAsync(x => x.SaleListingId == model.Id, includeProperties: "SaleListing,TransactionType,DocumentType");
-
-            var fileUploadsWithFiles = FilterFileUploadsWithFilesOnly(fileUploads.ToList());
-
-            viewModel.EditSaleListing.FileUploads = fileUploadsWithFiles;
-
-            var documentTypeAssignmentIEnum = await _unitOfWork.DocumentTypeAssignment.GetAllAsync(x => x.IsDeleted == false, includeProperties: "TransactionType,DocumentType");
-            var documentTypeIEnum = await _unitOfWork.DocumentType.GetAllAsync(x => x.IsDeleted == false);
-            var documentTypeAssignmentList = documentTypeAssignmentIEnum.ToList();
-            var documentTypeList = documentTypeIEnum.ToList();
-            viewModel.EditSaleListing.DocumentTypeList = _documentTransactionService
-                                                            .GetDocumentTypesFromDocumentTypeAssignment(model.TransactionType!.Description,
-                                                                                                        documentTypeAssignmentList,
-                                                                                                        documentTypeList);
-            var dealStatusIEnum = await _unitOfWork.DealStatus.GetAllAsync();
-            viewModel.EditSaleListing.DealStatusList = dealStatusIEnum.ToList();
-
-            var menus = EditDealTransactionTabMenuData.GetEditDealTransactionTabMenuData();
-
-            string menuName = "IRFDetails1";
-
-            foreach (var menu in menus.Where(x => x.Menu == menuName))
+            catch (Exception ex)
             {
-                menu.IsActive = "active";
-                menu.IsSelected = "true";
+                _logger.LogError(ex, "Failed to update SaleListing");
+                return StatusCode(500, "An error occurred while saving the deal.");
             }
-
-            viewModel.Menus = menus;
-
-            return View(viewModel);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, int dealStatusId, EditSaleListingWithTabMenuViewModel viewModel)
+        public async Task<IActionResult> Edit(int id, EditSaleListingWithTabMenuViewModel viewModel)
         {
             if (id == 0)
                 return NotFoundResultWithMessage("SaleListing", id);
+
+            var dealStatusIEnum = await _unitOfWork.DealStatus.GetAllAsync(x => x.IsActive == true && !x.IsDeleted);
+            viewModel.EditSaleListingViewModel.DealStatusList = dealStatusIEnum.ToList();
 
             if (!ModelState.IsValid)
                 return View(viewModel);
@@ -452,15 +453,15 @@ namespace Intl.Realty.Firm.Controllers
             var saleListingModel = await _unitOfWork.SaleListing.GetAsync(
                 x => x.Id == id,
                 includeProperties: "IRFDeal,TransactionType,DealStatus",
-                tracked:true);
+                tracked: true);
 
             if (saleListingModel == null)
                 return NotFoundResultWithMessage("SaleListing", id);
 
             // Load transaction type
             var transactionType = await _unitOfWork.TransactionType.GetAsync(x => x.Id == saleListingModel.TransactionTypeId);
-            viewModel.EditSaleListing.TransactionType = transactionType;
-            viewModel.EditSaleListing.TransactionTypeId = transactionType.Id;
+            viewModel.EditSaleListingViewModel.TransactionType = transactionType;
+            viewModel.EditSaleListingViewModel.TransactionTypeId = transactionType.Id;
 
             // Rebuild document type list
             var documentTypeAssignments = await _unitOfWork.DocumentTypeAssignment
@@ -468,7 +469,7 @@ namespace Intl.Realty.Firm.Controllers
 
             var documentTypes = await _unitOfWork.DocumentType.GetAllAsync(x => !x.IsDeleted);
 
-            viewModel.EditSaleListing.DocumentTypeList = _documentTransactionService
+            viewModel.EditSaleListingViewModel.DocumentTypeList = _documentTransactionService
                 .GetDocumentTypesFromDocumentTypeAssignment(
                     transactionType.Description,
                     documentTypeAssignments.ToList(),
@@ -479,17 +480,16 @@ namespace Intl.Realty.Firm.Controllers
 
             // Update IRFDeal safely (do not reassign navigation)
             var irfDealDb = await _unitOfWork.IRFDeal.GetAsync(x => x.Id == saleListingModel.IRFDealId, tracked: true);
-            var editedIRFData = viewModel.EditSaleListing.EditIRFDealSaleListingViewModel;
+            var editedIRFData = viewModel.EditSaleListingViewModel.EditIRFDealSaleListingViewModel;
 
             if (irfDealDb != null && editedIRFData != null)
             {
                 irfDealDb.UpdateFromViewModel(editedIRFData, parsedUserId);
                 await _unitOfWork.IRFDeal.UpdateAsync(irfDealDb);
             }
-
             // Update SaleListing model (EF is tracking it)
-            saleListingModel.DealStatusId = dealStatusId;
-            saleListingModel.Notes = viewModel.EditSaleListing.Notes;
+            saleListingModel.DealStatusId = viewModel.EditSaleListingViewModel.DealStatusId;
+            saleListingModel.Notes = viewModel.EditSaleListingViewModel.Notes;
             saleListingModel.DateSubmitted = DateTime.Now;
             saleListingModel.IsActive = true;
             saleListingModel.UpdatedAt = DateTime.Now;
@@ -501,7 +501,7 @@ namespace Intl.Realty.Firm.Controllers
 
             // Handle file uploads
             var uploadPath = CreateFilePath(saleListingModel.Id);
-            var fileUploadVM = viewModel.EditSaleListing.CreateFileUploadListViewModel?.CreateFileUploadsViewModel;
+            var fileUploadVM = viewModel.EditSaleListingViewModel.CreateFileUploadListViewModel?.CreateFileUploadsViewModel;
 
             if (fileUploadVM != null)
             {
@@ -509,7 +509,7 @@ namespace Intl.Realty.Firm.Controllers
                     fileUploadVM,
                     saleListingModel.Id,
                     transactionType.Id,
-                    viewModel.EditSaleListing.DocumentTypeList,
+                    viewModel.EditSaleListingViewModel.DocumentTypeList,
                     uploadPath
                 );
             }
@@ -563,7 +563,7 @@ namespace Intl.Realty.Firm.Controllers
             }
 
             var viewModel = model.ToPreviewSaleListingViewModel();
-            var fileUploadIEnum = await _unitOfWork.FileUpload.GetAllAsync(x => x.SaleListingId == model.Id);
+            var fileUploadIEnum = await _unitOfWork.FileUpload.GetAllAsync(x => x.SaleListingId == model.Id && x.IsActive == true && !x.IsDeleted);
             viewModel.FileUploads = fileUploadIEnum.ToList();
             var users = _userManager.Users;
 
@@ -706,7 +706,12 @@ namespace Intl.Realty.Firm.Controllers
             var fileUpload = await _unitOfWork.FileUpload.GetAsync(x => x.Id == id);
             if (fileUpload != null)
             {
-                await _unitOfWork.FileUpload.RemoveAsync(fileUpload);
+                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                var user = await _userManager.FindByIdAsync(userId!);
+                fileUpload.IsDeleted = true;
+                fileUpload.DeletedAt = DateTime.UtcNow;
+                fileUpload.DeletedBy = user.Id;
+                await _unitOfWork.FileUpload.UpdateAsync(fileUpload);
 
                 var isSuccess = await _fileHandlerService.DeleteFile(fileUpload.FullPath);
 
@@ -735,10 +740,14 @@ namespace Intl.Realty.Firm.Controllers
 
         public async Task<JsonResult> GetDocumentTypesThatHasFileUploads(int saleListingId)
         {
-            var fileUploads = await _unitOfWork.FileUpload.GetAllAsync(x => x.SaleListingId == saleListingId);
+            var fileUploads = await _unitOfWork.FileUpload.GetAllAsync(x => x.SaleListingId == saleListingId && x.IsDeleted == false && x.IsActive);
             var documentTypeIds = fileUploads.Select(x => x.DocumentTypeId).ToArray();
 
-            return Json(documentTypeIds);
+            var documentTypes = await _unitOfWork.DocumentType.GetAllAsync(x =>
+                documentTypeIds.Contains(x.Id) &&
+                x.IsActive &&
+                !x.IsDeleted);
+            return Json(documentTypes);
         }
         [HttpPost]
         public async Task<IActionResult> GetSaleListingList([FromBody] DtParameters dtParameters)
@@ -1014,7 +1023,8 @@ namespace Intl.Realty.Firm.Controllers
                     else
                     {
                         result = DefaultFilterSearch(result, searchBy);
-                    };
+                    }
+                    ;
 
                 }
 

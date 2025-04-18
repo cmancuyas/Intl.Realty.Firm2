@@ -32,7 +32,7 @@
     </a>
     <div class="row justify-content-center">
         <div class="col-md-12 card mt-4 p-4 b-none bg-none">
-            <h1 class="text-blue mb-0">Edit Lease Co-op - Deal Id: @Model.EditLeaseCoop.DealTransactionNumber - @Model.EditLeaseCoop.DealStatus!.Description</h1>
+            <h1 class="text-blue mb-0">Edit Lease Co-op - Deal Id: @Model.EditLeaseCoopViewModel.DealTransactionNumber - @Model.EditLeaseCoopViewModel.DealStatus!.Description</h1>
             <hr class="my-4" />
             <form id="ListFormId"
                   asp-action="Edit"
@@ -40,9 +40,8 @@
                   method="post"
                   enctype="multipart/form-data">
 
-                <input type="hidden" asp-for="EditLeaseCoop.Id" />
-                <input type="hidden" asp-for="EditLeaseCoop.DealTransactionNumber" />
-                <input hidden id="DealStatusId" name="DealStatusId" value="1" />
+                <input type="hidden" asp-for="EditLeaseCoopViewModel.Id" />
+                <input type="hidden" asp-for="EditLeaseCoopViewModel.DealTransactionNumber" />
 
                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
@@ -79,13 +78,13 @@
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label class="control-label fw-bolder">Deal Status</label>
-                                            <select id="EditLeaseCoop.DealStatusId" name="EditLeaseCoop.DealStatusId" class="form-select">
+                                            <select id="EditLeaseCoopViewModel.DealStatusId" name="EditLeaseCoopViewModel.DealStatusId" class="form-select">
                                                 @{
-                                                    @if (Model.EditLeaseCoop.DealStatusList != null)
+                                                    @if (Model.EditLeaseCoopViewModel.DealStatusList != null)
                                                     {
-                                                        @foreach (var dealStatus in Model.EditLeaseCoop.DealStatusList)
+                                                        @foreach (var dealStatus in Model.EditLeaseCoopViewModel.DealStatusList)
                                                         {
-                                                            if (dealStatus.Id == Model.EditLeaseCoop.DealStatusId)
+                                                            if (dealStatus.Id == Model.EditLeaseCoopViewModel.DealStatusId)
                                                             {
                                                                 <option value="@dealStatus.Id" selected>@dealStatus.Description</option>
                                                             }
@@ -98,187 +97,147 @@
                                                 }
                                             </select>
 
-                                            @Html.ValidationMessageFor(m => m.EditLeaseCoop.DealStatusId, "", new { @class = "text-danger" })
+                                            @Html.ValidationMessageFor(m => m.EditLeaseCoopViewModel.DealStatusId, "", new { @class = "text-danger" })
 
                                         </div>
                                     </div>
                                 </div>
                             }
+                            else
+                            {
+                                <input type="hidden" name="EditLeaseCoopViewModel.DealStatusId" value="1" />
+                            }
                         }
 
-
+                        <!-- Property & Deal Info -->
+                        <h4 class="mt-4 text-blue">Property & Deal Info</h4>
                         <div class="row">
-                            <div class="col-md-6 mt-4">
-                                <div class="form-group">
-                                    <label asp-for="EditLeaseCoop.EditIRFDealLeaseCoopViewModel.PropertyAddress" class="control-label fw-bolder">Property Address</label>
-                                    <input asp-for="EditLeaseCoop.EditIRFDealLeaseCoopViewModel.PropertyAddress" class="form-control" />
-                                    <span asp-validation-for="EditLeaseCoop.EditIRFDealLeaseCoopViewModel.PropertyAddress" class="text-danger"></span>
-                                </div>
+                            <div class="col-md-6 mt-3">
+                                <label asp-for="EditLeaseCoopViewModel.EditIRFDealLeaseCoopViewModel.PropertyAddress" class="fw-bolder">Property Address</label>
+                                <input asp-for="EditLeaseCoopViewModel.EditIRFDealLeaseCoopViewModel.PropertyAddress" class="form-control" />
+                                <span asp-validation-for="EditLeaseCoopViewModel.EditIRFDealLeaseCoopViewModel.PropertyAddress" class="text-danger"></span>
                             </div>
-                            <div class="col-md-6 mt-4">
-                                <div class="form-group">
-                                    <label asp-for="EditLeaseCoop.UpdatedByFullName" class="control-label fw-bolder">Created By</label>
-                                    <input asp-for="EditLeaseCoop.UpdatedByFullName" disabled class="form-control" />
-                                    <span asp-validation-for="EditLeaseCoop.UpdatedByFullName" class="text-danger"></span>
-                                </div>
-                            </div>
-
-                        </div>
-                        <div class="row">
-                            <div class="col-md-6 mt-4">
-                                <div class="form-group">
-                                    <label asp-for="EditLeaseCoop.EditIRFDealLeaseCoopViewModel.FinalLeasePrice" class="control-label fw-bolder">Final Lease Price</label>
-                                    <input asp-for="EditLeaseCoop.EditIRFDealLeaseCoopViewModel.FinalLeasePrice" class="form-control" />
-                                    <span asp-validation-for="EditLeaseCoop.EditIRFDealLeaseCoopViewModel.FinalLeasePrice" class="text-danger"></span>
-                                </div>
-                            </div>
-                            <div class="col-md-6 mt-4">
-                                <div class="form-group">
-                                    <label asp-for="EditLeaseCoop.EditIRFDealLeaseCoopViewModel.FinalClosingDate" class="control-label fw-bolder">Final ClosingDate</label>
-                                    <input asp-for="EditLeaseCoop.EditIRFDealLeaseCoopViewModel.FinalClosingDate" class="form-control" />
-                                    <span asp-validation-for="EditLeaseCoop.EditIRFDealLeaseCoopViewModel.FinalClosingDate" class="text-danger"></span>
-                                </div>
+                            <div class="col-md-6 mt-3">
+                                <label asp-for="EditLeaseCoopViewModel.UpdatedByFullName" class="fw-bolder">Created By</label>
+                                <input asp-for="EditLeaseCoopViewModel.UpdatedByFullName" disabled class="form-control" />
+                                <span asp-validation-for="EditLeaseCoopViewModel.UpdatedByFullName" class="text-danger"></span>
                             </div>
                         </div>
+
+                        <!-- Financial Details -->
+                        <h4 class="mt-5 text-blue">Financial Details</h4>
                         <div class="row">
-                            <div class="col-md-6 mt-4">
-                                <div class="form-group">
-                                    <label asp-for="EditLeaseCoop.EditIRFDealLeaseCoopViewModel.DepositAmount" class="control-label fw-bolder">Deposit Amount</label>
-                                    <input asp-for="EditLeaseCoop.EditIRFDealLeaseCoopViewModel.DepositAmount" class="form-control" />
-                                    <span asp-validation-for="EditLeaseCoop.EditIRFDealLeaseCoopViewModel.DepositAmount" class="text-danger"></span>
-                                </div>
+                            <div class="col-md-6 mt-3">
+                                <label asp-for="EditLeaseCoopViewModel.EditIRFDealLeaseCoopViewModel.FinalLeasePrice" class="fw-bolder">Final Lease Price</label>
+                                <input asp-for="EditLeaseCoopViewModel.EditIRFDealLeaseCoopViewModel.FinalLeasePrice" class="form-control" />
+                                <span asp-validation-for="EditLeaseCoopViewModel.EditIRFDealLeaseCoopViewModel.FinalLeasePrice" class="text-danger"></span>
                             </div>
-                            <div class="col-md-6 mt-4">
-                                <div class="form-group">
-                                    <label asp-for="EditLeaseCoop.EditIRFDealLeaseCoopViewModel.DepositDate" class="control-label fw-bolder">Deposit Date</label>
-                                    <input asp-for="EditLeaseCoop.EditIRFDealLeaseCoopViewModel.DepositDate" class="form-control" />
-                                    <span asp-validation-for="EditLeaseCoop.EditIRFDealLeaseCoopViewModel.DepositDate" class="text-danger"></span>
-                                </div>
+                            <div class="col-md-6 mt-3">
+                                <label asp-for="EditLeaseCoopViewModel.EditIRFDealLeaseCoopViewModel.FinalClosingDate" class="fw-bolder">Final Closing Date</label>
+                                <input asp-for="EditLeaseCoopViewModel.EditIRFDealLeaseCoopViewModel.FinalClosingDate" class="form-control" type="date" />
+                                <span asp-validation-for="EditLeaseCoopViewModel.EditIRFDealLeaseCoopViewModel.FinalClosingDate" class="text-danger"></span>
                             </div>
-
-                        </div>
-                        <div class="row">
-                            <div class="col-md-6 mt-4">
-                                <div class="form-group">
-                                    <label asp-for="EditLeaseCoop.EditIRFDealLeaseCoopViewModel.TenantName" class="control-label fw-bolder">Tenant's Name</label>
-                                    <input asp-for="EditLeaseCoop.EditIRFDealLeaseCoopViewModel.TenantName" class="form-control" />
-                                    <span asp-validation-for="EditLeaseCoop.EditIRFDealLeaseCoopViewModel.TenantName" class="text-danger"></span>
-                                </div>
+                            <div class="col-md-6 mt-3">
+                                <label asp-for="EditLeaseCoopViewModel.EditIRFDealLeaseCoopViewModel.DepositAmount" class="fw-bolder">Deposit Amount</label>
+                                <input asp-for="EditLeaseCoopViewModel.EditIRFDealLeaseCoopViewModel.DepositAmount" class="form-control" />
+                                <span asp-validation-for="EditLeaseCoopViewModel.EditIRFDealLeaseCoopViewModel.DepositAmount" class="text-danger"></span>
                             </div>
-
-                            <div class="col-md-6 mt-4">
-                                <div class="form-group">
-                                    <label asp-for="EditLeaseCoop.EditIRFDealLeaseCoopViewModel.TenantEmailAddress" class="control-label fw-bolder">Tenant's Email Address</label>
-                                    <input asp-for="EditLeaseCoop.EditIRFDealLeaseCoopViewModel.TenantEmailAddress" class="form-control" />
-                                    <span asp-validation-for="EditLeaseCoop.EditIRFDealLeaseCoopViewModel.TenantEmailAddress" class="text-danger"></span>
-                                </div>
+                            <div class="col-md-6 mt-3">
+                                <label asp-for="EditLeaseCoopViewModel.EditIRFDealLeaseCoopViewModel.DepositDate" class="fw-bolder">Deposit Date</label>
+                                <input asp-for="EditLeaseCoopViewModel.EditIRFDealLeaseCoopViewModel.DepositDate" class="form-control" type="date" />
+                                <span asp-validation-for="EditLeaseCoopViewModel.EditIRFDealLeaseCoopViewModel.DepositDate" class="text-danger"></span>
                             </div>
-
-
-
                         </div>
 
+                        <!-- Tenant Details -->
+                        <h4 class="mt-5 text-blue">Tenant Details</h4>
                         <div class="row">
-                            <div class="col-md-6 mt-4">
-                                <div class="form-group">
-                                    <label asp-for="EditLeaseCoop.EditIRFDealLeaseCoopViewModel.LandLordName" class="control-label fw-bolder">Landlord's Name</label>
-                                    <input asp-for="EditLeaseCoop.EditIRFDealLeaseCoopViewModel.LandLordName" class="form-control" />
-                                    <span asp-validation-for="EditLeaseCoop.EditIRFDealLeaseCoopViewModel.LandLordName" class="text-danger"></span>
-                                </div>
+                            <div class="col-md-6 mt-3">
+                                <label asp-for="EditLeaseCoopViewModel.EditIRFDealLeaseCoopViewModel.TenantDetails.TenantName" class="fw-bolder">Tenant's Name</label>
+                                <input asp-for="EditLeaseCoopViewModel.EditIRFDealLeaseCoopViewModel.TenantDetails.TenantName" class="form-control" />
+                                <span asp-validation-for="EditLeaseCoopViewModel.EditIRFDealLeaseCoopViewModel.TenantDetails.TenantName" class="text-danger"></span>
                             </div>
-                            <div class="col-md-6 mt-4">
-                                <div class="form-group">
-                                    <label asp-for="EditLeaseCoop.EditIRFDealLeaseCoopViewModel.BuyingCommissionPercentage" class="control-label fw-bolder">Buying Commission Percentage</label>
-                                    <input asp-for="EditLeaseCoop.EditIRFDealLeaseCoopViewModel.BuyingCommissionPercentage" class="form-control" />
-                                    <span asp-validation-for="EditLeaseCoop.EditIRFDealLeaseCoopViewModel.BuyingCommissionPercentage" class="text-danger"></span>
-                                </div>
+                            <div class="col-md-6 mt-3">
+                                <label asp-for="EditLeaseCoopViewModel.EditIRFDealLeaseCoopViewModel.TenantDetails.TenantEmailAddress" class="fw-bolder">Tenant's Email</label>
+                                <input asp-for="EditLeaseCoopViewModel.EditIRFDealLeaseCoopViewModel.TenantDetails.TenantEmailAddress" class="form-control" />
+                                <span asp-validation-for="EditLeaseCoopViewModel.EditIRFDealLeaseCoopViewModel.TenantDetails.TenantEmailAddress" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 mt-3">
+                                <label asp-for="EditLeaseCoopViewModel.EditIRFDealLeaseCoopViewModel.TenantDetails.TenantPhoneNumber" class="fw-bolder">Tenant's Phone Number</label>
+                                <input asp-for="EditLeaseCoopViewModel.EditIRFDealLeaseCoopViewModel.TenantDetails.TenantPhoneNumber" class="form-control" />
+                                <span asp-validation-for="EditLeaseCoopViewModel.EditIRFDealLeaseCoopViewModel.TenantDetails.TenantPhoneNumber" class="text-danger"></span>
                             </div>
                         </div>
+
+                        <!-- Landlord Info -->
+                        <h4 class="mt-5 text-blue">Landlord Info</h4>
                         <div class="row">
-
-                            <div class="col-md-6 mt-4">
-                                <div class="form-group">
-                                    <label asp-for="EditLeaseCoop.EditIRFDealLeaseCoopViewModel.ListingAgentName" class="control-label fw-bolder">Listing Agent Name</label>
-                                    <input asp-for="EditLeaseCoop.EditIRFDealLeaseCoopViewModel.ListingAgentName" class="form-control" />
-                                    <span asp-validation-for="EditLeaseCoop.EditIRFDealLeaseCoopViewModel.ListingAgentName" class="text-danger"></span>
-                                </div>
+                            <div class="col-md-6 mt-3">
+                                <label asp-for="EditLeaseCoopViewModel.EditIRFDealLeaseCoopViewModel.LandLordDetails.LandLordName" class="fw-bolder">Landlord Name</label>
+                                <input asp-for="EditLeaseCoopViewModel.EditIRFDealLeaseCoopViewModel.LandLordDetails.LandLordName" class="form-control" />
+                                <span asp-validation-for="EditLeaseCoopViewModel.EditIRFDealLeaseCoopViewModel.LandLordDetails.LandLordName" class="text-danger"></span>
                             </div>
-
-                            <div class="col-md-6 mt-4">
-                                <div class="form-group">
-                                    <label asp-for="EditLeaseCoop.EditIRFDealLeaseCoopViewModel.ListingBrokerage" class="control-label fw-bolder">Listing Brokerage</label>
-                                    <input asp-for="EditLeaseCoop.EditIRFDealLeaseCoopViewModel.ListingBrokerage" class="form-control" />
-                                    <span asp-validation-for="EditLeaseCoop.EditIRFDealLeaseCoopViewModel.ListingBrokerage" class="text-danger"></span>
-                                </div>
+                            <div class="col-md-6 mt-3">
+                                <label asp-for="EditLeaseCoopViewModel.EditIRFDealLeaseCoopViewModel.LandLordDetails.LandLordPhoneNumber" class="fw-bolder">Landlord Phone</label>
+                                <input asp-for="EditLeaseCoopViewModel.EditIRFDealLeaseCoopViewModel.LandLordDetails.LandLordPhoneNumber" class="form-control" />
+                                <span asp-validation-for="EditLeaseCoopViewModel.EditIRFDealLeaseCoopViewModel.LandLordDetails.LandLordPhoneNumber" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 mt-3">
+                                <label asp-for="EditLeaseCoopViewModel.EditIRFDealLeaseCoopViewModel.LandLordDetails.LandLordEmailAddress" class="fw-bolder">Landlord Email</label>
+                                <input asp-for="EditLeaseCoopViewModel.EditIRFDealLeaseCoopViewModel.LandLordDetails.LandLordEmailAddress" class="form-control" />
+                                <span asp-validation-for="EditLeaseCoopViewModel.EditIRFDealLeaseCoopViewModel.LandLordDetails.LandLordEmailAddress" class="text-danger"></span>
                             </div>
                         </div>
+
+                        <!-- Commission -->
+                        <h4 class="mt-5 text-blue">Commission</h4>
                         <div class="row">
-
-
-                            <div class="col-md-6 mt-4">
-                                <div class="form-group">
-                                    <label asp-for="EditLeaseCoop.EditIRFDealLeaseCoopViewModel.ListingBrokerageFax" class="control-label fw-bolder">Listing Brokerage Fax</label>
-                                    <input asp-for="EditLeaseCoop.EditIRFDealLeaseCoopViewModel.ListingBrokerageFax" class="form-control" />
-                                    <span asp-validation-for="EditLeaseCoop.EditIRFDealLeaseCoopViewModel.ListingBrokerageFax" class="text-danger"></span>
-                                </div>
+                            <div class="col-md-6 mt-3">
+                                <label asp-for="EditLeaseCoopViewModel.EditIRFDealLeaseCoopViewModel.Commission.BuyingCommissionPercentage" class="fw-bolder">Buying Commission %</label>
+                                <input asp-for="EditLeaseCoopViewModel.EditIRFDealLeaseCoopViewModel.Commission.BuyingCommissionPercentage" type="number" class="form-control" />
+                                <span asp-validation-for="EditLeaseCoopViewModel.EditIRFDealLeaseCoopViewModel.Commission.BuyingCommissionPercentage" class="text-danger"></span>
                             </div>
-
-
                         </div>
 
+                        <!-- Listing Info -->
+                        <h4 class="mt-5 text-blue">Listing Info</h4>
+                        <div class="row">
+                            <div class="col-md-6 mt-3">
+                                <label asp-for="EditLeaseCoopViewModel.EditIRFDealLeaseCoopViewModel.ListingInfo.ListingAgentName" class="fw-bolder">Listing Agent Name</label>
+                                <input asp-for="EditLeaseCoopViewModel.EditIRFDealLeaseCoopViewModel.ListingInfo.ListingAgentName" class="form-control" />
+                                <span asp-validation-for="EditLeaseCoopViewModel.EditIRFDealLeaseCoopViewModel.ListingInfo.ListingAgentName" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 mt-3">
+                                <label asp-for="EditLeaseCoopViewModel.EditIRFDealLeaseCoopViewModel.ListingInfo.ListingBrokerage" class="fw-bolder">Listing Brokerage</label>
+                                <input asp-for="EditLeaseCoopViewModel.EditIRFDealLeaseCoopViewModel.ListingInfo.ListingBrokerage" class="form-control" />
+                                <span asp-validation-for="EditLeaseCoopViewModel.EditIRFDealLeaseCoopViewModel.ListingInfo.ListingBrokerage" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 mt-3">
+                                <label asp-for="EditLeaseCoopViewModel.EditIRFDealLeaseCoopViewModel.ListingInfo.ListingBrokerageFax" class="fw-bolder">Listing Brokerage Fax</label>
+                                <input asp-for="EditLeaseCoopViewModel.EditIRFDealLeaseCoopViewModel.ListingInfo.ListingBrokerageFax" class="form-control" />
+                                <span asp-validation-for="EditLeaseCoopViewModel.EditIRFDealLeaseCoopViewModel.ListingInfo.ListingBrokerageFax" class="text-danger"></span>
+                            </div>
+                        </div>
                     </div>
 
                     <div class="tab-pane" id="irfDetails2" aria-labelledby="irfDetails2-tab" style="background-color:white;">
-
+                        <!-- Tenant Agent Info -->
+                        <h4 class="mt-4 text-blue">Tenant's Agent & Brokerage Info</h4>
                         <div class="row">
-
-                            <div class="col-md-6 mt-4">
-                                <div class="form-group">
-                                    <label asp-for="EditLeaseCoop.EditIRFDealLeaseCoopViewModel.TenantAgentName" class="control-label fw-bolder">Tenant's Agent Name</label>
-                                    <input asp-for="EditLeaseCoop.EditIRFDealLeaseCoopViewModel.TenantAgentName" class="form-control" />
-                                    <span asp-validation-for="EditLeaseCoop.EditIRFDealLeaseCoopViewModel.TenantAgentName" class="text-danger"></span>
-                                </div>
+                            <div class="col-md-6 mt-3">
+                                <label asp-for="EditLeaseCoopViewModel.EditIRFDealLeaseCoopViewModel.TenantDetails.TenantAgentName" class="fw-bolder">Tenant Agent Name</label>
+                                <input asp-for="EditLeaseCoopViewModel.EditIRFDealLeaseCoopViewModel.TenantDetails.TenantAgentName" class="form-control" />
+                                <span asp-validation-for="EditLeaseCoopViewModel.EditIRFDealLeaseCoopViewModel.TenantDetails.TenantAgentName" class="text-danger"></span>
                             </div>
-                            <div class="col-md-6 mt-4">
-                                <div class="form-group">
-                                    <label asp-for="EditLeaseCoop.EditIRFDealLeaseCoopViewModel.TenantBrokerage" class="control-label fw-bolder">Tenant Brokerage</label>
-                                    <input asp-for="EditLeaseCoop.EditIRFDealLeaseCoopViewModel.TenantBrokerage" class="form-control" />
-                                    <span asp-validation-for="EditLeaseCoop.EditIRFDealLeaseCoopViewModel.TenantBrokerage" class="text-danger"></span>
-                                </div>
+                            <div class="col-md-6 mt-3">
+                                <label asp-for="EditLeaseCoopViewModel.EditIRFDealLeaseCoopViewModel.TenantDetails.TenantBrokerage" class="fw-bolder">Tenant Brokerage</label>
+                                <input asp-for="EditLeaseCoopViewModel.EditIRFDealLeaseCoopViewModel.TenantDetails.TenantBrokerage" class="form-control" />
+                                <span asp-validation-for="EditLeaseCoopViewModel.EditIRFDealLeaseCoopViewModel.TenantDetails.TenantBrokerage" class="text-danger"></span>
                             </div>
-                        </div>
-                        <div class="row">
-
-                            <div class="col-md-6 mt-4">
-                                <div class="form-group">
-                                    <label asp-for="EditLeaseCoop.EditIRFDealLeaseCoopViewModel.TenantBrokerageFax" class="control-label fw-bolder">Tenant Brokerage Fax</label>
-                                    <input asp-for="EditLeaseCoop.EditIRFDealLeaseCoopViewModel.TenantBrokerageFax" class="form-control" />
-                                    <span asp-validation-for="EditLeaseCoop.EditIRFDealLeaseCoopViewModel.TenantBrokerageFax" class="text-danger"></span>
-                                </div>
-                            </div>
-                            <div class="col-md-6 mt-4">
-                                <div class="form-group">
-                                    <label asp-for="EditLeaseCoop.EditIRFDealLeaseCoopViewModel.LandLordPhoneNumber" class="control-label fw-bolder">Landlord's PhoneNumber</label>
-                                    <input asp-for="EditLeaseCoop.EditIRFDealLeaseCoopViewModel.LandLordPhoneNumber" class="form-control" />
-                                    <span asp-validation-for="EditLeaseCoop.EditIRFDealLeaseCoopViewModel.LandLordPhoneNumber" class="text-danger"></span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row">
-
-                            <div class="col-md-6 mt-4">
-                                <div class="form-group">
-                                    <label asp-for="EditLeaseCoop.EditIRFDealLeaseCoopViewModel.TenantPhoneNumber" class="control-label fw-bolder">Tenant's PhoneNumber</label>
-                                    <input asp-for="EditLeaseCoop.EditIRFDealLeaseCoopViewModel.TenantPhoneNumber" class="form-control" />
-                                    <span asp-validation-for="EditLeaseCoop.EditIRFDealLeaseCoopViewModel.TenantPhoneNumber" class="text-danger"></span>
-                                </div>
-                            </div>
-                            <div class="col-md-6 mt-4">
-                                <div class="form-group">
-                                    <label asp-for="EditLeaseCoop.EditIRFDealLeaseCoopViewModel.LandLordEmailAddress" class="control-label fw-bolder">Landlord's Email Address</label>
-                                    <input asp-for="EditLeaseCoop.EditIRFDealLeaseCoopViewModel.LandLordEmailAddress" class="form-control" />
-                                    <span asp-validation-for="EditLeaseCoop.EditIRFDealLeaseCoopViewModel.LandLordEmailAddress" class="text-danger"></span>
-                                </div>
+                            <div class="col-md-6 mt-3">
+                                <label asp-for="EditLeaseCoopViewModel.EditIRFDealLeaseCoopViewModel.TenantDetails.TenantBrokerageFax" class="fw-bolder">Tenant Brokerage Fax</label>
+                                <input asp-for="EditLeaseCoopViewModel.EditIRFDealLeaseCoopViewModel.TenantDetails.TenantBrokerageFax" class="form-control" />
+                                <span asp-validation-for="EditLeaseCoopViewModel.EditIRFDealLeaseCoopViewModel.TenantDetails.TenantBrokerageFax" class="text-danger"></span>
                             </div>
                         </div>
                     </div>
@@ -298,14 +257,14 @@
                                             </thead>
                                             <tbody id="fileTableBody">
 
-                                                @foreach (DocumentType item in Model.EditLeaseCoop.DocumentTypeList!)
+                                                @foreach (DocumentType item in Model.EditLeaseCoopViewModel.DocumentTypeList!)
                                                 {
                                                     <tr class="border-bottom">
                                                         <td class="p-2">
                                                             <span class="mt-3 ms-2 mb-1">@item.Description</span>
                                                         </td>
                                                         @{
-                                                            var filesWithDocumentTypeId = Model.EditLeaseCoop.FileUploads!.Where(x => x.DocumentTypeId == item.Id);
+                                                            var filesWithDocumentTypeId = Model.EditLeaseCoopViewModel.FileUploads!.Where(x => x.DocumentTypeId == item.Id);
 
                                                             if (filesWithDocumentTypeId != null)
                                                             {
@@ -358,14 +317,14 @@
                                         @{
                                             int i = 0;
                                         }
-                                        @foreach (DocumentType item in Model.EditLeaseCoop.DocumentTypeList!)
+                                        @foreach (DocumentType item in Model.EditLeaseCoopViewModel.DocumentTypeList!)
                                         {
-                                            <tr>
+                                            <tr data-document-type-id="@item.Id">
                                                 <td style="width: 30%">
                                                     @Html.DisplayFor(modelItem => item.Description)
                                                 </td>
                                                 <input type="hidden"
-                                                       asp-for="EditLeaseCoop.CreateFileUploadListViewModel.CreateFileUploadsViewModel[i].DocumentTypeId"
+                                                       asp-for="EditLeaseCoopViewModel.CreateFileUploadListViewModel.CreateFileUploadsViewModel[i].DocumentTypeId"
                                                        value="@item.Id" />
                                                 <td id="isRequired">
                                                     @if (item.IsRequired == true)
@@ -378,7 +337,7 @@
                                                     }
                                                 </td>
                                                 <td>
-                                                    <input asp-for="EditLeaseCoop.CreateFileUploadListViewModel.CreateFileUploadsViewModel[i].Files"
+                                                    <input asp-for="EditLeaseCoopViewModel.CreateFileUploadListViewModel.CreateFileUploadsViewModel[i].Files"
                                                            id="fileListDropDown_@i"
                                                            type="file"
                                                            class="file"
@@ -406,8 +365,8 @@
                     <div class="tab-pane" id="notes" aria-labelledby="notes-tab" style="background-color:white;">
                         <div class="col-md-12 mt-4">
                             <div class="form-group">
-                                <label asp-for="EditLeaseCoop.Notes" class="control-label fw-bolder">Notes</label>
-                                @Html.TextAreaFor(model => model.EditLeaseCoop.Notes, 10, 100, new { @class = "form-control" })
+                                <label asp-for="EditLeaseCoopViewModel.Notes" class="control-label fw-bolder">Notes</label>
+                                @Html.TextAreaFor(model => model.EditLeaseCoopViewModel.Notes, 10, 100, new { @class = "form-control" })
 
                             </div>
                         </div>
@@ -423,57 +382,18 @@
                 </div>
                 </div> *@
                 <hr class="my-5" />
-                <div class="form-group d-flex justify-content-center gap-4">
-                    <a href="##" onClick="history.go(-1); return false;" class="btn btn-outline-secondary w-15">
-                        Back
-                    </a>
-                    @* <button type="reset" class="btn btn-secondary w-15" onclick="$('.text-danger').hide();">Reset</button> *@
-                    @{
-                        @if (isAdmin || isSuperAdmin || isDealAdmin || isAgent && Model.EditLeaseCoop.DealStatus!.Id == 2) //Submitted
-                        {
-                            <button type="button" id="btnSave" class="btn btn-primary w-15" onclick="$('.text-danger').show();">Save</button>
-                        }
-                        @if (isAdmin || isSuperAdmin || isAgent && Model.EditLeaseCoop.DealStatus!.Id == 1) //Saved
-                        {
-                            <button type="button" id="btnEditRequest" data-bs-toggle="modal" data-bs-target="#sendEditRequestModal" class="btn btn-primary w-15">Edit Request</button>
-                            <!-- Button trigger modal -->
-                        }
-                    }
-
-                    @{
-                        @if (isAdmin || isSuperAdmin || isAgent && Model.EditLeaseCoop.DealStatus!.Id == 2) //Saved
-                        {
-
-                            <button type="button" id="btnSubmit" class="btn btn-primary w-15" onclick="$('.text-danger').show();">Submit</button>
-                        }
-                    }
-
+                <input type="hidden" id="ActionTypeHidden" name="actionType" value="" />
+                <div id="submitSpinner" style="display:none;" class="text-center me-4">
+                    <div class="spinner-border text-primary" role="status"></div>
                 </div>
+                @await Html.PartialAsync("~/Views/Shared/Transaction/_EditActionButtons.cshtml", Model.EditLeaseCoopViewModel.DealStatusId)
+
             </form>
         </div>
     </div>
 </div>
 
-<!-- Modal -->
-<div class="modal fade" id="sendEditRequestModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Are you sure you want to edit this Deal?</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                Click continue to request editing this deal to DealAdmin
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary" onclick="window.location.href='@Url.Action("SendRequestToDealAdmin", "LeaseCoop", new{ dealId = @Model.EditLeaseCoop.Id})'">Continue</button>
-            </div>
-        </div>
-    </div>
-</div>
+<partial name="~/Views/Shared/Modal/_ConfirmSaveModal.cshtml" />
 
 
 @section Scripts {
@@ -481,92 +401,21 @@
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
     <script src="~/js/viewdatatableutility.js"></script>
+    <script src="~/js/submitUtility.js" asp-append-version="true"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script type="text/javascript">
+
+    <script src="~/js/submitUtility.js" asp-append-version="true"></script>
+    <script>
+        const documentTypes = @Html.Raw(JsonConvert.SerializeObject(Model.EditLeaseCoopViewModel.DocumentTypeList));
+
         $(document).ready(function () {
-            onBtnSave();
-            onBtnSubmit();
-
-            $('#isActiveCheckbox').on('click', toggleStatusLabels);
-            $('#isDeletedCheckbox').on('click', toggleStatusLabelSoftDelete);
-
-            toggleStatusLabels();
-            toggleStatusLabelSoftDelete();
+            initializeSubmitHandlers({
+                formId: "ListFormId",
+                dealStatusDropdownSelector: '[name="EditLeaseListingViewModel.DealStatusId"]',
+                isAdminLike: @((isAdmin || isSuperAdmin || isDealAdmin).ToString().ToLower()),
+                fileErrorScrollTargetId: "fileUploads",
+                validateFilesFn: () => defaultValidateFiles(documentTypes)
+            });
         });
-
-        function onBtnSave() {
-            $('#btnSave').on('click', function () {
-                $('#DealStatusId').val(2); // Set deal status to "Submitted" when saving
-                $('#confirmSaveModal').modal('show');
-            });
-
-            $(document).on('click', '#btnConfirmSave', function () {
-                $('#ListFormId').submit();
-            });
-        }
-
-        function onBtnSubmit() {
-            $('#btnSubmit').on('click', function () {
-                if (filesValidation()) {
-                    $('#DealStatusId').val(1); // Set deal status to "Saved" when submitting
-                    $('#confirmSubmitModal').modal('show');
-                }
-            });
-
-            $(document).on('click', '#btnConfirmSubmit', function () {
-                $('#ListFormId').submit();
-            });
-        }
-
-
-        function filesValidation() {
-            var LeaseCoopId = '@Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.EditLeaseCoop.Id))';
-            var documentTypeList = @Html.Raw(JsonConvert.SerializeObject(Model.EditLeaseCoop.DocumentTypeList));
-            var openModalFlag = true;
-
-            var error = [];
-
-            var documentTypesWithFileUploads = [];
-            $.ajax({
-                url: '/LeaseCoop/GetDocumentTypesThatHasFileUploads/',
-                type: 'GET',
-                async: false,
-                data: { saleListingId: LeaseCoopId },
-                success: function (data) {
-                    documentTypesWithFileUploads = data;
-                }
-            });
-
-            documentTypeList.forEach(function (item, index) {
-                var formFiles = document.forms['ListFormId']['EditLeaseCoop.CreateFileUploadListViewModel.CreateFileUploadsViewModel[' + index + '].Files'];
-                var documentType = documentTypesWithFileUploads.find(x => x == item.Id);
-
-                if (
-                    (item.IsRequired && formFiles.value !== "") ||
-                    (!item.IsRequired && formFiles.value === "") ||
-                    (!item.IsRequired && formFiles.value !== "") ||
-                    (documentType && item.IsRequired)
-                ) {
-                    // valid
-                } else {
-                    openModalFlag = false;
-                    var title = item.Description + " is required.";
-                    error.push(title);
-                }
-            });
-
-            if (error.length > 0) {
-                Swal.fire({
-                    title: error[0],
-                    text: "Please upload the required documents to proceed with the application.",
-                    icon: "error",
-                    confirmButtonColor: '#203D57'
-                });
-            }
-
-            return openModalFlag;
-        }
-
     </script>
 }
-

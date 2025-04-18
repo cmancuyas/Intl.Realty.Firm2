@@ -14,10 +14,8 @@ namespace Intl.Realty.Firm.Model.Model
         [ForeignKey("EmploymentStatus")]
         public int EmploymentStatusId { get; set; }
 
-        public int? ProfilePictureId { get; set; }
         public bool UserAgreement { get; set; }
         public DateTime RegistrationDate { get; set; }
-
         public virtual Department? Department { get; set; }
         public virtual EmploymentStatus? EmploymentStatus { get; set; }
 
@@ -27,6 +25,13 @@ namespace Intl.Realty.Firm.Model.Model
         public virtual ApplicationUser? TeamLeader { get; set; } // Navigation property
 
         public virtual ICollection<ApplicationUser>? Agents { get; set; } // TeamLeader's Agents
+
+        public int? ProfileImageId { get; set; }
+
+        [ForeignKey("ProfileImageId")]
+        public virtual ProfileImage? ProfileImage { get; set; }
+
+
     }
 
 }

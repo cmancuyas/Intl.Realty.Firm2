@@ -32,7 +32,7 @@
     </a>
     <div class="row justify-content-center">
         <div class="col-md-12 card mt-4 p-4 b-none bg-none">
-            <h1 class="text-blue mb-0">Edit Lease Listing - Deal Id: @Model.EditLeaseListing.DealTransactionNumber - @Model.EditLeaseListing.DealStatus!.Description</h1>
+            <h1 class="text-blue mb-0">Edit Lease Listing - Deal Id: @Model.EditLeaseListingViewModel.DealTransactionNumber - @Model.EditLeaseListingViewModel.DealStatus!.Description</h1>
             <hr class="my-4" />
             <form id="ListFormId"
                   asp-action="Edit"
@@ -40,9 +40,8 @@
                   method="post"
                   enctype="multipart/form-data">
 
-                <input type="hidden" asp-for="EditLeaseListing.Id" />
-                <input type="hidden" asp-for="EditLeaseListing.DealTransactionNumber" />
-                <input hidden id="DealStatusId" name="DealStatusId" value="1" />
+                <input type="hidden" asp-for="EditLeaseListingViewModel.Id" />
+                <input type="hidden" asp-for="EditLeaseListingViewModel.DealTransactionNumber" />
 
                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
@@ -79,13 +78,13 @@
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label class="control-label fw-bolder">Deal Status</label>
-                                            <select id="EditLeaseListing.DealStatusId" name="EditLeaseListing.DealStatusId" class="form-select">
+                                            <select id="EditLeaseListing.DealStatusId" name="EditLeaseListingViewModel.DealStatusId" class="form-select">
                                                 @{
-                                                    @if (Model.EditLeaseListing.DealStatusList != null)
+                                                    @if (Model.EditLeaseListingViewModel.DealStatusList != null)
                                                     {
-                                                        @foreach (var dealStatus in Model.EditLeaseListing.DealStatusList)
+                                                        @foreach (var dealStatus in Model.EditLeaseListingViewModel.DealStatusList)
                                                         {
-                                                            if (dealStatus.Id == Model.EditLeaseListing.DealStatusId)
+                                                            if (dealStatus.Id == Model.EditLeaseListingViewModel.DealStatusId)
                                                             {
                                                                 <option value="@dealStatus.Id" selected>@dealStatus.Description</option>
                                                             }
@@ -98,200 +97,169 @@
                                                 }
                                             </select>
 
-                                            @Html.ValidationMessageFor(m => m.EditLeaseListing.DealStatusId, "", new { @class = "text-danger" })
+                                            @Html.ValidationMessageFor(m => m.EditLeaseListingViewModel.DealStatusId, "", new { @class = "text-danger" })
 
                                         </div>
                                     </div>
                                 </div>
                             }
+                            else
+                            {
+                                <input type="hidden" name="EditLeaseListingViewModel.DealStatusId" value="1" />
+                            }
                         }
 
-
+                        <!-- Section: Property Info -->
+                        <h4 class="mt-4 text-blue">Property Information</h4>
                         <div class="row">
-                            <div class="col-md-6 mt-4">
-                                <div class="form-group">
-                                    <label asp-for="EditLeaseListing.EditIRFDealLeaseListingViewModel.PropertyAddress" class="control-label fw-bolder">Property Address</label>
-                                    <input asp-for="EditLeaseListing.EditIRFDealLeaseListingViewModel.PropertyAddress" class="form-control" />
-                                    <span asp-validation-for="EditLeaseListing.EditIRFDealLeaseListingViewModel.PropertyAddress" class="text-danger"></span>
-                                </div>
+                            <div class="col-md-6 mt-3">
+                                <label asp-for="EditLeaseListingViewModel.EditIRFDealLeaseListingViewModel.PropertyAddress" class="fw-bolder">Property Address</label>
+                                <input asp-for="EditLeaseListingViewModel.EditIRFDealLeaseListingViewModel.PropertyAddress" class="form-control" />
+                                <span asp-validation-for="EditLeaseListingViewModel.EditIRFDealLeaseListingViewModel.PropertyAddress" class="text-danger"></span>
                             </div>
-                            <div class="col-md-6 mt-4">
-                                <div class="form-group">
-                                    <label asp-for="EditLeaseListing.UpdatedByFullName" class="control-label fw-bolder">Created By</label>
-                                    <input asp-for="EditLeaseListing.UpdatedByFullName" disabled class="form-control" />
-                                    <span asp-validation-for="EditLeaseListing.UpdatedByFullName" class="text-danger"></span>
-                                </div>
-                            </div>
-
-                        </div>
-                        <div class="row">
-                            <div class="col-md-6 mt-4">
-                                <div class="form-group">
-                                    <label asp-for="EditLeaseListing.EditIRFDealLeaseListingViewModel.FinalLeasePrice" class="control-label fw-bolder">Final Lease Price</label>
-                                    <input asp-for="EditLeaseListing.EditIRFDealLeaseListingViewModel.FinalLeasePrice" class="form-control" />
-                                    <span asp-validation-for="EditLeaseListing.EditIRFDealLeaseListingViewModel.FinalLeasePrice" class="text-danger"></span>
-                                </div>
-                            </div>
-                            <div class="col-md-6 mt-4">
-                                <div class="form-group">
-                                    <label asp-for="EditLeaseListing.EditIRFDealLeaseListingViewModel.FinalClosingDate" class="control-label fw-bolder">Final ClosingDate</label>
-                                    <input asp-for="EditLeaseListing.EditIRFDealLeaseListingViewModel.FinalClosingDate" class="form-control" />
-                                    <span asp-validation-for="EditLeaseListing.EditIRFDealLeaseListingViewModel.FinalClosingDate" class="text-danger"></span>
-                                </div>
+                            <div class="col-md-6 mt-3">
+                                <label asp-for="EditLeaseListingViewModel.UpdatedByFullName" class="fw-bolder">Created By</label>
+                                <input asp-for="EditLeaseListingViewModel.UpdatedByFullName" class="form-control" disabled />
+                                <span asp-validation-for="EditLeaseListingViewModel.UpdatedByFullName" class="text-danger"></span>
                             </div>
                         </div>
+
+                        <!-- Section: Financial Info -->
+                        <h4 class="mt-5 text-blue">Financial Information</h4>
                         <div class="row">
-                            <div class="col-md-6 mt-4">
-                                <div class="form-group">
-                                    <label asp-for="EditLeaseListing.EditIRFDealLeaseListingViewModel.DepositAmount" class="control-label fw-bolder">Deposit Amount</label>
-                                    <input asp-for="EditLeaseListing.EditIRFDealLeaseListingViewModel.DepositAmount" class="form-control" />
-                                    <span asp-validation-for="EditLeaseListing.EditIRFDealLeaseListingViewModel.DepositAmount" class="text-danger"></span>
-                                </div>
+                            <div class="col-md-6 mt-3">
+                                <label asp-for="EditLeaseListingViewModel.EditIRFDealLeaseListingViewModel.FinalLeasePrice" class="fw-bolder">Final Lease Price</label>
+                                <input asp-for="EditLeaseListingViewModel.EditIRFDealLeaseListingViewModel.FinalLeasePrice" class="form-control" />
+                                <span asp-validation-for="EditLeaseListingViewModel.EditIRFDealLeaseListingViewModel.FinalLeasePrice" class="text-danger"></span>
                             </div>
-                            <div class="col-md-6 mt-4">
-                                <div class="form-group">
-                                    <label asp-for="EditLeaseListing.EditIRFDealLeaseListingViewModel.DepositDate" class="control-label fw-bolder">Deposit Date</label>
-                                    <input asp-for="EditLeaseListing.EditIRFDealLeaseListingViewModel.DepositDate" class="form-control" />
-                                    <span asp-validation-for="EditLeaseListing.EditIRFDealLeaseListingViewModel.DepositDate" class="text-danger"></span>
-                                </div>
+                            <div class="col-md-6 mt-3">
+                                <label asp-for="EditLeaseListingViewModel.EditIRFDealLeaseListingViewModel.FinalClosingDate" class="fw-bolder">Final Closing Date</label>
+                                <input asp-for="EditLeaseListingViewModel.EditIRFDealLeaseListingViewModel.FinalClosingDate" class="form-control" />
+                                <span asp-validation-for="EditLeaseListingViewModel.EditIRFDealLeaseListingViewModel.FinalClosingDate" class="text-danger"></span>
                             </div>
-
-                        </div>
-                        <div class="row">
-                            <div class="col-md-6 mt-4">
-                                <div class="form-group">
-                                    <label asp-for="EditLeaseListing.EditIRFDealLeaseListingViewModel.TenantName" class="control-label fw-bolder">Tenant's Name</label>
-                                    <input asp-for="EditLeaseListing.EditIRFDealLeaseListingViewModel.TenantName" class="form-control" />
-                                    <span asp-validation-for="EditLeaseListing.EditIRFDealLeaseListingViewModel.TenantName" class="text-danger"></span>
-                                </div>
+                            <div class="col-md-6 mt-3">
+                                <label asp-for="EditLeaseListingViewModel.EditIRFDealLeaseListingViewModel.DepositAmount" class="fw-bolder">Deposit Amount</label>
+                                <input asp-for="EditLeaseListingViewModel.EditIRFDealLeaseListingViewModel.DepositAmount" class="form-control" />
+                                <span asp-validation-for="EditLeaseListingViewModel.EditIRFDealLeaseListingViewModel.DepositAmount" class="text-danger"></span>
                             </div>
-
-                            <div class="col-md-6 mt-4">
-                                <div class="form-group">
-                                    <label asp-for="EditLeaseListing.EditIRFDealLeaseListingViewModel.TenantEmailAddress" class="control-label fw-bolder">Tenant's Email Address</label>
-                                    <input asp-for="EditLeaseListing.EditIRFDealLeaseListingViewModel.TenantEmailAddress" class="form-control" />
-                                    <span asp-validation-for="EditLeaseListing.EditIRFDealLeaseListingViewModel.TenantEmailAddress" class="text-danger"></span>
-                                </div>
+                            <div class="col-md-6 mt-3">
+                                <label asp-for="EditLeaseListingViewModel.EditIRFDealLeaseListingViewModel.DepositDate" class="fw-bolder">Deposit Date</label>
+                                <input asp-for="EditLeaseListingViewModel.EditIRFDealLeaseListingViewModel.DepositDate" class="form-control" />
+                                <span asp-validation-for="EditLeaseListingViewModel.EditIRFDealLeaseListingViewModel.DepositDate" class="text-danger"></span>
                             </div>
-
-
                         </div>
 
+                        <!-- Tenant Details -->
+                        <h4 class="mt-5 text-blue">Tenant Details</h4>
                         <div class="row">
-
-                            <div class="col-md-6 mt-4">
-                                <div class="form-group">
-                                    <label asp-for="EditLeaseListing.EditIRFDealLeaseListingViewModel.LandLordName" class="control-label fw-bolder">LandLord's Name</label>
-                                    <input asp-for="EditLeaseListing.EditIRFDealLeaseListingViewModel.LandLordName" class="form-control" />
-                                    <span asp-validation-for="EditLeaseListing.EditIRFDealLeaseListingViewModel.LandLordName" class="text-danger"></span>
-                                </div>
+                            <div class="col-md-6 mt-3">
+                                <label asp-for="EditLeaseListingViewModel.EditIRFDealLeaseListingViewModel.TenantDetails.TenantName" class="fw-bolder">Tenant's Name</label>
+                                <input asp-for="EditLeaseListingViewModel.EditIRFDealLeaseListingViewModel.TenantDetails.TenantName" class="form-control" />
+                                <span asp-validation-for="EditLeaseListingViewModel.EditIRFDealLeaseListingViewModel.TenantDetails.TenantName" class="text-danger"></span>
                             </div>
-
-                            <div class="col-md-6 mt-4">
-                                <div class="form-group">
-                                    <label asp-for="EditLeaseListing.EditIRFDealLeaseListingViewModel.ListingCommissionPercentage" class="control-label fw-bolder">Listing Commission Percentage</label>
-                                    <input asp-for="EditLeaseListing.EditIRFDealLeaseListingViewModel.ListingCommissionPercentage" class="form-control" />
-                                    <span asp-validation-for="EditLeaseListing.EditIRFDealLeaseListingViewModel.ListingCommissionPercentage" class="text-danger"></span>
-                                </div>
+                            <div class="col-md-6 mt-3">
+                                <label asp-for="EditLeaseListingViewModel.EditIRFDealLeaseListingViewModel.TenantDetails.TenantEmailAddress" class="fw-bolder">Tenant's Email</label>
+                                <input asp-for="EditLeaseListingViewModel.EditIRFDealLeaseListingViewModel.TenantDetails.TenantEmailAddress" class="form-control" />
+                                <span asp-validation-for="EditLeaseListingViewModel.EditIRFDealLeaseListingViewModel.TenantDetails.TenantEmailAddress" class="text-danger"></span>
                             </div>
-
-
-                        </div>
-                        <div class="row">
-
-                            <div class="col-md-6 mt-4">
-                                <div class="form-group">
-                                    <label asp-for="EditLeaseListing.EditIRFDealLeaseListingViewModel.BuyingCommissionPercentage" class="control-label fw-bolder">Buying Commission Percentage</label>
-                                    <input asp-for="EditLeaseListing.EditIRFDealLeaseListingViewModel.BuyingCommissionPercentage" class="form-control" />
-                                    <span asp-validation-for="EditLeaseListing.EditIRFDealLeaseListingViewModel.BuyingCommissionPercentage" class="text-danger"></span>
-                                </div>
+                            <div class="col-md-6 mt-3">
+                                <label asp-for="EditLeaseListingViewModel.EditIRFDealLeaseListingViewModel.TenantDetails.TenantPhoneNumber" class="fw-bolder">Tenant's Phone Number</label>
+                                <input asp-for="EditLeaseListingViewModel.EditIRFDealLeaseListingViewModel.TenantDetails.TenantPhoneNumber" class="form-control" />
+                                <span asp-validation-for="EditLeaseListingViewModel.EditIRFDealLeaseListingViewModel.TenantDetails.TenantPhoneNumber" class="text-danger"></span>
                             </div>
-
-                            <div class="col-md-6 mt-4">
-                                <div class="form-group">
-                                    <label asp-for="EditLeaseListing.EditIRFDealLeaseListingViewModel.ListingAgentName" class="control-label fw-bolder">Listing Agent Name</label>
-                                    <input asp-for="EditLeaseListing.EditIRFDealLeaseListingViewModel.ListingAgentName" class="form-control" />
-                                    <span asp-validation-for="EditLeaseListing.EditIRFDealLeaseListingViewModel.ListingAgentName" class="text-danger"></span>
-                                </div>
-                            </div>
-
-
-                        </div>
-                        <div class="row">
-
-                            <div class="col-md-6 mt-4">
-                                <div class="form-group">
-                                    <label asp-for="EditLeaseListing.EditIRFDealLeaseListingViewModel.ListingBrokerage" class="control-label fw-bolder">Listing Brokerage</label>
-                                    <input asp-for="EditLeaseListing.EditIRFDealLeaseListingViewModel.ListingBrokerage" class="form-control" />
-                                    <span asp-validation-for="EditLeaseListing.EditIRFDealLeaseListingViewModel.ListingBrokerage" class="text-danger"></span>
-                                </div>
-                            </div>
-                            <div class="col-md-6 mt-4">
-                                <div class="form-group">
-                                    <label asp-for="EditLeaseListing.EditIRFDealLeaseListingViewModel.ListingBrokerageFax" class="control-label fw-bolder">Listing Brokerage Fax</label>
-                                    <input asp-for="EditLeaseListing.EditIRFDealLeaseListingViewModel.ListingBrokerageFax" class="form-control" />
-                                    <span asp-validation-for="EditLeaseListing.EditIRFDealLeaseListingViewModel.ListingBrokerageFax" class="text-danger"></span>
-                                </div>
-                            </div>
-
-
                         </div>
 
+                        <!-- Landlord Info -->
+                        <h4 class="mt-5 text-blue">Landlord Info</h4>
+                        <div class="row">
+                            <div class="col-md-6 mt-3">
+                                <label asp-for="EditLeaseListingViewModel.EditIRFDealLeaseListingViewModel.LandLordDetails.LandLordName" class="fw-bolder">Landlord Name</label>
+                                <input asp-for="EditLeaseListingViewModel.EditIRFDealLeaseListingViewModel.LandLordDetails.LandLordName" class="form-control" />
+                                <span asp-validation-for="EditLeaseListingViewModel.EditIRFDealLeaseListingViewModel.LandLordDetails.LandLordName" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 mt-3">
+                                <label asp-for="EditLeaseListingViewModel.EditIRFDealLeaseListingViewModel.LandLordDetails.LandLordPhoneNumber" class="fw-bolder">Landlord Phone</label>
+                                <input asp-for="EditLeaseListingViewModel.EditIRFDealLeaseListingViewModel.LandLordDetails.LandLordPhoneNumber" class="form-control" />
+                                <span asp-validation-for="EditLeaseListingViewModel.EditIRFDealLeaseListingViewModel.LandLordDetails.LandLordPhoneNumber" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 mt-3">
+                                <label asp-for="EditLeaseListingViewModel.EditIRFDealLeaseListingViewModel.LandLordDetails.LandLordEmailAddress" class="fw-bolder">Landlord Email</label>
+                                <input asp-for="EditLeaseListingViewModel.EditIRFDealLeaseListingViewModel.LandLordDetails.LandLordEmailAddress" class="form-control" />
+                                <span asp-validation-for="EditLeaseListingViewModel.EditIRFDealLeaseListingViewModel.LandLordDetails.LandLordEmailAddress" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <!-- Section: Commission & Listing -->
+                        <h4 class="mt-5 text-blue">Commission & Listing Info</h4>
+                        <div class="row">
+                            <div class="col-md-6 mt-3">
+                                <label asp-for="EditLeaseListingViewModel.EditIRFDealLeaseListingViewModel.Commission.ListingCommissionPercentage" class="fw-bolder">Listing Commission %</label>
+                                <input asp-for="EditLeaseListingViewModel.EditIRFDealLeaseListingViewModel.Commission.ListingCommissionPercentage" class="form-control" type="number" step="0.01" />
+                                <span asp-validation-for="EditLeaseListingViewModel.EditIRFDealLeaseListingViewModel.Commission.ListingCommissionPercentage" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 mt-3">
+                                <label asp-for="EditLeaseListingViewModel.EditIRFDealLeaseListingViewModel.Commission.BuyingCommissionPercentage" class="fw-bolder">Buying Commission %</label>
+                                <input asp-for="EditLeaseListingViewModel.EditIRFDealLeaseListingViewModel.Commission.BuyingCommissionPercentage" class="form-control" type="number" step="0.01" />
+                                <span asp-validation-for="EditLeaseListingViewModel.EditIRFDealLeaseListingViewModel.Commission.BuyingCommissionPercentage" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 mt-3">
+                                <label asp-for="EditLeaseListingViewModel.EditIRFDealLeaseListingViewModel.ListingInfo.ListingAgentName" class="fw-bolder">Listing Agent Name</label>
+                                <input asp-for="EditLeaseListingViewModel.EditIRFDealLeaseListingViewModel.ListingInfo.ListingAgentName" class="form-control" />
+                                <span asp-validation-for="EditLeaseListingViewModel.EditIRFDealLeaseListingViewModel.ListingInfo.ListingAgentName" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 mt-3">
+                                <label asp-for="EditLeaseListingViewModel.EditIRFDealLeaseListingViewModel.ListingInfo.ListingBrokerage" class="fw-bolder">Listing Brokerage</label>
+                                <input asp-for="EditLeaseListingViewModel.EditIRFDealLeaseListingViewModel.ListingInfo.ListingBrokerage" class="form-control" />
+                                <span asp-validation-for="EditLeaseListingViewModel.EditIRFDealLeaseListingViewModel.ListingInfo.ListingBrokerage" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 mt-3">
+                                <label asp-for="EditLeaseListingViewModel.EditIRFDealLeaseListingViewModel.ListingInfo.ListingBrokerageFax" class="fw-bolder">Listing Brokerage Fax</label>
+                                <input asp-for="EditLeaseListingViewModel.EditIRFDealLeaseListingViewModel.ListingInfo.ListingBrokerageFax" class="form-control" />
+                                <span asp-validation-for="EditLeaseListingViewModel.EditIRFDealLeaseListingViewModel.ListingInfo.ListingBrokerageFax" class="text-danger"></span>
+                            </div>
+                        </div>
                     </div>
 
                     <div class="tab-pane" id="irfDetails2" aria-labelledby="irfDetails2-tab" style="background-color:white;">
 
+                        <!-- Section: Tenant Representation -->
+                        <h4 class="mt-4 text-blue">Tenant Representation</h4>
                         <div class="row">
-
-                            <div class="col-md-6 mt-4">
-                                <div class="form-group">
-                                    <label asp-for="EditLeaseListing.EditIRFDealLeaseListingViewModel.TenantAgentName" class="control-label fw-bolder">Tenant's Agent Name</label>
-                                    <input asp-for="EditLeaseListing.EditIRFDealLeaseListingViewModel.TenantAgentName" class="form-control" />
-                                    <span asp-validation-for="EditLeaseListing.EditIRFDealLeaseListingViewModel.TenantAgentName" class="text-danger"></span>
-                                </div>
+                            <div class="col-md-6 mt-3">
+                                <label asp-for="EditLeaseListingViewModel.EditIRFDealLeaseListingViewModel.TenantDetails.TenantAgentName" class="fw-bolder">Tenant Agent Name</label>
+                                <input asp-for="EditLeaseListingViewModel.EditIRFDealLeaseListingViewModel.TenantDetails.TenantAgentName" class="form-control" />
+                                <span asp-validation-for="EditLeaseListingViewModel.EditIRFDealLeaseListingViewModel.TenantDetails.TenantAgentName" class="text-danger"></span>
                             </div>
-                            <div class="col-md-6 mt-4">
-                                <div class="form-group">
-                                    <label asp-for="EditLeaseListing.EditIRFDealLeaseListingViewModel.TenantBrokerage" class="control-label fw-bolder">Tenant's Brokerage</label>
-                                    <input asp-for="EditLeaseListing.EditIRFDealLeaseListingViewModel.TenantBrokerage" class="form-control" />
-                                    <span asp-validation-for="EditLeaseListing.EditIRFDealLeaseListingViewModel.TenantBrokerage" class="text-danger"></span>
-                                </div>
+                            <div class="col-md-6 mt-3">
+                                <label asp-for="EditLeaseListingViewModel.EditIRFDealLeaseListingViewModel.TenantDetails.TenantBrokerage" class="fw-bolder">Tenant Brokerage</label>
+                                <input asp-for="EditLeaseListingViewModel.EditIRFDealLeaseListingViewModel.TenantDetails.TenantBrokerage" class="form-control" />
+                                <span asp-validation-for="EditLeaseListingViewModel.EditIRFDealLeaseListingViewModel.TenantDetails.TenantBrokerage" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 mt-3">
+                                <label asp-for="EditLeaseListingViewModel.EditIRFDealLeaseListingViewModel.TenantDetails.TenantBrokerageFax" class="fw-bolder">Tenant Brokerage Fax</label>
+                                <input asp-for="EditLeaseListingViewModel.EditIRFDealLeaseListingViewModel.TenantDetails.TenantBrokerageFax" class="form-control" />
+                                <span asp-validation-for="EditLeaseListingViewModel.EditIRFDealLeaseListingViewModel.TenantDetails.TenantBrokerageFax" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 mt-3">
+                                <label asp-for="EditLeaseListingViewModel.EditIRFDealLeaseListingViewModel.TenantDetails.TenantPhoneNumber" class="fw-bolder">Tenant Phone Number</label>
+                                <input asp-for="EditLeaseListingViewModel.EditIRFDealLeaseListingViewModel.TenantDetails.TenantPhoneNumber" class="form-control" />
+                                <span asp-validation-for="EditLeaseListingViewModel.EditIRFDealLeaseListingViewModel.TenantDetails.TenantPhoneNumber" class="text-danger"></span>
                             </div>
                         </div>
+
+                        <!-- Section: Landlord Contact -->
+                        <h4 class="mt-5 text-blue">Landlord Contact</h4>
                         <div class="row">
-
-                            <div class="col-md-6 mt-4">
-                                <div class="form-group">
-                                    <label asp-for="EditLeaseListing.EditIRFDealLeaseListingViewModel.TenantBrokerageFax" class="control-label fw-bolder">Tenant's Brokerage Fax</label>
-                                    <input asp-for="EditLeaseListing.EditIRFDealLeaseListingViewModel.TenantBrokerageFax" class="form-control" />
-                                    <span asp-validation-for="EditLeaseListing.EditIRFDealLeaseListingViewModel.TenantBrokerageFax" class="text-danger"></span>
-                                </div>
+                            <div class="col-md-6 mt-3">
+                                <label asp-for="EditLeaseListingViewModel.EditIRFDealLeaseListingViewModel.LandLordDetails.LandLordPhoneNumber" class="fw-bolder">Landlord Phone Number</label>
+                                <input asp-for="EditLeaseListingViewModel.EditIRFDealLeaseListingViewModel.LandLordDetails.LandLordPhoneNumber" class="form-control" />
+                                <span asp-validation-for="EditLeaseListingViewModel.EditIRFDealLeaseListingViewModel.LandLordDetails.LandLordPhoneNumber" class="text-danger"></span>
                             </div>
-                            <div class="col-md-6 mt-4">
-                                <div class="form-group">
-                                    <label asp-for="EditLeaseListing.EditIRFDealLeaseListingViewModel.TenantPhoneNumber" class="control-label fw-bolder">Tenant's Phone Number</label>
-                                    <input asp-for="EditLeaseListing.EditIRFDealLeaseListingViewModel.TenantPhoneNumber" class="form-control" />
-                                    <span asp-validation-for="EditLeaseListing.EditIRFDealLeaseListingViewModel.TenantPhoneNumber" class="text-danger"></span>
-                                </div>
+                            <div class="col-md-6 mt-3">
+                                <label asp-for="EditLeaseListingViewModel.EditIRFDealLeaseListingViewModel.LandLordDetails.LandLordEmailAddress" class="fw-bolder">Landlord Email Address</label>
+                                <input asp-for="EditLeaseListingViewModel.EditIRFDealLeaseListingViewModel.LandLordDetails.LandLordEmailAddress" class="form-control" />
+                                <span asp-validation-for="EditLeaseListingViewModel.EditIRFDealLeaseListingViewModel.LandLordDetails.LandLordEmailAddress" class="text-danger"></span>
                             </div>
-                        </div>
-                        <div class="row">
-
-                            <div class="col-md-6 mt-4">
-                                <div class="form-group">
-                                    <label asp-for="EditLeaseListing.EditIRFDealLeaseListingViewModel.LandLordPhoneNumber" class="control-label fw-bolder">Landlord's Phone Number</label>
-                                    <input asp-for="EditLeaseListing.EditIRFDealLeaseListingViewModel.LandLordPhoneNumber" class="form-control" />
-                                    <span asp-validation-for="EditLeaseListing.EditIRFDealLeaseListingViewModel.LandLordPhoneNumber" class="text-danger"></span>
-                                </div>
-                            </div>
-                            <div class="col-md-6 mt-4">
-                                <div class="form-group">
-                                    <label asp-for="EditLeaseListing.EditIRFDealLeaseListingViewModel.LandLordEmailAddress" class="control-label fw-bolder">LandLord's Email Address</label>
-                                    <input asp-for="EditLeaseListing.EditIRFDealLeaseListingViewModel.LandLordEmailAddress" class="form-control" />
-                                    <span asp-validation-for="EditLeaseListing.EditIRFDealLeaseListingViewModel.LandLordEmailAddress" class="text-danger"></span>
-                                </div>
-                            </div>
-
                         </div>
                     </div>
 
@@ -310,14 +278,14 @@
                                             </thead>
                                             <tbody id="fileTableBody">
 
-                                                @foreach (DocumentType item in Model.EditLeaseListing.DocumentTypeList!)
+                                                @foreach (DocumentType item in Model.EditLeaseListingViewModel.DocumentTypeList!)
                                                 {
                                                     <tr class="border-bottom">
                                                         <td class="p-2">
                                                             <span class="mt-3 ms-2 mb-1">@item.Description</span>
                                                         </td>
                                                         @{
-                                                            var filesWithDocumentTypeId = Model.EditLeaseListing.FileUploads!.Where(x => x.DocumentTypeId == item.Id);
+                                                            var filesWithDocumentTypeId = Model.EditLeaseListingViewModel.FileUploads!.Where(x => x.DocumentTypeId == item.Id);
 
                                                             if (filesWithDocumentTypeId != null)
                                                             {
@@ -370,14 +338,14 @@
                                         @{
                                             int i = 0;
                                         }
-                                        @foreach (DocumentType item in Model.EditLeaseListing.DocumentTypeList!)
+                                        @foreach (DocumentType item in Model.EditLeaseListingViewModel.DocumentTypeList!)
                                         {
-                                            <tr>
+                                            <tr data-document-type-id="@item.Id">
                                                 <td style="width: 30%">
                                                     @Html.DisplayFor(modelItem => item.Description)
                                                 </td>
                                                 <input type="hidden"
-                                                       asp-for="EditLeaseListing.CreateFileUploadListViewModel.CreateFileUploadsViewModel[i].DocumentTypeId"
+                                                       asp-for="EditLeaseListingViewModel.CreateFileUploadListViewModel.CreateFileUploadsViewModel[i].DocumentTypeId"
                                                        value="@item.Id" />
                                                 <td id="isRequired">
                                                     @if (item.IsRequired == true)
@@ -390,7 +358,7 @@
                                                     }
                                                 </td>
                                                 <td>
-                                                    <input asp-for="EditLeaseListing.CreateFileUploadListViewModel.CreateFileUploadsViewModel[i].Files"
+                                                    <input asp-for="EditLeaseListingViewModel.CreateFileUploadListViewModel.CreateFileUploadsViewModel[i].Files"
                                                            id="fileListDropDown_@i"
                                                            type="file"
                                                            class="file"
@@ -418,8 +386,8 @@
                     <div class="tab-pane" id="notes" aria-labelledby="notes-tab" style="background-color:white;">
                         <div class="col-md-12 mt-4">
                             <div class="form-group">
-                                <label asp-for="EditLeaseListing.Notes" class="control-label fw-bolder">Notes</label>
-                                @Html.TextAreaFor(model => model.EditLeaseListing.Notes, 10, 100, new { @class = "form-control" })
+                                <label asp-for="EditLeaseListingViewModel.Notes" class="control-label fw-bolder">Notes</label>
+                                @Html.TextAreaFor(model => model.EditLeaseListingViewModel.Notes, 10, 100, new { @class = "form-control" })
 
                             </div>
                         </div>
@@ -435,150 +403,39 @@
                 </div>
                 </div> *@
                 <hr class="my-5" />
-                <div class="form-group d-flex justify-content-center gap-4">
-                    <a href="##" onClick="history.go(-1); return false;" class="btn btn-outline-secondary w-15">
-                        Back
-                    </a>
-                    @* <button type="reset" class="btn btn-secondary w-15" onclick="$('.text-danger').hide();">Reset</button> *@
-                    @{
-                        @if (isAdmin || isSuperAdmin || isDealAdmin || isAgent && Model.EditLeaseListing.DealStatus!.Id == 2) //Submitted
-                        {
-                            <button type="button" id="btnSave" class="btn btn-primary w-15" onclick="$('.text-danger').show();">Save</button>
-                        }
-                        @if (isAdmin || isSuperAdmin || isAgent && Model.EditLeaseListing.DealStatus!.Id == 1) //Saved
-                        {
-                            <button type="button" id="btnEditRequest" data-bs-toggle="modal" data-bs-target="#sendEditRequestModal" class="btn btn-primary w-15">Edit Request</button>
-                            <!-- Button trigger modal -->
-                        }
-                    }
-
-                    @{
-                        @if (isAdmin || isSuperAdmin || isAgent && Model.EditLeaseListing.DealStatus!.Id == 2) //Saved
-                        {
-
-                            <button type="button" id="btnSubmit" class="btn btn-primary w-15" onclick="$('.text-danger').show();">Submit</button>
-                        }
-                    }
-
+                <input type="hidden" id="ActionTypeHidden" name="actionType" value="" />
+                <div id="submitSpinner" style="display:none;" class="text-center me-4">
+                    <div class="spinner-border text-primary" role="status"></div>
                 </div>
+                @await Html.PartialAsync("~/Views/Shared/Transaction/_EditActionButtons.cshtml", Model.EditLeaseListingViewModel.DealStatusId)
+
             </form>
         </div>
     </div>
 </div>
 
-<!-- Modal -->
-<div class="modal fade" id="sendEditRequestModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Are you sure you want to edit this Deal?</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                Click continue to request editing this deal to DealAdmin
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary" onclick="window.location.href='@Url.Action("SendRequestToDealAdmin", "LeaseListing", new{ dealId = @Model.EditLeaseListing.Id})'">Continue</button>
-            </div>
-        </div>
-    </div>
-</div>
-
+<partial name="~/Views/Shared/Modal/_ConfirmSaveModal.cshtml" />
 
 @section Scripts {
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
     <script src="~/js/viewdatatableutility.js"></script>
-            <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script type="text/javascript">
+    <script src="~/js/submitUtility.js" asp-append-version="true"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script src="~/js/submitUtility.js" asp-append-version="true"></script>
+    <script>
+        const documentTypes = @Html.Raw(JsonConvert.SerializeObject(Model.EditLeaseListingViewModel.DocumentTypeList));
+
         $(document).ready(function () {
-            onBtnSave();
-            onBtnSubmit();
-
-            $('#isActiveCheckbox').on('click', toggleStatusLabels);
-            $('#isDeletedCheckbox').on('click', toggleStatusLabelSoftDelete);
-
-            toggleStatusLabels();
-            toggleStatusLabelSoftDelete();
+            initializeSubmitHandlers({
+                formId: "ListFormId",
+                dealStatusDropdownSelector: '[name="EditLeaseListingViewModel.DealStatusId"]',
+                isAdminLike: @((isAdmin || isSuperAdmin || isDealAdmin).ToString().ToLower()),
+                fileErrorScrollTargetId: "fileUploads",
+                validateFilesFn: () => defaultValidateFiles(documentTypes)
+            });
         });
-
-        function onBtnSave() {
-            $('#btnSave').on('click', function () {
-                $('#DealStatusId').val(2); // Set deal status to "Submitted" when saving
-                $('#confirmSaveModal').modal('show');
-            });
-
-            $(document).on('click', '#btnConfirmSave', function () {
-                $('#ListFormId').submit();
-            });
-        }
-
-        function onBtnSubmit() {
-            $('#btnSubmit').on('click', function () {
-                if (filesValidation()) {
-                    $('#DealStatusId').val(1); // Set deal status to "Saved" when submitting
-                    $('#confirmSubmitModal').modal('show');
-                }
-            });
-
-            $(document).on('click', '#btnConfirmSubmit', function () {
-                $('#ListFormId').submit();
-            });
-        }
-
-
-        function filesValidation() {
-            var LeaseListingId = '@Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.EditLeaseListing.Id))';
-            var documentTypeList = @Html.Raw(JsonConvert.SerializeObject(Model.EditLeaseListing.DocumentTypeList));
-            var openModalFlag = true;
-
-            var error = [];
-
-            var documentTypesWithFileUploads = [];
-            $.ajax({
-                url: '/LeaseListing/GetDocumentTypesThatHasFileUploads/',
-                type: 'GET',
-                async: false,
-                data: { saleListingId: LeaseListingId },
-                success: function (data) {
-                    documentTypesWithFileUploads = data;
-                }
-            });
-
-            documentTypeList.forEach(function (item, index) {
-                var formFiles = document.forms['ListFormId']['EditLeaseListing.CreateFileUploadListViewModel.CreateFileUploadsViewModel[' + index + '].Files'];
-                var documentType = documentTypesWithFileUploads.find(x => x == item.Id);
-
-                if (
-                    (item.IsRequired && formFiles.value !== "") ||
-                    (!item.IsRequired && formFiles.value === "") ||
-                    (!item.IsRequired && formFiles.value !== "") ||
-                    (documentType && item.IsRequired)
-                ) {
-                    // valid
-                } else {
-                    openModalFlag = false;
-                    var title = item.Description + " is required.";
-                    error.push(title);
-                }
-            });
-
-            if (error.length > 0) {
-                Swal.fire({
-                    title: error[0],
-                    text: "Please upload the required documents to proceed with the application.",
-                    icon: "error",
-                    confirmButtonColor: '#203D57'
-                });
-            }
-
-            return openModalFlag;
-        }
-
     </script>
 }
-

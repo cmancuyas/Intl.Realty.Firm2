@@ -18,7 +18,7 @@ namespace Intl.Realty.Firm.Model.ViewModel.UserVM
         public int? DepartmentId { get; set; }
         public int EmploymentStatusId { get; set; }
         public bool EmailConfirmed { get; set; }
-        public int? ProfilePictureId { get; set; }
+        public int? ProfileImageId { get; set; }
         public List<string> Claims { get; set; } = new List<string>();
         public List<string> Roles { get; set; } = new List<string>();
         public List<Department>? DepartmentList { get; set; }

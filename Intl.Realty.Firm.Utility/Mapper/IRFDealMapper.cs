@@ -21,146 +21,189 @@ namespace Intl.Realty.Firm.Utility.Mapper
         }
         public static EditIRFDealSaleListingViewModel ToEditIRFDealSaleListingViewModel(this IRFDeal model)
         {
-            return new EditIRFDealSaleListingViewModel
+            var viewModel = new EditIRFDealSaleListingViewModel
             {
                 Id = model.Id,
-                //SaleListingId = model.SaleListingId,
-
                 PropertyAddress = model.PropertyAddress,
                 FinalSalePrice = model.FinalSalePrice ?? 0,
                 FinalClosingDate = model.FinalClosingDate,
-
                 DepositAmount = model.DepositAmount,
                 DepositDate = model.DepositDate,
-                BuyerName = model.BuyerName,
-                LandLordName = model.LandLordName,
-                ListingCommissionPercentage = model.ListingCommissionPercentage,
-                BuyingCommissionPercentage = model.BuyingCommissionPercentage,
-                ListingAgentName = model.ListingAgentName ?? "",
-                ListingBrokerage = model.ListingBrokerage ?? "",
-                ListingBrokerageFax = model.ListingBrokerageFax ?? "",
-                BuyerAgentName = model.BuyerAgentName ?? "",
-                BuyerBrokerage = model.BuyerBrokerage ?? "",
-                BuyerBrokerageFax = model.BuyerBrokerageFax ?? "",
-                SellersLawyer = model.SellersLawyer ?? "",
-                SellersLawyerAddress = model.SellersLawyerAddress ?? "",
-                SellersPhoneNumber = model.SellersPhoneNumber ?? "",
-                BuyersLawyer = model.BuyersLawyer ?? "",
-                BuyersLawyerAddress = model.BuyersLawyerAddress ?? "",
-                BuyersPhoneNumber = model.BuyersPhoneNumber ?? "",
-
+                Commission = new()
+                {
+                    ListingCommissionPercentage = model.ListingCommissionPercentage,
+                    BuyingCommissionPercentage = model.BuyingCommissionPercentage
+                },
                 IsActive = model.IsActive,
                 IsDeleted = model.IsDeleted,
                 UpdatedBy = model.UpdatedBy ?? Guid.Empty,
-                UpdatedAt = model.UpdatedAt ?? DateTime.Now
+                UpdatedAt = model.UpdatedAt ?? DateTime.Now,
+                BuyerDetails = new()
+                {
+                    BuyerName = model.BuyerName ?? string.Empty,
+                    BuyerAgentName = model.BuyerAgentName ?? string.Empty,
+                    BuyerBrokerage = model.BuyerBrokerage ?? string.Empty,
+                    BuyerBrokerageFax = model.BuyerBrokerageFax ?? string.Empty,
+                    BuyersPhoneNumber = model.BuyersPhoneNumber ?? string.Empty,
+                    BuyersLawyer = model.BuyersLawyer ?? string.Empty,
+                    BuyerLawyerAddress = model.BuyersLawyerAddress ?? string.Empty,
+                    BuyerLawyerEmail = model.BuyerLawyerEmail ?? string.Empty,
+                    BuyerLawyerPhone = model.BuyerLawyerPhone ?? string.Empty
+                },
+                SellerDetails = new()
+                {
+                    SellersLawyer = model.SellersLawyer ?? string.Empty,
+                    SellersLawyerAddress = model.SellersLawyerAddress ?? string.Empty,
+                    SellersPhoneNumber = model.SellersPhoneNumber ?? string.Empty,
+                    SellerLawyerEmail = model.SellerLawyerEmail ?? string.Empty,
+                    SellerLawyerPhone = model.SellerLawyerPhone ?? string.Empty,
+                }
             };
+
+            return viewModel;
         }
+
         public static EditIRFDealSaleCoopViewModel ToEditIRFDealSaleCoopViewModel(this IRFDeal model)
         {
             return new EditIRFDealSaleCoopViewModel
             {
                 Id = model.Id,
-                //SaleListingId = model.SaleListingId,
-
                 PropertyAddress = model.PropertyAddress,
                 FinalSalePrice = model.FinalSalePrice ?? 0,
                 FinalClosingDate = model.FinalClosingDate,
-
                 DepositAmount = model.DepositAmount,
                 DepositDate = model.DepositDate,
-                BuyerName = model.BuyerName,
-                LandLordName = model.LandLordName,
-                //ListingCommissionPercentage = model.ListingCommissionPercentage,
-                BuyingCommissionPercentage = model.BuyingCommissionPercentage,
-                ListingAgentName = model.ListingAgentName ?? "",
-                ListingBrokerage = model.ListingBrokerage ?? "",
-                ListingBrokerageFax = model.ListingBrokerageFax ?? "",
-                BuyerAgentName = model.BuyerAgentName ?? "",
-                BuyerBrokerage = model.BuyerBrokerage ?? "",
-                BuyerBrokerageFax = model.BuyerBrokerageFax ?? "",
-                SellersLawyer = model.SellersLawyer ?? "",
-                SellersLawyerAddress = model.SellersLawyerAddress ?? "",
-                SellersPhoneNumber = model.SellersPhoneNumber ?? "",
-                BuyersLawyer = model.BuyersLawyer ?? "",
-                BuyersLawyerAddress = model.BuyersLawyerAddress ?? "",
-                BuyersPhoneNumber = model.BuyersPhoneNumber ?? "",
-
+                Commission = new()
+                {
+                    BuyingCommissionPercentage = model.BuyingCommissionPercentage
+                },
                 IsActive = model.IsActive,
                 IsDeleted = model.IsDeleted,
                 UpdatedBy = model.UpdatedBy ?? Guid.Empty,
-                UpdatedAt = model.UpdatedAt ?? DateTime.Now
+                UpdatedAt = model.UpdatedAt ?? DateTime.Now,
+
+                BuyerDetails = new()
+                {
+                    BuyerName = model.BuyerName ?? string.Empty,
+                    BuyerAgentName = model.BuyerAgentName ?? string.Empty,
+                    BuyerBrokerage = model.BuyerBrokerage ?? string.Empty,
+                    BuyerBrokerageFax = model.BuyerBrokerageFax ?? string.Empty,
+                    BuyersPhoneNumber = model.BuyersPhoneNumber ?? string.Empty,
+                    BuyersLawyer = model.BuyersLawyer ?? string.Empty,
+                    BuyerLawyerAddress = model.BuyersLawyerAddress ?? string.Empty,
+                    BuyerLawyerEmail = model.BuyerLawyerEmail ?? string.Empty,
+                    BuyerLawyerPhone = model.BuyerLawyerPhone ?? string.Empty
+                },
+
+                SellerDetails = new()
+                {
+                    SellersLawyer = model.SellersLawyer ?? string.Empty,
+                    SellersLawyerAddress = model.SellersLawyerAddress ?? string.Empty,
+                    SellersPhoneNumber = model.SellersPhoneNumber ?? string.Empty,
+                    SellerLawyerEmail = model.SellerLawyerEmail ?? string.Empty,
+                    SellerLawyerPhone = model.SellerLawyerPhone ?? string.Empty,
+                }
             };
         }
+
         public static EditIRFDealLeaseListingViewModel ToEditIRFDealLeaseListingViewModel(this IRFDeal model)
         {
             return new EditIRFDealLeaseListingViewModel
             {
                 Id = model.Id,
-                //SaleListingId = model.SaleListingId,
-
                 PropertyAddress = model.PropertyAddress,
                 FinalLeasePrice = model.FinalLeasePrice ?? 0,
                 FinalClosingDate = model.FinalClosingDate,
-
                 DepositAmount = model.DepositAmount,
                 DepositDate = model.DepositDate,
-                TenantName = model.TenantName ?? "",
-                LandLordName = model.LandLordName,
-                ListingCommissionPercentage = model.ListingCommissionPercentage,
-                BuyingCommissionPercentage = model.BuyingCommissionPercentage,
-                ListingAgentName = model.ListingAgentName ?? "",
-                ListingBrokerage = model.ListingBrokerage ?? "",
-                ListingBrokerageFax = model.ListingBrokerageFax ?? "",
-                TenantAgentName = model.TenantAgentName ?? "",
-                TenantBrokerage = model.TenantBrokerage ?? "",
-                TenantBrokerageFax = model.TenantBrokerageFax ?? "",
-                TenantEmailAddress = model.TenantEmailAddress ?? "",
 
-                TenantPhoneNumber = model.TenantPhoneNumber ?? "",
-                LandLordPhoneNumber = model.LandLordPhoneNumber ?? "",
-                LandLordEmailAddress = model.LandLordEmailAddress ?? "",
+                // 🧑‍💼 Tenant Info
+                TenantDetails = new()
+                {
+                    TenantName = model.TenantName ?? string.Empty,
+                    TenantAgentName = model.TenantAgentName ?? string.Empty,
+                    TenantBrokerage = model.TenantBrokerage ?? string.Empty,
+                    TenantBrokerageFax = model.TenantBrokerageFax ?? string.Empty,
+                    TenantPhoneNumber = model.TenantPhoneNumber ?? string.Empty,
+                    TenantEmailAddress = model.TenantEmailAddress ?? string.Empty
+                },
 
+                // 🏠 Landlord Info
+                LandLordDetails = new()
+                {
+                    LandLordName = model.LandLordName ?? string.Empty,
+                    LandLordPhoneNumber = model.LandLordPhoneNumber ?? string.Empty,
+                    LandLordEmailAddress = model.LandLordEmailAddress ?? string.Empty
+                },
+
+                // 💼 Commission Info
+                Commission = new()
+                {
+                    ListingCommissionPercentage = model.ListingCommissionPercentage,
+                    BuyingCommissionPercentage = model.BuyingCommissionPercentage
+                },
+
+                // 📋 Listing Info
+                ListingInfo = new()
+                {
+                    ListingAgentName = model.ListingAgentName ?? string.Empty,
+                    ListingBrokerage = model.ListingBrokerage ?? string.Empty,
+                    ListingBrokerageFax = model.ListingBrokerageFax ?? string.Empty
+                },
+
+                // 🕵️‍♀️ Audit
                 IsActive = model.IsActive,
                 IsDeleted = model.IsDeleted,
                 UpdatedBy = model.UpdatedBy ?? Guid.Empty,
-                UpdatedAt = model.UpdatedAt??DateTime.Now   
+                UpdatedAt = model.UpdatedAt ?? DateTime.UtcNow
             };
         }
+
 
         public static EditIRFDealLeaseCoopViewModel ToEditIRFDealLeaseCoopViewModel(this IRFDeal model)
         {
             return new EditIRFDealLeaseCoopViewModel
             {
                 Id = model.Id,
-                //SaleListingId = model.SaleListingId,
-
                 PropertyAddress = model.PropertyAddress,
                 FinalLeasePrice = model.FinalLeasePrice ?? 0,
                 FinalClosingDate = model.FinalClosingDate,
-
                 DepositAmount = model.DepositAmount,
                 DepositDate = model.DepositDate,
-                TenantName = model.TenantName ?? "",
-                LandLordName = model.LandLordName,
-                //ListingCommissionPercentage = model.ListingCommissionPercentage,
-                BuyingCommissionPercentage = model.BuyingCommissionPercentage,
-                ListingAgentName = model.ListingAgentName ?? "",
-                ListingBrokerage = model.ListingBrokerage ?? "",
-                ListingBrokerageFax = model.ListingBrokerageFax ?? "",
-                TenantAgentName = model.TenantAgentName ?? "",
-                TenantBrokerage = model.TenantBrokerage ?? "",
-                TenantBrokerageFax = model.TenantBrokerageFax ?? "",
-                TenantEmailAddress = model.TenantEmailAddress ?? "",
-                TenantPhoneNumber = model.TenantPhoneNumber ?? "",
-                LandLordPhoneNumber = model.LandLordPhoneNumber ?? "",
-                LandLordEmailAddress = model.LandLordEmailAddress ?? "",
 
+                // 👤 Tenant
+                TenantDetails = new()
+                {
+                    TenantName = model.TenantName ?? string.Empty,
+                    TenantAgentName = model.TenantAgentName ?? string.Empty,
+                    TenantBrokerage = model.TenantBrokerage ?? string.Empty,
+                    TenantBrokerageFax = model.TenantBrokerageFax ?? string.Empty,
+                    TenantPhoneNumber = model.TenantPhoneNumber ?? string.Empty,
+                    TenantEmailAddress = model.TenantEmailAddress ?? string.Empty
+                },
+
+                // 👤 Landlord
+                LandLordDetails = new()
+                {
+                    LandLordName = model.LandLordName ?? string.Empty,
+                    LandLordPhoneNumber = model.LandLordPhoneNumber ?? string.Empty,
+                    LandLordEmailAddress = model.LandLordEmailAddress ?? string.Empty
+                },
+                Commission = new()
+                {
+                    BuyingCommissionPercentage = model.BuyingCommissionPercentage
+                },
+
+                // ✅ Status
                 IsActive = model.IsActive,
                 IsDeleted = model.IsDeleted,
                 UpdatedBy = model.UpdatedBy ?? Guid.Empty,
-                UpdatedAt = model.UpdatedAt ?? DateTime.Now
+                UpdatedAt = model.UpdatedAt ?? DateTime.UtcNow
             };
         }
+
+
+
         public static IEnumerable<IRFDealViewModel> ToIRFDealIEnumViewModel(this IEnumerable<IRFDeal> modelIEnum)
         {
             IEnumerable<IRFDealViewModel> viewModelIEnum = new List<IRFDealViewModel>();
@@ -189,9 +232,14 @@ namespace Intl.Realty.Firm.Utility.Mapper
                     SellersLawyer = x.SellersLawyer,
                     SellersLawyerAddress = x.SellersLawyerAddress,
                     SellersPhoneNumber = x.SellersPhoneNumber,
+                    SellerLawyerPhone = x.SellerLawyerPhone,
+                    SellerLawyerEmail = x.SellerLawyerEmail,
+
                     BuyersLawyer = x.BuyersLawyer,
                     BuyersLawyerAddress = x.BuyersLawyerAddress,
                     BuyersPhoneNumber = x.BuyersPhoneNumber,
+                    BuyerLawyerPhone = x.BuyerLawyerPhone,
+                    BuyerLawyerEmail = x.BuyerLawyerEmail,
 
                     IsActive = x.IsActive,
                     IsDeleted = x.IsDeleted,
@@ -209,102 +257,121 @@ namespace Intl.Realty.Firm.Utility.Mapper
         {
             return new IRFDeal
             {
-                //SaleListingId = viewModel.SaleListingId,
-
                 PropertyAddress = viewModel.PropertyAddress,
                 FinalSalePrice = viewModel.FinalSalePrice,
                 FinalClosingDate = viewModel.FinalClosingDate,
                 DepositAmount = viewModel.DepositAmount,
                 DepositDate = viewModel.DepositDate,
-                BuyerName = viewModel.BuyerName,
-                LandLordName = viewModel.LandLordName,
-                ListingCommissionPercentage = viewModel.ListingCommissionPercentage,
-                BuyingCommissionPercentage = viewModel.BuyingCommissionPercentage,
-                ListingAgentName = viewModel.ListingAgentName,
-                ListingBrokerage = viewModel.ListingBrokerage,
-                ListingBrokerageFax = viewModel.ListingBrokerageFax,
-                BuyerAgentName = viewModel.BuyerAgentName,
-                BuyerBrokerage = viewModel.BuyerBrokerage,
-                BuyerBrokerageFax = viewModel.BuyerBrokerageFax,
-                SellersLawyer = viewModel.SellersLawyer,
-                SellersLawyerAddress = viewModel.SellersLawyerAddress,
-                SellersPhoneNumber = viewModel.SellersPhoneNumber,
-                BuyersLawyer = viewModel.BuyersLawyer,
-                BuyersLawyerAddress = viewModel.BuyersLawyerAddress,
-                BuyersPhoneNumber = viewModel.BuyersPhoneNumber,
 
+                // 👤 Buyer
+                BuyerName = viewModel.BuyerDetails.BuyerName,
+                BuyerAgentName = viewModel.BuyerDetails.BuyerAgentName,
+                BuyerBrokerage = viewModel.BuyerDetails.BuyerBrokerage,
+                BuyerBrokerageFax = viewModel.BuyerDetails.BuyerBrokerageFax,
+                BuyersLawyer = viewModel.BuyerDetails.BuyersLawyer,
+                BuyersLawyerAddress = viewModel.BuyerDetails.BuyerLawyerAddress,
+                BuyersPhoneNumber = viewModel.BuyerDetails.BuyersPhoneNumber,
+                BuyerLawyerEmail = viewModel.BuyerDetails.BuyerLawyerEmail,
+                BuyerLawyerPhone = viewModel.BuyerDetails.BuyerLawyerPhone,
+
+                // 👤 Seller
+                SellersLawyer = viewModel.SellerDetails.SellersLawyer,
+                SellersLawyerAddress = viewModel.SellerDetails.SellersLawyerAddress,
+                SellersPhoneNumber = viewModel.SellerDetails.SellersPhoneNumber,
+                SellerLawyerEmail = viewModel.SellerDetails.SellerLawyerEmail,
+                SellerLawyerPhone = viewModel.SellerDetails.SellerLawyerPhone ,
+                // 💼 Commission
+
+                ListingCommissionPercentage = viewModel.Commission.ListingCommissionPercentage,
+                BuyingCommissionPercentage = viewModel.Commission.BuyingCommissionPercentage,
+
+                // 🧾 Metadata
                 IsActive = viewModel.IsActive,
                 IsDeleted = viewModel.IsDeleted,
                 CreatedAt = viewModel.CreatedAt,
                 CreatedBy = viewModel.CreatedBy,
             };
         }
+
         public static IRFDeal ToIRFDealModel(this CreateIRFDealSaleCoopViewModel viewModel)
         {
             return new IRFDeal
             {
-                //SaleListingId = viewModel.SaleListingId,
-
                 PropertyAddress = viewModel.PropertyAddress,
                 FinalSalePrice = viewModel.FinalSalePrice,
                 FinalClosingDate = viewModel.FinalClosingDate,
                 DepositAmount = viewModel.DepositAmount,
                 DepositDate = viewModel.DepositDate,
-                BuyerName = viewModel.BuyerName,
-                LandLordName = viewModel.LandLordName,
-                //ListingCommissionPercentage = viewModel.ListingCommissionPercentage,
-                BuyingCommissionPercentage = viewModel.BuyingCommissionPercentage,
-                ListingAgentName = viewModel.ListingAgentName,
-                ListingBrokerage = viewModel.ListingBrokerage,
-                ListingBrokerageFax = viewModel.ListingBrokerageFax,
-                BuyerAgentName = viewModel.BuyerAgentName,
-                BuyerBrokerage = viewModel.BuyerBrokerage,
-                BuyerBrokerageFax = viewModel.BuyerBrokerageFax,
-                SellersLawyer = viewModel.SellersLawyer,
-                SellersLawyerAddress = viewModel.SellersLawyerAddress,
-                SellersPhoneNumber = viewModel.SellersPhoneNumber,
-                BuyersLawyer = viewModel.BuyersLawyer,
-                BuyersLawyerAddress = viewModel.BuyersLawyerAddress,
-                BuyersPhoneNumber = viewModel.BuyersPhoneNumber,
 
+                // 👤 Buyer
+                BuyerName = viewModel.BuyerDetails.BuyerName,
+                BuyerAgentName = viewModel.BuyerDetails.BuyerAgentName,
+                BuyerBrokerage = viewModel.BuyerDetails.BuyerBrokerage,
+                BuyerBrokerageFax = viewModel.BuyerDetails.BuyerBrokerageFax,
+                BuyersLawyer = viewModel.BuyerDetails.BuyersLawyer,
+                BuyersLawyerAddress = viewModel.BuyerDetails.BuyerLawyerAddress,
+                BuyersPhoneNumber = viewModel.BuyerDetails.BuyersPhoneNumber,
+                BuyerLawyerEmail = viewModel.BuyerDetails.BuyerLawyerEmail,
+                BuyerLawyerPhone = viewModel.BuyerDetails.BuyerLawyerPhone,
+
+                // 👤 Seller
+                SellersLawyer = viewModel.SellerDetails.SellersLawyer,
+                SellersLawyerAddress = viewModel.SellerDetails.SellersLawyerAddress,
+                SellersPhoneNumber = viewModel.SellerDetails.SellersPhoneNumber,
+                SellerLawyerEmail = viewModel.SellerDetails.SellerLawyerEmail,
+                SellerLawyerPhone = viewModel.SellerDetails.SellerLawyerPhone,
+
+                // 💼 Commission (Only Buying)
+                BuyingCommissionPercentage = viewModel.Commission.BuyingCommissionPercentage,
+
+                // 🧾 Metadata
                 IsActive = viewModel.IsActive,
                 IsDeleted = viewModel.IsDeleted,
                 CreatedAt = viewModel.CreatedAt,
                 CreatedBy = viewModel.CreatedBy,
             };
         }
+
         public static IRFDeal ToIRFDealModel(this CreateIRFDealLeaseListingViewModel viewModel)
         {
             return new IRFDeal
             {
-                //SaleListingId = viewModel.SaleListingId,
-
                 PropertyAddress = viewModel.PropertyAddress,
                 FinalLeasePrice = viewModel.FinalLeasePrice,
                 FinalClosingDate = viewModel.FinalClosingDate,
                 DepositAmount = viewModel.DepositAmount,
                 DepositDate = viewModel.DepositDate,
-                TenantName = viewModel.TenantName,
-                LandLordName = viewModel.LandLordName,
-                ListingCommissionPercentage = viewModel.ListingCommissionPercentage,
-                BuyingCommissionPercentage = viewModel.BuyingCommissionPercentage,
-                ListingAgentName = viewModel.ListingAgentName,
-                ListingBrokerage = viewModel.ListingBrokerage,
-                ListingBrokerageFax = viewModel.ListingBrokerageFax,
-                TenantAgentName = viewModel.TenantAgentName,
-                TenantBrokerage = viewModel.TenantBrokerage,
-                TenantBrokerageFax = viewModel.TenantBrokerageFax,
 
-                TenantPhoneNumber = viewModel.TenantPhoneNumber ?? "",
-                LandLordPhoneNumber = viewModel.LandLordPhoneNumber ?? "",
-                LandLordEmailAddress = viewModel.LandLordEmailAddress ?? "",
+                // 👤 Tenant
+                TenantName = viewModel.TenantDetails.TenantName,
+                TenantAgentName = viewModel.TenantDetails.TenantAgentName,
+                TenantBrokerage = viewModel.TenantDetails.TenantBrokerage,
+                TenantBrokerageFax = viewModel.TenantDetails.TenantBrokerageFax,
+                TenantPhoneNumber = viewModel.TenantDetails.TenantPhoneNumber,
+                TenantEmailAddress = viewModel.TenantDetails.TenantEmailAddress,
 
+                // 👤 Landlord
+                LandLordName = viewModel.LandLordDetails.LandLordName,
+                LandLordPhoneNumber = viewModel.LandLordDetails.LandLordPhoneNumber,
+                LandLordEmailAddress = viewModel.LandLordDetails.LandLordEmailAddress,
+
+                // 🏢 Listing Info
+                ListingAgentName = viewModel.ListingInfo.ListingAgentName,
+                ListingBrokerage = viewModel.ListingInfo.ListingBrokerage,
+                ListingBrokerageFax = viewModel.ListingInfo.ListingBrokerageFax,
+
+                // 💼 Commission Info
+                ListingCommissionPercentage = viewModel.Commission.ListingCommissionPercentage,
+                BuyingCommissionPercentage = viewModel.Commission.BuyingCommissionPercentage,
+
+                // 📌 Metadata
                 IsActive = viewModel.IsActive,
                 IsDeleted = viewModel.IsDeleted,
                 CreatedAt = viewModel.CreatedAt,
                 CreatedBy = viewModel.CreatedBy,
             };
         }
+
         public static IRFDeal ToIRFDealModel(this CreateIRFDealLeaseCoopViewModel viewModel)
         {
             return new IRFDeal
@@ -316,20 +383,20 @@ namespace Intl.Realty.Firm.Utility.Mapper
                 FinalClosingDate = viewModel.FinalClosingDate,
                 DepositAmount = viewModel.DepositAmount,
                 DepositDate = viewModel.DepositDate,
-                TenantName = viewModel.TenantName,
-                LandLordName = viewModel.LandLordName,
+                TenantName = viewModel.TenantDetails.TenantName,
+                LandLordName = viewModel.LandLordDetails.LandLordName,
                 //ListingCommissionPercentage = viewModel.ListingCommissionPercentage,
-                BuyingCommissionPercentage = viewModel.BuyingCommissionPercentage,
-                ListingAgentName = viewModel.ListingAgentName,
-                ListingBrokerage = viewModel.ListingBrokerage,
-                ListingBrokerageFax = viewModel.ListingBrokerageFax,
-                TenantAgentName = viewModel.TenantAgentName,
-                TenantBrokerage = viewModel.TenantBrokerage,
-                TenantBrokerageFax = viewModel.TenantBrokerageFax,
+                BuyingCommissionPercentage = viewModel.Commission.BuyingCommissionPercentage,
+                ListingAgentName = viewModel.ListingInfo.ListingAgentName,
+                ListingBrokerage = viewModel.ListingInfo.ListingBrokerage,
+                ListingBrokerageFax = viewModel.ListingInfo.ListingBrokerageFax,
+                TenantAgentName = viewModel.TenantDetails.TenantAgentName,
+                TenantBrokerage = viewModel.TenantDetails.TenantBrokerage,
+                TenantBrokerageFax = viewModel.TenantDetails.TenantBrokerageFax,
 
-                TenantPhoneNumber = viewModel.TenantPhoneNumber ?? "",
-                LandLordPhoneNumber = viewModel.LandLordPhoneNumber ?? "",
-                LandLordEmailAddress = viewModel.LandLordEmailAddress ?? "",
+                TenantPhoneNumber = viewModel.TenantDetails.TenantPhoneNumber ?? "",
+                LandLordPhoneNumber = viewModel.LandLordDetails.LandLordPhoneNumber ?? "",
+                LandLordEmailAddress = viewModel.LandLordDetails.LandLordEmailAddress ?? "",
 
                 IsActive = viewModel.IsActive,
                 IsDeleted = viewModel.IsDeleted,
@@ -349,31 +416,28 @@ namespace Intl.Realty.Firm.Utility.Mapper
                 FinalClosingDate = viewModel.FinalClosingDate,
                 DepositAmount = viewModel.DepositAmount,
                 DepositDate = viewModel.DepositDate,
-                BuyerName = viewModel.BuyerName,
-                LandLordName = viewModel.LandLordName,
-                ListingCommissionPercentage = viewModel.ListingCommissionPercentage,
-                BuyingCommissionPercentage = viewModel.BuyingCommissionPercentage,
-                ListingAgentName = viewModel.ListingAgentName,
-                ListingBrokerage = viewModel.ListingBrokerage,
-                ListingBrokerageFax = viewModel.ListingBrokerageFax,
-                BuyerAgentName = viewModel.BuyerAgentName,
-                BuyerBrokerage = viewModel.BuyerBrokerage,
-                BuyerBrokerageFax = viewModel.BuyerBrokerageFax,
-                SellersLawyer = viewModel.SellersLawyer,
-                SellersLawyerAddress = viewModel.SellersLawyerAddress,
-                SellersPhoneNumber = viewModel.SellersPhoneNumber,
-                BuyersLawyer = viewModel.BuyersLawyer,
-                BuyersLawyerAddress = viewModel.BuyersLawyerAddress,
-                BuyersPhoneNumber = viewModel.BuyersPhoneNumber,
+                BuyerName = viewModel.BuyerDetails.BuyerName,
+                ListingCommissionPercentage = viewModel.Commission.ListingCommissionPercentage,
+                BuyingCommissionPercentage = viewModel.Commission.BuyingCommissionPercentage,
+                BuyerAgentName = viewModel.BuyerDetails.BuyerAgentName,
+                BuyerBrokerage = viewModel.BuyerDetails.BuyerBrokerage,
+                BuyerBrokerageFax = viewModel.BuyerDetails.BuyerBrokerageFax,
+                SellersLawyer = viewModel.SellerDetails.SellersLawyer,
+                SellersLawyerAddress = viewModel.SellerDetails.SellersLawyerAddress,
+                SellersPhoneNumber = viewModel.SellerDetails.SellersPhoneNumber,
+                SellerLawyerEmail = viewModel.SellerDetails.SellerLawyerEmail,
+                SellerLawyerPhone = viewModel.SellerDetails.SellerLawyerPhone,
+
+                BuyersLawyer = viewModel.BuyerDetails.BuyersLawyer,
+                BuyersLawyerAddress = viewModel.BuyerDetails.BuyerLawyerAddress,
+                BuyersPhoneNumber = viewModel.BuyerDetails.BuyersPhoneNumber,
+                BuyerLawyerEmail = viewModel.BuyerDetails.BuyerLawyerEmail,
+                BuyerLawyerPhone = viewModel.BuyerDetails.BuyerLawyerPhone,
 
                 IsActive = viewModel.IsActive,
                 IsDeleted = viewModel.IsDeleted,
-                CreatedAt = viewModel.CreatedAt,
-                CreatedBy = viewModel.CreatedBy,
                 UpdatedBy = viewModel.UpdatedBy,
                 UpdatedAt = viewModel.UpdatedAt,
-                DeletedBy = viewModel.DeletedBy,
-                DeletedAt = viewModel.DeletedAt,
             };
         }
         public static IRFDeal ToIRFDealModel(this EditIRFDealSaleCoopViewModel viewModel)
@@ -381,112 +445,119 @@ namespace Intl.Realty.Firm.Utility.Mapper
             return new IRFDeal
             {
                 Id = viewModel.Id,
-                //SaleListingId = viewModel.SaleListingId,
-
                 PropertyAddress = viewModel.PropertyAddress,
                 FinalSalePrice = viewModel.FinalSalePrice,
                 FinalClosingDate = viewModel.FinalClosingDate,
                 DepositAmount = viewModel.DepositAmount,
                 DepositDate = viewModel.DepositDate,
-                BuyerName = viewModel.BuyerName,
-                LandLordName = viewModel.LandLordName,
-                //ListingCommissionPercentage = viewModel.ListingCommissionPercentage,
-                BuyingCommissionPercentage = viewModel.BuyingCommissionPercentage,
-                ListingAgentName = viewModel.ListingAgentName,
-                ListingBrokerage = viewModel.ListingBrokerage,
-                ListingBrokerageFax = viewModel.ListingBrokerageFax,
-                BuyerAgentName = viewModel.BuyerAgentName,
-                BuyerBrokerage = viewModel.BuyerBrokerage,
-                BuyerBrokerageFax = viewModel.BuyerBrokerageFax,
-                SellersLawyer = viewModel.SellersLawyer,
-                SellersLawyerAddress = viewModel.SellersLawyerAddress,
-                SellersPhoneNumber = viewModel.SellersPhoneNumber,
-                BuyersLawyer = viewModel.BuyersLawyer,
-                BuyersLawyerAddress = viewModel.BuyersLawyerAddress,
-                BuyersPhoneNumber = viewModel.BuyersPhoneNumber,
 
+                // 👤 Buyer
+                BuyerName = viewModel.BuyerDetails.BuyerName,
+                BuyerAgentName = viewModel.BuyerDetails.BuyerAgentName,
+                BuyerBrokerage = viewModel.BuyerDetails.BuyerBrokerage,
+                BuyerBrokerageFax = viewModel.BuyerDetails.BuyerBrokerageFax,
+                BuyersPhoneNumber = viewModel.BuyerDetails.BuyersPhoneNumber,
+                BuyersLawyer = viewModel.BuyerDetails.BuyersLawyer,
+                BuyersLawyerAddress = viewModel.BuyerDetails.BuyerLawyerAddress,
+                BuyerLawyerPhone = viewModel.BuyerDetails.BuyerLawyerPhone,
+                BuyerLawyerEmail = viewModel.BuyerDetails.BuyerLawyerEmail,
+
+                // 👤 Seller
+                SellersPhoneNumber = viewModel.SellerDetails.SellersPhoneNumber,
+                SellersLawyer = viewModel.SellerDetails.SellersLawyer,
+                SellersLawyerAddress = viewModel.SellerDetails.SellersLawyerAddress,
+                SellerLawyerPhone = viewModel.SellerDetails.SellerLawyerPhone,
+                SellerLawyerEmail = viewModel.SellerDetails.SellerLawyerEmail,
+
+                // 💼 Commission (only buying for SaleCoop)
+                BuyingCommissionPercentage = viewModel.Commission.BuyingCommissionPercentage,
+
+                // 📌 Audit
                 IsActive = viewModel.IsActive,
                 IsDeleted = viewModel.IsDeleted,
-                CreatedAt = viewModel.CreatedAt,
-                CreatedBy = viewModel.CreatedBy,
                 UpdatedBy = viewModel.UpdatedBy,
-                UpdatedAt = viewModel.UpdatedAt,
-                DeletedBy = viewModel.DeletedBy,
-                DeletedAt = viewModel.DeletedAt,
+                UpdatedAt = viewModel.UpdatedAt
             };
         }
+
         public static IRFDeal ToIRFDealModel(this EditIRFDealLeaseListingViewModel viewModel)
         {
             return new IRFDeal
             {
                 Id = viewModel.Id,
-                //SaleListingId = viewModel.SaleListingId,
-
                 PropertyAddress = viewModel.PropertyAddress,
                 FinalLeasePrice = viewModel.FinalLeasePrice,
                 FinalClosingDate = viewModel.FinalClosingDate,
                 DepositAmount = viewModel.DepositAmount,
                 DepositDate = viewModel.DepositDate,
-                TenantName = viewModel.TenantName,
-                LandLordName = viewModel.LandLordName,
-                ListingCommissionPercentage = viewModel.ListingCommissionPercentage,
-                BuyingCommissionPercentage = viewModel.BuyingCommissionPercentage,
-                ListingAgentName = viewModel.ListingAgentName,
-                ListingBrokerage = viewModel.ListingBrokerage,
-                ListingBrokerageFax = viewModel.ListingBrokerageFax,
-                TenantAgentName = viewModel.TenantAgentName,
-                TenantBrokerage = viewModel.TenantBrokerage,
-                TenantBrokerageFax = viewModel.TenantBrokerageFax,
-                TenantPhoneNumber = viewModel.TenantPhoneNumber,
-                LandLordPhoneNumber = viewModel.LandLordPhoneNumber,
-                LandLordEmailAddress = viewModel.LandLordEmailAddress,
 
+                // 👤 Tenant Info
+                TenantName = viewModel.TenantDetails.TenantName,
+                TenantAgentName = viewModel.TenantDetails.TenantAgentName,
+                TenantBrokerage = viewModel.TenantDetails.TenantBrokerage,
+                TenantBrokerageFax = viewModel.TenantDetails.TenantBrokerageFax,
+                TenantPhoneNumber = viewModel.TenantDetails.TenantPhoneNumber,
+                TenantEmailAddress = viewModel.TenantDetails.TenantEmailAddress,
+
+                // 🧑‍💼 Landlord Info
+                LandLordName = viewModel.LandLordDetails.LandLordName,
+                LandLordPhoneNumber = viewModel.LandLordDetails.LandLordPhoneNumber,
+                LandLordEmailAddress = viewModel.LandLordDetails.LandLordEmailAddress,
+
+                // 📋 Listing Info
+                ListingAgentName = viewModel.ListingInfo.ListingAgentName,
+                ListingBrokerage = viewModel.ListingInfo.ListingBrokerage,
+                ListingBrokerageFax = viewModel.ListingInfo.ListingBrokerageFax,
+
+                // 💼 Commission Info
+                ListingCommissionPercentage = viewModel.Commission.ListingCommissionPercentage,
+                BuyingCommissionPercentage = viewModel.Commission.BuyingCommissionPercentage,
+
+                // ✅ Audit
                 IsActive = viewModel.IsActive,
                 IsDeleted = viewModel.IsDeleted,
-                CreatedAt = viewModel.CreatedAt,
-                CreatedBy = viewModel.CreatedBy,
                 UpdatedBy = viewModel.UpdatedBy,
                 UpdatedAt = viewModel.UpdatedAt,
-                DeletedBy = viewModel.DeletedBy,
-                DeletedAt = viewModel.DeletedAt,
             };
         }
+
         public static IRFDeal ToIRFDealModel(this EditIRFDealLeaseCoopViewModel viewModel)
         {
             return new IRFDeal
             {
                 Id = viewModel.Id,
-                //SaleListingId = viewModel.SaleListingId,
-
                 PropertyAddress = viewModel.PropertyAddress,
                 FinalLeasePrice = viewModel.FinalLeasePrice,
                 FinalClosingDate = viewModel.FinalClosingDate,
                 DepositAmount = viewModel.DepositAmount,
                 DepositDate = viewModel.DepositDate,
-                TenantName = viewModel.TenantName,
-                LandLordName = viewModel.LandLordName,
-                //ListingCommissionPercentage = viewModel.ListingCommissionPercentage,
-                BuyingCommissionPercentage = viewModel.BuyingCommissionPercentage,
-                ListingAgentName = viewModel.ListingAgentName,
-                ListingBrokerage = viewModel.ListingBrokerage,
-                ListingBrokerageFax = viewModel.ListingBrokerageFax,
-                TenantAgentName = viewModel.TenantAgentName,
-                TenantBrokerage = viewModel.TenantBrokerage,
-                TenantBrokerageFax = viewModel.TenantBrokerageFax,
-                TenantPhoneNumber = viewModel.TenantPhoneNumber,
-                LandLordPhoneNumber = viewModel.LandLordPhoneNumber,
-                LandLordEmailAddress = viewModel.LandLordEmailAddress,
 
+                // 👤 Tenant Info
+                TenantName = viewModel.TenantDetails.TenantName,
+                TenantAgentName = viewModel.TenantDetails.TenantAgentName,
+                TenantBrokerage = viewModel.TenantDetails.TenantBrokerage,
+                TenantBrokerageFax = viewModel.TenantDetails.TenantBrokerageFax,
+                TenantPhoneNumber = viewModel.TenantDetails.TenantPhoneNumber,
+                TenantEmailAddress = viewModel.TenantDetails.TenantEmailAddress,
+
+                // 🧑‍💼 Landlord Info
+                LandLordName = viewModel.LandLordDetails.LandLordName,
+                LandLordPhoneNumber = viewModel.LandLordDetails.LandLordPhoneNumber,
+                LandLordEmailAddress = viewModel.LandLordDetails.LandLordEmailAddress,
+
+                // 💼 Commission Info (only buying for LeaseCoop)
+                BuyingCommissionPercentage = viewModel.Commission.BuyingCommissionPercentage,
+
+                // ListingInfo is ignored here as it's not required in LeaseCoop
+
+                // ✅ Audit
                 IsActive = viewModel.IsActive,
                 IsDeleted = viewModel.IsDeleted,
-                CreatedAt = viewModel.CreatedAt,
-                CreatedBy = viewModel.CreatedBy,
                 UpdatedBy = viewModel.UpdatedBy,
                 UpdatedAt = viewModel.UpdatedAt,
-                DeletedBy = viewModel.DeletedBy,
-                DeletedAt = viewModel.DeletedAt,
             };
         }
+
         public static List<IRFDealExport> ToIRFDealListExport(this List<IRFDealViewModel> modelList)
         {
             List<IRFDealExport> exportList = new List<IRFDealExport>();
@@ -510,12 +581,18 @@ namespace Intl.Realty.Firm.Utility.Mapper
                     BuyerAgentName = x.BuyerAgentName,
                     BuyerBrokerage = x.BuyerBrokerage,
                     BuyerBrokerageFax = x.BuyerBrokerageFax,
+
                     SellersLawyer = x.SellersLawyer,
                     SellersLawyerAddress = x.SellersLawyerAddress,
                     SellersPhoneNumber = x.SellersPhoneNumber,
+                    SellerLawyerEmail = x.SellerLawyerEmail,
+                    SellerLawyerPhone = x.SellerLawyerPhone,
+
                     BuyersLawyer = x.BuyersLawyer,
                     BuyersLawyerAddress = x.BuyersLawyerAddress,
                     BuyersPhoneNumber = x.BuyersPhoneNumber,
+                    BuyerLawyerEmail = x.BuyerLawyerEmail,
+                    BuyerLawyerPhone = x.BuyerLawyerPhone
 
                 }).ToList();
             }
@@ -544,12 +621,18 @@ namespace Intl.Realty.Firm.Utility.Mapper
                 BuyerAgentName = model.BuyerAgentName,
                 BuyerBrokerage = model.BuyerBrokerage,
                 BuyerBrokerageFax = model.BuyerBrokerageFax,
+
                 SellersLawyer = model.SellersLawyer,
                 SellersLawyerAddress = model.SellersLawyerAddress,
                 SellersPhoneNumber = model.SellersPhoneNumber,
+                SellerLawyerEmail = model.SellerLawyerEmail,
+                SellerLawyerPhone = model.SellerLawyerPhone,
                 BuyersLawyer = model.BuyersLawyer,
                 BuyersLawyerAddress = model.BuyersLawyerAddress,
                 BuyersPhoneNumber = model.BuyersPhoneNumber,
+                BuyerLawyerEmail = model.BuyerLawyerEmail,
+                BuyerLawyerPhone = model.BuyerLawyerPhone,
+
 
                 IsActive = model.IsActive,
                 IsDeleted = model.IsDeleted,
@@ -592,9 +675,14 @@ namespace Intl.Realty.Firm.Utility.Mapper
                     SellersLawyer = x.SellersLawyer,
                     SellersLawyerAddress = x.SellersLawyerAddress,
                     SellersPhoneNumber = x.SellersPhoneNumber,
+                    SellerLawyerEmail = x.SellerLawyerEmail,
+                    SellerLawyerPhone = x.SellerLawyerPhone,
+
                     BuyersLawyer = x.BuyersLawyer,
                     BuyersLawyerAddress = x.BuyersLawyerAddress,
                     BuyersPhoneNumber = x.BuyersPhoneNumber,
+                    BuyerLawyerEmail = x.BuyerLawyerEmail,
+                    BuyerLawyerPhone = x.BuyerLawyerPhone,
 
                     IsActive = x.IsActive,
                     IsDeleted = x.IsDeleted,
@@ -616,79 +704,107 @@ namespace Intl.Realty.Firm.Utility.Mapper
             entity.FinalClosingDate = viewModel.FinalClosingDate;
             entity.DepositAmount = viewModel.DepositAmount;
             entity.DepositDate = viewModel.DepositDate;
-            entity.TenantName = viewModel.TenantName;
-            entity.LandLordName = viewModel.LandLordName;
-            entity.BuyingCommissionPercentage = viewModel.BuyingCommissionPercentage;
-            entity.ListingAgentName = viewModel.ListingAgentName;
-            entity.ListingBrokerage = viewModel.ListingBrokerage;
-            entity.ListingBrokerageFax = viewModel.ListingBrokerageFax;
-            entity.TenantAgentName = viewModel.TenantAgentName;
-            entity.TenantEmailAddress = viewModel.TenantEmailAddress;
-            entity.TenantBrokerage = viewModel.TenantBrokerage;
-            entity.TenantBrokerageFax = viewModel.TenantBrokerageFax;
-            entity.TenantPhoneNumber = viewModel.TenantPhoneNumber;
-            entity.LandLordPhoneNumber = viewModel.LandLordPhoneNumber;
-            entity.LandLordEmailAddress = viewModel.LandLordEmailAddress;
+
+            // 👤 Tenant
+            entity.TenantName = viewModel.TenantDetails.TenantName;
+            entity.TenantAgentName = viewModel.TenantDetails.TenantAgentName;
+            entity.TenantBrokerage = viewModel.TenantDetails.TenantBrokerage;
+            entity.TenantBrokerageFax = viewModel.TenantDetails.TenantBrokerageFax;
+            entity.TenantPhoneNumber = viewModel.TenantDetails.TenantPhoneNumber;
+            entity.TenantEmailAddress = viewModel.TenantDetails.TenantEmailAddress;
+
+            // 🧑‍💼 Landlord
+            entity.LandLordName = viewModel.LandLordDetails.LandLordName;
+            entity.LandLordPhoneNumber = viewModel.LandLordDetails.LandLordPhoneNumber;
+            entity.LandLordEmailAddress = viewModel.LandLordDetails.LandLordEmailAddress;
+
+            // 💼 Commission (only BuyingCommission is used for LeaseCoop)
+            entity.BuyingCommissionPercentage = viewModel.Commission.BuyingCommissionPercentage;
+
+            // ❌ Listing Info not included for LeaseCoop by requirement
+
+            // ✅ Audit
             entity.IsActive = viewModel.IsActive;
             entity.IsDeleted = viewModel.IsDeleted;
             entity.UpdatedBy = updatedBy;
             entity.UpdatedAt = DateTime.UtcNow;
         }
+
         public static void UpdateFromViewModel(this IRFDeal entity, EditIRFDealLeaseListingViewModel viewModel, Guid updatedBy)
         {
+            // 🏠 Deal Info
             entity.PropertyAddress = viewModel.PropertyAddress;
             entity.FinalLeasePrice = viewModel.FinalLeasePrice;
             entity.FinalClosingDate = viewModel.FinalClosingDate;
             entity.DepositAmount = viewModel.DepositAmount;
             entity.DepositDate = viewModel.DepositDate;
-            entity.TenantName = viewModel.TenantName;
-            entity.LandLordName = viewModel.LandLordName;
-            entity.BuyingCommissionPercentage = viewModel.BuyingCommissionPercentage;
-            entity.ListingAgentName = viewModel.ListingAgentName;
-            entity.ListingBrokerage = viewModel.ListingBrokerage;
-            entity.ListingBrokerageFax = viewModel.ListingBrokerageFax;
-            entity.TenantAgentName = viewModel.TenantAgentName;
-            entity.TenantEmailAddress = viewModel.TenantEmailAddress;
-            entity.TenantBrokerage = viewModel.TenantBrokerage;
-            entity.TenantBrokerageFax = viewModel.TenantBrokerageFax;
-            entity.TenantPhoneNumber = viewModel.TenantPhoneNumber;
-            entity.LandLordPhoneNumber = viewModel.LandLordPhoneNumber;
-            entity.LandLordEmailAddress = viewModel.LandLordEmailAddress;
+
+            // 👤 Tenant
+            entity.TenantName = viewModel.TenantDetails.TenantName;
+            entity.TenantAgentName = viewModel.TenantDetails.TenantAgentName;
+            entity.TenantBrokerage = viewModel.TenantDetails.TenantBrokerage;
+            entity.TenantBrokerageFax = viewModel.TenantDetails.TenantBrokerageFax;
+            entity.TenantPhoneNumber = viewModel.TenantDetails.TenantPhoneNumber;
+            entity.TenantEmailAddress = viewModel.TenantDetails.TenantEmailAddress;
+
+            // 🧑‍💼 Landlord
+            entity.LandLordName = viewModel.LandLordDetails.LandLordName;
+            entity.LandLordPhoneNumber = viewModel.LandLordDetails.LandLordPhoneNumber;
+            entity.LandLordEmailAddress = viewModel.LandLordDetails.LandLordEmailAddress;
+
+            // 🏢 Listing
+            entity.ListingAgentName = viewModel.ListingInfo.ListingAgentName;
+            entity.ListingBrokerage = viewModel.ListingInfo.ListingBrokerage;
+            entity.ListingBrokerageFax = viewModel.ListingInfo.ListingBrokerageFax;
+
+            // 💼 Commission
+            entity.BuyingCommissionPercentage = viewModel.Commission.BuyingCommissionPercentage;
+            entity.ListingCommissionPercentage = viewModel.Commission.ListingCommissionPercentage;
+
+            // ✅ Audit
             entity.IsActive = viewModel.IsActive;
             entity.IsDeleted = viewModel.IsDeleted;
             entity.UpdatedBy = updatedBy;
             entity.UpdatedAt = DateTime.UtcNow;
         }
+
         public static void UpdateFromViewModel(this IRFDeal entity, EditIRFDealSaleCoopViewModel viewModel, Guid updatedBy)
         {
-
+            // 🏠 Deal Info
             entity.PropertyAddress = viewModel.PropertyAddress;
             entity.FinalSalePrice = viewModel.FinalSalePrice;
             entity.FinalClosingDate = viewModel.FinalClosingDate;
             entity.DepositAmount = viewModel.DepositAmount;
             entity.DepositDate = viewModel.DepositDate;
-            entity.BuyerName = viewModel.BuyerName;
-            entity.LandLordName = viewModel.LandLordName;
-            //ListingCommissionPercentage = viewModel.ListingCommissionPercentage;
-            entity.BuyingCommissionPercentage = viewModel.BuyingCommissionPercentage;
-            entity.ListingAgentName = viewModel.ListingAgentName;
-            entity.ListingBrokerage = viewModel.ListingBrokerage;
-            entity.ListingBrokerageFax = viewModel.ListingBrokerageFax;
-            entity.BuyerAgentName = viewModel.BuyerAgentName;
-            entity.BuyerBrokerage = viewModel.BuyerBrokerage;
-            entity.BuyerBrokerageFax = viewModel.BuyerBrokerageFax;
-            entity.SellersLawyer = viewModel.SellersLawyer;
-            entity.SellersLawyerAddress = viewModel.SellersLawyerAddress;
-            entity.SellersPhoneNumber = viewModel.SellersPhoneNumber;
-            entity.BuyersLawyer = viewModel.BuyersLawyer;
-            entity.BuyersLawyerAddress = viewModel.BuyersLawyerAddress;
-            entity.BuyersPhoneNumber = viewModel.BuyersPhoneNumber;
 
+            // 👤 Buyer
+            entity.BuyerName = viewModel.BuyerDetails.BuyerName;
+            entity.BuyerAgentName = viewModel.BuyerDetails.BuyerAgentName;
+            entity.BuyerBrokerage = viewModel.BuyerDetails.BuyerBrokerage;
+            entity.BuyerBrokerageFax = viewModel.BuyerDetails.BuyerBrokerageFax;
+            entity.BuyersPhoneNumber = viewModel.BuyerDetails.BuyersPhoneNumber;
+            entity.BuyersLawyer = viewModel.BuyerDetails.BuyersLawyer;
+            entity.BuyersLawyerAddress = viewModel.BuyerDetails.BuyerLawyerAddress;
+            entity.BuyerLawyerEmail = viewModel.BuyerDetails.BuyerLawyerEmail;
+            entity.BuyerLawyerPhone = viewModel.BuyerDetails.BuyerLawyerPhone;
+
+            // 🧑‍💼 Seller
+            entity.SellersLawyer = viewModel.SellerDetails.SellersLawyer;
+            entity.SellersLawyerAddress = viewModel.SellerDetails.SellersLawyerAddress;
+            entity.SellersPhoneNumber = viewModel.SellerDetails.SellersPhoneNumber;
+            entity.SellerLawyerEmail = viewModel.SellerDetails.SellerLawyerEmail;
+            entity.SellerLawyerPhone = viewModel.SellerDetails.SellerLawyerPhone;
+
+            // 💼 Commission (only buying for SaleCoop)
+            entity.BuyingCommissionPercentage = viewModel.Commission.BuyingCommissionPercentage;
+
+            // ✅ Audit
             entity.IsActive = viewModel.IsActive;
             entity.IsDeleted = viewModel.IsDeleted;
             entity.UpdatedBy = updatedBy;
             entity.UpdatedAt = DateTime.UtcNow;
         }
+
         public static void UpdateFromViewModel(this IRFDeal entity, EditIRFDealSaleListingViewModel viewModel, Guid updatedBy)
         {
 
@@ -697,22 +813,22 @@ namespace Intl.Realty.Firm.Utility.Mapper
             entity.FinalClosingDate = viewModel.FinalClosingDate;
             entity.DepositAmount = viewModel.DepositAmount;
             entity.DepositDate = viewModel.DepositDate;
-            entity.BuyerName = viewModel.BuyerName;
-            entity.LandLordName = viewModel.LandLordName;
-            entity.ListingCommissionPercentage = viewModel.ListingCommissionPercentage;
-            entity.BuyingCommissionPercentage = viewModel.BuyingCommissionPercentage;
-            entity.ListingAgentName = viewModel.ListingAgentName;
-            entity.ListingBrokerage = viewModel.ListingBrokerage;
-            entity.ListingBrokerageFax = viewModel.ListingBrokerageFax;
-            entity.BuyerAgentName = viewModel.BuyerAgentName;
-            entity.BuyerBrokerage = viewModel.BuyerBrokerage;
-            entity.BuyerBrokerageFax = viewModel.BuyerBrokerageFax;
-            entity.SellersLawyer = viewModel.SellersLawyer;
-            entity.SellersLawyerAddress = viewModel.SellersLawyerAddress;
-            entity.SellersPhoneNumber = viewModel.SellersPhoneNumber;
-            entity.BuyersLawyer = viewModel.BuyersLawyer;
-            entity.BuyersLawyerAddress = viewModel.BuyersLawyerAddress;
-            entity.BuyersPhoneNumber = viewModel.BuyersPhoneNumber;
+            entity.BuyerName = viewModel.BuyerDetails.BuyerName;
+            entity.ListingCommissionPercentage = viewModel.Commission.ListingCommissionPercentage;
+            entity.BuyingCommissionPercentage = viewModel.Commission.BuyingCommissionPercentage;
+            entity.BuyerAgentName = viewModel.BuyerDetails.BuyerAgentName;
+            entity.BuyerBrokerage = viewModel.BuyerDetails.BuyerBrokerage;
+            entity.BuyerBrokerageFax = viewModel.BuyerDetails.BuyerBrokerageFax;
+            entity.BuyerLawyerEmail = viewModel.BuyerDetails.BuyerLawyerEmail;
+            entity.BuyerLawyerPhone = viewModel.BuyerDetails.BuyerLawyerPhone;
+            entity.SellersLawyer = viewModel.SellerDetails.SellersLawyer;
+            entity.SellersLawyerAddress = viewModel.SellerDetails.SellersLawyerAddress;
+            entity.SellersPhoneNumber = viewModel.SellerDetails.SellersPhoneNumber;
+            entity.SellerLawyerEmail = viewModel.SellerDetails.SellerLawyerEmail;
+            entity.SellerLawyerPhone = viewModel.SellerDetails.SellerLawyerPhone;
+            entity.BuyersLawyer = viewModel.BuyerDetails.BuyersLawyer;
+            entity.BuyersLawyerAddress = viewModel.BuyerDetails.BuyerLawyerAddress;
+            entity.BuyersPhoneNumber = viewModel.BuyerDetails.BuyersPhoneNumber;
 
             entity.IsActive = viewModel.IsActive;
             entity.IsDeleted = viewModel.IsDeleted;

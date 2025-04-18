@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Intl.Realty.Firm.DataAccess.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250305012215_InitialMigrate")]
+    [Migration("20250418122621_InitialMigrate")]
     partial class InitialMigrate
     {
         /// <inheritdoc />
@@ -136,6 +136,12 @@ namespace Intl.Realty.Firm.DataAccess.Migrations
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("bit");
 
+                    b.Property<int?>("ProfileImageId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("ProfileImageId1")
+                        .HasColumnType("int");
+
                     b.Property<int?>("ProfilePictureId")
                         .HasColumnType("int");
 
@@ -172,6 +178,14 @@ namespace Intl.Realty.Firm.DataAccess.Migrations
                         .HasDatabaseName("UserNameIndex")
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
+                    b.HasIndex("ProfileImageId")
+                        .IsUnique()
+                        .HasFilter("[ProfileImageId] IS NOT NULL");
+
+                    b.HasIndex("ProfileImageId1")
+                        .IsUnique()
+                        .HasFilter("[ProfileImageId1] IS NOT NULL");
+
                     b.HasIndex("TeamLeaderId");
 
                     b.ToTable("AspNetUsers", (string)null);
@@ -181,7 +195,7 @@ namespace Intl.Realty.Firm.DataAccess.Migrations
                         {
                             Id = new Guid("74b7ddfa-9c71-4b95-84e2-9b5fcdef884c"),
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "54535f62-eeec-4780-9145-0840c97e698e",
+                            ConcurrencyStamp = "863ab1aa-7549-49ee-9b5b-cf546c4c5c13",
                             Email = "superadmin@internationalrealtyfirm.com",
                             EmailConfirmed = true,
                             EmploymentStatusId = 1,
@@ -190,10 +204,10 @@ namespace Intl.Realty.Firm.DataAccess.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "SUPERADMIN@INTERNATIONALREALTYFIRM.COM",
                             NormalizedUserName = "SUPERADMIN@INTERNATIONALREALTYFIRM.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEKarZQbdL2baywShaDIiiATQS24lPQ7jpPAAWSxf1+ejzXHERnHr+eq7wwZYQrXRgw==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEK0QTCe7E/V5UswcdWgUq/20KLlUnED2PgSJ2z9FZ1w2Z/j10EbsT9HSYT+vhdfD/Q==",
                             PhoneNumberConfirmed = false,
-                            RegistrationDate = new DateTime(2025, 3, 5, 9, 22, 14, 634, DateTimeKind.Local).AddTicks(728),
-                            SecurityStamp = "d311dd10-d00f-47ce-9d21-550597299ab8",
+                            RegistrationDate = new DateTime(2025, 4, 18, 20, 26, 20, 656, DateTimeKind.Local).AddTicks(3915),
+                            SecurityStamp = "931ceb30-dbe3-47e2-b35d-b002b0e49559",
                             TwoFactorEnabled = false,
                             UserAgreement = false,
                             UserName = "superadmin@internationalrealtyfirm.com"
@@ -1032,15 +1046,18 @@ namespace Intl.Realty.Firm.DataAccess.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("BuyerAgentName")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("BuyerBrokerage")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("BuyerBrokerageFax")
-                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("BuyerLawyerEmail")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("BuyerLawyerPhone")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("BuyerName")
@@ -1048,11 +1065,9 @@ namespace Intl.Realty.Firm.DataAccess.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("BuyersLawyer")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("BuyersLawyerAddress")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("BuyersPhoneNumber")
@@ -1083,7 +1098,10 @@ namespace Intl.Realty.Firm.DataAccess.Migrations
                     b.Property<DateTime>("FinalClosingDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<decimal>("FinalSalePrice")
+                    b.Property<decimal?>("FinalLeasePrice")
+                        .HasColumnType("decimal(18,4)");
+
+                    b.Property<decimal?>("FinalSalePrice")
                         .HasColumnType("decimal(18,4)");
 
                     b.Property<bool>("IsActive")
@@ -1092,20 +1110,23 @@ namespace Intl.Realty.Firm.DataAccess.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
+                    b.Property<string>("LandLordEmailAddress")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("LandLordName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("LandLordPhoneNumber")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("ListingAgentName")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ListingBrokerage")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ListingBrokerageFax")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<decimal>("ListingCommissionPercentage")
@@ -1115,16 +1136,37 @@ namespace Intl.Realty.Firm.DataAccess.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("SellerLawyerEmail")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SellerLawyerPhone")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("SellersLawyer")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("SellersLawyerAddress")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("SellersPhoneNumber")
-                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("TenantAgentName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("TenantBrokerage")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("TenantBrokerageFax")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("TenantEmailAddress")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("TenantName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("TenantPhoneNumber")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime?>("UpdatedAt")
@@ -1328,6 +1370,71 @@ namespace Intl.Realty.Firm.DataAccess.Migrations
                     b.HasIndex("TransactionTypeId");
 
                     b.ToTable("LeaseListings", (string)null);
+                });
+
+            modelBuilder.Entity("Intl.Realty.Firm.Model.Model.ProfileImage", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("CreatedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("DeletedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("FileExtension")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<string>("FileName")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("FileSize")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("FullPath")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("OriginalFileName")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("UpdatedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("UploadedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ProfileImages");
                 });
 
             modelBuilder.Entity("Intl.Realty.Firm.Model.Model.Province", b =>
@@ -1729,6 +1836,15 @@ namespace Intl.Realty.Firm.DataAccess.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Intl.Realty.Firm.Model.Model.ProfileImage", "ProfileImage")
+                        .WithOne()
+                        .HasForeignKey("Intl.Realty.Firm.Model.Model.ApplicationUser", "ProfileImageId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("Intl.Realty.Firm.Model.Model.ProfileImage", null)
+                        .WithOne("User")
+                        .HasForeignKey("Intl.Realty.Firm.Model.Model.ApplicationUser", "ProfileImageId1");
+
                     b.HasOne("Intl.Realty.Firm.Model.Model.ApplicationUser", "TeamLeader")
                         .WithMany("Agents")
                         .HasForeignKey("TeamLeaderId");
@@ -1736,6 +1852,8 @@ namespace Intl.Realty.Firm.DataAccess.Migrations
                     b.Navigation("Department");
 
                     b.Navigation("EmploymentStatus");
+
+                    b.Navigation("ProfileImage");
 
                     b.Navigation("TeamLeader");
                 });
@@ -1985,6 +2103,11 @@ namespace Intl.Realty.Firm.DataAccess.Migrations
             modelBuilder.Entity("Intl.Realty.Firm.Model.Model.LeaseListing", b =>
                 {
                     b.Navigation("FileUploads");
+                });
+
+            modelBuilder.Entity("Intl.Realty.Firm.Model.Model.ProfileImage", b =>
+                {
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Intl.Realty.Firm.Model.Model.SaleCoop", b =>

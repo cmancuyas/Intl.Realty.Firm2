@@ -75,7 +75,7 @@ namespace Intl.Realty.Firm.Controllers
                     DepartmentId = user.DepartmentId,
                     EmploymentStatusId = user.EmploymentStatusId,
                     EmailConfirmed = user.EmailConfirmed,
-                    ProfilePictureId = user.ProfilePictureId,
+                    ProfileImageId = user.ProfileImageId,
                     Claims = (await _userManager.GetClaimsAsync(user))
                         .Select(x => $"{x.Type} : {x.Value}")
                         .ToList(),
@@ -120,7 +120,7 @@ namespace Intl.Realty.Firm.Controllers
                 user.LastName = viewModel.EditUser.LastName;
                 user.DepartmentId = viewModel.EditUser.DepartmentId;
                 user.EmploymentStatusId = viewModel.EditUser.EmploymentStatusId;
-                user.ProfilePictureId = viewModel.EditUser.ProfilePictureId;
+                user.ProfileImageId = viewModel.EditUser.ProfileImageId;
                 user.EmailConfirmed = viewModel.EditUser.EmailConfirmed;
                 var result = await _userManager.UpdateAsync(user);
 
