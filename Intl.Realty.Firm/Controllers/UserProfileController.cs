@@ -278,10 +278,15 @@ namespace Intl.Realty.Firm.Controllers
             }
 
             // Save new image using file handler
-            var directory = Path.Combine("uploads", "profile-images", userId.ToString());
-            var (fileName, extension, originalFileName) = await _fileHandlerService.UploadFile(profileImage, directory);
+            var relativeDirectory = Path.Combine("uploads", "profile-images", userId.ToString());
+            var absoluteDirectory = Path.Combine(_webHostEnvironment.WebRootPath, relativeDirectory);
 
-            var fullPath = Path.Combine("/", directory, fileName + extension).Replace("\\", "/");
+            // Now pass the absolute path to the service
+            var (fileName, extension, originalFileName) = await _fileHandlerService.UploadFile(profileImage, absoluteDirectory);
+
+            // Store the web-accessible relative path in the database
+            var fullPath = Path.Combine("/", relativeDirectory, fileName + extension).Replace("\\", "/");
+
 
             var profileImageEntity = new ProfileImage
             {
@@ -321,31 +326,47 @@ namespace Intl.Realty.Firm.Controllers
             }
 
             var profileImage = await _unitOfWork.ProfileImage.GetAsync(i => i.Id == user.ProfileImageId.Value);
-            if (profileImage != null)
+            if (profileImage == null)
             {
-                var physicalPath = Path.Combine(_webHostEnvironment.WebRootPath, profileImage.FullPath.TrimStart('/').Replace("/", Path.DirectorySeparatorChar.ToString()));
+                TempData["ErrorMessage"] = "Profile image record not found.";
+                return RedirectToAction("Index", new { id = userId });
+            }
 
-                var success = await _fileHandlerService.DeleteFile(physicalPath);
-                if (success)
+            // Get the absolute file path
+            var physicalPath = Path.Combine(
+                _webHostEnvironment.WebRootPath,
+                profileImage.FullPath.TrimStart('/').Replace("/", Path.DirectorySeparatorChar.ToString())
+            );
+
+            try
+            {
+                if (System.IO.File.Exists(physicalPath))
                 {
-                    await _unitOfWork.ProfileImage.RemoveAsync(profileImage);
-                    user.ProfileImageId = null;
-                    await _userManager.UpdateAsync(user);
-                    await _unitOfWork.SaveChangesAsync();
-                    TempData["SuccessMessage"] = "Profile picture removed successfully.";
+                    System.IO.File.Delete(physicalPath);
                 }
                 else
                 {
-                    TempData["ErrorMessage"] = "Failed to remove profile picture file.";
+                    Console.WriteLine($"⚠ File not found on disk: {physicalPath}");
                 }
+
+                // Remove DB record even if the file wasn't there
+                await _unitOfWork.ProfileImage.RemoveAsync(profileImage);
+                user.ProfileImageId = null;
+
+                await _userManager.UpdateAsync(user);
+                await _unitOfWork.SaveChangesAsync();
+
+                TempData["SuccessMessage"] = "Profile picture removed successfully.";
             }
-            else
+            catch (Exception ex)
             {
-                TempData["ErrorMessage"] = "Profile image record not found.";
+                Console.WriteLine($"❌ Error deleting file: {ex.Message}");
+                TempData["ErrorMessage"] = "An error occurred while removing the profile picture.";
             }
 
             return RedirectToAction("Index", new { id = userId });
         }
+
 
 
     }
