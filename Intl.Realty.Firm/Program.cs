@@ -18,8 +18,8 @@ using Intl.Realty.Firm.Model.Model;
 using Intl.Realty.Firm.Models;
 
 using Serilog;
-using Serilog.Events;
 using Microsoft.Extensions.FileProviders;
+using OfficeOpenXml;
 
 Log.Logger = new LoggerConfiguration()
     .MinimumLevel.Debug()
@@ -28,6 +28,9 @@ Log.Logger = new LoggerConfiguration()
     .CreateLogger();
 
 var builder = WebApplication.CreateBuilder(args);
+
+// ✅ Set non-commercial license
+ExcelPackage.License.SetNonCommercialPersonal("Kyle Bouchard");
 
 builder.Host.UseSerilog();
 // Add services to the container.
