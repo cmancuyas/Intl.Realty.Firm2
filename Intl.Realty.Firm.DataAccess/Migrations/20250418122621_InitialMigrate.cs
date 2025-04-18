@@ -224,7 +224,7 @@ namespace Intl.Realty.Firm.DataAccess.Migrations
                     DeletedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     DeletedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
                     PropertyAddress = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    FinalSalePrice = table.Column<decimal>(type: "decimal(18,4)", nullable: false),
+                    FinalSalePrice = table.Column<decimal>(type: "decimal(18,4)", nullable: true),
                     FinalClosingDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     DepositAmount = table.Column<decimal>(type: "decimal(18,4)", nullable: false),
                     DepositDate = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -232,22 +232,61 @@ namespace Intl.Realty.Firm.DataAccess.Migrations
                     LandLordName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     ListingCommissionPercentage = table.Column<decimal>(type: "decimal(18,4)", nullable: false),
                     BuyingCommissionPercentage = table.Column<decimal>(type: "decimal(18,4)", nullable: false),
-                    ListingAgentName = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    ListingBrokerage = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    ListingBrokerageFax = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    BuyerAgentName = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    BuyerBrokerage = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    BuyerBrokerageFax = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    SellersLawyer = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    SellersLawyerAddress = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    SellersPhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    BuyersLawyer = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    BuyersLawyerAddress = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    BuyersPhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    ListingAgentName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ListingBrokerage = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ListingBrokerageFax = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    BuyerAgentName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    BuyerBrokerage = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    BuyerBrokerageFax = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    SellersLawyer = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    SellersLawyerAddress = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    SellersPhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    BuyersLawyer = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    BuyersLawyerAddress = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    BuyersPhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    TenantName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    TenantAgentName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    TenantBrokerage = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    TenantBrokerageFax = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    LandLordPhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    LandLordEmailAddress = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    FinalLeasePrice = table.Column<decimal>(type: "decimal(18,4)", nullable: true),
+                    TenantEmailAddress = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    TenantPhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    SellerLawyerPhone = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    SellerLawyerEmail = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    BuyerLawyerPhone = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    BuyerLawyerEmail = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_IRFDeals", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ProfileImages",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    FileName = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    FullPath = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
+                    OriginalFileName = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    FileExtension = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
+                    FileSize = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    UploadedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    CreatedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    DeletedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    DeletedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ProfileImages", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -358,6 +397,8 @@ namespace Intl.Realty.Firm.DataAccess.Migrations
                     UserAgreement = table.Column<bool>(type: "bit", nullable: false),
                     RegistrationDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     TeamLeaderId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    ProfileImageId = table.Column<int>(type: "int", nullable: true),
+                    ProfileImageId1 = table.Column<int>(type: "int", nullable: true),
                     UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
@@ -392,6 +433,17 @@ namespace Intl.Realty.Firm.DataAccess.Migrations
                         principalTable: "EmploymentStatuses",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_AspNetUsers_ProfileImages_ProfileImageId",
+                        column: x => x.ProfileImageId,
+                        principalTable: "ProfileImages",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.SetNull);
+                    table.ForeignKey(
+                        name: "FK_AspNetUsers_ProfileImages_ProfileImageId1",
+                        column: x => x.ProfileImageId1,
+                        principalTable: "ProfileImages",
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -827,8 +879,8 @@ namespace Intl.Realty.Firm.DataAccess.Migrations
 
             migrationBuilder.InsertData(
                 table: "AspNetUsers",
-                columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "DepartmentId", "Email", "EmailConfirmed", "EmploymentStatusId", "FirstName", "LastName", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "ProfilePictureId", "RegistrationDate", "SecurityStamp", "TeamLeaderId", "TwoFactorEnabled", "UserAgreement", "UserName" },
-                values: new object[] { new Guid("74b7ddfa-9c71-4b95-84e2-9b5fcdef884c"), 0, "54535f62-eeec-4780-9145-0840c97e698e", null, "superadmin@internationalrealtyfirm.com", true, 1, "Christopher", "Mancuyas", false, null, "SUPERADMIN@INTERNATIONALREALTYFIRM.COM", "SUPERADMIN@INTERNATIONALREALTYFIRM.COM", "AQAAAAIAAYagAAAAEKarZQbdL2baywShaDIiiATQS24lPQ7jpPAAWSxf1+ejzXHERnHr+eq7wwZYQrXRgw==", null, false, null, new DateTime(2025, 3, 5, 9, 22, 14, 634, DateTimeKind.Local).AddTicks(728), "d311dd10-d00f-47ce-9d21-550597299ab8", null, false, false, "superadmin@internationalrealtyfirm.com" });
+                columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "DepartmentId", "Email", "EmailConfirmed", "EmploymentStatusId", "FirstName", "LastName", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "ProfileImageId", "ProfileImageId1", "ProfilePictureId", "RegistrationDate", "SecurityStamp", "TeamLeaderId", "TwoFactorEnabled", "UserAgreement", "UserName" },
+                values: new object[] { new Guid("74b7ddfa-9c71-4b95-84e2-9b5fcdef884c"), 0, "863ab1aa-7549-49ee-9b5b-cf546c4c5c13", null, "superadmin@internationalrealtyfirm.com", true, 1, "Christopher", "Mancuyas", false, null, "SUPERADMIN@INTERNATIONALREALTYFIRM.COM", "SUPERADMIN@INTERNATIONALREALTYFIRM.COM", "AQAAAAIAAYagAAAAEK0QTCe7E/V5UswcdWgUq/20KLlUnED2PgSJ2z9FZ1w2Z/j10EbsT9HSYT+vhdfD/Q==", null, false, null, null, null, new DateTime(2025, 4, 18, 20, 26, 20, 656, DateTimeKind.Local).AddTicks(3915), "931ceb30-dbe3-47e2-b35d-b002b0e49559", null, false, false, "superadmin@internationalrealtyfirm.com" });
 
             migrationBuilder.InsertData(
                 table: "DocumentTypeAssignments",
@@ -895,6 +947,20 @@ namespace Intl.Realty.Firm.DataAccess.Migrations
                 name: "IX_AspNetUsers_EmploymentStatusId",
                 table: "AspNetUsers",
                 column: "EmploymentStatusId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AspNetUsers_ProfileImageId",
+                table: "AspNetUsers",
+                column: "ProfileImageId",
+                unique: true,
+                filter: "[ProfileImageId] IS NOT NULL");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AspNetUsers_ProfileImageId1",
+                table: "AspNetUsers",
+                column: "ProfileImageId1",
+                unique: true,
+                filter: "[ProfileImageId1] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetUsers_TeamLeaderId",
@@ -1082,6 +1148,9 @@ namespace Intl.Realty.Firm.DataAccess.Migrations
 
             migrationBuilder.DropTable(
                 name: "EmploymentStatuses");
+
+            migrationBuilder.DropTable(
+                name: "ProfileImages");
 
             migrationBuilder.DropTable(
                 name: "DealStatuses");

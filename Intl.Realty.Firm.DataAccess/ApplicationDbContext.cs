@@ -31,6 +31,7 @@ namespace Intl.Realty.Firm.DataAccess
         public DbSet<Customer> Customers { get; set; }
         public DbSet<EmailCategory> EmailCategories { get; set; }
         public DbSet<ContactEmail> ContactEmails { get; set; }
+        public DbSet<ProfileImage> ProfileImages { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -41,6 +42,13 @@ namespace Intl.Realty.Firm.DataAccess
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<ApplicationUser>()
+                .HasOne(u => u.ProfileImage)
+                .WithOne()
+                .HasForeignKey<ApplicationUser>(u => u.ProfileImageId)
+                .OnDelete(DeleteBehavior.SetNull); // Or .Cascade if you want image deleted with user
+
             // Location Module
             modelBuilder.ApplyConfiguration(new SaleListingConfig());
             modelBuilder.ApplyConfiguration(new SaleCoopConfig());

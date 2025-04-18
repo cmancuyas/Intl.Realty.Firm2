@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc.Rendering;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Intl.Realty.Firm.Model.ViewModel.UserProfileVM
 {
@@ -23,6 +24,11 @@ namespace Intl.Realty.Firm.Model.ViewModel.UserProfileVM
 
         // 🔹 Team Members List (Fixed)
         public List<TeamMemberViewModel> TeamMembers { get; set; } = new List<TeamMemberViewModel>(); // List of actual team members
+
+        [NotMapped]
+        public string? ProfileImageUrl { get; set; }
+
+
     }
 
     // ✅ New ViewModel for Team Members

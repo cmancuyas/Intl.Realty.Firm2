@@ -19,6 +19,7 @@ using Intl.Realty.Firm.Models;
 
 using Serilog;
 using Serilog.Events;
+using Microsoft.Extensions.FileProviders;
 
 Log.Logger = new LoggerConfiguration()
     .MinimumLevel.Debug()
@@ -186,7 +187,13 @@ app.UseStatusCodePagesWithReExecute("/Error/{0}");
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
-
+// 🔥 Add this:
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(
+        Path.Combine(builder.Environment.ContentRootPath, "Uploads")),
+    RequestPath = "/uploads"
+});
 app.UseRouting();
 
 app.UseAuthentication(); // identifying who the user is
