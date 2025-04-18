@@ -20,19 +20,19 @@
     </a>
 
     <!-- ✅ Save: for everyone -->
-    <button type="submit" id="btnSave" class="btn btn-primary w-15">Save as Draft</button>
+    <button type="submit" id="btnSave" class="btn btn-outline-primary w-15">
+        Save as Draft
+    </button>
 
-    <!-- ✅ Edit Request: Admins & Agents when status is "Saved" -->
-    @if ((isAdmin || isSuperAdmin || isAgent) && isSavedStatus)
+
+@*     <!-- ✅ Edit Request: Admins & Agents when status is "Saved" -->
+    @if (isAgent)
     {
         <button type="button" id="btnEditRequest" data-bs-toggle="modal" data-bs-target="#sendEditRequestModal" class="btn btn-primary w-15">
             Edit Request
         </button>
-    }
+    } *@
 
-    <!-- ✅ Submit: Admins & Agents when status is "Submitted" -->
-    @if ((isAdmin || isSuperAdmin || isAgent) && isSubmittedStatus)
-    {
-        <button type="submit" id="btnSubmit" class="btn btn-primary w-15">Submit</button>
-    }
+    <button type="submit" id="btnSubmit" class="btn btn-primary w-15">Submit</button>
+
 </div>

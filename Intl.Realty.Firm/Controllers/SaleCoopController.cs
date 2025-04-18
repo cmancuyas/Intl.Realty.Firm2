@@ -725,7 +725,11 @@ namespace Intl.Realty.Firm.Controllers
             var fileUploads = await _unitOfWork.FileUpload.GetAllAsync(x => x.SaleCoopId == saleCoopId);
             var documentTypeIds = fileUploads.Select(x => x.DocumentTypeId).ToArray();
 
-            return Json(documentTypeIds);
+            var documentTypes = await _unitOfWork.DocumentType.GetAllAsync(x =>
+                documentTypeIds.Contains(x.Id) &&
+                x.IsActive &&
+                !x.IsDeleted);
+            return Json(documentTypes);
         }
         [HttpPost]
         public async Task<IActionResult> GetSaleCoopList([FromBody] DtParameters dtParameters)

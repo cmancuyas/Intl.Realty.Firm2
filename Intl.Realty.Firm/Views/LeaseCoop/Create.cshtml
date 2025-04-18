@@ -231,7 +231,7 @@
                                         }
                                         @foreach (DocumentType item in Model.CreateLeaseCoopViewModel.DocumentTypeList!)
                                         {
-                                            <tr>
+                                            <tr data-document-type-id="@item.Id">
                                                 <td style="width: 30%">
                                                     @Html.DisplayFor(modelItem => item.Description)
                                                 </td>

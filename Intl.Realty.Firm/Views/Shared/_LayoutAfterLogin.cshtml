@@ -8,10 +8,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - Intl.Realty.Firm</title>
 
-    <!-- Bootstrap 5.3 (CSS and JS Bundle with Popper) -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" crossorigin="anonymous" />
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
-
     <!-- Custom CSS -->
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     @* <link href="~/css/datatable.min.css" rel="stylesheet" /> *@
@@ -28,6 +24,8 @@
 
     <!-- Scripts -->
     <script src="~/lib/jquery/jquery.min.js" asp-append-version="true"></script>
+    <!-- Bootstrap 5.3 (CSS and JS Bundle with Popper) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" crossorigin="anonymous" />
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
 
     <script src="~/js/site.js" asp-append-version="true"></script>
@@ -115,19 +113,30 @@
 
                     </div>
 
-                    <div class="d-flex align-items-center">
-                        <!-- User Avatar -->
-                        <img src="/files/img/avatar-blank.png" class="avatar" id="avatar" width="40" height="40">
+                    <div class="d-flex align-items-center dropdown ms-3">
+                        <button class="btn dropdown-toggle d-flex align-items-center p-0 border-0 bg-transparent"
+                                type="button"
+                                id="userDropdown"
+                                data-bs-toggle="dropdown"
+                                aria-expanded="false">
+                            <img src="/files/img/avatar-blank.png" class="avatar rounded-circle" width="40" height="40" alt="User Avatar" />
 
-                        <!-- Dropdown Menu (Desktop Only)  -->
-                        <div class="dropdown d-md-block ms-3">
-                            <button class="bg-transparent border-0 b-none px-0 dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></button>
-                            <div class="dropdown-menu text-secondary py-0">
-                                <a class="dropdown-item py-1" href="@Url.Action("Index", "UserProfile", new { id = user!.Id })">View Profile</a>
-                                <a class="dropdown-item py-1" asp-action="Logout" asp-controller="Account">Sign Out</a>
-                            </div>
-                        </div>
+                        </button>
+
+                        <ul class="dropdown-menu dropdown-menu-end text-secondary" aria-labelledby="userDropdown">
+                            <li>
+                                <a class="dropdown-item py-1" href="@Url.Action("Index", "UserProfile", new { id = user!.Id })">
+                                    View Profile
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item py-1" asp-action="Logout" asp-controller="Account">
+                                    Sign Out
+                                </a>
+                            </li>
+                        </ul>
                     </div>
+
 
 
                 </div>

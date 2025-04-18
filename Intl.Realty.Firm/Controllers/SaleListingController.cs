@@ -706,7 +706,12 @@ namespace Intl.Realty.Firm.Controllers
             var fileUpload = await _unitOfWork.FileUpload.GetAsync(x => x.Id == id);
             if (fileUpload != null)
             {
-                await _unitOfWork.FileUpload.RemoveAsync(fileUpload);
+                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                var user = await _userManager.FindByIdAsync(userId!);
+                fileUpload.IsDeleted = true;
+                fileUpload.DeletedAt = DateTime.UtcNow;
+                fileUpload.DeletedBy = user.Id;
+                await _unitOfWork.FileUpload.UpdateAsync(fileUpload);
 
                 var isSuccess = await _fileHandlerService.DeleteFile(fileUpload.FullPath);
 
@@ -735,10 +740,14 @@ namespace Intl.Realty.Firm.Controllers
 
         public async Task<JsonResult> GetDocumentTypesThatHasFileUploads(int saleListingId)
         {
-            var fileUploads = await _unitOfWork.FileUpload.GetAllAsync(x => x.SaleListingId == saleListingId);
+            var fileUploads = await _unitOfWork.FileUpload.GetAllAsync(x => x.SaleListingId == saleListingId && x.IsDeleted == false && x.IsActive);
             var documentTypeIds = fileUploads.Select(x => x.DocumentTypeId).ToArray();
 
-            return Json(documentTypeIds);
+            var documentTypes = await _unitOfWork.DocumentType.GetAllAsync(x =>
+                documentTypeIds.Contains(x.Id) &&
+                x.IsActive &&
+                !x.IsDeleted);
+            return Json(documentTypes);
         }
         [HttpPost]
         public async Task<IActionResult> GetSaleListingList([FromBody] DtParameters dtParameters)

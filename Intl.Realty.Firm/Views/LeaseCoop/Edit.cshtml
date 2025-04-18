@@ -42,7 +42,6 @@
 
                 <input type="hidden" asp-for="EditLeaseCoopViewModel.Id" />
                 <input type="hidden" asp-for="EditLeaseCoopViewModel.DealTransactionNumber" />
-                <input hidden id="DealStatusId" name="DealStatusId" value="1" />
 
                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
@@ -281,7 +280,7 @@
                                         }
                                         @foreach (DocumentType item in Model.EditLeaseCoopViewModel.DocumentTypeList!)
                                         {
-                                            <tr>
+                                            <tr data-document-type-id="@item.Id">
                                                 <td style="width: 30%">
                                                     @Html.DisplayFor(modelItem => item.Description)
                                                 </td>
@@ -363,171 +362,21 @@
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
     <script src="~/js/viewdatatableutility.js"></script>
+    <script src="~/js/submitUtility.js" asp-append-version="true"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-    <script type="text/javascript">
+    <script src="~/js/submitUtility.js" asp-append-version="true"></script>
+    <script>
+        const documentTypes = @Html.Raw(JsonConvert.SerializeObject(Model.EditLeaseCoopViewModel.DocumentTypeList));
+
         $(document).ready(function () {
-            setupButtonHandlers();
-
-            $('#isActiveCheckbox').on('click', toggleStatusLabels);
-            $('#isDeletedCheckbox').on('click', toggleStatusLabelSoftDelete);
-
-            toggleStatusLabels();
-            toggleStatusLabelSoftDelete();
+            initializeSubmitHandlers({
+                formId: "ListFormId",
+                dealStatusDropdownSelector: '[name="EditLeaseListingViewModel.DealStatusId"]',
+                isAdminLike: @((isAdmin || isSuperAdmin || isDealAdmin).ToString().ToLower()),
+                fileErrorScrollTargetId: "fileUploads",
+                validateFilesFn: () => defaultValidateFiles(documentTypes)
+            });
         });
-
-        function setupButtonHandlers() {
-            // Button click tracking
-            $('#btnSave').click(() => $('#ActionTypeHidden').val('save'));
-            $('#btnSubmit').click(() => $('#ActionTypeHidden').val('submit'));
-
-            // On form submit
-            $('#ListFormId').on('submit', function (e) {
-                const actionType = $('#ActionTypeHidden').val();
-                const hasFieldErrors = validateAllTabs();
-
-                if (hasFieldErrors) {
-                    e.preventDefault();
-                    Swal.fire({
-                        icon: "error",
-                        title: "Form Incomplete",
-                        text: "Please complete all required fields.",
-                        confirmButtonColor: "#d33"
-                    });
-                    return false;
-                }
-
-                if (actionType === 'submit') {
-                    const fileValidation = validateFiles();
-                    if (!fileValidation.success) {
-                        e.preventDefault();
-                        Swal.fire({
-                            icon: "error",
-                            title: "Missing Required Documents",
-                            html: fileValidation.message,
-                            confirmButtonColor: "#d33"
-                        });
-                        return false;
-                    }
-
-                    $('#DealStatusId').val(1); // Submitted
-                    $('#confirmSubmitModal').modal('show');
-                    e.preventDefault(); // Wait for confirmation
-                }
-
-                if (actionType === 'save') {
-                    $('#DealStatusId').val(2); // Saved
-                    $('#confirmSaveModal').modal('show');
-                    e.preventDefault(); // Wait for confirmation
-                }
-            });
-
-            // Confirm Save
-            $(document).on('click', '#btnConfirmSave', function () {
-                $('#ListFormId').off('submit').submit();
-            });
-
-            // Confirm Submit
-            $(document).on('click', '#btnConfirmSubmit', function () {
-                $("#submitSpinner").show();
-                $('#btnSubmit').prop('disabled', true).html('<span class="spinner-border spinner-border-sm me-2"></span>Submitting...');
-                $('#ListFormId').off('submit').submit();
-            });
-        }
-
-        function validateAllTabs() {
-            let hasErrors = false;
-            let firstErrorTab = null;
-
-            $(".tab-pane").each(function () {
-                const tabId = $(this).attr("id");
-
-                $(this).find("input, textarea, select").each(function () {
-                    const isRequired = $(this).attr("data-val-required") !== undefined;
-                    const isEmpty = !$(this).val()?.trim();
-
-                    if (isRequired && isEmpty) {
-                        $(this).addClass("border-danger");
-                        hasErrors = true;
-
-                        if (!firstErrorTab) firstErrorTab = tabId;
-                    } else {
-                        $(this).removeClass("border-danger");
-                    }
-                });
-            });
-
-            if (firstErrorTab) {
-                $('.nav-tabs button[data-bs-target="#' + firstErrorTab + '"]').tab("show");
-            }
-
-            return hasErrors;
-        }
-
-        function validateFiles() {
-            const saleListingId = '@Html.Raw(JsonConvert.SerializeObject(Model.EditLeaseCoopViewModel.Id))';
-            const documentTypes = @Html.Raw(JsonConvert.SerializeObject(Model.EditLeaseCoopViewModel.DocumentTypeList));
-
-            let uploadedDocs = [];
-            let missing = [];
-
-            $.ajax({
-                url: '/SaleListing/GetDocumentTypesThatHasFileUploads/',
-                type: 'GET',
-                data: { saleListingId },
-                async: false,
-                success: function (data) {
-                    uploadedDocs = data;
-                }
-            });
-
-            documentTypes.forEach((doc, i) => {
-                const isRequired = doc.IsRequired;
-                const hasUploaded = uploadedDocs.includes(doc.Id);
-                const inputName = `EditLeaseCoopViewModel.CreateFileUploadListViewModel.CreateFileUploadsViewModel[${i}].Files`;
-                const input = document.forms['ListFormId'][inputName];
-                const hasNewFile = input && input.files && input.files.length > 0;
-
-                if (isRequired && !hasUploaded && !hasNewFile) {
-                    missing.push(`<li>${doc.Description}</li>`);
-                }
-            });
-
-            if (missing.length > 0) {
-                return {
-                    success: false,
-                    message: `<b>The following required documents are missing:</b><ul>${missing.join("")}</ul>`
-                };
-            }
-
-            return { success: true, message: "" };
-        }
-        function toggleStatusLabels() {
-            const checkbox = $('#isActiveCheckbox');
-            const label = $('#lblStatus'); // Make sure this ID exists in your view
-
-            if (checkbox.length && label.length) {
-                if (checkbox.is(':checked')) {
-                    label.text('Active').removeClass('text-danger').addClass('text-success');
-                } else {
-                    label.text('Inactive').removeClass('text-success').addClass('text-danger');
-                }
-            }
-        }
-
-        function toggleStatusLabelSoftDelete() {
-            const checkbox = $('#isDeletedCheckbox');
-            const label = $('#lblStatusSoftDelete'); // Make sure this ID exists in your view
-
-            if (checkbox.length && label.length) {
-                if (checkbox.is(':checked')) {
-                    label.text('Deleted').removeClass('text-success').addClass('text-danger');
-                } else {
-                    label.text('Not Deleted').removeClass('text-danger').addClass('text-success');
-                }
-            }
-        }
-
     </script>
 }
-

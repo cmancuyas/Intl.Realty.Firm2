@@ -1,290 +1,117 @@
 ﻿@using Intl.Realty.Firm.Model.ViewModel.SaleListingVM
 
 @model PreviewSaleListingViewModel
+
 @{
     ViewData["Title"] = "Preview";
     Layout = "~/Views/Shared/_LayoutAfterLogin.cshtml";
+    string Display(string? value) => !string.IsNullOrWhiteSpace(value) ? value : "—";
+    string DisplayDecimal(decimal? value) => value.HasValue ? value.Value.ToString("N2") : "—";
+    string DisplayDate(DateTime? date) => date.HasValue ? date.Value.ToString("yyyy-MM-dd") : "—";
 }
+
 <div class="c-content">
-@*     <a href="@Url.Action("Index","SaleListing")" class="text-decoration-none text-blue d-flex mb-4">
-        <i data-feather="chevron-left"></i><span>Back</span>
-    </a> *@
     <a href="##" class="back" onClick="history.go(-1); return false;">
         <i data-feather="chevron-left"></i><span>Back</span>
     </a>
-    <div class="row">
-        <div class="col-md-12 d-flex justify-content-between align-items-center mt-4 px-0">
-            <h1 class="text-blue mb-0">Sale Listing</h1>
-            <div class="d-flex gap-4">
-                <button type="button" id="btnMultipleDelete"
-                        class="btn btn-danger d-none align-items-center"
-                        data-toggle="tooltip"
-                        data-bs-placement="left"
-                        title="Delete"
-                        onclick="OpenMultipleDeleteModal('SaleListing')">
-                    <i data-feather="trash-2"></i>
-                </button>
-                <a asp-action="Create"
-                   class="btn btn-primary d-flex align-items-center">
-                    <i data-feather="plus" class="w-15px h-auto me-1"></i>Add New
-                </a>
-            </div>
-        </div>
-    </div>
 
     <div class="preview-page mt-4">
         <div class="row justify-content-center">
-            <div class="col-md-12 card p-5 mx-4 ">
-                <div class="d-flex justify-content-between">
-                    <h2 class="text-blue">Deal Id: @Model.DealTransactionNumber</h2>
-                    <button type="button" class="btn btn-secondary w-15" id="EditSaleListingBtn"
-                            onclick="location.href='@Url.Action("Edit", "SaleListing", new { id = Model.Id,})'"
-                            '">
+            <div class="col-md-10 card p-5 mb-4">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h2 class="text-blue">Deal ID: @Model.DealTransactionNumber</h2>
+                    <button type="button" class="btn btn-secondary" onclick="location.href='@Url.Action("Edit", "SaleListing", new { id = Model.Id })'">
                         Edit
                     </button>
                 </div>
+
                 <hr />
-                <h4 class="text-blue mb-1">Header</h4>
-                <div class="row my-2">
-                    <div class="col-md-2">
-                        <div class="form-group">
-                            <label class="control-label fw-bolder">Transaction Type</label>
-                            <p>@Model.TransactionType!.Description</p>
-                        </div>
-                    </div>
-
-                    <div class="col-md-2">
-                        <div class="form-group">
-                            <label class="control-label fw-bolder">Deal Status</label>
-                            <p>@Model.DealStatus!.Description</p>
-                        </div>
-                    </div>
-                    <div class="col-md-2">
-                        <div class="form-group">
-                            <label class="control-label fw-bolder">Date Submitted</label>
-                            <p>@Model.DateSubmitted</p>
-                        </div>
-                    </div>
-                    <div class="col-md-2">
-                        <div class="form-group">
-                            <label class="control-label fw-bolder">Created By</label>
-                            <p>@Model.CreatedByFullName</p>
-                        </div>
-                    </div>
-                    <div class="col-md-2">
-                        <div class="form-group">
-                            <label class="control-label fw-bolder">Created At</label>
-                            <p>@Model.CreatedAt</p>
-                        </div>
-                    </div>
+                <h4 class="text-blue mb-3">Header</h4>
+                <div class="row mb-3">
+                    <div class="col-md-4"><strong>Transaction Type:</strong><p>@Display(Model.TransactionType?.Description)</p></div>
+                    <div class="col-md-4"><strong>Deal Status:</strong><p>@Display(Model.DealStatus?.Description)</p></div>
+                    <div class="col-md-4"><strong>Date Submitted:</strong><p>@DisplayDate(Model.DateSubmitted)</p></div>
+                    <div class="col-md-4"><strong>Created By:</strong><p>@Display(Model.CreatedByFullName)</p></div>
+                    <div class="col-md-4"><strong>Created At:</strong><p>@DisplayDate(Model.CreatedAt)</p></div>
                 </div>
+
                 <hr />
-                <h4 class="text-blue mb-1">Item</h4>
-                    @* // Start of IRFDeal *@
-                <div class="row my-2">
-                    <div class="col-md-3">
-                        <div class="form-group">
-                            <label class="control-label fw-bolder">Property Address</label>
-                            <p>@Model.IRFDeal.PropertyAddress</p>
-                        </div>
-                    </div>
-
-                    <div class="col-md-3">
-                        <div class="form-group">
-                            <label class="control-label fw-bolder">Final Sale Price</label>
-                            <p>@(Model.IRFDeal.FinalSalePrice.HasValue ? Model.IRFDeal.FinalSalePrice.Value.ToString("F2") : "")</p>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="form-group">
-                            <label class="control-label fw-bolder">Final Closing Date</label>
-                            <p>@Model.IRFDeal.FinalClosingDate</p>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="form-group">
-                            <label class="control-label fw-bolder">Deposit Amount</label>
-                            <p>@Model.IRFDeal.DepositAmount.ToString("N2")</p>
-                        </div>
-                    </div>
+                <h4 class="text-blue mb-3">IRF Deal Details</h4>
+                <div class="row mb-3">
+                    <div class="col-md-6"><strong>Property Address:</strong><p>@Display(Model.IRFDeal.PropertyAddress)</p></div>
+                    <div class="col-md-6"><strong>Final Sale Price:</strong><p>@DisplayDecimal(Model.IRFDeal.FinalSalePrice)</p></div>
+                    <div class="col-md-6"><strong>Final Closing Date:</strong><p>@DisplayDate(Model.IRFDeal.FinalClosingDate)</p></div>
+                    <div class="col-md-6"><strong>Deposit Amount:</strong><p>@DisplayDecimal(Model.IRFDeal.DepositAmount)</p></div>
+                    <div class="col-md-6"><strong>Deposit Date:</strong><p>@DisplayDate(Model.IRFDeal.DepositDate)</p></div>
                 </div>
 
-                <div class="row my-2">
-                    <div class="col-md-3">
-                        <div class="form-group">
-                            <label class="control-label fw-bolder">Deposit Date</label>
-                            <p>@Model.IRFDeal.DepositDate</p>
-                        </div>
-                    </div>
-
-                    <div class="col-md-3">
-                        <div class="form-group">
-                            <label class="control-label fw-bolder">Buyers Name</label>
-                            <p>@Model.IRFDeal.BuyerName</p>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="form-group">
-                            <label class="control-label fw-bolder">LandLord Name</label>
-                            <p>@Model.IRFDeal.LandLordName</p>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="form-group">
-                            <label class="control-label fw-bolder">Listing Commission Percentage</label>
-                            <p>@Model.IRFDeal.ListingCommissionPercentage.ToString("N2")</p>
-                        </div>
-                    </div>
+                <div class="row mb-3">
+                    <div class="col-md-6"><strong>Buyer Name:</strong><p>@Display(Model.IRFDeal.BuyerName)</p></div>
+                    <div class="col-md-6"><strong>Landlord Name:</strong><p>@Display(Model.IRFDeal.LandLordName)</p></div>
+                    <div class="col-md-6"><strong>Listing Commission %:</strong><p>@DisplayDecimal(Model.IRFDeal.ListingCommissionPercentage)</p></div>
+                    <div class="col-md-6"><strong>Buying Commission %:</strong><p>@DisplayDecimal(Model.IRFDeal.BuyingCommissionPercentage)</p></div>
                 </div>
 
-                <div class="row my-2">
-                    <div class="col-md-3">
-                        <div class="form-group">
-                            <label class="control-label fw-bolder">Buying Commission Percentage</label>
-                            <p>@Model.IRFDeal.BuyingCommissionPercentage.ToString("N2")</p>
-                        </div>
-                    </div>
-
-                    <div class="col-md-3">
-                        <div class="form-group">
-                            <label class="control-label fw-bolder">Listing Agent Name</label>
-                            <p>@Model.IRFDeal.ListingAgentName</p>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="form-group">
-                            <label class="control-label fw-bolder">Listing Brokerage</label>
-                            <p>@Model.IRFDeal.ListingBrokerage</p>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="form-group">
-                            <label class="control-label fw-bolder">Listing Brokerage Fax</label>
-                            <p>@Model.IRFDeal.ListingBrokerageFax</p>
-                        </div>
-                    </div>
+                <div class="row mb-3">
+                    <div class="col-md-6"><strong>Listing Agent Name:</strong><p>@Display(Model.IRFDeal.ListingAgentName)</p></div>
+                    <div class="col-md-6"><strong>Listing Brokerage:</strong><p>@Display(Model.IRFDeal.ListingBrokerage)</p></div>
+                    <div class="col-md-6"><strong>Listing Brokerage Fax:</strong><p>@Display(Model.IRFDeal.ListingBrokerageFax)</p></div>
+                    <div class="col-md-6"><strong>Buyer Agent Name:</strong><p>@Display(Model.IRFDeal.BuyerAgentName)</p></div>
                 </div>
 
-                <div class="row my-2">
-                    <div class="col-md-3">
-                        <div class="form-group">
-                            <label class="control-label fw-bolder">Buyer Agent Name</label>
-                            <p>@Model.IRFDeal.BuyerAgentName</p>
-                        </div>
-                    </div>
-
-                    <div class="col-md-3">
-                        <div class="form-group">
-                            <label class="control-label fw-bolder">Buyer Brokerage</label>
-                            <p>@Model.IRFDeal.BuyerBrokerage</p>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="form-group">
-                            <label class="control-label fw-bolder">Sellers Lawyer</label>
-                            <p>@Model.IRFDeal.SellersLawyer</p>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="form-group">
-                            <label class="control-label fw-bolder">Sellers Lawyer Address</label>
-                            <p>@Model.IRFDeal.SellersLawyerAddress</p>
-                        </div>
-                    </div>
+                <div class="row mb-3">
+                    <div class="col-md-6"><strong>Buyer Brokerage:</strong><p>@Display(Model.IRFDeal.BuyerBrokerage)</p></div>
+                    <div class="col-md-6"><strong>Seller's Lawyer:</strong><p>@Display(Model.IRFDeal.SellersLawyer)</p></div>
+                    <div class="col-md-6"><strong>Seller's Lawyer Address:</strong><p>@Display(Model.IRFDeal.SellersLawyerAddress)</p></div>
+                    <div class="col-md-6"><strong>Seller's Phone:</strong><p>@Display(Model.IRFDeal.SellersPhoneNumber)</p></div>
                 </div>
 
-                <div class="row my-2">
-                    <div class="col-md-3">
-                        <div class="form-group">
-                            <label class="control-label fw-bolder">Sellers PhoneNumber</label>
-                            <p>@Model.IRFDeal.SellersPhoneNumber</p>
-                        </div>
-                    </div>
-
-                    <div class="col-md-3">
-                        <div class="form-group">
-                            <label class="control-label fw-bolder">Buyers Lawyer</label>
-                            <p>@Model.IRFDeal.BuyersLawyer</p>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="form-group">
-                            <label class="control-label fw-bolder">Buyers Lawyer Address</label>
-                            <p>@Model.IRFDeal.BuyersLawyerAddress</p>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="form-group">
-                            <label class="control-label fw-bolder">Buyers PhoneNumber</label>
-                            <p>@Model.IRFDeal.BuyersPhoneNumber</p>
-                        </div>
-                    </div>
+                <div class="row mb-3">
+                    <div class="col-md-6"><strong>Buyer's Lawyer:</strong><p>@Display(Model.IRFDeal.BuyersLawyer)</p></div>
+                    <div class="col-md-6"><strong>Buyer's Lawyer Address:</strong><p>@Display(Model.IRFDeal.BuyersLawyerAddress)</p></div>
+                    <div class="col-md-6"><strong>Buyer's Phone:</strong><p>@Display(Model.IRFDeal.BuyersPhoneNumber)</p></div>
+                    <div class="col-md-6"><strong>Buyer's Lawyer Email:</strong><p>@Display(Model.IRFDeal.BuyerLawyerEmail)</p></div>
                 </div>
-                <hr />
-                <h4 class="text-blue mb-1">List of Files associated with this Transaction</h4>
-                <div class="row my-2">
-                    <div class="table-responsive">
-                        <table id="modelTable" class="data-table table w-100">
-                            <thead>
-                                <tr>
-                                    <th class="text-start">File Name</th>
-                                    <th class="text-start">File Extension</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                    @{
-                        @if (Model.FileUploads!.Count > 0)
-                        {
-                            @foreach (var item in Model.FileUploads)
+            </div>
+
+            <!-- 📂 Files Card -->
+            <div class="col-md-10 card p-4 mb-4">
+                <h4 class="text-blue mb-3">Associated Documents</h4>
+                <div class="table-responsive">
+                    <table class="table table-bordered">
+                        <thead class="table-light">
+                            <tr>
+                                <th>File Name</th>
+                                <th>Extension</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model.FileUploads != null && Model.FileUploads.Any())
                             {
-                                <tr>
-                                    <td>@item.FileName</td>
-                                    <td><div class="attachment-icon">@item.FileExtension</div></td>
-                                </tr>
+                                foreach (var file in Model.FileUploads)
+                                {
+                                    <tr>
+                                        <td>@file.FileName</td>
+                                        <td>@file.FileExtension</td>
+                                    </tr>
+                                }
                             }
-
-                        }
                             else
                             {
                                 <tr>
-                                    <td></td>
-                                    <td>No Associated Files Found</td>
-                                    <td></td>
+                                    <td colspan="2">No associated files found.</td>
                                 </tr>
                             }
-                        }
-
-                            </tbody>
-                        </table>
-                    </div>
+                        </tbody>
+                    </table>
                 </div>
+            </div>
 
-                <hr />
-                <div class="row my-2">
-                    <div class="form-group">
-                        <label asp-for="EditSaleListing.Notes" class="control-label fw-bolder">Notes</label>
-                    @Html.TextAreaFor(model => model.Notes, 10, 100, new { @class = "form-control", disabled = "disabled" })
-
-                    </div>
-                </div>
+            <!-- 📝 Notes Card -->
+            <div class="col-md-10 card p-4 mb-5">
+                <h4 class="text-blue mb-3">Notes</h4>
+                @Html.TextAreaFor(m => m.Notes, 10, 100, new { @class = "form-control", disabled = "disabled" })
             </div>
         </div>
     </div>
 </div>
-
-<style>
-    .blurry {
-        filter: blur(3px);
-    }
-
-    tfoot {
-        display: table-header-group;
-    }
-
-</style>
-
-<script>
-    $(document).ready(function () {
-
-    });
-</script>
