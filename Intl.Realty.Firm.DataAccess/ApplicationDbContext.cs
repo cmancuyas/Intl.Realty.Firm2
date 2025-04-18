@@ -45,9 +45,9 @@ namespace Intl.Realty.Firm.DataAccess
 
             modelBuilder.Entity<ApplicationUser>()
                 .HasOne(u => u.ProfileImage)
-                .WithOne()
+                .WithOne(p => p.User)
                 .HasForeignKey<ApplicationUser>(u => u.ProfileImageId)
-                .OnDelete(DeleteBehavior.SetNull); // Or .Cascade if you want image deleted with user
+                .OnDelete(DeleteBehavior.SetNull); // or Cascade depending on logic
 
             // Location Module
             modelBuilder.ApplyConfiguration(new SaleListingConfig());

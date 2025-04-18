@@ -39,7 +39,7 @@ namespace Intl.Realty.Firm.Model.ViewModel.AccountVM
         [Required(ErrorMessage = "The Employment Status field is required.")]
         public int EmploymentStatusId { get; set; } = 1; // Default employment status
 
-        public int? ProfilePictureId { get; set; }
+        public int? ProfileImageId { get; set; }
 
         [Display(Name = "User Agreement")]
         [MustBeTrue(ErrorMessage = "You must accept the terms and conditions.")]

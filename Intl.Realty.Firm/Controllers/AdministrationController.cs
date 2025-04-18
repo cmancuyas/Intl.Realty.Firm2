@@ -263,7 +263,7 @@ namespace Intl.Realty.Firm.Controllers
                 LastName = user.LastName,
                 DepartmentId = user.DepartmentId,
                 EmploymentStatusId = user.EmploymentStatusId,
-                ProfilePictureId = user.ProfilePictureId,
+                ProfileImageId = user.ProfileImageId,
                 Claims = userClaims.Select(x => x.Type + " : " + x.Value).ToList(),
                 Roles = userRoles.ToList()
             };
@@ -287,7 +287,7 @@ namespace Intl.Realty.Firm.Controllers
                 user.LastName = viewModel.LastName;
                 user.DepartmentId = viewModel.DepartmentId;
                 user.EmploymentStatusId = viewModel.EmploymentStatusId;
-                user.ProfilePictureId = viewModel.ProfilePictureId;
+                user.ProfileImageId = viewModel.ProfileImageId;
 
                 var result = await _userManager.UpdateAsync(user);
 

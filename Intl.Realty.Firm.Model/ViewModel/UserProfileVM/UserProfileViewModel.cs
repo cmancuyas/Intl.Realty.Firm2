@@ -11,7 +11,7 @@ namespace Intl.Realty.Firm.Model.ViewModel.UserProfileVM
         public string Email { get; set; } = string.Empty;
         public string? DepartmentName { get; set; }
         public string EmploymentStatusName { get; set; } = string.Empty;
-        public int? ProfilePictureId { get; set; }
+        public int? ProfileImageId { get; set; }
         public bool EmailConfirmed { get; set; }
 
         // Roles & Claims

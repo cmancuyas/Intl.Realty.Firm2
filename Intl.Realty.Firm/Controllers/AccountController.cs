@@ -350,7 +350,7 @@ namespace Intl.Realty.Firm.Controllers
                     LastName = viewModel.LastName,
                     DepartmentId = (viewModel.DepartmentId == 0) ? 1 : viewModel.DepartmentId,
                     EmploymentStatusId = 1,
-                    ProfilePictureId = viewModel.ProfilePictureId ?? 0,
+                    ProfileImageId = viewModel.ProfileImageId ?? 0,
                     UserAgreement = viewModel.UserAgreement,
                     RegistrationDate = DateTime.UtcNow,
                     TeamLeaderId = teamLeaderId // ✅ Assign the selected TeamLeader
