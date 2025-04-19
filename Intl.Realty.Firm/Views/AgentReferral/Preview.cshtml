@@ -1,0 +1,86 @@
+﻿@using Intl.Realty.Firm.Model.ViewModel.AgentReferralVM
+@model PreviewAgentReferralViewModel
+
+@{
+    ViewData["Title"] = "Referral Preview";
+    Layout = "~/Views/Shared/_LayoutAfterLogin.cshtml";
+}
+
+<div>
+    <a href="@Url.Action("Index", "AgentReferral")" class="text-decoration-none text-primary d-flex align-items-center mb-4">
+        <i data-feather="chevron-left" class="me-1"></i><span>Back</span>
+    </a>
+
+    <div class="row">
+        <div class="col-md-12 d-flex justify-content-between align-items-center">
+            <h1 class="text-blue mb-0">Agent Referral Details</h1>
+            <a asp-action="Create" class="btn btn-primary d-flex align-items-center">
+                <i data-feather="plus" class="me-1"></i> Add New
+            </a>
+        </div>
+    </div>
+
+    <hr class="my-4" />
+
+    <div class="preview-page">
+        <div class="row justify-content-center w-100">
+            <div class="col-md-12 card p-5 mx-4 shadow-sm">
+                <div class="d-flex justify-content-between mb-3">
+                    <h4 class="text-blue fw-bold">Referral by @Model.ReferrerName</h4>
+                    <button type="button" class="btn btn-outline-secondary"
+                            onclick="location.href='@Url.Action("Edit", "AgentReferral", new { id = Model.Id })'">
+                        Edit
+                    </button>
+                </div>
+
+                <hr />
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Referrer Name</label>
+                        <p>@Model.ReferrerName</p>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Referrer Phone</label>
+                        <p>@Model.ReferrerPhone</p>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Referred Agent Name</label>
+                        <p>@Model.ReferredAgentName</p>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Submitted At</label>
+                        <p>@Model.SubmittedAt.ToLocalTime().ToString("f")</p>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-12">
+                        <label class="form-label fw-semibold">Notes</label>
+                        <p>@(!string.IsNullOrWhiteSpace(Model.Notes) ? Model.Notes : "<em>No additional notes</em>")</p>
+                    </div>
+                </div>
+
+                <div class="row mt-4">
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Archived</label>
+                        <p>@(Model.IsArchived ? "Yes" : "No")</p>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Submitted By</label>
+                        <p>@Model.SubmittedByFullName</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        feather.replace();
+    </script>
+}

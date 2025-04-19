@@ -1,31 +1,46 @@
 ﻿@using Intl.Realty.Firm.Model.ViewModel.ReferAnAgentVM
-
 @model ReferAnAgentViewModel
+
 @{
     ViewData["Title"] = "Refer An Agent";
     Layout = "~/Views/Shared/_LayoutAfterLogin.cshtml";
 }
 
-<h1>Refer An Agent</h1>
-<div class="row">
-    <!-- Card 1 -->
-    <div class="col-md-12">
-        <div class="card">
-            <div class="card-body">
-                <form id="contactForm">
-                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+<div class="row justify-content-center mt-4">
+    <div class="col-md-8 col-lg-6">
+        <div class="card shadow-sm border-0">
+            <div class="card-body p-4">
+                <h4 class="text-blue fw-bold text-center mb-4">Refer an Agent</h4>
+
+                <form id="contactForm" novalidate>
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger d-none"></div>
+
                     <div class="mb-3">
-                        <label for="Name" class="form-label">Name</label>
-                        <input asp-for="Name" type="text" id="Name" class="form-control" placeholder="Enter your name" required>
-                        <span asp-validation-for="Name" class="text-danger"></span>
+                        <label asp-for="Name" class="form-label fw-semibold">Your Full Name</label>
+                        <input asp-for="Name" class="form-control" placeholder="Enter your name" required />
+                        <span asp-validation-for="Name" class="text-danger fst-italic"></span>
                     </div>
+
                     <div class="mb-3">
-                        <label for="TelephoneNumber" class="form-label">Phone Number</label>
-                        <input asp-for="TelephoneNumber" type="tel" id="TelephoneNumber" class="form-control" placeholder="Enter your phone number" required>
-                        <span asp-validation-for="TelephoneNumber" class="text-danger"></span>
+                        <label asp-for="TelephoneNumber" class="form-label fw-semibold">Your Phone Number</label>
+                        <input asp-for="TelephoneNumber" class="form-control" placeholder="Enter your phone number" required />
+                        <span asp-validation-for="TelephoneNumber" class="text-danger fst-italic"></span>
                     </div>
-                    <div class="text-end">
-                        <button type="button" class="btn btn-primary" onclick="sendEmail()">Send Email</button>
+
+                    <div class="mb-3">
+                        <label asp-for="ReferredAgentName" class="form-label fw-semibold">Referred Agent's Name</label>
+                        <input asp-for="ReferredAgentName" class="form-control" placeholder="Enter referred agent's name" />
+                        <span asp-validation-for="ReferredAgentName" class="text-danger fst-italic"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Notes" class="form-label fw-semibold">Notes (Optional)</label>
+                        <textarea asp-for="Notes" class="form-control" rows="3" placeholder="Add any relevant notes..."></textarea>
+                        <span asp-validation-for="Notes" class="text-danger fst-italic"></span>
+                    </div>
+
+                    <div class="d-grid mt-4">
+                        <button type="button" class="btn btn-primary" onclick="sendEmail()">📤 Send Referral</button>
                     </div>
                 </form>
             </div>
@@ -33,64 +48,60 @@
     </div>
 </div>
 
-<!-- Include the shared spinner -->
+<!-- Spinner -->
 <div id="spinner-container" style="display: none;">
     @Html.Partial("~/Views/Shared/_Spinner.cshtml")
 </div>
 
 @section Scripts {
-    <!-- SweetAlert2 CDN -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script type="text/javascript">
+    <script>
         function sendEmail() {
-            // Gather form data
             const formData = {
-                Name: $("#Name").val(),
-                TelephoneNumber: $("#TelephoneNumber").val()
+                Name: $("#Name").val().trim(),
+                TelephoneNumber: $("#TelephoneNumber").val().trim(),
+                ReferredAgentName: $("#ReferredAgentName").val().trim(),
+                Notes: $("#Notes").val().trim()
             };
 
-            // Validate the input
+            // Basic validation
             if (!formData.Name || !formData.TelephoneNumber) {
                 Swal.fire({
                     icon: 'error',
-                    title: 'Validation Error',
-                    text: 'Please fill out all fields.',
+                    title: 'Missing Info',
+                    text: 'Please fill in your name and phone number.',
                 });
                 return;
             }
 
-            // Show the spinner
             $("#spinner-container").show();
 
-            // Make the AJAX POST request
             $.ajax({
-                url: '/ReferAnAgent/SendEmail', // Endpoint in the controller
+                url: '/ReferAnAgent/SendEmail',
                 type: 'POST',
                 contentType: 'application/json',
-                data: JSON.stringify(formData), // Convert form data to JSON
-                success: function (response) {
-                    // Hide the spinner
+                data: JSON.stringify(formData),
+                success: function () {
                     $("#spinner-container").hide();
-
                     Swal.fire({
                         icon: 'success',
-                        title: 'Success',
-                        text: 'Email sent successfully!',
+                        title: 'Referral Sent',
+                        text: 'Your referral has been successfully submitted!',
                     }).then(() => {
-                        // Optionally clear the form
                         $("#contactForm")[0].reset();
                     });
                 },
-                error: function (xhr, status, error) {
-                    // Hide the spinner
+                error: function (xhr) {
                     $("#spinner-container").hide();
-
+                    let errorText = 'Something went wrong. Please try again later.';
+                    if (xhr.responseJSON?.errors) {
+                        errorText = Object.values(xhr.responseJSON.errors).flat().join('\n');
+                    }
                     Swal.fire({
                         icon: 'error',
-                        title: 'Error',
-                        text: 'An error occurred while sending the email. Please try again.',
+                        title: 'Submission Failed',
+                        text: errorText
                     });
-                    console.error("Error sending email:", error);
                 }
             });
         }

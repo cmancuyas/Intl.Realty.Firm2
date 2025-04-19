@@ -22,6 +22,68 @@ namespace Intl.Realty.Firm.DataAccess.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("Intl.Realty.Firm.Model.Model.AgentReferral", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("CreatedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("DeletedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsArchived")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Notes")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ReferredAgentName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ReferrerName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("ReferrerPhone")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<DateTime>("SubmittedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("SubmittedByUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("UpdatedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("AgentReferrals");
+                });
+
             modelBuilder.Entity("Intl.Realty.Firm.Model.Model.ApplicationRole", b =>
                 {
                     b.Property<Guid>("Id")
@@ -136,12 +198,6 @@ namespace Intl.Realty.Firm.DataAccess.Migrations
                     b.Property<int?>("ProfileImageId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("ProfileImageId1")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("ProfilePictureId")
-                        .HasColumnType("int");
-
                     b.Property<DateTime>("RegistrationDate")
                         .HasColumnType("datetime2");
 
@@ -179,10 +235,6 @@ namespace Intl.Realty.Firm.DataAccess.Migrations
                         .IsUnique()
                         .HasFilter("[ProfileImageId] IS NOT NULL");
 
-                    b.HasIndex("ProfileImageId1")
-                        .IsUnique()
-                        .HasFilter("[ProfileImageId1] IS NOT NULL");
-
                     b.HasIndex("TeamLeaderId");
 
                     b.ToTable("AspNetUsers", (string)null);
@@ -192,7 +244,7 @@ namespace Intl.Realty.Firm.DataAccess.Migrations
                         {
                             Id = new Guid("74b7ddfa-9c71-4b95-84e2-9b5fcdef884c"),
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "863ab1aa-7549-49ee-9b5b-cf546c4c5c13",
+                            ConcurrencyStamp = "bd36cffe-6a74-4add-922d-c0ba713bfeef",
                             Email = "superadmin@internationalrealtyfirm.com",
                             EmailConfirmed = true,
                             EmploymentStatusId = 1,
@@ -201,10 +253,10 @@ namespace Intl.Realty.Firm.DataAccess.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "SUPERADMIN@INTERNATIONALREALTYFIRM.COM",
                             NormalizedUserName = "SUPERADMIN@INTERNATIONALREALTYFIRM.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEK0QTCe7E/V5UswcdWgUq/20KLlUnED2PgSJ2z9FZ1w2Z/j10EbsT9HSYT+vhdfD/Q==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEDvzYyeFYAlwq3YyYPOGQkP5hL52hOldB4OIcEeAs4Qa7wsnlhQdorOO+61sVtD+NA==",
                             PhoneNumberConfirmed = false,
-                            RegistrationDate = new DateTime(2025, 4, 18, 20, 26, 20, 656, DateTimeKind.Local).AddTicks(3915),
-                            SecurityStamp = "931ceb30-dbe3-47e2-b35d-b002b0e49559",
+                            RegistrationDate = new DateTime(2025, 4, 20, 3, 30, 11, 271, DateTimeKind.Local).AddTicks(684),
+                            SecurityStamp = "ebf7dab4-1583-48fe-9acf-cff24293ea89",
                             TwoFactorEnabled = false,
                             UserAgreement = false,
                             UserName = "superadmin@internationalrealtyfirm.com"
@@ -1834,13 +1886,9 @@ namespace Intl.Realty.Firm.DataAccess.Migrations
                         .IsRequired();
 
                     b.HasOne("Intl.Realty.Firm.Model.Model.ProfileImage", "ProfileImage")
-                        .WithOne()
+                        .WithOne("User")
                         .HasForeignKey("Intl.Realty.Firm.Model.Model.ApplicationUser", "ProfileImageId")
                         .OnDelete(DeleteBehavior.SetNull);
-
-                    b.HasOne("Intl.Realty.Firm.Model.Model.ProfileImage", null)
-                        .WithOne("User")
-                        .HasForeignKey("Intl.Realty.Firm.Model.Model.ApplicationUser", "ProfileImageId1");
 
                     b.HasOne("Intl.Realty.Firm.Model.Model.ApplicationUser", "TeamLeader")
                         .WithMany("Agents")
