@@ -25,6 +25,7 @@ namespace Intl.Realty.Firm.Repository
         public IEmailCategoryRepository EmailCategory { get; private set; }
         public IContactEmailRepository ContactEmail { get; private set; }
         public IProfileImageRepository ProfileImage { get; private set; }
+        public IAgentReferralRepository AgentReferral { get; private set; }
 
         public UnitOfWork(ApplicationDbContext db)
         {
@@ -48,6 +49,7 @@ namespace Intl.Realty.Firm.Repository
             EmailCategory = new EmailCategoryRepository(_db);
             ContactEmail = new ContactEmailRepository(_db);
             ProfileImage = new ProfileImageRepository(_db);
+            AgentReferral = new AgentReferralRepository(_db);
         }
         public async Task SaveChangesAsync()
         {

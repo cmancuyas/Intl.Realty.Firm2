@@ -19,19 +19,20 @@ namespace Intl.Realty.Firm.Controllers
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IEmailService _emailService;
 
-        public ReferAnAgentController(IUnitOfWork unitOfWork,
-                                    IConfigurationService configurationService,
-                                    IFileHandlerService fileHandlerService,
-                                    UserManager<ApplicationUser> userManager,
-                                    IEmailService emailService
-                                                                        )
+        public ReferAnAgentController(
+            IUnitOfWork unitOfWork,
+            IConfigurationService configurationService,
+            IFileHandlerService fileHandlerService,
+            UserManager<ApplicationUser> userManager,
+            IEmailService emailService)
         {
             _unitOfWork = unitOfWork;
             _configurationService = configurationService;
             _fileHandlerService = fileHandlerService;
-            _emailService = emailService;
             _userManager = userManager;
+            _emailService = emailService;
         }
+
         public IActionResult Index()
         {
             return View();
@@ -40,23 +41,44 @@ namespace Intl.Realty.Firm.Controllers
         [HttpPost]
         public async Task<IActionResult> SendEmail([FromBody] ReferAnAgentViewModel viewModel)
         {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var user = await _userManager.FindByIdAsync(userId!);
 
+            if (user == null)
+                return Unauthorized();
+
             var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+            var referralLink = Url.Action("Login", "Account",
+                new { id = viewModel.Name, token = token }, Request.Scheme);
 
-            var agentName = Url.Action("Login", "Account",
-                                            new { id = viewModel.Name, token = token }, Request.Scheme);
-
-            var contactEmailList = await _unitOfWork.ContactEmail.GetAllAsync(x => x.IsActive == true && !x.IsDeleted, includeProperties: "EmailCategory");
+            var contactEmailList = await _unitOfWork.ContactEmail
+                .GetAllAsync(x => x.IsActive && !x.IsDeleted, includeProperties: "EmailCategory");
 
             foreach (var contactEmail in contactEmailList)
             {
-                var mailRequest = EmailRequest.SendRemailToReferAnAgent(contactEmail, viewModel, agentName);
+                var mailRequest = EmailRequest.SendRemailToReferAnAgent(contactEmail, viewModel, referralLink);
                 await _emailService.SendEmailAsync(mailRequest);
             }
 
-            return RedirectToAction("Index");
+            var referral = new AgentReferral
+            {
+                ReferrerName = viewModel.Name,
+                ReferrerPhone = viewModel.TelephoneNumber,
+                ReferredAgentName = viewModel.ReferredAgentName,
+                Notes = viewModel.Notes,
+                SubmittedByUserId = Guid.Parse(userId),
+                SubmittedAt = DateTime.UtcNow,
+                IsArchived = false
+            };
+
+
+            await _unitOfWork.AgentReferral.AddAsync(referral);
+            await _unitOfWork.SaveChangesAsync();
+
+            return Ok();
         }
     }
 }

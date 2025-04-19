@@ -192,24 +192,38 @@ namespace Intl.Realty.Firm.Helper
             return template;
         }
         public static string SendRemailToReferAnAgent(ContactEmail contactEmail,
-                                                     ReferAnAgentViewModel referAnAgentViewModel,
-                                                     string agentLink)
+                                                      ReferAnAgentViewModel referAnAgentViewModel,
+                                                      string agentLink)
         {
-            string template = 
-            @$"<html>
-                     <meta charset=""utf-8"">
-                    <body>
-                    <p>Good day <strong>{contactEmail.FirstName},</strong></p>
-                    <p><span style=""background-color:transparent;color:#000000;font-family:Arial,sans-serif;font-size:11pt;""><span style=""font-style:normal;font-variant:normal;font-weight:400;text-decoration:none;vertical-align:baseline;white-space:pre-wrap;"">This agent being referred:  <br> Name: {referAnAgentViewModel.Name} <br> Phone Number: {referAnAgentViewModel.TelephoneNumber} .&nbsp;</span></span></p>
-                    <p><span style=""background-color:transparent;color:#000000;font-family:Arial,sans-serif;font-size:11pt;""><span style=""font-style:normal;font-variant:normal;font-weight:400;text-decoration:none;vertical-align:baseline;white-space:pre-wrap;"">Click this link to login and review.&nbsp;</span></span></p>
-                    <p><strong>{agentLink}</strong>
-                    <p>&nbsp;</p>
+            string template =
+            @$"
+                <html>
+                <head>
+                    <meta charset=""utf-8"">
+                </head>
+                <body style=""font-family: Arial, sans-serif; font-size: 11pt; color: #000000;"">
+                    <p>Good day <strong>{contactEmail.FirstName}</strong>,</p>
+
+                    <p>The following agent has been referred:</p>
+                    <ul>
+                        <li><strong>Referrer Name:</strong> {referAnAgentViewModel.Name}</li>
+                        <li><strong>Referrer Phone:</strong> {referAnAgentViewModel.TelephoneNumber}</li>
+                        <li><strong>Referred Agent Name:</strong> {referAnAgentViewModel.ReferredAgentName ?? "<em>Not provided</em>"}</li>
+                        <li><strong>Notes:</strong> {(!string.IsNullOrWhiteSpace(referAnAgentViewModel.Notes) ? referAnAgentViewModel.Notes : "<em>None</em>")}</li>
+                    </ul>
+
+                    <p>Click the link below to log in and review:</p>
                     <p>
-                        <meta charset=""utf-8""><span style=""background-color:transparent;color:#000000;font-family:Arial,sans-serif;font-size:11pt;""><span style=""font-style:normal;font-variant:normal;font-weight:400;text-decoration:none;vertical-align:baseline;white-space:pre-wrap;"">Thank you.&nbsp;</span></span>
+                        <a href=""{agentLink}"" style=""color: #1a73e8;"">{agentLink}</a>
                     </p>
-                    </body>
-                    </html>";
+
+                    <p>Thank you.</p>
+                </body>
+                </html>";
+
             return template;
         }
+
+
     }
 }

@@ -12,7 +12,8 @@
         "emailCategories-tab": "/EmailCategory/Index",
         "contactEmails-tab": "/ContactEmail/Index",
         "provinces-tab": "/Province/Index",
-        "dealTransactionNumberRanges-tab": "/DealTransactionNumberRange/Index"
+        "dealTransactionNumberRanges-tab": "/DealTransactionNumberRange/Index",
+        "agentReferrals-tab": "/AgentReferral/Index"
     };
 
     // Desktop Tab Navigation

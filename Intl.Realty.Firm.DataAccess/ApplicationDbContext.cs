@@ -32,6 +32,7 @@ namespace Intl.Realty.Firm.DataAccess
         public DbSet<EmailCategory> EmailCategories { get; set; }
         public DbSet<ContactEmail> ContactEmails { get; set; }
         public DbSet<ProfileImage> ProfileImages { get; set; }
+        public DbSet<AgentReferral> AgentReferrals { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

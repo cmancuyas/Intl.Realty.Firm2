@@ -21,6 +21,7 @@
         IEmailCategoryRepository EmailCategory { get; }
         IContactEmailRepository ContactEmail { get; }
         IProfileImageRepository ProfileImage { get; }
+        IAgentReferralRepository AgentReferral { get; }
         Task SaveChangesAsync();
         void SaveChanges();
     }

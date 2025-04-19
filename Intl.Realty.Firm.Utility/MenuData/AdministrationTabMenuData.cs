@@ -28,7 +28,8 @@ namespace Intl.Realty.Firm.Utility.MenuData
                 CreateTabMenu(++count, "Province", "Provinces", "provinces-tab", "provinces"),
                 CreateTabMenu(++count, "InternalEmail", "Internal Emails", "internalEmails-tab", "internalEmails"),
                 CreateTabMenu(++count, "ContactEmail", "Contact Emails", "contactEmails-tab", "contactEmails"),
-                CreateTabMenu(++count, "EmailCategory", "Email Categories", "emailCategories-tab", "emailCategories")
+                CreateTabMenu(++count, "EmailCategory", "Email Categories", "emailCategories-tab", "emailCategories"),
+                CreateTabMenu(++count, "AgentReferral", "Agent Referrals", "agentReferrals-tab", "agentReferrals")
             };
 
             return menus.AsReadOnly();
