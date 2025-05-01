@@ -347,7 +347,7 @@ namespace Intl.Realty.Firm.Controllers
             (orderCriteria, orderAscendingDirection) = InitializeOrderCriteria(dtParameters, orderCriteria, orderAscendingDirection);
 
             // Query initialization
-            var result = await _unitOfWork.DocumentType.AsQueryableAsync(x => x.IsDeleted == false);
+            var result = await _unitOfWork.DocumentType.AsQueryableAsync(x => x.IsActive && x.IsDeleted == false);
             var totalResultsCount = result.Count();
 
             if (searchBy!.Contains(":") || searchBy.Contains("+"))
@@ -476,7 +476,7 @@ namespace Intl.Realty.Firm.Controllers
 
                 (orderCriteria, orderAscendingDirection) = InitializeOrderCriteria(dtParameters, orderCriteria, orderAscendingDirection);
 
-                var result = _unitOfWork.DocumentType.AsQueryable(x => x.IsDeleted == false);
+                var result = _unitOfWork.DocumentType.AsQueryable(x => x.IsActive && x.IsDeleted == false);
 
                 if (!string.IsNullOrEmpty(searchBy))
                 {
