@@ -329,11 +329,11 @@
                                         @{
                                             int i = 0;
                                         }
-                                        @foreach (DocumentType item in Model.EditSaleCoopViewModel.DocumentTypeList!)
+                                        @foreach (DocumentTypeAssignment item in Model.EditSaleCoopViewModel.DocumentTypeAssignmentList!)
                                         {
                                             <tr data-document-type-id="@item.Id">
                                                 <td style="width: 30%">
-                                                    @Html.DisplayFor(modelItem => item.Description)
+                                                    @Html.DisplayFor(modelItem => item.DocumentType.Description)
                                                 </td>
                                                 <input type="hidden"
                                                        asp-for="EditSaleCoopViewModel.CreateFileUploadListViewModel.CreateFileUploadsViewModel[i].DocumentTypeId"

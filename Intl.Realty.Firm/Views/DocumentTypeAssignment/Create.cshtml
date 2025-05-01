@@ -78,6 +78,16 @@
                                     </div>
                                 </div>
                             </div>
+                            @* Status Toggle *@
+                            <div class="row mb-4">
+                                <div class="col-md-12">
+                                    <div class="form-check form-switch d-flex align-items-center gap-2">
+                                        <input id="isRequiredCheckbox" class="form-check-input" type="checkbox" asp-for="CreateDocumentTypeAssignment.IsRequired" />
+                                        <label id="lblStatus" class="fw-bolder">Required</label>
+                                    </div>
+                                    @Html.ValidationMessageFor(m => m.CreateDocumentTypeAssignment.IsRequired, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -96,17 +106,27 @@
 
 
 @section Scripts {
-
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
-    <script src="~/js/viewDataTableUtility.js"></script>
+
     <script type="text/javascript">
         $(document).ready(function () {
+            // Initialize status labels
+            toggleStatusLabels();
+            toggleRequiredStatusLabels();
+            // Event handlers
+            $('#isActiveCheckbox').on('change', toggleStatusLabels);
+            $('#isRequiredCheckbox').on('change', toggleRequiredStatusLabels);
+        });
 
-        })
-
-
-
+        function toggleStatusLabels() {
+            const isActive = $('#isActiveCheckbox').is(':checked');
+            $('#lblStatus').css('color', isActive ? '#0d6efd' : '#bfbfbf').text(isActive ? "Active" : "Inactive");
+        }
+        function toggleRequiredStatusLabels() {
+            const isRequired = $('#isRequiredCheckbox').is(':checked');
+            $('#lblStatus').css('color', isRequired ? '#0d6efd' : '#bfbfbf').text(isRequired ? "Required" : "Not Required");
+        }
     </script>
 }
