@@ -111,6 +111,9 @@ namespace Intl.Realty.Firm.Controllers
             var documentTypeAssignmentIEnum = await _unitOfWork.DocumentTypeAssignment.GetAllAsync(x => x.IsDeleted == false, includeProperties: "TransactionType,DocumentType");
             var documentTypeIEnum = await _unitOfWork.DocumentType.GetAllAsync(x => x.IsDeleted == false);
             var documentTypeAssignmentList = documentTypeAssignmentIEnum.ToList();
+
+            viewModel.CreateSaleListing.DocumentTypeAssignmentList = documentTypeAssignmentList.Where(x => x.TransactionType.Id == transactionType.Id).ToList(); ; // DocumentTypeAssignmentList
+
             var documentTypeList = documentTypeIEnum.ToList();
             viewModel.CreateSaleListing.DocumentTypeList = _documentTransactionService
                                                             .GetDocumentTypesFromDocumentTypeAssignment(transactionTypeName,
@@ -400,6 +403,9 @@ namespace Intl.Realty.Firm.Controllers
                 var documentTypeAssignmentIEnum = await _unitOfWork.DocumentTypeAssignment.GetAllAsync(x => x.IsDeleted == false, includeProperties: "TransactionType,DocumentType");
                 var documentTypeIEnum = await _unitOfWork.DocumentType.GetAllAsync(x => x.IsActive && x.IsDeleted == false);
                 var documentTypeAssignmentList = documentTypeAssignmentIEnum.ToList();
+
+                viewModel.EditSaleListingViewModel.DocumentTypeAssignmentList = documentTypeAssignmentList.Where(x => x.TransactionType.Id == model.TransactionType.Id).ToList(); // DocumentTypeAssignmentList
+
                 var documentTypeList = documentTypeIEnum.ToList();
                 viewModel.EditSaleListingViewModel.DocumentTypeList = _documentTransactionService
                                                                 .GetDocumentTypesFromDocumentTypeAssignment(model.TransactionType!.Description,

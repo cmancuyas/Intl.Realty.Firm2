@@ -14,6 +14,7 @@ namespace Intl.Realty.Firm.Model.Model
         [Required]
         [ForeignKey("TransactionType")]
         public int TransactionTypeId { get; set; }
+        public bool IsRequired { get; set; } = false;
         public virtual DocumentType? DocumentType { get; set; }
         public virtual TransactionType? TransactionType { get; set; }
     }

@@ -13,5 +13,6 @@ namespace Intl.Realty.Firm.Model.ViewModel.DocumentTypeAssignmentVM
         public int TransactionTypeId { get; set; }
         public DocumentType? DocumentType { get; set; }
         public TransactionType? TransactionType { get; set; }
+        public bool IsRequired { get; set; } = true;
     }
 }

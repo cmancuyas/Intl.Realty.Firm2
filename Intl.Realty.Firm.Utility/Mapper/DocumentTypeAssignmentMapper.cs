@@ -27,6 +27,7 @@ namespace Intl.Realty.Firm.Utility.Mapper
 
                 DocumentTypeId = model.DocumentTypeId,
                 TransactionTypeId = model.TransactionTypeId,
+                IsRequired = model.IsRequired,
 
                 IsActive = model.IsActive,
                 IsDeleted = model.IsDeleted,
@@ -45,6 +46,7 @@ namespace Intl.Realty.Firm.Utility.Mapper
 
                     DocumentTypeId = x.DocumentTypeId,
                     TransactionTypeId= x.TransactionTypeId,
+                    IsRequired = x.IsRequired,
 
                     IsActive = x.IsActive,
                     IsDeleted = x.IsDeleted,
@@ -64,6 +66,7 @@ namespace Intl.Realty.Firm.Utility.Mapper
             {
                 DocumentTypeId = viewModel.DocumentTypeId,
                 TransactionTypeId = viewModel.TransactionTypeId,
+                IsRequired = viewModel.IsRequired,
 
                 IsActive = viewModel.IsActive,
                 IsDeleted = viewModel.IsDeleted,
@@ -79,6 +82,7 @@ namespace Intl.Realty.Firm.Utility.Mapper
 
                 DocumentTypeId = viewModel.DocumentTypeId,
                 TransactionTypeId = viewModel.TransactionTypeId,
+                IsRequired = viewModel.IsRequired,
 
                 IsActive = viewModel.IsActive,
                 IsDeleted = viewModel.IsDeleted,
@@ -96,6 +100,8 @@ namespace Intl.Realty.Firm.Utility.Mapper
                 {
                     DocumentType = x.DocumentType!.Description,
                     TransactionType= x.TransactionType!.Description,
+                    IsRequired = x.IsRequired,
+
                 }).ToList();
             }
             return exportList;
@@ -109,6 +115,7 @@ namespace Intl.Realty.Firm.Utility.Mapper
 
                 DocumentTypeId = model.DocumentTypeId,
                 TransactionTypeId = model.TransactionTypeId,
+                IsRequired = model.IsRequired,
             };
 
         }

@@ -109,6 +109,9 @@ namespace Intl.Realty.Firm.Controllers
             var documentTypeAssignmentIEnum = await _unitOfWork.DocumentTypeAssignment.GetAllAsync(x => x.IsDeleted == false, includeProperties: "TransactionType,DocumentType");
             var documentTypeIEnum = await _unitOfWork.DocumentType.GetAllAsync(x => x.IsDeleted == false);
             var documentTypeAssignmentList = documentTypeAssignmentIEnum.ToList();
+            
+            viewModel.CreateLeaseCoopViewModel.DocumentTypeAssignmentList = documentTypeAssignmentList.Where(x=>x.TransactionType.Id == transactionType.Id).ToList();
+
             var documentTypeList = documentTypeIEnum.ToList();
             viewModel.CreateLeaseCoopViewModel.DocumentTypeList = _documentTransactionService
                                                             .GetDocumentTypesFromDocumentTypeAssignment(transactionTypeName,
@@ -370,6 +373,9 @@ namespace Intl.Realty.Firm.Controllers
             var documentTypeAssignmentIEnum = await _unitOfWork.DocumentTypeAssignment.GetAllAsync(x => x.IsDeleted == false, includeProperties: "TransactionType,DocumentType");
             var documentTypeIEnum = await _unitOfWork.DocumentType.GetAllAsync(x => x.IsDeleted == false);
             var documentTypeAssignmentList = documentTypeAssignmentIEnum.ToList();
+
+            viewModel.EditLeaseCoopViewModel.DocumentTypeAssignmentList = documentTypeAssignmentList.Where(x => x.TransactionType.Id == model.TransactionType.Id).ToList(); // DocumentTypeAssignmentList
+
             var documentTypeList = documentTypeIEnum.ToList();
             viewModel.EditLeaseCoopViewModel.DocumentTypeList = _documentTransactionService
                                                             .GetDocumentTypesFromDocumentTypeAssignment(model.TransactionType!.Description,

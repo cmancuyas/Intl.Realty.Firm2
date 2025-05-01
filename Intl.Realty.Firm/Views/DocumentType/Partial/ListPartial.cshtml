@@ -79,10 +79,8 @@
                         <thead>
                             <tr>
                                 <th class="text-center w-5"><input id="select_all" type="checkbox" class="column-checkbox no-sort no-search" data-toggle="tooltip" data-bs-placement="left" title="Select all"></th>
-                                @* <th class="text-start">@Html.DisplayNameFor(model => model.Id)</th> *@
                                 <th class="text-start">Code</th>
                                 <th class="text-start">Description</th>
-                                <th class="text-start">Is Required?</th>
                                 <th class="text-start">Action</th>
                             </tr>
                         </thead>
@@ -147,34 +145,32 @@
         }
 
         table = $("#modelTable").DataTable({
-            "preDrawCallback": function (settings) {
+            preDrawCallback: function () {
                 $('#modelTable tbody').hide();
             },
-
-            "drawCallback": function () {
+            drawCallback: function () {
                 $('#modelTable tbody td').addClass("blurry");
                 $('#modelTable tbody').fadeIn(800);
-                setTimeout(function () {
+                setTimeout(() => {
                     $('#modelTable tbody td').removeClass("blurry");
                 }, 400);
             },
 
-            // Design Assets
             stateSave: true,
             autoWidth: true,
-            // ServerSide Setups
+
             processing: true,
             serverSide: true,
             lengthMenu: [[5, 10, 25, 50, 100, -1], [5, 10, 25, 50, 100, "All"]],
             pageLength: 10,
             pagingType: "full_numbers",
-            // Searching Setups
+
             searching: { regex: true },
-            "language": {
-                "infoFiltered": "",
-                "processing": '<div class="lds-ellipsis"><div></div><div></div><div></div><div></div></div>'
+            language: {
+                infoFiltered: "",
+                processing: '<div class="lds-ellipsis"><div></div><div></div><div></div><div></div></div>'
             },
-            // Custom Export Buttons
+
             dom: 'lBfrtip',
             buttons: [
                 {
@@ -191,7 +187,6 @@
                 }
             ],
 
-            // Ajax Filter
             ajax: {
                 url: "/DocumentType/GetDocumentTypeList",
                 type: "POST",
@@ -202,79 +197,36 @@
                 }
             },
 
-            // Columns Setups
             columns: [
                 {
-                    targets: 0,
                     data: null,
                     className: 'text-center',
-                    sortable: false,
-                    searchable: false,
                     orderable: false,
-                    render: function (data, type, full, meta) {
-                        return '<input type="checkbox" class="row-checkbox no-sort no-search" name="selectedRows" id="selectedRows" value="' + full.id + '">';
-                    },
+                    searchable: false,
+                    render: function (data, type, full) {
+                        return `<input type="checkbox" class="row-checkbox" name="selectedRows" value="${full.id}">`;
+                    }
                 },
                 { data: "code" },
                 { data: "description", title: "Description" },
-
                 {
-                    data: "isRequired", title: "Is Required?",
-                    render: function (data, type, row, meta) {
-                        var html = "";
-                        if(data == true){
-                            html = '<label class="status-active">Required</label>';
-                        }
-                        else
-                        {
-                            html = '<label class="status-inactive pe-cursor">Not Required</label>';
-                        }
-                        return html;
-                    }
-                },
-                // { data: "email", title: "Email" }
-
-                // {
-                //     data: "createdAt",
-                //     render: function (data, type, row) {
-                //         if (type === "display" || type === "filter") {
-                //             return moment(data).format("ddd MM/DD/YYYY HH:mm:ss");
-                //         }
-                //         return data;
-                //     }
-                // }
-            ],
-
-            // Column Definitions
-            columnDefs: [
-                { targets: "no-sort", orderable: false },
-                { targets: "no-search", searchable: false },
-                {
-                    targets: "trim",
-                    render: function (data, type, full, meta) {
-                        if (type === "display") {
-                            data = strtrunc(data, 10);
-                        }
-                        return data;
-                    }
-                },
-                { targets: "date-type", type: "date-eu" },
-
-                {
-                    targets: 4,
                     data: null,
-                    defaultContent: "<a class='btn btn-secondary' role='button' href='#' onclick='preview(this)'>Preview</a> <a class='btn btn-secondary' role='button' href='#' onclick='edit(this)'>Edit</a>",
-                    orderable: false
-                },
+                    className: "text-center text-nowrap",
+                    orderable: false,
+                    searchable: false,
+                    render: function () {
+                        return `<a class='btn btn-secondary me-1' href='#' onclick='preview(this)'>Preview</a><a class='btn btn-secondary' href='#' onclick='edit(this)'>Edit</a>`;
+                    }
+                }
             ]
         });
 
-        // Apply debounced search
+        // Debounced search input
         $('#search-input').on('input', function () {
             clearTimeout(debounceTimer);
             debounceTimer = setTimeout(function () {
                 table.search($('#search-input').val()).draw();
-            }, 300); // 300ms debounce delay
+            }, 300);
         });
     }
 

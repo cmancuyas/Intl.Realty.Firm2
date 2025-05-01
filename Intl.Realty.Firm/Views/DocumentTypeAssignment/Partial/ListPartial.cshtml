@@ -82,6 +82,7 @@
                                 @* <th class="text-start">@Html.DisplayCodeFor(model => model.Id)</th> *@
                                 <th class="text-start">Transaction Type</th>
                                 <th class="text-start">Document Type</th>
+                                <th class="text-start">Is Required?</th>
                                 <th class="text-start">Action</th>
                             </tr>
                         </thead>
@@ -130,8 +131,8 @@
             closeModal();
         });
 
-        handleToastrNotification('addSuccess', 'New DocumentTypeAssignment added successfully!');
-        handleToastrNotification('editSuccess', 'DocumentTypeAssignment updated successfully!');
+        handleToastrNotification('addSuccess', 'New Document Type Assignment added successfully!');
+        handleToastrNotification('editSuccess', 'Document Type Assignment updated successfully!');
         handleToastrNotification('deleteSuccess', 'Selection deleted successfully!');
 
     }); // End of document ready
@@ -233,7 +234,20 @@
                         return object[3];
                     }
                 },
-
+                {
+                    data: "isRequired", title: "Is Required?",
+                    render: function (data, type, row, meta) {
+                        var html = "";
+                        if(data == true){
+                            html = '<label class="status-active">Required</label>';
+                        }
+                        else
+                        {
+                            html = '<label class="status-inactive pe-cursor">Not Required</label>';
+                        }
+                        return html;
+                    }
+                },
                 // { data: "email", title: "Email" }
 
                 // {
@@ -263,7 +277,7 @@
                 { targets: "date-type", type: "date-eu" },
 
                 {
-                    targets: 3,
+                    targets: 4,
                     data: null,
                     defaultContent: "<a class='btn btn-secondary' role='button' href='#' onclick='preview(this)'>Preview</a> <a class='btn btn-secondary' role='button' href='#' onclick='edit(this)'>Edit</a>",
                     orderable: false

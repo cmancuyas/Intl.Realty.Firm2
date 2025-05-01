@@ -244,7 +244,7 @@ namespace Intl.Realty.Firm.DataAccess.Migrations
                         {
                             Id = new Guid("74b7ddfa-9c71-4b95-84e2-9b5fcdef884c"),
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "bd36cffe-6a74-4add-922d-c0ba713bfeef",
+                            ConcurrencyStamp = "5e16c607-b60e-49c5-b891-e673ef7d2862",
                             Email = "superadmin@internationalrealtyfirm.com",
                             EmailConfirmed = true,
                             EmploymentStatusId = 1,
@@ -253,10 +253,10 @@ namespace Intl.Realty.Firm.DataAccess.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "SUPERADMIN@INTERNATIONALREALTYFIRM.COM",
                             NormalizedUserName = "SUPERADMIN@INTERNATIONALREALTYFIRM.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEDvzYyeFYAlwq3YyYPOGQkP5hL52hOldB4OIcEeAs4Qa7wsnlhQdorOO+61sVtD+NA==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEPUbszbTp/8t89kcO0SLrGo8qRt9Z0UOsSklbHwwy+/gWY0T/kbud9gmnJ1GSF8LkQ==",
                             PhoneNumberConfirmed = false,
-                            RegistrationDate = new DateTime(2025, 4, 20, 3, 30, 11, 271, DateTimeKind.Local).AddTicks(684),
-                            SecurityStamp = "ebf7dab4-1583-48fe-9acf-cff24293ea89",
+                            RegistrationDate = new DateTime(2025, 5, 2, 3, 45, 39, 689, DateTimeKind.Local).AddTicks(6786),
+                            SecurityStamp = "8f22c68e-46f0-4eed-af62-db771f2b6778",
                             TwoFactorEnabled = false,
                             UserAgreement = false,
                             UserName = "superadmin@internationalrealtyfirm.com"
@@ -731,6 +731,9 @@ namespace Intl.Realty.Firm.DataAccess.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
+                    b.Property<bool>("IsRequired")
+                        .HasColumnType("bit");
+
                     b.Property<int>("TransactionTypeId")
                         .HasColumnType("int");
 
@@ -757,6 +760,7 @@ namespace Intl.Realty.Firm.DataAccess.Migrations
                             DocumentTypeId = 1,
                             IsActive = true,
                             IsDeleted = false,
+                            IsRequired = false,
                             TransactionTypeId = 1
                         },
                         new
@@ -767,6 +771,7 @@ namespace Intl.Realty.Firm.DataAccess.Migrations
                             DocumentTypeId = 2,
                             IsActive = true,
                             IsDeleted = false,
+                            IsRequired = false,
                             TransactionTypeId = 1
                         },
                         new
@@ -777,6 +782,7 @@ namespace Intl.Realty.Firm.DataAccess.Migrations
                             DocumentTypeId = 3,
                             IsActive = true,
                             IsDeleted = false,
+                            IsRequired = false,
                             TransactionTypeId = 1
                         },
                         new
@@ -787,6 +793,7 @@ namespace Intl.Realty.Firm.DataAccess.Migrations
                             DocumentTypeId = 1,
                             IsActive = true,
                             IsDeleted = false,
+                            IsRequired = false,
                             TransactionTypeId = 2
                         },
                         new
@@ -797,6 +804,7 @@ namespace Intl.Realty.Firm.DataAccess.Migrations
                             DocumentTypeId = 2,
                             IsActive = true,
                             IsDeleted = false,
+                            IsRequired = false,
                             TransactionTypeId = 2
                         },
                         new
@@ -807,6 +815,7 @@ namespace Intl.Realty.Firm.DataAccess.Migrations
                             DocumentTypeId = 3,
                             IsActive = true,
                             IsDeleted = false,
+                            IsRequired = false,
                             TransactionTypeId = 2
                         },
                         new
@@ -817,6 +826,7 @@ namespace Intl.Realty.Firm.DataAccess.Migrations
                             DocumentTypeId = 1,
                             IsActive = true,
                             IsDeleted = false,
+                            IsRequired = false,
                             TransactionTypeId = 3
                         },
                         new
@@ -827,6 +837,7 @@ namespace Intl.Realty.Firm.DataAccess.Migrations
                             DocumentTypeId = 2,
                             IsActive = true,
                             IsDeleted = false,
+                            IsRequired = false,
                             TransactionTypeId = 3
                         },
                         new
@@ -837,6 +848,7 @@ namespace Intl.Realty.Firm.DataAccess.Migrations
                             DocumentTypeId = 3,
                             IsActive = true,
                             IsDeleted = false,
+                            IsRequired = false,
                             TransactionTypeId = 3
                         },
                         new
@@ -847,6 +859,7 @@ namespace Intl.Realty.Firm.DataAccess.Migrations
                             DocumentTypeId = 1,
                             IsActive = true,
                             IsDeleted = false,
+                            IsRequired = false,
                             TransactionTypeId = 4
                         },
                         new
@@ -857,6 +870,7 @@ namespace Intl.Realty.Firm.DataAccess.Migrations
                             DocumentTypeId = 2,
                             IsActive = true,
                             IsDeleted = false,
+                            IsRequired = false,
                             TransactionTypeId = 4
                         },
                         new
@@ -867,6 +881,7 @@ namespace Intl.Realty.Firm.DataAccess.Migrations
                             DocumentTypeId = 3,
                             IsActive = true,
                             IsDeleted = false,
+                            IsRequired = false,
                             TransactionTypeId = 4
                         });
                 });

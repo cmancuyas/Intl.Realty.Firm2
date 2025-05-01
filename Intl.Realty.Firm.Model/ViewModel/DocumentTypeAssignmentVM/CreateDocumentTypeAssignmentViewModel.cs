@@ -12,6 +12,8 @@ namespace Intl.Realty.Firm.Model.ViewModel.DocumentTypeAssignmentVM
         [Required(ErrorMessage = "The TransactionType field is required.")]
         public int TransactionTypeId { get; set; }
         [Required]
+        public bool IsRequired { get; set; }
+        [Required]
         public bool IsActive { get; set; }
         [Required]
         public bool IsDeleted { get; set; }
