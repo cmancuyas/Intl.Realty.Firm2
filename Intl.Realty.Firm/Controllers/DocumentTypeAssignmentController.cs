@@ -518,7 +518,7 @@ namespace Intl.Realty.Firm.Controllers
 
                 (orderCriteria, orderAscendingDirection) = InitializeOrderCriteria(dtParameters, orderCriteria, orderAscendingDirection);
 
-                var result = _unitOfWork.DocumentTypeAssignment.AsQueryable(x => x.IsDeleted == false);
+                var result = _unitOfWork.DocumentTypeAssignment.AsQueryable(x => x.IsActive && x.IsDeleted == false, includeProperties:"TransactionType,DocumentType");
 
                 if (!string.IsNullOrEmpty(searchBy))
                 {
