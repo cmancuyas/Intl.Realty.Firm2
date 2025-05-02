@@ -142,12 +142,12 @@ namespace Intl.Realty.Firm.Utility.Mapper
                     BuyerAgentName = x.IRFDeal.BuyerAgentName,
                     BuyerBrokerage = x.IRFDeal.BuyerBrokerage,
                     BuyerBrokerageFax = x.IRFDeal.BuyerBrokerageFax,
-                    SellersLawyer = x.IRFDeal.SellersLawyer,
-                    SellersLawyerAddress = x.IRFDeal.SellersLawyerAddress,
-                    SellersPhoneNumber = x.IRFDeal.SellersPhoneNumber,
-                    BuyersLawyer = x.IRFDeal.BuyersLawyer,
-                    BuyersLawyerAddress = x.IRFDeal.BuyersLawyerAddress,
-                    BuyersPhoneNumber = x.IRFDeal.BuyersPhoneNumber,
+                    SellerLawyer = x.IRFDeal.SellerLawyer,
+                    SellerLawyerAddress = x.IRFDeal.SellerLawyerAddress,
+                    SellerPhoneNumber = x.IRFDeal.SellerEmailPhone,
+                    BuyerLawyer = x.IRFDeal.BuyerLawyer,
+                    BuyerLawyerAddress = x.IRFDeal.BuyerLawyerAddress,
+                    BuyerEmailPhone = x.IRFDeal.BuyerEmailPhone,
                     DealStatus = x.DealStatus!.Description
                 }).ToList();
             }

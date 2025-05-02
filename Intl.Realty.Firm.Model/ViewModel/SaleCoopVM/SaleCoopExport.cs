@@ -13,17 +13,17 @@ namespace Intl.Realty.Firm.Model.ViewModel.SaleCoopVM
         public DateTime DateCreated { get; set; }
         public DateTime DateSubmitted { get; set; }
         public string PropertyAddress { get; set; } = string.Empty;
-        [Column(TypeName = "decimal(18,4)")]
+        [Column(TypeName = "decimal(18,2)")]
         public decimal FinalSalePrice { get; set; }
         public DateTime FinalClosingDate { get; set; }
-        [Column(TypeName = "decimal(18,4)")]
+        [Column(TypeName = "decimal(18,2)")]
         public decimal DepositAmount { get; set; }
         public DateTime DepositDate { get; set; }
         public string BuyerName { get; set; } = string.Empty;
         public string LandLordName { get; set; } = string.Empty;
-        [Column(TypeName = "decimal(18,4)")]
+        [Column(TypeName = "decimal(18,2)")]
         public decimal ListingCommissionPercentage { get; set; }
-        [Column(TypeName = "decimal(18,4)")]
+        [Column(TypeName = "decimal(18,2)")]
         public decimal BuyingCommissionPercentage { get; set; }
         public string ListingAgentName { get; set; } = string.Empty;
         public string ListingBrokerage { get; set; } = string.Empty;
@@ -31,12 +31,12 @@ namespace Intl.Realty.Firm.Model.ViewModel.SaleCoopVM
         public string BuyerAgentName { get; set; } = string.Empty;
         public string BuyerBrokerage { get; set; } = string.Empty;
         public string BuyerBrokerageFax { get; set; } = string.Empty;
-        public string SellersLawyer { get; set; } = string.Empty;
-        public string SellersLawyerAddress { get; set; } = string.Empty;
-        public string SellersPhoneNumber { get; set; } = string.Empty;
-        public string BuyersLawyer { get; set; } = string.Empty;
-        public string BuyersLawyerAddress { get; set; } = string.Empty;
-        public string BuyersPhoneNumber { get; set; } = string.Empty;
+        public string SellerLawyer { get; set; } = string.Empty;
+        public string SellerLawyerAddress { get; set; } = string.Empty;
+        public string SellerEmailPhone { get; set; } = string.Empty;
+        public string BuyerLawyer { get; set; } = string.Empty;
+        public string BuyerLawyerAddress { get; set; } = string.Empty;
+        public string BuyerEmailPhone { get; set; } = string.Empty;
         public List<FileUpload>? FileUploads { get; set; }
         public int DealStatusId { get; set; }
         public string DealStatus { get; set; } = string.Empty;

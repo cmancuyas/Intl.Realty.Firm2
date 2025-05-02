@@ -6,12 +6,12 @@ namespace Intl.Realty.Firm.Model.Model
     {
         public string PropertyAddress { get; set; } = string.Empty;
 
-        [Column(TypeName = "decimal(18,4)")]
+        [Column(TypeName = "decimal(18,2)")]
         public decimal? FinalSalePrice { get; set; }
 
         public DateTime FinalClosingDate { get; set; }
 
-        [Column(TypeName = "decimal(18,4)")]
+        [Column(TypeName = "decimal(18,2)")]
         public decimal DepositAmount { get; set; }
 
         public DateTime DepositDate { get; set; }
@@ -19,27 +19,34 @@ namespace Intl.Realty.Firm.Model.Model
         public string BuyerName { get; set; } = string.Empty;
         public string LandLordName { get; set; } = string.Empty;
 
-        [Column(TypeName = "decimal(18,4)")]
+        [Column(TypeName = "decimal(18,2)")]
         public decimal ListingCommissionPercentage { get; set; }
 
-        [Column(TypeName = "decimal(18,4)")]
+        [Column(TypeName = "decimal(18,2)")]
         public decimal BuyingCommissionPercentage { get; set; }
 
         public string? ListingAgentName { get; set; }
         public string? ListingBrokerage { get; set; }
         public string? ListingBrokerageFax { get; set; }
 
+        public string? BuyerLawyer { get; set; }
+        public string? BuyerLawyerAddress { get; set; }
+        public string? BuyerEmailPhone { get; set; } = string.Empty;
+
         public string? BuyerAgentName { get; set; }
         public string? BuyerBrokerage { get; set; }
         public string? BuyerBrokerageFax { get; set; }
+        public string? BuyerBrokeragePhoneNumber { get; set; }
+        public string? BuyerBrokerageEmail { get; set; }
 
-        public string? SellersLawyer { get; set; }
-        public string? SellersLawyerAddress { get; set; }
-        public string? SellersPhoneNumber { get; set; }
-
-        public string? BuyersLawyer { get; set; }
-        public string? BuyersLawyerAddress { get; set; }
-        public string BuyersPhoneNumber { get; set; } = string.Empty;
+        public string? SellerName { get; set; }
+        public string? SellerAgentName { get; set; }
+        public string? SellerLawyer { get; set; }
+        public string? SellerLawyerAddress { get; set; }
+        public string? SellerEmailPhone { get; set; }
+        public string? SellerBrokerageFax { get; set; }
+        public string? SellerBrokeragePhoneNumber { get; set; }
+        public string? SellerBrokerageEmail { get; set; }
 
         public string? TenantName { get; set; }
         public string? TenantAgentName { get; set; }
@@ -49,7 +56,7 @@ namespace Intl.Realty.Firm.Model.Model
         public string? LandLordPhoneNumber { get; set; }
         public string? LandLordEmailAddress { get; set; }
 
-        [Column(TypeName = "decimal(18,4)")]
+        [Column(TypeName = "decimal(18,2)")]
         public decimal? FinalLeasePrice { get; set; }
 
         public string? TenantEmailAddress { get; set; }

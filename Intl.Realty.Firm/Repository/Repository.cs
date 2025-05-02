@@ -29,30 +29,23 @@ namespace Intl.Realty.Firm.Repository
             await _context.SaveChangesAsync();
         }
 
-        public async Task<T> GetAsync(Expression<Func<T, bool>> filter, string? includeProperties = null, bool tracked = false)
+        public async Task<T?> GetAsync(Expression<Func<T, bool>> filter, string? includeProperties = null, bool tracked = false)
         {
-            IQueryable<T> query;
-            if (tracked)
-            {
-                query = dbSet;
-            }
-            else
-            {
-                query = dbSet.AsNoTracking();
-            }
+            IQueryable<T> query = tracked ? dbSet : dbSet.AsNoTracking();
 
             query = query.Where(filter);
+
             if (!string.IsNullOrEmpty(includeProperties))
             {
-                foreach (var includeProp in includeProperties
-                    .Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
+                foreach (var includeProp in includeProperties.Split(',', StringSplitOptions.RemoveEmptyEntries))
                 {
                     query = query.Include(includeProp);
                 }
             }
-            return await query.FirstOrDefaultAsync() ?? query.FirstOrDefault()!;
 
+            return await query.FirstOrDefaultAsync();
         }
+
         public async Task<IEnumerable<T>>
                 GetAllAsync(Expression<Func<T, bool>>? filter = null,
                             string? includeProperties = null,

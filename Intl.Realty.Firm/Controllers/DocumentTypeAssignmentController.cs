@@ -63,18 +63,22 @@ namespace Intl.Realty.Firm.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> IsAssignmentExists(int transactionTypeId, int documentTypeId)
         {
-            var combinedExp = LinqExtensions.AndAlso<DocumentTypeAssignment>(x => x.TransactionTypeId == transactionTypeId,
-                                                                              x => x.DocumentTypeId == documentTypeId);
+            var combinedExp = LinqExtensions.AndAlso<DocumentTypeAssignment>(
+                x => x.TransactionTypeId == transactionTypeId,
+                x => x.DocumentTypeId == documentTypeId && !x.IsDeleted);
+
             var checkIfExists = await _unitOfWork.DocumentTypeAssignment.GetAsync(combinedExp);
-            if (combinedExp == null)
+
+            if (checkIfExists == null)
             {
                 return Json(true);
             }
             else
             {
-                return Json($"Document Type Assignment already exists");
+                return Json("Document Type Assignment already exists");
             }
         }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(CreateDocumentTypeAssignmentWithTabMenuViewModel viewModel)
