@@ -70,7 +70,7 @@ namespace Intl.Realty.Firm.Controllers
             // to get current user info
             var user = await _userManager.FindByIdAsync(userId!);
 
-            viewModel.CreateSaleListing.CreatedByFullName = user!.FirstName + " " + user.LastName;
+            viewModel.CreateSaleListingViewModel.CreatedByFullName = user!.FirstName + " " + user.LastName;
 
             string transactionTypeName = _transactionTypeName; // 1 = Sale Listing
 
@@ -95,8 +95,8 @@ namespace Intl.Realty.Firm.Controllers
             }
 
             var transactionType = await _unitOfWork.TransactionType.GetAsync(x => x.Description == transactionTypeName);
-            viewModel.CreateSaleListing.TransactionType = transactionType;
-            viewModel.CreateSaleListing.TransactionTypeId = transactionType.Id;
+            viewModel.CreateSaleListingViewModel.TransactionType = transactionType;
+            viewModel.CreateSaleListingViewModel.TransactionTypeId = transactionType.Id;
 
             var paddedTransactionType = transactionType.Id.ToString().PadLeft(2, '0');
 
@@ -106,16 +106,16 @@ namespace Intl.Realty.Firm.Controllers
             var paddedCurrentNumber = (numberRange.CurrentNumber + 1).ToString().PadLeft(5, '0');
             var paddedNumberRange = currentYear + currentMonth + currentDay + "-" + paddedTransactionType + "-" + paddedCurrentNumber;
 
-            viewModel.CreateSaleListing.DealTransactionNumber = paddedNumberRange;
+            viewModel.CreateSaleListingViewModel.DealTransactionNumber = paddedNumberRange;
 
             var documentTypeAssignmentIEnum = await _unitOfWork.DocumentTypeAssignment.GetAllAsync(x => x.IsDeleted == false, includeProperties: "TransactionType,DocumentType");
             var documentTypeIEnum = await _unitOfWork.DocumentType.GetAllAsync(x => x.IsDeleted == false);
             var documentTypeAssignmentList = documentTypeAssignmentIEnum.ToList();
 
-            viewModel.CreateSaleListing.DocumentTypeAssignmentList = documentTypeAssignmentList.Where(x => x.TransactionType.Id == transactionType.Id).ToList(); ; // DocumentTypeAssignmentList
+            viewModel.CreateSaleListingViewModel.DocumentTypeAssignmentList = documentTypeAssignmentList.Where(x => x.TransactionType.Id == transactionType.Id).ToList(); ; // DocumentTypeAssignmentList
 
             var documentTypeList = documentTypeIEnum.ToList();
-            viewModel.CreateSaleListing.DocumentTypeList = _documentTransactionService
+            viewModel.CreateSaleListingViewModel.DocumentTypeList = _documentTransactionService
                                                             .GetDocumentTypesFromDocumentTypeAssignment(transactionTypeName,
                                                                                                         documentTypeAssignmentList,
                                                                                                         documentTypeList);
@@ -141,11 +141,11 @@ namespace Intl.Realty.Firm.Controllers
         {
             if (actionType == "save")
             {
-                viewModel.CreateSaleListing.DealStatusId = 2; // Draft
+                viewModel.CreateSaleListingViewModel.DealStatusId = 2; // Draft
             }
             else if (actionType == "submit")
             {
-                viewModel.CreateSaleListing.DealStatusId = 1; // Submitted
+                viewModel.CreateSaleListingViewModel.DealStatusId = 1; // Submitted
             }
 
 
@@ -156,8 +156,8 @@ namespace Intl.Realty.Firm.Controllers
             // Set transaction type
             string transactionTypeName = _transactionTypeName; // e.g., "Sale Listing"
             var transactionType = await _unitOfWork.TransactionType.GetAsync(x => x.Description == transactionTypeName);
-            viewModel.CreateSaleListing.TransactionType = transactionType;
-            viewModel.CreateSaleListing.TransactionTypeId = transactionType.Id;
+            viewModel.CreateSaleListingViewModel.TransactionType = transactionType;
+            viewModel.CreateSaleListingViewModel.TransactionTypeId = transactionType.Id;
 
             // Update DealTransactionNumberRange
             var numberRange = await _unitOfWork.DealTransactionNumberRange.GetAsync(x => !x.IsDeleted && x.Year == DateTime.Now.Year);
@@ -171,10 +171,10 @@ namespace Intl.Realty.Firm.Controllers
             // Prepare document types
             var docAssignments = await _unitOfWork.DocumentTypeAssignment.GetAllAsync(x => !x.IsDeleted, includeProperties: "TransactionType,DocumentType");
             var docTypes = await _unitOfWork.DocumentType.GetAllAsync(x => !x.IsDeleted);
-            viewModel.CreateSaleListing.DocumentTypeList = _documentTransactionService.GetDocumentTypesFromDocumentTypeAssignment(transactionTypeName, docAssignments.ToList(), docTypes.ToList());
+            viewModel.CreateSaleListingViewModel.DocumentTypeList = _documentTransactionService.GetDocumentTypesFromDocumentTypeAssignment(transactionTypeName, docAssignments.ToList(), docTypes.ToList());
 
             // Set creator information
-            viewModel.CreateSaleListing.CreatedByFullName = $"{user.FirstName} {user.LastName}";
+            viewModel.CreateSaleListingViewModel.CreatedByFullName = $"{user.FirstName} {user.LastName}";
 
             // Set up menus
             var menus = CreateDealTransactionTabMenuData.GetCreateDealTransactionTabMenuData();
@@ -192,7 +192,7 @@ namespace Intl.Realty.Firm.Controllers
             }
 
             // Create IRF Deal
-            var irfDealModel = viewModel.CreateSaleListing.CreateIRFDealSaleListingViewModel?.ToIRFDealModel();
+            var irfDealModel = viewModel.CreateSaleListingViewModel.CreateIRFDealSaleListingViewModel?.ToIRFDealModel();
             if (irfDealModel != null)
             {
                 irfDealModel.CreatedAt = DateTime.Now;
@@ -205,32 +205,32 @@ namespace Intl.Realty.Firm.Controllers
             var newIRFDeal = await _unitOfWork.IRFDeal.GetAsync(x => x.Id == irfDealModel.Id);
 
             // Set SaleListing properties
-            viewModel.CreateSaleListing.IRFDealId = newIRFDeal.Id;
-            viewModel.CreateSaleListing.TransactionTypeId = transactionType.Id;
-            viewModel.CreateSaleListing.TransactionType = transactionType;
-            viewModel.CreateSaleListing.IsActive = true;
-            viewModel.CreateSaleListing.IsDeleted = false;
-            viewModel.CreateSaleListing.CreatedBy = user.Id;
-            viewModel.CreateSaleListing.CreatedAt = DateTime.Now;
+            viewModel.CreateSaleListingViewModel.IRFDealId = newIRFDeal.Id;
+            viewModel.CreateSaleListingViewModel.TransactionTypeId = transactionType.Id;
+            viewModel.CreateSaleListingViewModel.TransactionType = transactionType;
+            viewModel.CreateSaleListingViewModel.IsActive = true;
+            viewModel.CreateSaleListingViewModel.IsDeleted = false;
+            viewModel.CreateSaleListingViewModel.CreatedBy = user.Id;
+            viewModel.CreateSaleListingViewModel.CreatedAt = DateTime.Now;
 
             // Set DealStatusId based on actionType
             if (actionType == "save")
             {
-                viewModel.CreateSaleListing.DealStatusId = 2; // Saved
+                viewModel.CreateSaleListingViewModel.DealStatusId = 2; // Saved
             }
 
-            var saleListingModel = viewModel.CreateSaleListing.ToSaleListingModel();
+            var saleListingModel = viewModel.CreateSaleListingViewModel.ToSaleListingModel();
             await _unitOfWork.SaleListing.AddAsync(saleListingModel);
 
             // Handle file uploads
-            if (viewModel.CreateSaleListing.CreateFileUploadListViewModel?.CreateFileUploadsViewModel != null)
+            if (viewModel.CreateSaleListingViewModel.CreateFileUploadListViewModel?.CreateFileUploadsViewModel != null)
             {
                 var uploadPath = CreateFilePath(saleListingModel.Id);
                 await CreateFileUploadData(
-                    viewModel.CreateSaleListing.CreateFileUploadListViewModel.CreateFileUploadsViewModel,
+                    viewModel.CreateSaleListingViewModel.CreateFileUploadListViewModel.CreateFileUploadsViewModel,
                     saleListingModel.Id,
                     transactionType.Id,
-                    viewModel.CreateSaleListing.DocumentTypeList,
+                    viewModel.CreateSaleListingViewModel.DocumentTypeList,
                     uploadPath
                 );
             }
@@ -869,12 +869,12 @@ namespace Intl.Realty.Firm.Controllers
                    r.IRFDeal!.BuyerAgentName! != null && r.IRFDeal.BuyerAgentName.ToUpper().Contains(searchBy.ToUpper()) ||
                    r.IRFDeal!.BuyerBrokerage! != null && r.IRFDeal.BuyerBrokerage.ToUpper().Contains(searchBy.ToUpper()) ||
                    r.IRFDeal!.BuyerBrokerageFax! != null && r.IRFDeal.BuyerBrokerageFax.ToUpper().Contains(searchBy.ToUpper()) ||
-                   r.IRFDeal!.SellersLawyer! != null && r.IRFDeal.SellersLawyer.ToUpper().Contains(searchBy.ToUpper()) ||
-                   r.IRFDeal!.SellersLawyerAddress! != null && r.IRFDeal.SellersLawyerAddress.ToUpper().Contains(searchBy.ToUpper()) ||
-                   r.IRFDeal!.SellersPhoneNumber! != null && r.IRFDeal.SellersPhoneNumber.ToUpper().Contains(searchBy.ToUpper()) ||
-                   r.IRFDeal!.BuyersLawyer! != null && r.IRFDeal.BuyersLawyer.ToUpper().Contains(searchBy.ToUpper()) ||
-                   r.IRFDeal!.BuyersLawyerAddress! != null && r.IRFDeal.BuyersLawyerAddress.ToUpper().Contains(searchBy.ToUpper()) ||
-                   r.IRFDeal!.BuyersPhoneNumber! != null && r.IRFDeal.BuyersPhoneNumber.ToUpper().Contains(searchBy.ToUpper())
+                   r.IRFDeal!.SellerLawyer! != null && r.IRFDeal.SellerLawyer.ToUpper().Contains(searchBy.ToUpper()) ||
+                   r.IRFDeal!.SellerLawyerAddress! != null && r.IRFDeal.SellerLawyerAddress.ToUpper().Contains(searchBy.ToUpper()) ||
+                   r.IRFDeal!.SellerEmailPhone! != null && r.IRFDeal.SellerEmailPhone.ToUpper().Contains(searchBy.ToUpper()) ||
+                   r.IRFDeal!.BuyerLawyer! != null && r.IRFDeal.BuyerLawyer.ToUpper().Contains(searchBy.ToUpper()) ||
+                   r.IRFDeal!.BuyerLawyerAddress! != null && r.IRFDeal.BuyerLawyerAddress.ToUpper().Contains(searchBy.ToUpper()) ||
+                   r.IRFDeal!.BuyerEmailPhone! != null && r.IRFDeal.BuyerEmailPhone.ToUpper().Contains(searchBy.ToUpper())
                    );
             return result;
         }
@@ -931,23 +931,23 @@ namespace Intl.Realty.Firm.Controllers
                     case "BuyerBrokerageFax":
                         query = query.Where(r => r.IRFDeal!.BuyerBrokerageFax != null && r.IRFDeal!.BuyerBrokerageFax.ToUpper().Contains(value));
                         break;
-                    case "SellersLawyer":
-                        query = query.Where(r => r.IRFDeal!.SellersLawyer != null && r.IRFDeal!.SellersLawyer.ToUpper().Contains(value));
+                    case "SellerLawyer":
+                        query = query.Where(r => r.IRFDeal!.SellerLawyer != null && r.IRFDeal!.SellerLawyer.ToUpper().Contains(value));
                         break;
-                    case "SellersLawyerAddress":
-                        query = query.Where(r => r.IRFDeal!.SellersLawyerAddress != null && r.IRFDeal!.SellersLawyerAddress.ToUpper().Contains(value));
+                    case "SellerLawyerAddress":
+                        query = query.Where(r => r.IRFDeal!.SellerLawyerAddress != null && r.IRFDeal!.SellerLawyerAddress.ToUpper().Contains(value));
                         break;
-                    case "SellersPhoneNumber":
-                        query = query.Where(r => r.IRFDeal!.SellersPhoneNumber != null && r.IRFDeal!.SellersPhoneNumber.ToUpper().Contains(value));
+                    case "SellerPhoneNumber":
+                        query = query.Where(r => r.IRFDeal!.SellerEmailPhone != null && r.IRFDeal!.SellerEmailPhone.ToUpper().Contains(value));
                         break;
-                    case "BuyersLawyer":
-                        query = query.Where(r => r.IRFDeal!.BuyersLawyer != null && r.IRFDeal!.BuyersLawyer.ToUpper().Contains(value));
+                    case "BuyerLawyer":
+                        query = query.Where(r => r.IRFDeal!.BuyerLawyer != null && r.IRFDeal!.BuyerLawyer.ToUpper().Contains(value));
                         break;
-                    case "BuyersLawyerAddress":
-                        query = query.Where(r => r.IRFDeal!.BuyersLawyerAddress != null && r.IRFDeal!.BuyersLawyerAddress.ToUpper().Contains(value));
+                    case "BuyerLawyerAddress":
+                        query = query.Where(r => r.IRFDeal!.BuyerLawyerAddress != null && r.IRFDeal!.BuyerLawyerAddress.ToUpper().Contains(value));
                         break;
-                    case "BuyersPhoneNumber":
-                        query = query.Where(r => r.IRFDeal!.BuyersPhoneNumber != null && r.IRFDeal!.BuyersPhoneNumber.ToUpper().Contains(value));
+                    case "BuyerPhoneNumber":
+                        query = query.Where(r => r.IRFDeal!.BuyerEmailPhone != null && r.IRFDeal!.BuyerEmailPhone.ToUpper().Contains(value));
                         break;
                     default:
                         // If there's an unrecognized filter key, you can choose to ignore it or handle it as needed

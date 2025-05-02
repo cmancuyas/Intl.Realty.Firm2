@@ -44,19 +44,24 @@ namespace Intl.Realty.Firm.Utility.Mapper
                     BuyerAgentName = model.BuyerAgentName ?? string.Empty,
                     BuyerBrokerage = model.BuyerBrokerage ?? string.Empty,
                     BuyerBrokerageFax = model.BuyerBrokerageFax ?? string.Empty,
-                    BuyersPhoneNumber = model.BuyersPhoneNumber ?? string.Empty,
-                    BuyersLawyer = model.BuyersLawyer ?? string.Empty,
-                    BuyerLawyerAddress = model.BuyersLawyerAddress ?? string.Empty,
+                    BuyerEmailPhone = model.BuyerEmailPhone ?? string.Empty,
+                    BuyerLawyer = model.BuyerLawyer ?? string.Empty,
+                    BuyerLawyerAddress = model.BuyerLawyerAddress ?? string.Empty,
                     BuyerLawyerEmail = model.BuyerLawyerEmail ?? string.Empty,
                     BuyerLawyerPhone = model.BuyerLawyerPhone ?? string.Empty
                 },
                 SellerDetails = new()
                 {
-                    SellersLawyer = model.SellersLawyer ?? string.Empty,
-                    SellersLawyerAddress = model.SellersLawyerAddress ?? string.Empty,
-                    SellersPhoneNumber = model.SellersPhoneNumber ?? string.Empty,
+                    SellerName = model.SellerName ?? string.Empty,
+                    SellerAgentName = model.SellerAgentName ?? string.Empty,
+                    SellerLawyer = model.SellerLawyer ?? string.Empty,
+                    SellerLawyerAddress = model.SellerLawyerAddress ?? string.Empty,
+                    SellerEmailPhone = model.SellerEmailPhone ?? string.Empty,
                     SellerLawyerEmail = model.SellerLawyerEmail ?? string.Empty,
                     SellerLawyerPhone = model.SellerLawyerPhone ?? string.Empty,
+                    SellerBrokerageEmail = model.SellerBrokerageEmail ?? string.Empty,
+                    SellerBrokerageFax = model.SellerBrokerageFax ?? string.Empty,
+                    SellerBrokeragePhoneNumber = model.SellerBrokeragePhoneNumber ?? string.Empty,
                 }
             };
 
@@ -88,20 +93,24 @@ namespace Intl.Realty.Firm.Utility.Mapper
                     BuyerAgentName = model.BuyerAgentName ?? string.Empty,
                     BuyerBrokerage = model.BuyerBrokerage ?? string.Empty,
                     BuyerBrokerageFax = model.BuyerBrokerageFax ?? string.Empty,
-                    BuyersPhoneNumber = model.BuyersPhoneNumber ?? string.Empty,
-                    BuyersLawyer = model.BuyersLawyer ?? string.Empty,
-                    BuyerLawyerAddress = model.BuyersLawyerAddress ?? string.Empty,
+                    BuyerEmailPhone = model.BuyerEmailPhone ?? string.Empty,
+                    BuyerLawyer = model.BuyerLawyer ?? string.Empty,
+                    BuyerLawyerAddress = model.BuyerLawyerAddress ?? string.Empty,
                     BuyerLawyerEmail = model.BuyerLawyerEmail ?? string.Empty,
                     BuyerLawyerPhone = model.BuyerLawyerPhone ?? string.Empty
                 },
-
                 SellerDetails = new()
                 {
-                    SellersLawyer = model.SellersLawyer ?? string.Empty,
-                    SellersLawyerAddress = model.SellersLawyerAddress ?? string.Empty,
-                    SellersPhoneNumber = model.SellersPhoneNumber ?? string.Empty,
+                    SellerName = model.SellerName ?? string.Empty,
+                    SellerAgentName = model.SellerAgentName ?? string.Empty,
+                    SellerLawyer = model.SellerLawyer ?? string.Empty,
+                    SellerLawyerAddress = model.SellerLawyerAddress ?? string.Empty,
+                    SellerEmailPhone = model.SellerEmailPhone ?? string.Empty,
                     SellerLawyerEmail = model.SellerLawyerEmail ?? string.Empty,
                     SellerLawyerPhone = model.SellerLawyerPhone ?? string.Empty,
+                    SellerBrokerageEmail = model.SellerBrokerageEmail ?? string.Empty,
+                    SellerBrokerageFax = model.SellerBrokerageFax ?? string.Empty,
+                    SellerBrokeragePhoneNumber = model.SellerBrokeragePhoneNumber ?? string.Empty,
                 }
             };
         }
@@ -226,18 +235,28 @@ namespace Intl.Realty.Firm.Utility.Mapper
                     ListingAgentName = x.ListingAgentName,
                     ListingBrokerage = x.ListingBrokerage,
                     ListingBrokerageFax = x.ListingBrokerageFax,
-                    BuyerAgentName = x.BuyerAgentName,
-                    BuyerBrokerage = x.BuyerBrokerage,
-                    BuyerBrokerageFax = x.BuyerBrokerageFax,
-                    SellersLawyer = x.SellersLawyer,
-                    SellersLawyerAddress = x.SellersLawyerAddress,
-                    SellersPhoneNumber = x.SellersPhoneNumber,
+
+                    SellerName = x.SellerName,
+                    SellerAgentName = x.SellerAgentName,
+                    SellerBrokerageEmail = x.SellerBrokerageEmail,
+                    SellerBrokerageFax = x.SellerBrokerageFax,
+                    SellerBrokeragePhoneNumber = x.SellerBrokeragePhoneNumber,
+
+                    SellerLawyer = x.SellerLawyer,
+                    SellerLawyerAddress = x.SellerLawyerAddress,
+                    SellerEmailPhone = x.SellerEmailPhone,
                     SellerLawyerPhone = x.SellerLawyerPhone,
                     SellerLawyerEmail = x.SellerLawyerEmail,
 
-                    BuyersLawyer = x.BuyersLawyer,
-                    BuyersLawyerAddress = x.BuyersLawyerAddress,
-                    BuyersPhoneNumber = x.BuyersPhoneNumber,
+                    BuyerAgentName = x.BuyerAgentName,
+                    BuyerBrokerage = x.BuyerBrokerage,
+                    BuyerBrokerageFax = x.BuyerBrokerageFax,
+                    BuyerBrokerageEmail = x.BuyerBrokerageEmail,
+                    BuyerBrokeragePhoneNumber = x.BuyerBrokeragePhoneNumber,
+
+                    BuyerLawyer = x.BuyerLawyer,
+                    BuyerLawyerAddress = x.BuyerLawyerAddress,
+                    BuyerEmailPhone = x.BuyerEmailPhone,
                     BuyerLawyerPhone = x.BuyerLawyerPhone,
                     BuyerLawyerEmail = x.BuyerLawyerEmail,
 
@@ -268,18 +287,26 @@ namespace Intl.Realty.Firm.Utility.Mapper
                 BuyerAgentName = viewModel.BuyerDetails.BuyerAgentName,
                 BuyerBrokerage = viewModel.BuyerDetails.BuyerBrokerage,
                 BuyerBrokerageFax = viewModel.BuyerDetails.BuyerBrokerageFax,
-                BuyersLawyer = viewModel.BuyerDetails.BuyersLawyer,
-                BuyersLawyerAddress = viewModel.BuyerDetails.BuyerLawyerAddress,
-                BuyersPhoneNumber = viewModel.BuyerDetails.BuyersPhoneNumber,
+                BuyerBrokerageEmail = viewModel.BuyerDetails.BuyerBrokerageEmail,
+                BuyerBrokeragePhoneNumber = viewModel.BuyerDetails.BuyerBrokeragePhoneNumber,
+
+                BuyerLawyer = viewModel.BuyerDetails.BuyerLawyer,
+                BuyerLawyerAddress = viewModel.BuyerDetails.BuyerLawyerAddress,
+                BuyerEmailPhone = viewModel.BuyerDetails.BuyerEmailPhone,
                 BuyerLawyerEmail = viewModel.BuyerDetails.BuyerLawyerEmail,
                 BuyerLawyerPhone = viewModel.BuyerDetails.BuyerLawyerPhone,
 
                 // 👤 Seller
-                SellersLawyer = viewModel.SellerDetails.SellersLawyer,
-                SellersLawyerAddress = viewModel.SellerDetails.SellersLawyerAddress,
-                SellersPhoneNumber = viewModel.SellerDetails.SellersPhoneNumber,
+                SellerName = viewModel.SellerDetails.SellerName,
+                SellerAgentName = viewModel.SellerDetails.SellerAgentName,
+                SellerLawyer = viewModel.SellerDetails.SellerLawyer,
+                SellerLawyerAddress = viewModel.SellerDetails.SellerLawyerAddress,
+                SellerEmailPhone = viewModel.SellerDetails.SellerEmailPhone,
                 SellerLawyerEmail = viewModel.SellerDetails.SellerLawyerEmail,
                 SellerLawyerPhone = viewModel.SellerDetails.SellerLawyerPhone ,
+                SellerBrokerageEmail = viewModel.SellerDetails.SellerBrokerageEmail,
+                SellerBrokerageFax = viewModel.SellerDetails.SellerBrokerageFax,
+                SellerBrokeragePhoneNumber = viewModel.SellerDetails.SellerBrokeragePhoneNumber,
                 // 💼 Commission
 
                 ListingCommissionPercentage = viewModel.Commission.ListingCommissionPercentage,
@@ -308,18 +335,26 @@ namespace Intl.Realty.Firm.Utility.Mapper
                 BuyerAgentName = viewModel.BuyerDetails.BuyerAgentName,
                 BuyerBrokerage = viewModel.BuyerDetails.BuyerBrokerage,
                 BuyerBrokerageFax = viewModel.BuyerDetails.BuyerBrokerageFax,
-                BuyersLawyer = viewModel.BuyerDetails.BuyersLawyer,
-                BuyersLawyerAddress = viewModel.BuyerDetails.BuyerLawyerAddress,
-                BuyersPhoneNumber = viewModel.BuyerDetails.BuyersPhoneNumber,
+                BuyerBrokerageEmail = viewModel.BuyerDetails.BuyerBrokerageEmail,
+                BuyerBrokeragePhoneNumber = viewModel.BuyerDetails.BuyerBrokeragePhoneNumber,
+
+                BuyerLawyer = viewModel.BuyerDetails.BuyerLawyer,
+                BuyerLawyerAddress = viewModel.BuyerDetails.BuyerLawyerAddress,
+                BuyerEmailPhone = viewModel.BuyerDetails.BuyerEmailPhone,
                 BuyerLawyerEmail = viewModel.BuyerDetails.BuyerLawyerEmail,
                 BuyerLawyerPhone = viewModel.BuyerDetails.BuyerLawyerPhone,
 
                 // 👤 Seller
-                SellersLawyer = viewModel.SellerDetails.SellersLawyer,
-                SellersLawyerAddress = viewModel.SellerDetails.SellersLawyerAddress,
-                SellersPhoneNumber = viewModel.SellerDetails.SellersPhoneNumber,
+                SellerName = viewModel.SellerDetails.SellerName,
+                SellerAgentName = viewModel.SellerDetails.SellerAgentName,
+                SellerLawyer = viewModel.SellerDetails.SellerLawyer,
+                SellerLawyerAddress = viewModel.SellerDetails.SellerLawyerAddress,
+                SellerEmailPhone = viewModel.SellerDetails.SellerEmailPhone,
                 SellerLawyerEmail = viewModel.SellerDetails.SellerLawyerEmail,
                 SellerLawyerPhone = viewModel.SellerDetails.SellerLawyerPhone,
+                SellerBrokerageEmail = viewModel.SellerDetails.SellerBrokerageEmail,
+                SellerBrokerageFax = viewModel.SellerDetails.SellerBrokerageFax,
+                SellerBrokeragePhoneNumber = viewModel.SellerDetails.SellerBrokeragePhoneNumber,
 
                 // 💼 Commission (Only Buying)
                 BuyingCommissionPercentage = viewModel.Commission.BuyingCommissionPercentage,
@@ -419,20 +454,31 @@ namespace Intl.Realty.Firm.Utility.Mapper
                 BuyerName = viewModel.BuyerDetails.BuyerName,
                 ListingCommissionPercentage = viewModel.Commission.ListingCommissionPercentage,
                 BuyingCommissionPercentage = viewModel.Commission.BuyingCommissionPercentage,
+
+                // 👤 Buyer
                 BuyerAgentName = viewModel.BuyerDetails.BuyerAgentName,
                 BuyerBrokerage = viewModel.BuyerDetails.BuyerBrokerage,
                 BuyerBrokerageFax = viewModel.BuyerDetails.BuyerBrokerageFax,
-                SellersLawyer = viewModel.SellerDetails.SellersLawyer,
-                SellersLawyerAddress = viewModel.SellerDetails.SellersLawyerAddress,
-                SellersPhoneNumber = viewModel.SellerDetails.SellersPhoneNumber,
-                SellerLawyerEmail = viewModel.SellerDetails.SellerLawyerEmail,
-                SellerLawyerPhone = viewModel.SellerDetails.SellerLawyerPhone,
+                BuyerBrokerageEmail = viewModel.BuyerDetails.BuyerBrokerageEmail,
+                BuyerBrokeragePhoneNumber = viewModel.BuyerDetails.BuyerBrokeragePhoneNumber,
 
-                BuyersLawyer = viewModel.BuyerDetails.BuyersLawyer,
-                BuyersLawyerAddress = viewModel.BuyerDetails.BuyerLawyerAddress,
-                BuyersPhoneNumber = viewModel.BuyerDetails.BuyersPhoneNumber,
+                BuyerLawyer = viewModel.BuyerDetails.BuyerLawyer,
+                BuyerLawyerAddress = viewModel.BuyerDetails.BuyerLawyerAddress,
+                BuyerEmailPhone = viewModel.BuyerDetails.BuyerEmailPhone,
                 BuyerLawyerEmail = viewModel.BuyerDetails.BuyerLawyerEmail,
                 BuyerLawyerPhone = viewModel.BuyerDetails.BuyerLawyerPhone,
+
+                // 👤 Seller
+                SellerName = viewModel.SellerDetails.SellerName,
+                SellerAgentName = viewModel.SellerDetails.SellerAgentName,
+                SellerLawyer = viewModel.SellerDetails.SellerLawyer,
+                SellerLawyerAddress = viewModel.SellerDetails.SellerLawyerAddress,
+                SellerEmailPhone = viewModel.SellerDetails.SellerEmailPhone,
+                SellerLawyerEmail = viewModel.SellerDetails.SellerLawyerEmail,
+                SellerLawyerPhone = viewModel.SellerDetails.SellerLawyerPhone,
+                SellerBrokerageEmail = viewModel.SellerDetails.SellerBrokerageEmail,
+                SellerBrokerageFax = viewModel.SellerDetails.SellerBrokerageFax,
+                SellerBrokeragePhoneNumber = viewModel.SellerDetails.SellerBrokeragePhoneNumber,
 
                 IsActive = viewModel.IsActive,
                 IsDeleted = viewModel.IsDeleted,
@@ -456,18 +502,26 @@ namespace Intl.Realty.Firm.Utility.Mapper
                 BuyerAgentName = viewModel.BuyerDetails.BuyerAgentName,
                 BuyerBrokerage = viewModel.BuyerDetails.BuyerBrokerage,
                 BuyerBrokerageFax = viewModel.BuyerDetails.BuyerBrokerageFax,
-                BuyersPhoneNumber = viewModel.BuyerDetails.BuyersPhoneNumber,
-                BuyersLawyer = viewModel.BuyerDetails.BuyersLawyer,
-                BuyersLawyerAddress = viewModel.BuyerDetails.BuyerLawyerAddress,
-                BuyerLawyerPhone = viewModel.BuyerDetails.BuyerLawyerPhone,
+                BuyerBrokerageEmail = viewModel.BuyerDetails.BuyerBrokerageEmail,
+                BuyerBrokeragePhoneNumber = viewModel.BuyerDetails.BuyerBrokeragePhoneNumber,
+
+                BuyerLawyer = viewModel.BuyerDetails.BuyerLawyer,
+                BuyerLawyerAddress = viewModel.BuyerDetails.BuyerLawyerAddress,
+                BuyerEmailPhone = viewModel.BuyerDetails.BuyerEmailPhone,
                 BuyerLawyerEmail = viewModel.BuyerDetails.BuyerLawyerEmail,
+                BuyerLawyerPhone = viewModel.BuyerDetails.BuyerLawyerPhone,
 
                 // 👤 Seller
-                SellersPhoneNumber = viewModel.SellerDetails.SellersPhoneNumber,
-                SellersLawyer = viewModel.SellerDetails.SellersLawyer,
-                SellersLawyerAddress = viewModel.SellerDetails.SellersLawyerAddress,
-                SellerLawyerPhone = viewModel.SellerDetails.SellerLawyerPhone,
+                SellerName = viewModel.SellerDetails.SellerName,
+                SellerAgentName = viewModel.SellerDetails.SellerAgentName,
+                SellerLawyer = viewModel.SellerDetails.SellerLawyer,
+                SellerLawyerAddress = viewModel.SellerDetails.SellerLawyerAddress,
+                SellerEmailPhone = viewModel.SellerDetails.SellerEmailPhone,
                 SellerLawyerEmail = viewModel.SellerDetails.SellerLawyerEmail,
+                SellerLawyerPhone = viewModel.SellerDetails.SellerLawyerPhone,
+                SellerBrokerageEmail = viewModel.SellerDetails.SellerBrokerageEmail,
+                SellerBrokerageFax = viewModel.SellerDetails.SellerBrokerageFax,
+                SellerBrokeragePhoneNumber = viewModel.SellerDetails.SellerBrokeragePhoneNumber,
 
                 // 💼 Commission (only buying for SaleCoop)
                 BuyingCommissionPercentage = viewModel.Commission.BuyingCommissionPercentage,
@@ -578,21 +632,32 @@ namespace Intl.Realty.Firm.Utility.Mapper
                     ListingAgentName = x.ListingAgentName,
                     ListingBrokerage = x.ListingBrokerage,
                     ListingBrokerageFax = x.ListingBrokerageFax,
+
+                    SellerName = x.SellerName,
+                    SellerAgentName = x.SellerAgentName,
+
+                    SellerLawyer = x.SellerLawyer,
+                    SellerLawyerAddress = x.SellerLawyerAddress,
+                    SellerEmailPhone = x.SellerEmailPhone,
+                    SellerLawyerEmail = x.SellerLawyerEmail,
+                    SellerLawyerPhone = x.SellerLawyerPhone,
+                    SellerBrokerageEmail = x.SellerBrokerageEmail,
+                    SellerBrokerageFax = x.SellerBrokerageFax,
+                    SellerBrokeragePhoneNumber = x.SellerBrokeragePhoneNumber,
+                    
                     BuyerAgentName = x.BuyerAgentName,
                     BuyerBrokerage = x.BuyerBrokerage,
                     BuyerBrokerageFax = x.BuyerBrokerageFax,
 
-                    SellersLawyer = x.SellersLawyer,
-                    SellersLawyerAddress = x.SellersLawyerAddress,
-                    SellersPhoneNumber = x.SellersPhoneNumber,
-                    SellerLawyerEmail = x.SellerLawyerEmail,
-                    SellerLawyerPhone = x.SellerLawyerPhone,
-
-                    BuyersLawyer = x.BuyersLawyer,
-                    BuyersLawyerAddress = x.BuyersLawyerAddress,
-                    BuyersPhoneNumber = x.BuyersPhoneNumber,
+                    BuyerLawyer = x.BuyerLawyer,
+                    BuyerLawyerAddress = x.BuyerLawyerAddress,
+                    BuyerEmailPhone = x.BuyerEmailPhone,
                     BuyerLawyerEmail = x.BuyerLawyerEmail,
-                    BuyerLawyerPhone = x.BuyerLawyerPhone
+                    BuyerLawyerPhone = x.BuyerLawyerPhone,
+                    BuyerBrokerageEmail = x.BuyerBrokerageEmail,
+                    BuyerBrokeragePhoneNumber = x.BuyerBrokeragePhoneNumber,
+                    
+
 
                 }).ToList();
             }
@@ -618,21 +683,30 @@ namespace Intl.Realty.Firm.Utility.Mapper
                 ListingAgentName = model.ListingAgentName,
                 ListingBrokerage = model.ListingBrokerage,
                 ListingBrokerageFax = model.ListingBrokerageFax,
+
                 BuyerAgentName = model.BuyerAgentName,
                 BuyerBrokerage = model.BuyerBrokerage,
                 BuyerBrokerageFax = model.BuyerBrokerageFax,
-
-                SellersLawyer = model.SellersLawyer,
-                SellersLawyerAddress = model.SellersLawyerAddress,
-                SellersPhoneNumber = model.SellersPhoneNumber,
-                SellerLawyerEmail = model.SellerLawyerEmail,
-                SellerLawyerPhone = model.SellerLawyerPhone,
-                BuyersLawyer = model.BuyersLawyer,
-                BuyersLawyerAddress = model.BuyersLawyerAddress,
-                BuyersPhoneNumber = model.BuyersPhoneNumber,
+                BuyerLawyer = model.BuyerLawyer,
+                BuyerLawyerAddress = model.BuyerLawyerAddress,
+                BuyerEmailPhone = model.BuyerEmailPhone,
                 BuyerLawyerEmail = model.BuyerLawyerEmail,
                 BuyerLawyerPhone = model.BuyerLawyerPhone,
+                BuyerBrokerageEmail = model.BuyerBrokerageEmail,
+                BuyerBrokeragePhoneNumber = model.BuyerBrokeragePhoneNumber,
 
+                SellerBrokerageEmail = model.SellerBrokerageEmail,
+                SellerBrokerageFax = model.SellerBrokerageFax,
+                SellerBrokeragePhoneNumber = model.SellerBrokeragePhoneNumber,
+
+                SellerName = model.SellerName,
+                SellerAgentName = model.SellerAgentName,
+
+                SellerLawyer = model.SellerLawyer,
+                SellerLawyerAddress = model.SellerLawyerAddress,
+                SellerEmailPhone = model.SellerEmailPhone,
+                SellerLawyerEmail = model.SellerLawyerEmail,
+                SellerLawyerPhone = model.SellerLawyerPhone,
 
                 IsActive = model.IsActive,
                 IsDeleted = model.IsDeleted,
@@ -669,20 +743,29 @@ namespace Intl.Realty.Firm.Utility.Mapper
                     ListingAgentName = x.ListingAgentName,
                     ListingBrokerage = x.ListingBrokerage,
                     ListingBrokerageFax = x.ListingBrokerageFax,
+
                     BuyerAgentName = x.BuyerAgentName,
                     BuyerBrokerage = x.BuyerBrokerage,
                     BuyerBrokerageFax = x.BuyerBrokerageFax,
-                    SellersLawyer = x.SellersLawyer,
-                    SellersLawyerAddress = x.SellersLawyerAddress,
-                    SellersPhoneNumber = x.SellersPhoneNumber,
-                    SellerLawyerEmail = x.SellerLawyerEmail,
-                    SellerLawyerPhone = x.SellerLawyerPhone,
-
-                    BuyersLawyer = x.BuyersLawyer,
-                    BuyersLawyerAddress = x.BuyersLawyerAddress,
-                    BuyersPhoneNumber = x.BuyersPhoneNumber,
+                    BuyerLawyer = x.BuyerLawyer,
+                    BuyerLawyerAddress = x.BuyerLawyerAddress,
+                    BuyerEmailPhone = x.BuyerEmailPhone,
                     BuyerLawyerEmail = x.BuyerLawyerEmail,
                     BuyerLawyerPhone = x.BuyerLawyerPhone,
+                    BuyerBrokerageEmail = x.BuyerBrokerageEmail,
+                    BuyerBrokeragePhoneNumber = x.BuyerBrokeragePhoneNumber,
+
+                    SellerName = x.SellerName,
+                    SellerAgentName = x.SellerAgentName,
+                    SellerLawyer = x.SellerLawyer,
+                    SellerLawyerAddress = x.SellerLawyerAddress,
+                    SellerEmailPhone = x.SellerEmailPhone,
+                    SellerLawyerEmail = x.SellerLawyerEmail,
+                    SellerLawyerPhone = x.SellerLawyerPhone,
+                    SellerBrokerageEmail = x.SellerBrokerageEmail,
+                    SellerBrokerageFax = x.SellerBrokerageFax,
+                    SellerBrokeragePhoneNumber = x.SellerBrokeragePhoneNumber,
+
 
                     IsActive = x.IsActive,
                     IsDeleted = x.IsDeleted,
@@ -782,18 +865,24 @@ namespace Intl.Realty.Firm.Utility.Mapper
             entity.BuyerAgentName = viewModel.BuyerDetails.BuyerAgentName;
             entity.BuyerBrokerage = viewModel.BuyerDetails.BuyerBrokerage;
             entity.BuyerBrokerageFax = viewModel.BuyerDetails.BuyerBrokerageFax;
-            entity.BuyersPhoneNumber = viewModel.BuyerDetails.BuyersPhoneNumber;
-            entity.BuyersLawyer = viewModel.BuyerDetails.BuyersLawyer;
-            entity.BuyersLawyerAddress = viewModel.BuyerDetails.BuyerLawyerAddress;
+            entity.BuyerEmailPhone = viewModel.BuyerDetails.BuyerEmailPhone;
+            entity.BuyerLawyer = viewModel.BuyerDetails.BuyerLawyer;
+            entity.BuyerLawyerAddress = viewModel.BuyerDetails.BuyerLawyerAddress;
             entity.BuyerLawyerEmail = viewModel.BuyerDetails.BuyerLawyerEmail;
             entity.BuyerLawyerPhone = viewModel.BuyerDetails.BuyerLawyerPhone;
+            entity.BuyerBrokerageEmail = viewModel.BuyerDetails.BuyerBrokerageEmail;
 
             // 🧑‍💼 Seller
-            entity.SellersLawyer = viewModel.SellerDetails.SellersLawyer;
-            entity.SellersLawyerAddress = viewModel.SellerDetails.SellersLawyerAddress;
-            entity.SellersPhoneNumber = viewModel.SellerDetails.SellersPhoneNumber;
+            entity.SellerName = viewModel.SellerDetails.SellerName;
+            entity.SellerAgentName = viewModel.SellerDetails.SellerAgentName;
+            entity.SellerLawyer = viewModel.SellerDetails.SellerLawyer;
+            entity.SellerLawyerAddress = viewModel.SellerDetails.SellerLawyerAddress;
+            entity.SellerEmailPhone = viewModel.SellerDetails.SellerEmailPhone;
             entity.SellerLawyerEmail = viewModel.SellerDetails.SellerLawyerEmail;
             entity.SellerLawyerPhone = viewModel.SellerDetails.SellerLawyerPhone;
+            entity.SellerBrokerageEmail = viewModel.SellerDetails.SellerBrokerageEmail;
+            entity.SellerBrokerageFax = viewModel.SellerDetails.SellerBrokerageFax;
+            entity.SellerBrokeragePhoneNumber = viewModel.SellerDetails.SellerBrokeragePhoneNumber;
 
             // 💼 Commission (only buying for SaleCoop)
             entity.BuyingCommissionPercentage = viewModel.Commission.BuyingCommissionPercentage;
@@ -816,19 +905,29 @@ namespace Intl.Realty.Firm.Utility.Mapper
             entity.BuyerName = viewModel.BuyerDetails.BuyerName;
             entity.ListingCommissionPercentage = viewModel.Commission.ListingCommissionPercentage;
             entity.BuyingCommissionPercentage = viewModel.Commission.BuyingCommissionPercentage;
+
             entity.BuyerAgentName = viewModel.BuyerDetails.BuyerAgentName;
             entity.BuyerBrokerage = viewModel.BuyerDetails.BuyerBrokerage;
             entity.BuyerBrokerageFax = viewModel.BuyerDetails.BuyerBrokerageFax;
             entity.BuyerLawyerEmail = viewModel.BuyerDetails.BuyerLawyerEmail;
             entity.BuyerLawyerPhone = viewModel.BuyerDetails.BuyerLawyerPhone;
-            entity.SellersLawyer = viewModel.SellerDetails.SellersLawyer;
-            entity.SellersLawyerAddress = viewModel.SellerDetails.SellersLawyerAddress;
-            entity.SellersPhoneNumber = viewModel.SellerDetails.SellersPhoneNumber;
+            entity.BuyerLawyer = viewModel.BuyerDetails.BuyerLawyer;
+            entity.BuyerLawyerAddress = viewModel.BuyerDetails.BuyerLawyerAddress;
+            entity.BuyerEmailPhone = viewModel.BuyerDetails.BuyerEmailPhone;
+            entity.BuyerBrokerageEmail = viewModel.BuyerDetails.BuyerBrokerageEmail;
+            entity.BuyerBrokeragePhoneNumber = viewModel.BuyerDetails.BuyerBrokeragePhoneNumber;
+
+            entity.SellerName = viewModel.SellerDetails.SellerName;
+            entity.SellerAgentName = viewModel.SellerDetails.SellerAgentName;
+            entity.SellerLawyer = viewModel.SellerDetails.SellerLawyer;
+            entity.SellerLawyerAddress = viewModel.SellerDetails.SellerLawyerAddress;
+            entity.SellerEmailPhone = viewModel.SellerDetails.SellerEmailPhone;
             entity.SellerLawyerEmail = viewModel.SellerDetails.SellerLawyerEmail;
             entity.SellerLawyerPhone = viewModel.SellerDetails.SellerLawyerPhone;
-            entity.BuyersLawyer = viewModel.BuyerDetails.BuyersLawyer;
-            entity.BuyersLawyerAddress = viewModel.BuyerDetails.BuyerLawyerAddress;
-            entity.BuyersPhoneNumber = viewModel.BuyerDetails.BuyersPhoneNumber;
+            entity.SellerBrokerageEmail = viewModel.SellerDetails.SellerBrokerageEmail;
+            entity.SellerBrokerageFax = viewModel.SellerDetails.SellerBrokerageFax;
+            entity.SellerBrokeragePhoneNumber = viewModel.SellerDetails.SellerBrokeragePhoneNumber;
+
 
             entity.IsActive = viewModel.IsActive;
             entity.IsDeleted = viewModel.IsDeleted;

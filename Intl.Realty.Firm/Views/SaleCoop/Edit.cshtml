@@ -69,6 +69,7 @@
                 <div class="tab-content" style="border-bottom:none;background-color:white;">
 
 
+                    <!-- Tab 1: IRF Details - Part 1 -->
                     <div class="tab-pane active" id="irfDetails1" aria-labelledby="irfDetails1-tab" style="background-color:white;">
 
                         @{
@@ -110,7 +111,7 @@
                             }
                         }
 
-                        <!-- Section: Property & Deal Info -->
+                        <!-- 🏠 Property & Deal Info -->
                         <h4 class="mt-4 text-blue">Property & Deal Information</h4>
                         <div class="row">
                             <div class="col-md-6 mt-3">
@@ -119,18 +120,18 @@
                                 <span asp-validation-for="EditSaleCoopViewModel.EditIRFDealSaleCoopViewModel.PropertyAddress" class="text-danger"></span>
                             </div>
                             <div class="col-md-6 mt-3">
-                                <label asp-for="EditSaleCoopViewModel.UpdatedByFullName" class="fw-bolder">Updated By</label>
+                                <label asp-for="EditSaleCoopViewModel.UpdatedByFullName" class="fw-bolder">Created By</label>
                                 <input asp-for="EditSaleCoopViewModel.UpdatedByFullName" class="form-control" disabled />
                                 <span asp-validation-for="EditSaleCoopViewModel.UpdatedByFullName" class="text-danger"></span>
                             </div>
                         </div>
 
-                        <!-- Section: Financial Info -->
-                        <h4 class="mt-5 text-blue">Financial Information</h4>
+                        <!-- 💰 Financial Details -->
+                        <h4 class="mt-5 text-blue">Financial Details</h4>
                         <div class="row">
                             <div class="col-md-6 mt-3">
                                 <label asp-for="EditSaleCoopViewModel.EditIRFDealSaleCoopViewModel.FinalSalePrice" class="fw-bolder">Final Sale Price</label>
-                                <input asp-for="EditSaleCoopViewModel.EditIRFDealSaleCoopViewModel.FinalSalePrice" class="form-control" type="number" step="0.01" />
+                                <input asp-for="EditSaleCoopViewModel.EditIRFDealSaleCoopViewModel.FinalSalePrice" class="form-control" type="number" min="0" />
                                 <span asp-validation-for="EditSaleCoopViewModel.EditIRFDealSaleCoopViewModel.FinalSalePrice" class="text-danger"></span>
                             </div>
                             <div class="col-md-6 mt-3">
@@ -140,7 +141,7 @@
                             </div>
                             <div class="col-md-6 mt-3">
                                 <label asp-for="EditSaleCoopViewModel.EditIRFDealSaleCoopViewModel.DepositAmount" class="fw-bolder">Deposit Amount</label>
-                                <input asp-for="EditSaleCoopViewModel.EditIRFDealSaleCoopViewModel.DepositAmount" class="form-control" type="number" step="0.01" />
+                                <input asp-for="EditSaleCoopViewModel.EditIRFDealSaleCoopViewModel.DepositAmount" class="form-control" type="number" min="0" />
                                 <span asp-validation-for="EditSaleCoopViewModel.EditIRFDealSaleCoopViewModel.DepositAmount" class="text-danger"></span>
                             </div>
                             <div class="col-md-6 mt-3">
@@ -150,71 +151,121 @@
                             </div>
                         </div>
 
-                        <!-- Section: Buyer Info -->
-                        <h4 class="mt-5 text-blue">Buyer Information</h4>
+                        <!-- 👤 Buyer Info -->
+                        <h4 class="mt-5 text-blue">Buyer Details</h4>
                         <div class="row">
                             <div class="col-md-6 mt-3">
-                                <label asp-for="EditSaleCoopViewModel.EditIRFDealSaleCoopViewModel.BuyerDetails.BuyerName" class="fw-bolder">Buyer's Name</label>
+                                <label asp-for="EditSaleCoopViewModel.EditIRFDealSaleCoopViewModel.BuyerDetails.BuyerName" class="fw-bolder">Buyer’s Name</label>
                                 <input asp-for="EditSaleCoopViewModel.EditIRFDealSaleCoopViewModel.BuyerDetails.BuyerName" class="form-control" />
                                 <span asp-validation-for="EditSaleCoopViewModel.EditIRFDealSaleCoopViewModel.BuyerDetails.BuyerName" class="text-danger"></span>
                             </div>
                             <div class="col-md-6 mt-3">
-                                <label asp-for="EditSaleCoopViewModel.EditIRFDealSaleCoopViewModel.BuyerDetails.BuyersPhoneNumber" class="fw-bolder">Buyer's Phone Number</label>
-                                <input asp-for="EditSaleCoopViewModel.EditIRFDealSaleCoopViewModel.BuyerDetails.BuyersPhoneNumber" class="form-control" />
-                                <span asp-validation-for="EditSaleCoopViewModel.EditIRFDealSaleCoopViewModel.BuyerDetails.BuyersPhoneNumber" class="text-danger"></span>
+                                <label asp-for="EditSaleCoopViewModel.EditIRFDealSaleCoopViewModel.BuyerDetails.BuyerEmailPhone" class="fw-bolder">Buyer’s Email/Phone Number</label>
+                                <input asp-for="EditSaleCoopViewModel.EditIRFDealSaleCoopViewModel.BuyerDetails.BuyerEmailPhone" class="form-control" />
+                                <span asp-validation-for="EditSaleCoopViewModel.EditIRFDealSaleCoopViewModel.BuyerDetails.BuyerEmailPhone" class="text-danger"></span>
                             </div>
                         </div>
 
-                        <!-- Section: Commission -->
+                        <!-- 👤 Seller Info -->
+                        <h4 class="mt-5 text-blue">Seller Details</h4>
+                        <div class="row">
+                            <div class="col-md-6 mt-3">
+                                <label asp-for="EditSaleCoopViewModel.EditIRFDealSaleCoopViewModel.SellerDetails.SellerName" class="fw-bolder">Seller’s Name</label>
+                                <input asp-for="EditSaleCoopViewModel.EditIRFDealSaleCoopViewModel.SellerDetails.SellerName" class="form-control" />
+                                <span asp-validation-for="EditSaleCoopViewModel.EditIRFDealSaleCoopViewModel.SellerDetails.SellerName" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 mt-3">
+                                <label asp-for="EditSaleCoopViewModel.EditIRFDealSaleCoopViewModel.SellerDetails.SellerEmailPhone" class="fw-bolder">Seller’s Email/Phone Number</label>
+                                <input asp-for="EditSaleCoopViewModel.EditIRFDealSaleCoopViewModel.SellerDetails.SellerEmailPhone" class="form-control" />
+                                <span asp-validation-for="EditSaleCoopViewModel.EditIRFDealSaleCoopViewModel.SellerDetails.SellerEmailPhone" class="text-danger"></span>
+                            </div>
+                        </div>
+
+
+                        <!-- 📊 Commission Info -->
                         <h4 class="mt-5 text-blue">Commission</h4>
                         <div class="row">
                             <div class="col-md-6 mt-3">
                                 <label asp-for="EditSaleCoopViewModel.EditIRFDealSaleCoopViewModel.Commission.BuyingCommissionPercentage" class="fw-bolder">Buying Commission %</label>
-                                <input asp-for="EditSaleCoopViewModel.EditIRFDealSaleCoopViewModel.Commission.BuyingCommissionPercentage" class="form-control" type="number" step="0.01" />
+                                <input asp-for="EditSaleCoopViewModel.EditIRFDealSaleCoopViewModel.Commission.BuyingCommissionPercentage" class="form-control" type="number" min="0" />
                                 <span asp-validation-for="EditSaleCoopViewModel.EditIRFDealSaleCoopViewModel.Commission.BuyingCommissionPercentage" class="text-danger"></span>
                             </div>
                         </div>
                     </div>
 
-
+                    <!-- Tab 2: IRF Details - Part 2 -->
                     <div class="tab-pane" id="irfDetails2" aria-labelledby="irfDetails2-tab" style="background-color:white;">
-                        <!-- Buyer Agent & Brokerage -->
-                        <h4 class="mt-4 text-blue">Buyer's Agent & Brokerage Info</h4>
+
+                        <!-- 🧑‍💼 Buyer Agent & Brokerage Info -->
+                        <h4 class="mt-4 text-blue">Buyer’s Agent & Brokerage Info</h4>
                         <div class="row">
                             <div class="col-md-6 mt-3">
-                                <label asp-for="EditSaleCoopViewModel.EditIRFDealSaleCoopViewModel.BuyerDetails.BuyerAgentName" class="fw-bolder">Buyer Agent Name</label>
+                                <label asp-for="EditSaleCoopViewModel.EditIRFDealSaleCoopViewModel.BuyerDetails.BuyerAgentName" class="fw-bolder">Buyer's Agent Name</label>
                                 <input asp-for="EditSaleCoopViewModel.EditIRFDealSaleCoopViewModel.BuyerDetails.BuyerAgentName" class="form-control" />
                                 <span asp-validation-for="EditSaleCoopViewModel.EditIRFDealSaleCoopViewModel.BuyerDetails.BuyerAgentName" class="text-danger"></span>
                             </div>
                             <div class="col-md-6 mt-3">
-                                <label asp-for="EditSaleCoopViewModel.EditIRFDealSaleCoopViewModel.BuyerDetails.BuyerBrokerage" class="fw-bolder">Buyer Brokerage</label>
+                                <label asp-for="EditSaleCoopViewModel.EditIRFDealSaleCoopViewModel.BuyerDetails.BuyerBrokerage" class="fw-bolder">Buyer's Brokerage</label>
                                 <input asp-for="EditSaleCoopViewModel.EditIRFDealSaleCoopViewModel.BuyerDetails.BuyerBrokerage" class="form-control" />
                                 <span asp-validation-for="EditSaleCoopViewModel.EditIRFDealSaleCoopViewModel.BuyerDetails.BuyerBrokerage" class="text-danger"></span>
                             </div>
                             <div class="col-md-6 mt-3">
-                                <label asp-for="EditSaleCoopViewModel.EditIRFDealSaleCoopViewModel.BuyerDetails.BuyerBrokerageFax" class="fw-bolder">Buyer Brokerage Fax</label>
+                                <label asp-for="EditSaleCoopViewModel.EditIRFDealSaleCoopViewModel.BuyerDetails.BuyerBrokerageFax" class="fw-bolder">Buyer's Brokerage Fax</label>
                                 <input asp-for="EditSaleCoopViewModel.EditIRFDealSaleCoopViewModel.BuyerDetails.BuyerBrokerageFax" class="form-control" />
                                 <span asp-validation-for="EditSaleCoopViewModel.EditIRFDealSaleCoopViewModel.BuyerDetails.BuyerBrokerageFax" class="text-danger"></span>
                             </div>
+                            <div class="col-md-6 mt-3">
+                                <label asp-for="EditSaleCoopViewModel.EditIRFDealSaleCoopViewModel.BuyerDetails.BuyerBrokeragePhoneNumber" class="fw-bolder">Buyer's Brokerage Phone Number</label>
+                                <input asp-for="EditSaleCoopViewModel.EditIRFDealSaleCoopViewModel.BuyerDetails.BuyerBrokeragePhoneNumber" class="form-control" />
+                                <span asp-validation-for="EditSaleCoopViewModel.EditIRFDealSaleCoopViewModel.BuyerDetails.BuyerBrokeragePhoneNumber" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 mt-3">
+                                <label asp-for="EditSaleCoopViewModel.EditIRFDealSaleCoopViewModel.BuyerDetails.BuyerBrokerageEmail" class="fw-bolder">Buyer's Brokage Email</label>
+                                <input asp-for="EditSaleCoopViewModel.EditIRFDealSaleCoopViewModel.BuyerDetails.BuyerBrokerageEmail" class="form-control" />
+                                <span asp-validation-for="EditSaleCoopViewModel.EditIRFDealSaleCoopViewModel.BuyerDetails.BuyerBrokerageEmail" class="text-danger"></span>
+                            </div>
                         </div>
-
-                        <!-- Seller Info -->
-                        <h4 class="mt-5 text-blue">Seller & Legal Info</h4>
+                        <!-- 📜 Buyer Legal Info -->
+                        <h4 class="mt-5 text-blue">Buyer’s Legal Info</h4>
                         <div class="row">
                             <div class="col-md-6 mt-3">
-                                <label asp-for="EditSaleCoopViewModel.EditIRFDealSaleCoopViewModel.SellerDetails.SellersLawyer" class="fw-bolder">Seller's Lawyer</label>
-                                <input asp-for="EditSaleCoopViewModel.EditIRFDealSaleCoopViewModel.SellerDetails.SellersLawyer" class="form-control" />
-                                <span asp-validation-for="EditSaleCoopViewModel.EditIRFDealSaleCoopViewModel.SellerDetails.SellersLawyer" class="text-danger"></span>
+                                <label asp-for="EditSaleCoopViewModel.EditIRFDealSaleCoopViewModel.BuyerDetails.BuyerLawyer" class="fw-bolder">Buyer's Lawyer</label>
+                                <input asp-for="EditSaleCoopViewModel.EditIRFDealSaleCoopViewModel.BuyerDetails.BuyerLawyer" class="form-control" />
+                                <span asp-validation-for="EditSaleCoopViewModel.EditIRFDealSaleCoopViewModel.BuyerDetails.BuyerLawyer" class="text-danger"></span>
                             </div>
                             <div class="col-md-6 mt-3">
-                                <label asp-for="EditSaleCoopViewModel.EditIRFDealSaleCoopViewModel.SellerDetails.SellersPhoneNumber" class="fw-bolder">Seller's Phone Number</label>
-                                <input asp-for="EditSaleCoopViewModel.EditIRFDealSaleCoopViewModel.SellerDetails.SellersPhoneNumber" class="form-control" />
-                                <span asp-validation-for="EditSaleCoopViewModel.EditIRFDealSaleCoopViewModel.SellerDetails.SellersPhoneNumber" class="text-danger"></span>
+                                <label asp-for="EditSaleCoopViewModel.EditIRFDealSaleCoopViewModel.BuyerDetails.BuyerLawyerAddress" class="fw-bolder">Lawyer Address</label>
+                                <input asp-for="EditSaleCoopViewModel.EditIRFDealSaleCoopViewModel.BuyerDetails.BuyerLawyerAddress" class="form-control" />
+                                <span asp-validation-for="EditSaleCoopViewModel.EditIRFDealSaleCoopViewModel.BuyerDetails.BuyerLawyerAddress" class="text-danger"></span>
                             </div>
                             <div class="col-md-6 mt-3">
-                                <label asp-for="EditSaleCoopViewModel.EditIRFDealSaleCoopViewModel.SellerDetails.SellersLawyerAddress" class="fw-bolder">Seller's Lawyer Address</label>
-                                <input asp-for="EditSaleCoopViewModel.EditIRFDealSaleCoopViewModel.SellerDetails.SellersLawyerAddress" class="form-control" />
-                                <span asp-validation-for="EditSaleCoopViewModel.EditIRFDealSaleCoopViewModel.SellerDetails.SellersLawyerAddress" class="text-danger"></span>
+                                <label asp-for="EditSaleCoopViewModel.EditIRFDealSaleCoopViewModel.BuyerDetails.BuyerLawyerPhone" class="fw-bolder">Lawyer Phone</label>
+                                <input asp-for="EditSaleCoopViewModel.EditIRFDealSaleCoopViewModel.BuyerDetails.BuyerLawyerPhone" class="form-control" />
+                                <span asp-validation-for="EditSaleCoopViewModel.EditIRFDealSaleCoopViewModel.BuyerDetails.BuyerLawyerPhone" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 mt-3">
+                                <label asp-for="EditSaleCoopViewModel.EditIRFDealSaleCoopViewModel.BuyerDetails.BuyerLawyerEmail" class="fw-bolder">Lawyer Email</label>
+                                <input asp-for="EditSaleCoopViewModel.EditIRFDealSaleCoopViewModel.BuyerDetails.BuyerLawyerEmail" class="form-control" />
+                                <span asp-validation-for="EditSaleCoopViewModel.EditIRFDealSaleCoopViewModel.BuyerDetails.BuyerLawyerEmail" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <!-- 🧾 Seller & Legal Info -->
+                        <h4 class="mt-5 text-blue">Seller's Legal Info</h4>
+                        <div class="row">
+                            <div class="col-md-6 mt-3">
+                                <label asp-for="EditSaleCoopViewModel.EditIRFDealSaleCoopViewModel.SellerDetails.SellerEmailPhone" class="fw-bolder">Seller's Email/Phone Number</label>
+                                <input asp-for="EditSaleCoopViewModel.EditIRFDealSaleCoopViewModel.SellerDetails.SellerEmailPhone" class="form-control" />
+                                <span asp-validation-for="EditSaleCoopViewModel.EditIRFDealSaleCoopViewModel.SellerDetails.SellerEmailPhone" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 mt-3">
+                                <label asp-for="EditSaleCoopViewModel.EditIRFDealSaleCoopViewModel.SellerDetails.SellerLawyer" class="fw-bolder">Seller's Lawyer</label>
+                                <input asp-for="EditSaleCoopViewModel.EditIRFDealSaleCoopViewModel.SellerDetails.SellerLawyer" class="form-control" />
+                                <span asp-validation-for="EditSaleCoopViewModel.EditIRFDealSaleCoopViewModel.SellerDetails.SellerLawyer" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 mt-3">
+                                <label asp-for="EditSaleCoopViewModel.EditIRFDealSaleCoopViewModel.SellerDetails.SellerLawyerAddress" class="fw-bolder">Seller's Lawyer Address</label>
+                                <input asp-for="EditSaleCoopViewModel.EditIRFDealSaleCoopViewModel.SellerDetails.SellerLawyerAddress" class="form-control" />
+                                <span asp-validation-for="EditSaleCoopViewModel.EditIRFDealSaleCoopViewModel.SellerDetails.SellerLawyerAddress" class="text-danger"></span>
                             </div>
                             <div class="col-md-6 mt-3">
                                 <label asp-for="EditSaleCoopViewModel.EditIRFDealSaleCoopViewModel.SellerDetails.SellerLawyerPhone" class="fw-bolder">Seller's Lawyer Phone Number</label>
@@ -226,32 +277,34 @@
                                 <input asp-for="EditSaleCoopViewModel.EditIRFDealSaleCoopViewModel.SellerDetails.SellerLawyerEmail" class="form-control" />
                                 <span asp-validation-for="EditSaleCoopViewModel.EditIRFDealSaleCoopViewModel.SellerDetails.SellerLawyerEmail" class="text-danger"></span>
                             </div>
+
                         </div>
 
-                        <!-- Buyer Lawyer Info -->
-                        <h4 class="mt-5 text-blue">Buyer's Lawyer Info</h4>
+                        <!-- 🧾 Seller's Agent & Brokerage Info -->
+                        <h4 class="mt-5 text-blue">Seller's Agent & Brokerage Info</h4>
                         <div class="row">
                             <div class="col-md-6 mt-3">
-                                <label asp-for="EditSaleCoopViewModel.EditIRFDealSaleCoopViewModel.BuyerDetails.BuyersLawyer" class="fw-bolder">Buyer's Lawyer</label>
-                                <input asp-for="EditSaleCoopViewModel.EditIRFDealSaleCoopViewModel.BuyerDetails.BuyersLawyer" class="form-control" />
-                                <span asp-validation-for="EditSaleCoopViewModel.EditIRFDealSaleCoopViewModel.BuyerDetails.BuyersLawyer" class="text-danger"></span>
+                                <label asp-for="EditSaleCoopViewModel.EditIRFDealSaleCoopViewModel.SellerDetails.SellerAgentName" class="fw-bolder">Seller's Agent Name</label>
+                                <input asp-for="EditSaleCoopViewModel.EditIRFDealSaleCoopViewModel.SellerDetails.SellerAgentName" class="form-control" />
+                                <span asp-validation-for="EditSaleCoopViewModel.EditIRFDealSaleCoopViewModel.SellerDetails.SellerAgentName" class="text-danger"></span>
                             </div>
                             <div class="col-md-6 mt-3">
-                                <label asp-for="EditSaleCoopViewModel.EditIRFDealSaleCoopViewModel.BuyerDetails.BuyerLawyerAddress" class="fw-bolder">Buyer's Lawyer Address</label>
-                                <input asp-for="EditSaleCoopViewModel.EditIRFDealSaleCoopViewModel.BuyerDetails.BuyerLawyerAddress" class="form-control" />
-                                <span asp-validation-for="EditSaleCoopViewModel.EditIRFDealSaleCoopViewModel.BuyerDetails.BuyerLawyerAddress" class="text-danger"></span>
+                                <label asp-for="EditSaleCoopViewModel.EditIRFDealSaleCoopViewModel.SellerDetails.SellerBrokerageEmail" class="fw-bolder">Seller's Brokerage Email</label>
+                                <input asp-for="EditSaleCoopViewModel.EditIRFDealSaleCoopViewModel.SellerDetails.SellerBrokerageEmail" class="form-control" />
+                                <span asp-validation-for="EditSaleCoopViewModel.EditIRFDealSaleCoopViewModel.SellerDetails.SellerBrokerageEmail" class="text-danger"></span>
                             </div>
                             <div class="col-md-6 mt-3">
-                                <label asp-for="EditSaleCoopViewModel.EditIRFDealSaleCoopViewModel.BuyerDetails.BuyerLawyerEmail" class="fw-bolder">Buyer's Lawyer Email</label>
-                                <input asp-for="EditSaleCoopViewModel.EditIRFDealSaleCoopViewModel.BuyerDetails.BuyerLawyerEmail" class="form-control" type="email" />
-                                <span asp-validation-for="EditSaleCoopViewModel.EditIRFDealSaleCoopViewModel.BuyerDetails.BuyerLawyerEmail" class="text-danger"></span>
+                                <label asp-for="EditSaleCoopViewModel.EditIRFDealSaleCoopViewModel.SellerDetails.SellerBrokerageFax" class="fw-bolder">Seller's Brokerage Fax</label>
+                                <input asp-for="EditSaleCoopViewModel.EditIRFDealSaleCoopViewModel.SellerDetails.SellerBrokerageFax" class="form-control" />
+                                <span asp-validation-for="EditSaleCoopViewModel.EditIRFDealSaleCoopViewModel.SellerDetails.SellerBrokerageFax" class="text-danger"></span>
                             </div>
                             <div class="col-md-6 mt-3">
-                                <label asp-for="EditSaleCoopViewModel.EditIRFDealSaleCoopViewModel.BuyerDetails.BuyerLawyerPhone" class="fw-bolder">Buyer's Lawyer Phone</label>
-                                <input asp-for="EditSaleCoopViewModel.EditIRFDealSaleCoopViewModel.BuyerDetails.BuyerLawyerPhone" class="form-control" />
-                                <span asp-validation-for="EditSaleCoopViewModel.EditIRFDealSaleCoopViewModel.BuyerDetails.BuyerLawyerPhone" class="text-danger"></span>
+                                <label asp-for="EditSaleCoopViewModel.EditIRFDealSaleCoopViewModel.SellerDetails.SellerBrokeragePhoneNumber" class="fw-bolder">Seller's Brokerage Phone Number</label>
+                                <input asp-for="EditSaleCoopViewModel.EditIRFDealSaleCoopViewModel.SellerDetails.SellerBrokeragePhoneNumber" class="form-control" />
+                                <span asp-validation-for="EditSaleCoopViewModel.EditIRFDealSaleCoopViewModel.SellerDetails.SellerBrokeragePhoneNumber" class="text-danger"></span>
                             </div>
                         </div>
+
                     </div>
 
                     <div class="tab-pane" id="viewFileUploads" aria-labelledby="viewFileUploads-tab" style="background-color:white;">

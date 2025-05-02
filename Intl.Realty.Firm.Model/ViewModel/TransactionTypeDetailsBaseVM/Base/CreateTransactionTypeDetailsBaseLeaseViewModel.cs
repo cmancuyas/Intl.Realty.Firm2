@@ -10,14 +10,14 @@ namespace Intl.Realty.Firm.Model.ViewModel.TransactionTypeDetailsBaseVM.Base
         public string PropertyAddress { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "The Final Lease Price field is required.")]
-        [Column(TypeName = "decimal(18,4)")]
+        [Column(TypeName = "decimal(18,2)")]
         public decimal FinalLeasePrice { get; set; }
 
         [Required(ErrorMessage = "The Final Closing Date field is required.")]
         public DateTime FinalClosingDate { get; set; } = DateTime.Now;
 
         [Required(ErrorMessage = "The Deposit Amount field is required.")]
-        [Column(TypeName = "decimal(18,4)")]
+        [Column(TypeName = "decimal(18,2)")]
         public decimal DepositAmount { get; set; }
 
         [Required(ErrorMessage = "The Deposit Date field is required.")]

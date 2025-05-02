@@ -244,7 +244,7 @@ namespace Intl.Realty.Firm.DataAccess.Migrations
                         {
                             Id = new Guid("74b7ddfa-9c71-4b95-84e2-9b5fcdef884c"),
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "5e16c607-b60e-49c5-b891-e673ef7d2862",
+                            ConcurrencyStamp = "7d37611a-33f9-45cb-981d-7ec38bc07236",
                             Email = "superadmin@internationalrealtyfirm.com",
                             EmailConfirmed = true,
                             EmploymentStatusId = 1,
@@ -253,10 +253,10 @@ namespace Intl.Realty.Firm.DataAccess.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "SUPERADMIN@INTERNATIONALREALTYFIRM.COM",
                             NormalizedUserName = "SUPERADMIN@INTERNATIONALREALTYFIRM.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEPUbszbTp/8t89kcO0SLrGo8qRt9Z0UOsSklbHwwy+/gWY0T/kbud9gmnJ1GSF8LkQ==",
+                            PasswordHash = "AQAAAAIAAYagAAAAELBSkuXjlPDupDmidw7hrD/UnEFvvHaaAReX6/GjTDot1e2goUnx/zDQo9nAbHMGMA==",
                             PhoneNumberConfirmed = false,
-                            RegistrationDate = new DateTime(2025, 5, 2, 3, 45, 39, 689, DateTimeKind.Local).AddTicks(6786),
-                            SecurityStamp = "8f22c68e-46f0-4eed-af62-db771f2b6778",
+                            RegistrationDate = new DateTime(2025, 5, 3, 6, 15, 56, 2, DateTimeKind.Local).AddTicks(4756),
+                            SecurityStamp = "d3638f76-b4b2-4834-96df-92aa15cbcb52",
                             TwoFactorEnabled = false,
                             UserAgreement = false,
                             UserName = "superadmin@internationalrealtyfirm.com"
@@ -1115,7 +1115,22 @@ namespace Intl.Realty.Firm.DataAccess.Migrations
                     b.Property<string>("BuyerBrokerage")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("BuyerBrokerageEmail")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("BuyerBrokerageFax")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("BuyerBrokeragePhoneNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("BuyerEmailPhone")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("BuyerLawyer")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("BuyerLawyerAddress")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("BuyerLawyerEmail")
@@ -1128,18 +1143,8 @@ namespace Intl.Realty.Firm.DataAccess.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("BuyersLawyer")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("BuyersLawyerAddress")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("BuyersPhoneNumber")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<decimal>("BuyingCommissionPercentage")
-                        .HasColumnType("decimal(18,4)");
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
@@ -1154,7 +1159,7 @@ namespace Intl.Realty.Firm.DataAccess.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<decimal>("DepositAmount")
-                        .HasColumnType("decimal(18,4)");
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<DateTime>("DepositDate")
                         .HasColumnType("datetime2");
@@ -1163,10 +1168,10 @@ namespace Intl.Realty.Firm.DataAccess.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<decimal?>("FinalLeasePrice")
-                        .HasColumnType("decimal(18,4)");
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<decimal?>("FinalSalePrice")
-                        .HasColumnType("decimal(18,4)");
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
@@ -1194,10 +1199,31 @@ namespace Intl.Realty.Firm.DataAccess.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<decimal>("ListingCommissionPercentage")
-                        .HasColumnType("decimal(18,4)");
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("PropertyAddress")
                         .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SellerAgentName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SellerBrokerageEmail")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SellerBrokerageFax")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SellerBrokeragePhoneNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SellerEmailPhone")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SellerLawyer")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SellerLawyerAddress")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("SellerLawyerEmail")
@@ -1206,13 +1232,7 @@ namespace Intl.Realty.Firm.DataAccess.Migrations
                     b.Property<string>("SellerLawyerPhone")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("SellersLawyer")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("SellersLawyerAddress")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("SellersPhoneNumber")
+                    b.Property<string>("SellerName")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("TenantAgentName")
