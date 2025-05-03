@@ -59,6 +59,7 @@ namespace Intl.Realty.Firm.Utility.Mapper
                     SellerEmailPhone = model.SellerEmailPhone ?? string.Empty,
                     SellerLawyerEmail = model.SellerLawyerEmail ?? string.Empty,
                     SellerLawyerPhone = model.SellerLawyerPhone ?? string.Empty,
+                    SellerBrokerage = model.SellerBrokerage ?? string.Empty,    
                     SellerBrokerageEmail = model.SellerBrokerageEmail ?? string.Empty,
                     SellerBrokerageFax = model.SellerBrokerageFax ?? string.Empty,
                     SellerBrokeragePhoneNumber = model.SellerBrokeragePhoneNumber ?? string.Empty,
@@ -108,6 +109,7 @@ namespace Intl.Realty.Firm.Utility.Mapper
                     SellerEmailPhone = model.SellerEmailPhone ?? string.Empty,
                     SellerLawyerEmail = model.SellerLawyerEmail ?? string.Empty,
                     SellerLawyerPhone = model.SellerLawyerPhone ?? string.Empty,
+                    SellerBrokerage = model.SellerBrokerage ?? string.Empty,
                     SellerBrokerageEmail = model.SellerBrokerageEmail ?? string.Empty,
                     SellerBrokerageFax = model.SellerBrokerageFax ?? string.Empty,
                     SellerBrokeragePhoneNumber = model.SellerBrokeragePhoneNumber ?? string.Empty,
@@ -239,6 +241,7 @@ namespace Intl.Realty.Firm.Utility.Mapper
                     SellerName = x.SellerName,
                     SellerAgentName = x.SellerAgentName,
                     SellerBrokerageEmail = x.SellerBrokerageEmail,
+                    SellerBrokerage = x.SellerBrokerage,
                     SellerBrokerageFax = x.SellerBrokerageFax,
                     SellerBrokeragePhoneNumber = x.SellerBrokeragePhoneNumber,
 
@@ -304,6 +307,7 @@ namespace Intl.Realty.Firm.Utility.Mapper
                 SellerEmailPhone = viewModel.SellerDetails.SellerEmailPhone,
                 SellerLawyerEmail = viewModel.SellerDetails.SellerLawyerEmail,
                 SellerLawyerPhone = viewModel.SellerDetails.SellerLawyerPhone ,
+                SellerBrokerage = viewModel.SellerDetails.SellerBrokerage,
                 SellerBrokerageEmail = viewModel.SellerDetails.SellerBrokerageEmail,
                 SellerBrokerageFax = viewModel.SellerDetails.SellerBrokerageFax,
                 SellerBrokeragePhoneNumber = viewModel.SellerDetails.SellerBrokeragePhoneNumber,
@@ -352,6 +356,7 @@ namespace Intl.Realty.Firm.Utility.Mapper
                 SellerEmailPhone = viewModel.SellerDetails.SellerEmailPhone,
                 SellerLawyerEmail = viewModel.SellerDetails.SellerLawyerEmail,
                 SellerLawyerPhone = viewModel.SellerDetails.SellerLawyerPhone,
+                SellerBrokerage = viewModel.SellerDetails.SellerBrokerage,
                 SellerBrokerageEmail = viewModel.SellerDetails.SellerBrokerageEmail,
                 SellerBrokerageFax = viewModel.SellerDetails.SellerBrokerageFax,
                 SellerBrokeragePhoneNumber = viewModel.SellerDetails.SellerBrokeragePhoneNumber,
@@ -476,6 +481,7 @@ namespace Intl.Realty.Firm.Utility.Mapper
                 SellerEmailPhone = viewModel.SellerDetails.SellerEmailPhone,
                 SellerLawyerEmail = viewModel.SellerDetails.SellerLawyerEmail,
                 SellerLawyerPhone = viewModel.SellerDetails.SellerLawyerPhone,
+                SellerBrokerage = viewModel.SellerDetails.SellerBrokerage,
                 SellerBrokerageEmail = viewModel.SellerDetails.SellerBrokerageEmail,
                 SellerBrokerageFax = viewModel.SellerDetails.SellerBrokerageFax,
                 SellerBrokeragePhoneNumber = viewModel.SellerDetails.SellerBrokeragePhoneNumber,
@@ -519,6 +525,7 @@ namespace Intl.Realty.Firm.Utility.Mapper
                 SellerEmailPhone = viewModel.SellerDetails.SellerEmailPhone,
                 SellerLawyerEmail = viewModel.SellerDetails.SellerLawyerEmail,
                 SellerLawyerPhone = viewModel.SellerDetails.SellerLawyerPhone,
+                SellerBrokerage = viewModel.SellerDetails.SellerBrokerage,
                 SellerBrokerageEmail = viewModel.SellerDetails.SellerBrokerageEmail,
                 SellerBrokerageFax = viewModel.SellerDetails.SellerBrokerageFax,
                 SellerBrokeragePhoneNumber = viewModel.SellerDetails.SellerBrokeragePhoneNumber,
@@ -641,6 +648,7 @@ namespace Intl.Realty.Firm.Utility.Mapper
                     SellerEmailPhone = x.SellerEmailPhone,
                     SellerLawyerEmail = x.SellerLawyerEmail,
                     SellerLawyerPhone = x.SellerLawyerPhone,
+                    SellerBrokerage = x.SellerBrokerage,
                     SellerBrokerageEmail = x.SellerBrokerageEmail,
                     SellerBrokerageFax = x.SellerBrokerageFax,
                     SellerBrokeragePhoneNumber = x.SellerBrokeragePhoneNumber,
@@ -696,6 +704,7 @@ namespace Intl.Realty.Firm.Utility.Mapper
                 BuyerBrokeragePhoneNumber = model.BuyerBrokeragePhoneNumber,
 
                 SellerBrokerageEmail = model.SellerBrokerageEmail,
+                SellerBrokerage = model.SellerBrokerage,
                 SellerBrokerageFax = model.SellerBrokerageFax,
                 SellerBrokeragePhoneNumber = model.SellerBrokeragePhoneNumber,
 
@@ -762,6 +771,7 @@ namespace Intl.Realty.Firm.Utility.Mapper
                     SellerEmailPhone = x.SellerEmailPhone,
                     SellerLawyerEmail = x.SellerLawyerEmail,
                     SellerLawyerPhone = x.SellerLawyerPhone,
+                    SellerBrokerage = x.SellerBrokerage,
                     SellerBrokerageEmail = x.SellerBrokerageEmail,
                     SellerBrokerageFax = x.SellerBrokerageFax,
                     SellerBrokeragePhoneNumber = x.SellerBrokeragePhoneNumber,
@@ -880,6 +890,7 @@ namespace Intl.Realty.Firm.Utility.Mapper
             entity.SellerEmailPhone = viewModel.SellerDetails.SellerEmailPhone;
             entity.SellerLawyerEmail = viewModel.SellerDetails.SellerLawyerEmail;
             entity.SellerLawyerPhone = viewModel.SellerDetails.SellerLawyerPhone;
+            entity.SellerBrokerage = viewModel.SellerDetails.SellerBrokerage;
             entity.SellerBrokerageEmail = viewModel.SellerDetails.SellerBrokerageEmail;
             entity.SellerBrokerageFax = viewModel.SellerDetails.SellerBrokerageFax;
             entity.SellerBrokeragePhoneNumber = viewModel.SellerDetails.SellerBrokeragePhoneNumber;
@@ -896,7 +907,6 @@ namespace Intl.Realty.Firm.Utility.Mapper
 
         public static void UpdateFromViewModel(this IRFDeal entity, EditIRFDealSaleListingViewModel viewModel, Guid updatedBy)
         {
-
             entity.PropertyAddress = viewModel.PropertyAddress;
             entity.FinalSalePrice = viewModel.FinalSalePrice;
             entity.FinalClosingDate = viewModel.FinalClosingDate;
@@ -922,17 +932,18 @@ namespace Intl.Realty.Firm.Utility.Mapper
             entity.SellerLawyer = viewModel.SellerDetails.SellerLawyer;
             entity.SellerLawyerAddress = viewModel.SellerDetails.SellerLawyerAddress;
             entity.SellerEmailPhone = viewModel.SellerDetails.SellerEmailPhone;
-            entity.SellerLawyerEmail = viewModel.SellerDetails.SellerLawyerEmail;
-            entity.SellerLawyerPhone = viewModel.SellerDetails.SellerLawyerPhone;
+            entity.SellerBrokerage = viewModel.SellerDetails.SellerBrokerage;
             entity.SellerBrokerageEmail = viewModel.SellerDetails.SellerBrokerageEmail;
             entity.SellerBrokerageFax = viewModel.SellerDetails.SellerBrokerageFax;
             entity.SellerBrokeragePhoneNumber = viewModel.SellerDetails.SellerBrokeragePhoneNumber;
-
+            entity.SellerLawyerEmail = viewModel.SellerDetails.SellerLawyerEmail;
+            entity.SellerLawyerPhone = viewModel.SellerDetails.SellerLawyerPhone;
 
             entity.IsActive = viewModel.IsActive;
             entity.IsDeleted = viewModel.IsDeleted;
             entity.UpdatedBy = updatedBy;
             entity.UpdatedAt = DateTime.UtcNow;
         }
+
     }
 }
