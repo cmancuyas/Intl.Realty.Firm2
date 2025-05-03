@@ -44,6 +44,7 @@ namespace Intl.Realty.Firm.Model.Model
         public string? SellerLawyer { get; set; }
         public string? SellerLawyerAddress { get; set; }
         public string? SellerEmailPhone { get; set; }
+        public string? SellerBrokerage { get; set; }
         public string? SellerBrokerageFax { get; set; }
         public string? SellerBrokeragePhoneNumber { get; set; }
         public string? SellerBrokerageEmail { get; set; }

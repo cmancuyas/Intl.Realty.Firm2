@@ -18,6 +18,7 @@ namespace Intl.Realty.Firm.Model.ViewModel.Base.Concrete
 
         [EmailAddress(ErrorMessage = "Enter a valid email address for the seller's lawyer.")]
         public string? SellerLawyerEmail { get; set; }
+        public string? SellerBrokerage { get; set; }
         public string? SellerBrokerageFax { get; set; }
         public string? SellerBrokeragePhoneNumber { get; set; }
         public string? SellerBrokerageEmail { get; set; }

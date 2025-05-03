@@ -208,29 +208,54 @@
                                 <span asp-validation-for="CreateSaleListingViewModel.CreateIRFDealSaleListingViewModel.BuyerDetails.BuyerLawyer" class="text-danger"></span>
                             </div>
                             <div class="col-md-6 mt-3">
-                                <label asp-for="CreateSaleListingViewModel.CreateIRFDealSaleListingViewModel.BuyerDetails.BuyerLawyerAddress" class="fw-bolder">Lawyer Address</label>
+                                <label asp-for="CreateSaleListingViewModel.CreateIRFDealSaleListingViewModel.BuyerDetails.BuyerLawyerAddress" class="fw-bolder">Buyer's Lawyer Address</label>
                                 <input asp-for="CreateSaleListingViewModel.CreateIRFDealSaleListingViewModel.BuyerDetails.BuyerLawyerAddress" class="form-control" />
                                 <span asp-validation-for="CreateSaleListingViewModel.CreateIRFDealSaleListingViewModel.BuyerDetails.BuyerLawyerAddress" class="text-danger"></span>
                             </div>
                             <div class="col-md-6 mt-3">
-                                <label asp-for="CreateSaleListingViewModel.CreateIRFDealSaleListingViewModel.BuyerDetails.BuyerLawyerPhone" class="fw-bolder">Lawyer Phone</label>
+                                <label asp-for="CreateSaleListingViewModel.CreateIRFDealSaleListingViewModel.BuyerDetails.BuyerLawyerPhone" class="fw-bolder">Buyer's Lawyer Phone</label>
                                 <input asp-for="CreateSaleListingViewModel.CreateIRFDealSaleListingViewModel.BuyerDetails.BuyerLawyerPhone" class="form-control" />
                                 <span asp-validation-for="CreateSaleListingViewModel.CreateIRFDealSaleListingViewModel.BuyerDetails.BuyerLawyerPhone" class="text-danger"></span>
                             </div>
                             <div class="col-md-6 mt-3">
-                                <label asp-for="CreateSaleListingViewModel.CreateIRFDealSaleListingViewModel.BuyerDetails.BuyerLawyerEmail" class="fw-bolder">Lawyer Email</label>
+                                <label asp-for="CreateSaleListingViewModel.CreateIRFDealSaleListingViewModel.BuyerDetails.BuyerLawyerEmail" class="fw-bolder">Buyer's Lawyer Email</label>
                                 <input asp-for="CreateSaleListingViewModel.CreateIRFDealSaleListingViewModel.BuyerDetails.BuyerLawyerEmail" class="form-control" />
                                 <span asp-validation-for="CreateSaleListingViewModel.CreateIRFDealSaleListingViewModel.BuyerDetails.BuyerLawyerEmail" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <!-- 🧾 Seller's Agent & Brokerage Info -->
+                        <h4 class="mt-5 text-blue">Seller's Agent & Brokerage Info</h4>
+                        <div class="row">
+                            <div class="col-md-6 mt-3">
+                                <label asp-for="CreateSaleListingViewModel.CreateIRFDealSaleListingViewModel.SellerDetails.SellerAgentName" class="fw-bolder">Seller's Agent Name</label>
+                                <input asp-for="CreateSaleListingViewModel.CreateIRFDealSaleListingViewModel.SellerDetails.SellerAgentName" class="form-control" />
+                                <span asp-validation-for="CreateSaleListingViewModel.CreateIRFDealSaleListingViewModel.SellerDetails.SellerAgentName" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 mt-3">
+                                <label asp-for="CreateSaleListingViewModel.CreateIRFDealSaleListingViewModel.SellerDetails.SellerBrokerage" class="fw-bolder">Seller's Brokerage</label>
+                                <input asp-for="CreateSaleListingViewModel.CreateIRFDealSaleListingViewModel.SellerDetails.SellerBrokerage" class="form-control" />
+                                <span asp-validation-for="CreateSaleListingViewModel.CreateIRFDealSaleListingViewModel.SellerDetails.SellerBrokerage" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 mt-3">
+                                <label asp-for="CreateSaleListingViewModel.CreateIRFDealSaleListingViewModel.SellerDetails.SellerBrokerageFax" class="fw-bolder">Seller's Brokerage Fax</label>
+                                <input asp-for="CreateSaleListingViewModel.CreateIRFDealSaleListingViewModel.SellerDetails.SellerBrokerageFax" class="form-control" />
+                                <span asp-validation-for="CreateSaleListingViewModel.CreateIRFDealSaleListingViewModel.SellerDetails.SellerBrokerageFax" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 mt-3">
+                                <label asp-for="CreateSaleListingViewModel.CreateIRFDealSaleListingViewModel.SellerDetails.SellerBrokeragePhoneNumber" class="fw-bolder">Seller's Brokerage Phone Number</label>
+                                <input asp-for="CreateSaleListingViewModel.CreateIRFDealSaleListingViewModel.SellerDetails.SellerBrokeragePhoneNumber" class="form-control" />
+                                <span asp-validation-for="CreateSaleListingViewModel.CreateIRFDealSaleListingViewModel.SellerDetails.SellerBrokeragePhoneNumber" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 mt-3">
+                                <label asp-for="CreateSaleListingViewModel.CreateIRFDealSaleListingViewModel.SellerDetails.SellerBrokerageEmail" class="fw-bolder">Seller's Brokerage Email</label>
+                                <input asp-for="CreateSaleListingViewModel.CreateIRFDealSaleListingViewModel.SellerDetails.SellerBrokerageEmail" class="form-control" />
+                                <span asp-validation-for="CreateSaleListingViewModel.CreateIRFDealSaleListingViewModel.SellerDetails.SellerBrokerageEmail" class="text-danger"></span>
                             </div>
                         </div>
                         <!-- 🧾 Seller & Legal Info -->
                         <h4 class="mt-5 text-blue">Seller's Legal Info</h4>
                         <div class="row">
-                            <div class="col-md-6 mt-3">
-                                <label asp-for="CreateSaleListingViewModel.CreateIRFDealSaleListingViewModel.SellerDetails.SellerEmailPhone" class="fw-bolder">Seller's Email/Phone Number</label>
-                                <input asp-for="CreateSaleListingViewModel.CreateIRFDealSaleListingViewModel.SellerDetails.SellerEmailPhone" class="form-control" />
-                                <span asp-validation-for="CreateSaleListingViewModel.CreateIRFDealSaleListingViewModel.SellerDetails.SellerEmailPhone" class="text-danger"></span>
-                            </div>
                             <div class="col-md-6 mt-3">
                                 <label asp-for="CreateSaleListingViewModel.CreateIRFDealSaleListingViewModel.SellerDetails.SellerLawyer" class="fw-bolder">Seller's Lawyer</label>
                                 <input asp-for="CreateSaleListingViewModel.CreateIRFDealSaleListingViewModel.SellerDetails.SellerLawyer" class="form-control" />
@@ -253,32 +278,6 @@
                             </div>
 
                         </div>
-
-                        <!-- 🧾 Seller's Agent & Brokerage Info -->
-                        <h4 class="mt-5 text-blue">Seller's Agent & Brokerage Info</h4>
-                        <div class="row">
-                            <div class="col-md-6 mt-3">
-                                <label asp-for="CreateSaleListingViewModel.CreateIRFDealSaleListingViewModel.SellerDetails.SellerAgentName" class="fw-bolder">Seller's Agent Name</label>
-                                <input asp-for="CreateSaleListingViewModel.CreateIRFDealSaleListingViewModel.SellerDetails.SellerAgentName" class="form-control" />
-                                <span asp-validation-for="CreateSaleListingViewModel.CreateIRFDealSaleListingViewModel.SellerDetails.SellerAgentName" class="text-danger"></span>
-                            </div>
-                            <div class="col-md-6 mt-3">
-                                <label asp-for="CreateSaleListingViewModel.CreateIRFDealSaleListingViewModel.SellerDetails.SellerBrokerageEmail" class="fw-bolder">Seller's Brokerage Email</label>
-                                <input asp-for="CreateSaleListingViewModel.CreateIRFDealSaleListingViewModel.SellerDetails.SellerBrokerageEmail" class="form-control" />
-                                <span asp-validation-for="CreateSaleListingViewModel.CreateIRFDealSaleListingViewModel.SellerDetails.SellerBrokerageEmail" class="text-danger"></span>
-                            </div>
-                            <div class="col-md-6 mt-3">
-                                <label asp-for="CreateSaleListingViewModel.CreateIRFDealSaleListingViewModel.SellerDetails.SellerBrokerageFax" class="fw-bolder">Seller's Brokerage Fax</label>
-                                <input asp-for="CreateSaleListingViewModel.CreateIRFDealSaleListingViewModel.SellerDetails.SellerBrokerageFax" class="form-control" />
-                                <span asp-validation-for="CreateSaleListingViewModel.CreateIRFDealSaleListingViewModel.SellerDetails.SellerBrokerageFax" class="text-danger"></span>
-                            </div>
-                            <div class="col-md-6 mt-3">
-                                <label asp-for="CreateSaleListingViewModel.CreateIRFDealSaleListingViewModel.SellerDetails.SellerBrokeragePhoneNumber" class="fw-bolder">Seller's Brokerage Phone Number</label>
-                                <input asp-for="CreateSaleListingViewModel.CreateIRFDealSaleListingViewModel.SellerDetails.SellerBrokeragePhoneNumber" class="form-control" />
-                                <span asp-validation-for="CreateSaleListingViewModel.CreateIRFDealSaleListingViewModel.SellerDetails.SellerBrokeragePhoneNumber" class="text-danger"></span>
-                            </div>
-                        </div>
-
                     </div>
 
 

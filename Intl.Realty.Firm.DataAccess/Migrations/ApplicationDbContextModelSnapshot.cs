@@ -166,11 +166,13 @@ namespace Intl.Realty.Firm.DataAccess.Migrations
 
                     b.Property<string>("FirstName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("LastName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("bit");
@@ -244,7 +246,7 @@ namespace Intl.Realty.Firm.DataAccess.Migrations
                         {
                             Id = new Guid("74b7ddfa-9c71-4b95-84e2-9b5fcdef884c"),
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "7d37611a-33f9-45cb-981d-7ec38bc07236",
+                            ConcurrencyStamp = "70b0ee93-0b2d-40ba-818d-ec27a95836b0",
                             Email = "superadmin@internationalrealtyfirm.com",
                             EmailConfirmed = true,
                             EmploymentStatusId = 1,
@@ -253,10 +255,10 @@ namespace Intl.Realty.Firm.DataAccess.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "SUPERADMIN@INTERNATIONALREALTYFIRM.COM",
                             NormalizedUserName = "SUPERADMIN@INTERNATIONALREALTYFIRM.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAELBSkuXjlPDupDmidw7hrD/UnEFvvHaaAReX6/GjTDot1e2goUnx/zDQo9nAbHMGMA==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEH1pXQSP0TMLrIeG6u5yhJLZY8B6GscV4PEnNwfb/fBrpZFLsq5aNAYdCtSQpYUsyw==",
                             PhoneNumberConfirmed = false,
-                            RegistrationDate = new DateTime(2025, 5, 3, 6, 15, 56, 2, DateTimeKind.Local).AddTicks(4756),
-                            SecurityStamp = "d3638f76-b4b2-4834-96df-92aa15cbcb52",
+                            RegistrationDate = new DateTime(2025, 5, 3, 8, 5, 43, 249, DateTimeKind.Local).AddTicks(9713),
+                            SecurityStamp = "bab8205a-7af9-4866-a179-9e0d05c4d0ec",
                             TwoFactorEnabled = false,
                             UserAgreement = false,
                             UserName = "superadmin@internationalrealtyfirm.com"
@@ -1206,6 +1208,9 @@ namespace Intl.Realty.Firm.DataAccess.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("SellerAgentName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SellerBrokerage")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("SellerBrokerageEmail")
