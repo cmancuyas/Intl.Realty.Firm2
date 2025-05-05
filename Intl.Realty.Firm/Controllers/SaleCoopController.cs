@@ -852,10 +852,10 @@ namespace Intl.Realty.Firm.Controllers
                    r.IRFDeal!.BuyerBrokerageFax! != null && r.IRFDeal.BuyerBrokerageFax.ToUpper().Contains(searchBy.ToUpper()) ||
                    r.IRFDeal!.SellerLawyer! != null && r.IRFDeal.SellerLawyer.ToUpper().Contains(searchBy.ToUpper()) ||
                    r.IRFDeal!.SellerLawyerAddress! != null && r.IRFDeal.SellerLawyerAddress.ToUpper().Contains(searchBy.ToUpper()) ||
-                   r.IRFDeal!.SellerEmailPhone! != null && r.IRFDeal.SellerEmailPhone.ToUpper().Contains(searchBy.ToUpper()) ||
+                   r.IRFDeal!.SellerEmail! != null && r.IRFDeal.SellerEmail.ToUpper().Contains(searchBy.ToUpper()) ||
                    r.IRFDeal!.BuyerLawyer! != null && r.IRFDeal.BuyerLawyer.ToUpper().Contains(searchBy.ToUpper()) ||
                    r.IRFDeal!.BuyerLawyerAddress! != null && r.IRFDeal.BuyerLawyerAddress.ToUpper().Contains(searchBy.ToUpper()) ||
-                   r.IRFDeal!.BuyerEmailPhone! != null && r.IRFDeal.BuyerEmailPhone.ToUpper().Contains(searchBy.ToUpper())
+                   r.IRFDeal!.BuyerEmail! != null && r.IRFDeal.BuyerEmail.ToUpper().Contains(searchBy.ToUpper())
                    );
             return result;
         }
@@ -919,7 +919,7 @@ namespace Intl.Realty.Firm.Controllers
                         query = query.Where(r => r.IRFDeal!.SellerLawyerAddress != null && r.IRFDeal!.SellerLawyerAddress.ToUpper().Contains(value));
                         break;
                     case "SellerPhoneNumber":
-                        query = query.Where(r => r.IRFDeal!.SellerEmailPhone != null && r.IRFDeal!.SellerEmailPhone.ToUpper().Contains(value));
+                        query = query.Where(r => r.IRFDeal!.SellerEmail != null && r.IRFDeal!.SellerEmail.ToUpper().Contains(value));
                         break;
                     case "BuyerLawyer":
                         query = query.Where(r => r.IRFDeal!.BuyerLawyer != null && r.IRFDeal!.BuyerLawyer.ToUpper().Contains(value));
@@ -928,7 +928,7 @@ namespace Intl.Realty.Firm.Controllers
                         query = query.Where(r => r.IRFDeal!.BuyerLawyerAddress != null && r.IRFDeal!.BuyerLawyerAddress.ToUpper().Contains(value));
                         break;
                     case "BuyerPhoneNumber":
-                        query = query.Where(r => r.IRFDeal!.BuyerEmailPhone != null && r.IRFDeal!.BuyerEmailPhone.ToUpper().Contains(value));
+                        query = query.Where(r => r.IRFDeal!.BuyerEmail != null && r.IRFDeal!.BuyerEmail.ToUpper().Contains(value));
                         break;
                     default:
                         // If there's an unrecognized filter key, you can choose to ignore it or handle it as needed

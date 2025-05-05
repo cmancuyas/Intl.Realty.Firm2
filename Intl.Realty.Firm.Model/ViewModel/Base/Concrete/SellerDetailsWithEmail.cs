@@ -2,13 +2,12 @@
 
 namespace Intl.Realty.Firm.Model.ViewModel.Base.Concrete
 {
-    public class SellerDetails
+    public class SellerDetailsWithEmail : SellerDetailsEmailOnly
     {
         [Required(ErrorMessage = "Seller's Name Number is required.")]
         public string SellerName { get; set; } = string.Empty;
         [Required(ErrorMessage = "Seller's Agent Name Number is required.")]
         public string SellerAgentName { get; set; } = string.Empty;
-        public string? SellerEmailPhone { get; set; }
 
         public string? SellerLawyer { get; set; } 
 

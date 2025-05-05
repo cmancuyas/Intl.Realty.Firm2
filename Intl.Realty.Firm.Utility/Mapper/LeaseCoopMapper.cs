@@ -144,10 +144,10 @@ namespace Intl.Realty.Firm.Utility.Mapper
                     BuyerBrokerageFax = x.IRFDeal.BuyerBrokerageFax,
                     SellerLawyer = x.IRFDeal.SellerLawyer,
                     SellerLawyerAddress = x.IRFDeal.SellerLawyerAddress,
-                    SellerPhoneNumber = x.IRFDeal.SellerEmailPhone,
+                    SellerPhoneNumber = x.IRFDeal.SellerEmail,
                     BuyerLawyer = x.IRFDeal.BuyerLawyer,
                     BuyerLawyerAddress = x.IRFDeal.BuyerLawyerAddress,
-                    BuyerEmailPhone = x.IRFDeal.BuyerEmailPhone,
+                    BuyerEmailPhone = x.IRFDeal.BuyerEmail,
                     DealStatus = x.DealStatus!.Description
                 }).ToList();
             }

@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Intl.Realty.Firm.Model.ViewModel.IRFDealVM
 {
-    public class CreateIRFDealSaleListingViewModel : CreateTransactionTypeDetailsBaseSaleListingViewModel
+    public class CreateIRFDealSaleListingViewModel : CreateTransactionTypeDetailsSaleListingViewModel
     {
 
     }
