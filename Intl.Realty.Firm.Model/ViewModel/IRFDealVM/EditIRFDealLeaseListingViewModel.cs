@@ -1,7 +1,7 @@
 ﻿using Intl.Realty.Firm.Model.ViewModel.TransactionTypeDetailsBaseVM;
 namespace Intl.Realty.Firm.Model.ViewModel.IRFDealVM
 {
-    public class EditIRFDealLeaseListingViewModel : EditTransactionTypeDetailsBaseLeaseListingViewModel
+    public class EditIRFDealLeaseListingViewModel : EditTransactionTypeDetailsLeaseListingViewModel
     {
 
     }

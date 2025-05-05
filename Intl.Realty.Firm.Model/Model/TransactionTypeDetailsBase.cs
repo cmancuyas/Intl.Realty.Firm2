@@ -31,7 +31,7 @@ namespace Intl.Realty.Firm.Model.Model
 
         public string? BuyerLawyer { get; set; }
         public string? BuyerLawyerAddress { get; set; }
-        public string? BuyerEmailPhone { get; set; } = string.Empty;
+        public string? BuyerEmail { get; set; } = string.Empty;
 
         public string? BuyerAgentName { get; set; }
         public string? BuyerBrokerage { get; set; }
@@ -43,7 +43,7 @@ namespace Intl.Realty.Firm.Model.Model
         public string? SellerAgentName { get; set; }
         public string? SellerLawyer { get; set; }
         public string? SellerLawyerAddress { get; set; }
-        public string? SellerEmailPhone { get; set; }
+        public string? SellerEmail { get; set; }
         public string? SellerBrokerage { get; set; }
         public string? SellerBrokerageFax { get; set; }
         public string? SellerBrokeragePhoneNumber { get; set; }

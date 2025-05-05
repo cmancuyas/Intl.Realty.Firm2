@@ -1,11 +1,10 @@
-﻿using Intl.Realty.Firm.Model.ViewModel.Base;
-using Intl.Realty.Firm.Model.ViewModel.Base.Concrete;
+﻿using Intl.Realty.Firm.Model.ViewModel.Base.Concrete;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Intl.Realty.Firm.Model.ViewModel.TransactionTypeDetailsBaseVM.Base
 {
-    public class EditTransactionTypeDetailsBaseSaleViewModel
+    public class EditTransactionTypeDetailsBaseSaleCoopViewModel
     {
         [Required]
         public int Id { get; set; }
@@ -27,8 +26,8 @@ namespace Intl.Realty.Firm.Model.ViewModel.TransactionTypeDetailsBaseVM.Base
         [Required(ErrorMessage = "The Deposit Date field is required.")]
         public DateTime DepositDate { get; set; }
 
-        public BuyerDetails BuyerDetails { get; set; } = new BuyerDetails();
-        public SellerDetails SellerDetails { get; set; } = new SellerDetails();
+        public BuyerDetailsWithEmail BuyerDetails { get; set; } = new BuyerDetailsWithEmail();
+        public SellerDetailsWithoutEmail SellerDetails { get; set; } = new SellerDetailsWithoutEmail();
 
         // Commission
         public CommissionBase Commission { get; set; } = new CommissionWithListing();

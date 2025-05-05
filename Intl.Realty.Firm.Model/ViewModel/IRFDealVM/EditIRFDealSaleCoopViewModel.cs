@@ -2,7 +2,7 @@
 
 namespace Intl.Realty.Firm.Model.ViewModel.IRFDealVM
 {
-    public class EditIRFDealSaleCoopViewModel : EditTransactionTypeDetailsBaseSaleCoopViewModel
+    public class EditIRFDealSaleCoopViewModel : EditTransactionTypeDetailsSaleCoopViewModel
     {
     }
 }

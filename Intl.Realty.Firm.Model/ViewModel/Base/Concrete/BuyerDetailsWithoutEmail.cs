@@ -2,15 +2,11 @@
 
 namespace Intl.Realty.Firm.Model.ViewModel.Base.Concrete
 {
-    public class BuyerDetails
+    public class BuyerDetailsWithoutEmail
     {
         [Required(ErrorMessage = "Buyer's name is required.")]
         public string BuyerName { get; set; } = string.Empty;
-
-        [Required(ErrorMessage = "Buyer's Email/Phone Number is required.")]
-        public string BuyerEmailPhone { get; set; } = string.Empty;
         public string? BuyerLawyer { get; set; }
-
         public string? BuyerLawyerAddress { get; set; } = string.Empty;
 
         [EmailAddress(ErrorMessage = "Enter a valid email address for the buyer's lawyer.")]

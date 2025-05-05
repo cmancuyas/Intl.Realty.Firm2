@@ -3,7 +3,7 @@ using Intl.Realty.Firm.Model.ViewModel.TransactionTypeDetailsBaseVM.Base;
 
 namespace Intl.Realty.Firm.Model.ViewModel.TransactionTypeDetailsBaseVM
 {
-    public class EditTransactionTypeDetailsBaseSaleCoopViewModel : EditTransactionTypeDetailsBaseSaleViewModel
+    public class CreateTransactionTypeDetailsLeaseCoopViewModel : CreateTransactionTypeDetailsBaseLeaseViewModel
     {
         public new CommissionWithoutListing Commission { get; set; } = new CommissionWithoutListing();
     }
