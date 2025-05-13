@@ -21,18 +21,21 @@ namespace Intl.Realty.Firm.Controllers
         private readonly IEmailService _emailService;
         private readonly ILogger<AccountController> _logger;
         private readonly IGoogleCaptchaService _googleCaptchaService;
+        private readonly IConfigurationService _configurationService;
 
         public AccountController(UserManager<ApplicationUser> userManager,
                                 SignInManager<ApplicationUser> signInManager,
                                 IEmailService emailService,
                                 ILogger<AccountController> logger,
-                                IGoogleCaptchaService googleCaptchaService)
+                                IGoogleCaptchaService googleCaptchaService,
+                                IConfigurationService configurationService)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _emailService = emailService;
             _logger = logger;
             _googleCaptchaService = googleCaptchaService;
+            _configurationService = configurationService;
         }
 
         [AcceptVerbs("Get", "Post")]
@@ -111,6 +114,40 @@ namespace Intl.Realty.Firm.Controllers
 
             return RedirectToAction("Index", "Training"); // ✅ Default fallback if no roles assigned
 
+        }
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult LoginIssueSupport()
+        {
+            return View();
+        }
+        [HttpPost]
+        [AllowAnonymous]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> SubmitLoginIssue(SupportViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View("LoginIssueSupport", model);
+            }
+
+            try
+            {
+                var recipient = _configurationService.GetSupportEmail();
+                // Generate styled HTML email body from template
+                var mailRequest = EmailRequest.SendEmailLoginIssue(model, recipient);
+
+                await _emailService.SendEmailAsync(mailRequest);
+                _logger.LogInformation("Login issue submitted: {Email}", model.Email);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to send login issue email: {Email}", model.Email);
+                ModelState.AddModelError(string.Empty, "There was a problem sending your request. Please try again later.");
+                return View("LoginIssueSupport", model);
+            }
+
+            return RedirectToAction("LoginIssueConfirmation");
         }
 
 

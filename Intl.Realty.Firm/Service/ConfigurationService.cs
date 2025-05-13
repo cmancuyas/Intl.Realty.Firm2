@@ -99,5 +99,15 @@ namespace Intl.Realty.Firm.Service
             }
             return "";
         }
+        public string GetSupportEmail()
+        {
+            var supportEmail = _configuration["SupportEmail"];
+            if (supportEmail != null)
+            {
+                return supportEmail;
+            }
+            return "";
+        }
+
     }
 }
