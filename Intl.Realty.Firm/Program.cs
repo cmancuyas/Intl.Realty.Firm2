@@ -29,6 +29,9 @@ Log.Logger = new LoggerConfiguration()
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Configuration
+    .AddUserSecrets<Program>();
+
 // ✅ Set non-commercial license
 ExcelPackage.License.SetNonCommercialPersonal("Kyle Bouchard");
 

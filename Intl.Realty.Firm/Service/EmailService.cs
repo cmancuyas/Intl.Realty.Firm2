@@ -25,7 +25,7 @@ namespace Intl.Realty.Firm.Service
         public async Task SendEmailAsync(MailRequest mailRequest)
         {
             var emailAddress = _configurationService.GetEmail();
-            var password = _configurationService.GetPassword();
+            var password = _configurationService.GetPassword(); // This should be your SendGrid API key
             var host = _configurationService.GetHost();
             var displayName = _configurationService.GetDisplayName();
             var port = _configurationService.GetPort();
@@ -42,21 +42,25 @@ namespace Intl.Realty.Firm.Service
             try
             {
                 using var emailClient = new SmtpClient();
-                _logger.LogInformation("Connecting to SMTP server {Host}:{Port}...", host, port);
+
+                _logger.LogInformation("Preparing to send email...");
+                _logger.LogInformation("SMTP Host: {Host}, Port: {Port}", host, port);
+                _logger.LogInformation("To: {To}", mailRequest.ToEmail);
+                _logger.LogInformation("Using partial API key: {Key}", password?.Substring(0, 5));
 
                 await emailClient.ConnectAsync(host, Convert.ToInt32(port), MailKit.Security.SecureSocketOptions.StartTls);
-                await emailClient.AuthenticateAsync(emailAddress, password);
+                await emailClient.AuthenticateAsync("apikey", password);
 
                 _logger.LogInformation("Sending email to {Recipient}", mailRequest.ToEmail);
                 await emailClient.SendAsync(emailToSend);
                 await emailClient.DisconnectAsync(true);
 
-                _logger.LogInformation("Email successfully sent to {Recipient}", mailRequest.ToEmail);
+                _logger.LogInformation("✅ Email successfully sent to {Recipient}", mailRequest.ToEmail);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error sending email to {Recipient}", mailRequest.ToEmail);
-                throw; // Let the caller handle it or bubble it up
+                _logger.LogError(ex, "❌ Error sending email to {Recipient}", mailRequest.ToEmail);
+                throw;
             }
         }
     }
