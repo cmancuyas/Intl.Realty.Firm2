@@ -1,6 +1,7 @@
 ﻿using Intl.Realty.Firm.Model.Model;
 using Intl.Realty.Firm.Model.ViewModel.AccountVM;
 using Intl.Realty.Firm.Model.ViewModel.ReferAnAgentVM;
+using System.Net;
 
 namespace Intl.Realty.Firm.Helper
 {
@@ -224,6 +225,31 @@ namespace Intl.Realty.Firm.Helper
             return template;
         }
 
+        public static string SendEmailLoginIssue(SupportViewModel supportViewModel)
+        {
+            string template = $@"
+        <html>
+        <head>
+            <meta charset=""utf-8"">
+        </head>
+        <body style=""font-family: Arial, sans-serif; font-size: 11pt; color: #000000;"">
+            <p>Hello Support Team,</p>
+
+            <p>A new login issue has been submitted via the support form. The details are as follows:</p>
+
+            <ul>
+                <li><strong>Email Address:</strong> {WebUtility.HtmlEncode(supportViewModel.Email)}</li>
+                <li><strong>Description:</strong> {WebUtility.HtmlEncode(supportViewModel.Description).Replace("\n", "<br />")}</li>
+            </ul>
+
+            <p>Please review and follow up with the user as appropriate.</p>
+
+            <p>Thank you,<br />IRF Support Portal</p>
+        </body>
+        </html>";
+
+            return template;
+        }
 
     }
 }
