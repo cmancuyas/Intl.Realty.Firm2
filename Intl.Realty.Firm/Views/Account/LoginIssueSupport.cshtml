@@ -22,7 +22,7 @@
             <div class="container-fluid w-75 px-0">
                 <div class="row">
                     <div class="col-md-12">
-                        <form method="post" asp-action="SubmitLoginIssue">
+                        <form method="post" asp-action="SubmitLoginIssue" id="supportForm">
                             <div class="form-group mb-3">
                                 <label for="email" class="form-label">Email Address <span class="text-danger">*</span></label>
                                 <input asp-for="Email" type="email" class="form-control" placeholder="you@example.com" required />
@@ -36,7 +36,10 @@
                                 <span asp-validation-for="Description" class="text-danger"></span>
                             </div>
 
-                            <button type="submit" class="btn btn-primary w-100 mt-2">Submit</button>
+                            <button type="submit" class="btn btn-primary w-100 mt-2" id="submitBtn">
+                                <span id="btnText">Submit</span>
+                                <span id="spinner" class="spinner-border spinner-border-sm ms-2 d-none" role="status" aria-hidden="true"></span>
+                            </button>
                         </form>
                     </div>
                 </div>
@@ -44,3 +47,17 @@
         </div>
     </div>
 </container>
+
+@section Scripts {
+    <script>
+        document.getElementById("supportForm").addEventListener("submit", function () {
+            const btn = document.getElementById("submitBtn");
+            const spinner = document.getElementById("spinner");
+            const btnText = document.getElementById("btnText");
+
+            btn.disabled = true;
+            spinner.classList.remove("d-none");
+            btnText.textContent = "Submitting...";
+        });
+    </script>
+}

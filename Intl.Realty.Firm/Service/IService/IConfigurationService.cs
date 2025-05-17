@@ -5,6 +5,7 @@ namespace Intl.Realty.Firm.Service.IService
     public interface IConfigurationService: IConfigurationEmail,IConfigurationNotification, IConfigurationGoogleCaptcha
     {
         string GetDefaultUploadPathFromConfig();
-        string GetSupportEmail();
+        string[] GetSupportEmail();
+        string[] GetSupportEmailCC();
     }
 }

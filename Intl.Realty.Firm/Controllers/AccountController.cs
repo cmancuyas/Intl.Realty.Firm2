@@ -133,12 +133,18 @@ namespace Intl.Realty.Firm.Controllers
 
             try
             {
-                var recipient = _configurationService.GetSupportEmail();
-                // Generate styled HTML email body from template
-                var mailRequest = EmailRequest.SendEmailLoginIssue(model, recipient);
+                var recipients = _configurationService.GetSupportEmail() ?? Array.Empty<string>();
+                var recipientsCC = _configurationService.GetSupportEmailCC() ?? Array.Empty<string>();
+
+                var recipientString = string.Join(',', recipients);
+                var recipientStringCC = string.Join(',', recipientsCC);
+
+                var mailRequest = EmailRequest.SendEmailLoginIssue(model, recipientString, recipientStringCC);
 
                 await _emailService.SendEmailAsync(mailRequest);
+
                 _logger.LogInformation("Login issue submitted: {Email}", model.Email);
+                _logger.LogInformation("To: {To}, CC: {CC}", recipientString, recipientStringCC);
             }
             catch (Exception ex)
             {
@@ -147,8 +153,10 @@ namespace Intl.Realty.Firm.Controllers
                 return View("LoginIssueSupport", model);
             }
 
+            TempData["SuccessMessage"] = "Your login issue has been submitted successfully.";
             return RedirectToAction("LoginIssueConfirmation");
         }
+
 
 
         // ✅ Forgot Password - Request Reset Email
