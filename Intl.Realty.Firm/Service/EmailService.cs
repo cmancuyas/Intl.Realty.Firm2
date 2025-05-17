@@ -32,12 +32,32 @@ namespace Intl.Realty.Firm.Service
 
             var emailToSend = new MimeMessage();
             emailToSend.From.Add(new MailboxAddress(displayName, emailAddress));
-            emailToSend.To.Add(MailboxAddress.Parse(mailRequest.ToEmail));
+
+            // ✅ Supports multiple recipients now
+            foreach (var address in mailRequest.ToEmail
+                         .Split(',', StringSplitOptions.RemoveEmptyEntries)
+                         .Select(e => e.Trim()))
+            {
+                emailToSend.To.Add(MailboxAddress.Parse(address));
+            }
+
+            if (!string.IsNullOrWhiteSpace(mailRequest.CcEmail))
+            {
+                foreach (var cc in mailRequest.CcEmail
+                             .Split(',', StringSplitOptions.RemoveEmptyEntries)
+                             .Select(e => e.Trim()))
+                {
+                    emailToSend.Cc.Add(MailboxAddress.Parse(cc));
+                }
+            }
+
+
             emailToSend.Subject = mailRequest.Subject;
             emailToSend.Body = new TextPart(MimeKit.Text.TextFormat.Html)
             {
                 Text = mailRequest.Body
             };
+
 
             try
             {

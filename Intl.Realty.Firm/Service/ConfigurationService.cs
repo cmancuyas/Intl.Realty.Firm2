@@ -99,15 +99,25 @@ namespace Intl.Realty.Firm.Service
             }
             return "";
         }
-        public string GetSupportEmail()
+        public string[] GetSupportEmail()
         {
-            var supportEmail = _configuration["SupportEmail"];
-            if (supportEmail != null)
-            {
-                return supportEmail;
-            }
-            return "";
+            var raw = _configuration["SupportEmail"];
+            return raw?
+                .Split(',', StringSplitOptions.RemoveEmptyEntries)
+                .Select(email => email.Trim())
+                .ToArray()
+                ?? Array.Empty<string>();
         }
+        public string[] GetSupportEmailCC()
+        {
+            var raw = _configuration["SupportEmailCC"];
+            return raw?
+                .Split(',', StringSplitOptions.RemoveEmptyEntries)
+                .Select(email => email.Trim())
+                .ToArray()
+                ?? Array.Empty<string>();
+        }
+
 
     }
 }

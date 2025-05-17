@@ -114,20 +114,18 @@ namespace Intl.Realty.Firm.Helper
             };
             return mailRequest;
         }
-        public static MailRequest SendEmailLoginIssue(SupportViewModel supportViewModel,
-                                                      string recipient)
+        public static MailRequest SendEmailLoginIssue(SupportViewModel supportViewModel, string toEmail, string toEmailCC)
         {
-
-
             var template = EmailTemplate.SendEmailLoginIssue(supportViewModel);
 
-            var mailRequest = new MailRequest
+            return new MailRequest
             {
-                ToEmail = recipient,
+                ToEmail = toEmail,
+                CcEmail = toEmailCC,
                 Subject = "do not reply - Login Issue",
                 Body = template
             };
-            return mailRequest;
         }
+
     }
 }
