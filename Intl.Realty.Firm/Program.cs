@@ -174,6 +174,14 @@ builder.Services.AddMvc().AddNewtonsoftJson(options =>
     options.SerializerSettings.PreserveReferencesHandling = Newtonsoft.Json.PreserveReferencesHandling.Objects;
 });
 
+builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
+
+// 🔍 Verify EmailSettings loaded correctly
+var emailConfig = builder.Configuration.GetSection("EmailSettings").Get<EmailSettings>();
+Log.Information("📧 Email Host: {Host}, Port: {Port}, User: {User}, Password Exists: {HasPassword}",
+    emailConfig?.Host, emailConfig?.Port, emailConfig?.Email,
+    !string.IsNullOrWhiteSpace(emailConfig?.Password));
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

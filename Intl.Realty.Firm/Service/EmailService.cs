@@ -25,7 +25,7 @@ namespace Intl.Realty.Firm.Service
         public async Task SendEmailAsync(MailRequest mailRequest)
         {
             var emailAddress = _configurationService.GetEmail();
-            var password = _configurationService.GetPassword(); // This should be your SendGrid API key
+            var password = _configurationService.GetPassword(); 
             var host = _configurationService.GetHost();
             var displayName = _configurationService.GetDisplayName();
             var port = _configurationService.GetPort();
@@ -33,7 +33,6 @@ namespace Intl.Realty.Firm.Service
             var emailToSend = new MimeMessage();
             emailToSend.From.Add(new MailboxAddress(displayName, emailAddress));
 
-            // ✅ Supports multiple recipients now
             foreach (var address in mailRequest.ToEmail
                          .Split(',', StringSplitOptions.RemoveEmptyEntries)
                          .Select(e => e.Trim()))
@@ -51,13 +50,11 @@ namespace Intl.Realty.Firm.Service
                 }
             }
 
-
             emailToSend.Subject = mailRequest.Subject;
             emailToSend.Body = new TextPart(MimeKit.Text.TextFormat.Html)
             {
                 Text = mailRequest.Body
             };
-
 
             try
             {
@@ -66,7 +63,15 @@ namespace Intl.Realty.Firm.Service
                 _logger.LogInformation("Preparing to send email...");
                 _logger.LogInformation("SMTP Host: {Host}, Port: {Port}", host, port);
                 _logger.LogInformation("To: {To}", mailRequest.ToEmail);
-                _logger.LogInformation("Using partial API key: {Key}", password?.Substring(0, 5));
+
+                if (!string.IsNullOrWhiteSpace(password) && password.Length >= 5)
+                {
+                    _logger.LogInformation("Using partial API key: {Key}", password.Substring(0, 5));
+                }
+                else
+                {
+                    _logger.LogWarning("Email password is missing or too short to log safely.");
+                }
 
                 await emailClient.ConnectAsync(host, Convert.ToInt32(port), MailKit.Security.SecureSocketOptions.StartTls);
                 await emailClient.AuthenticateAsync("apikey", password);
@@ -83,5 +88,6 @@ namespace Intl.Realty.Firm.Service
                 throw;
             }
         }
+
     }
 }

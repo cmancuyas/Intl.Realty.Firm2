@@ -126,8 +126,13 @@ namespace Intl.Realty.Firm.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> SubmitLoginIssue(SupportViewModel model)
         {
+            _logger.LogInformation("📨 SubmitLoginIssue triggered. Email: {Email}", model.Email);
+
             if (!ModelState.IsValid)
             {
+                _logger.LogWarning("❌ ModelState invalid. Errors: {Errors}", string.Join(" | ", ModelState.Values
+                    .SelectMany(v => v.Errors)
+                    .Select(e => e.ErrorMessage)));
                 return View("LoginIssueSupport", model);
             }
 
@@ -136,19 +141,28 @@ namespace Intl.Realty.Firm.Controllers
                 var recipients = _configurationService.GetSupportEmail() ?? Array.Empty<string>();
                 var recipientsCC = _configurationService.GetSupportEmailCC() ?? Array.Empty<string>();
 
+                if (!recipients.Any())
+                {
+                    _logger.LogWarning("❗ No recipients configured in GetSupportEmail()");
+                    ModelState.AddModelError(string.Empty, "Support email is not configured.");
+                    return View("LoginIssueSupport", model);
+                }
+
                 var recipientString = string.Join(',', recipients);
                 var recipientStringCC = string.Join(',', recipientsCC);
 
+                _logger.LogInformation("📧 Preparing to send email to: {To}, CC: {CC}", recipientString, recipientStringCC);
+
                 var mailRequest = EmailRequest.SendEmailLoginIssue(model, recipientString, recipientStringCC);
 
+                _logger.LogInformation("📩 Calling SendEmailAsync...");
                 await _emailService.SendEmailAsync(mailRequest);
 
-                _logger.LogInformation("Login issue submitted: {Email}", model.Email);
-                _logger.LogInformation("To: {To}, CC: {CC}", recipientString, recipientStringCC);
+                _logger.LogInformation("✅ SendEmailAsync completed for: {Email}", model.Email);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Failed to send login issue email: {Email}", model.Email);
+                _logger.LogError(ex, "❌ Exception in SubmitLoginIssue for: {Email}", model.Email);
                 ModelState.AddModelError(string.Empty, "There was a problem sending your request. Please try again later.");
                 return View("LoginIssueSupport", model);
             }
@@ -156,7 +170,6 @@ namespace Intl.Realty.Firm.Controllers
             TempData["SuccessMessage"] = "Your login issue has been submitted successfully.";
             return RedirectToAction("LoginIssueConfirmation");
         }
-
 
 
         // ✅ Forgot Password - Request Reset Email
