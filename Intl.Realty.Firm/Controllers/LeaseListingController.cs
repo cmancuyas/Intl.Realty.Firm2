@@ -70,7 +70,7 @@ namespace Intl.Realty.Firm.Controllers
             // to get current user info
             var user = await _userManager.FindByIdAsync(userId!);
 
-            viewModel.CreateLeaseListing.CreatedByFullName = user!.FirstName + " " + user.LastName;
+            viewModel.CreateLeaseListingViewModel.CreatedByFullName = user!.FirstName + " " + user.LastName;
 
             string transactionTypeName = _transactionTypeName; // 1 = Sale Listing
 
@@ -95,8 +95,8 @@ namespace Intl.Realty.Firm.Controllers
             }
 
             var transactionType = await _unitOfWork.TransactionType.GetAsync(x => x.Description == transactionTypeName);
-            viewModel.CreateLeaseListing.TransactionType = transactionType;
-            viewModel.CreateLeaseListing.TransactionTypeId = transactionType.Id;
+            viewModel.CreateLeaseListingViewModel.TransactionType = transactionType;
+            viewModel.CreateLeaseListingViewModel.TransactionTypeId = transactionType.Id;
 
             var paddedTransactionType = transactionType.Id.ToString().PadLeft(2, '0');
 
@@ -106,16 +106,16 @@ namespace Intl.Realty.Firm.Controllers
             var paddedCurrentNumber = (numberRange.CurrentNumber + 1).ToString().PadLeft(5, '0');
             var paddedNumberRange = currentYear + currentMonth + currentDay + "-" + paddedTransactionType + "-" + paddedCurrentNumber;
 
-            viewModel.CreateLeaseListing.DealTransactionNumber = paddedNumberRange;
+            viewModel.CreateLeaseListingViewModel.DealTransactionNumber = paddedNumberRange;
 
             var documentTypeAssignmentIEnum = await _unitOfWork.DocumentTypeAssignment.GetAllAsync(x => x.IsDeleted == false, includeProperties: "TransactionType,DocumentType");
             
-            viewModel.CreateLeaseListing.DocumentTypeAssignmentList = documentTypeAssignmentIEnum.Where(x => x.TransactionType.Id == transactionType.Id).ToList(); // DocumentTypeAssignmentList
+            viewModel.CreateLeaseListingViewModel.DocumentTypeAssignmentList = documentTypeAssignmentIEnum.Where(x => x.TransactionType.Id == transactionType.Id).ToList(); // DocumentTypeAssignmentList
 
             var documentTypeIEnum = await _unitOfWork.DocumentType.GetAllAsync(x => x.IsDeleted == false);
             var documentTypeAssignmentList = documentTypeAssignmentIEnum.ToList();
             var documentTypeList = documentTypeIEnum.ToList();
-            viewModel.CreateLeaseListing.DocumentTypeList = _documentTransactionService
+            viewModel.CreateLeaseListingViewModel.DocumentTypeList = _documentTransactionService
                                                             .GetDocumentTypesFromDocumentTypeAssignment(transactionTypeName,
                                                                                                         documentTypeAssignmentList,
                                                                                                         documentTypeList);
@@ -141,11 +141,11 @@ namespace Intl.Realty.Firm.Controllers
         {
             if (actionType == "save")
             {
-                viewModel.CreateLeaseListing.DealStatusId = 2; // Draft
+                viewModel.CreateLeaseListingViewModel.DealStatusId = 2; // Draft
             }
             else if (actionType == "submit")
             {
-                viewModel.CreateLeaseListing.DealStatusId = 1; // Submitted
+                viewModel.CreateLeaseListingViewModel.DealStatusId = 1; // Submitted
             }
 
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -153,9 +153,9 @@ namespace Intl.Realty.Firm.Controllers
             var transactionTypeName = _transactionTypeName;
 
             var transactionType = await _unitOfWork.TransactionType.GetAsync(x => x.Description == transactionTypeName);
-            viewModel.CreateLeaseListing.TransactionType = transactionType;
-            viewModel.CreateLeaseListing.TransactionTypeId = transactionType.Id;
-            viewModel.CreateLeaseListing.CreatedByFullName = $"{user.FirstName} {user.LastName}";
+            viewModel.CreateLeaseListingViewModel.TransactionType = transactionType;
+            viewModel.CreateLeaseListingViewModel.TransactionTypeId = transactionType.Id;
+            viewModel.CreateLeaseListingViewModel.CreatedByFullName = $"{user.FirstName} {user.LastName}";
 
             await UpdateTransactionNumberAsync();
             await PopulateDocumentTypesAsync(viewModel, transactionTypeName);
@@ -174,7 +174,7 @@ namespace Intl.Realty.Firm.Controllers
             }
 
             // ✅ Create IRF Deal
-            var createIRFDealModel = viewModel.CreateLeaseListing.CreateIRFDealLeaseListingViewModel?.ToIRFDealModel();
+            var createIRFDealModel = viewModel.CreateLeaseListingViewModel.CreateIRFDealLeaseListingViewModel?.ToIRFDealModel();
             createIRFDealModel!.CreatedAt = DateTime.Now;
             createIRFDealModel.CreatedBy = user.Id;
             createIRFDealModel.IsActive = true;
@@ -183,34 +183,34 @@ namespace Intl.Realty.Firm.Controllers
             await _unitOfWork.IRFDeal.AddAsync(createIRFDealModel);
             var newIRFDeal = await _unitOfWork.IRFDeal.GetAsync(x => x.Id == createIRFDealModel.Id);
 
-            viewModel.CreateLeaseListing.IRFDealId = newIRFDeal!.Id;
-            viewModel.CreateLeaseListing.CreateIRFDealLeaseListingViewModel!.IsActive = newIRFDeal.IsActive;
-            viewModel.CreateLeaseListing.CreateIRFDealLeaseListingViewModel.CreatedBy = newIRFDeal.CreatedBy;
-            viewModel.CreateLeaseListing.CreateIRFDealLeaseListingViewModel.CreatedAt = newIRFDeal.CreatedAt;
+            viewModel.CreateLeaseListingViewModel.IRFDealId = newIRFDeal!.Id;
+            viewModel.CreateLeaseListingViewModel.CreateIRFDealLeaseListingViewModel!.IsActive = newIRFDeal.IsActive;
+            viewModel.CreateLeaseListingViewModel.CreateIRFDealLeaseListingViewModel.CreatedBy = newIRFDeal.CreatedBy;
+            viewModel.CreateLeaseListingViewModel.CreateIRFDealLeaseListingViewModel.CreatedAt = newIRFDeal.CreatedAt;
 
-            viewModel.CreateLeaseListing.IsActive = true;
-            viewModel.CreateLeaseListing.IsDeleted = false;
-            viewModel.CreateLeaseListing.CreatedBy = user.Id;
-            viewModel.CreateLeaseListing.CreatedAt = DateTime.Now;
+            viewModel.CreateLeaseListingViewModel.IsActive = true;
+            viewModel.CreateLeaseListingViewModel.IsDeleted = false;
+            viewModel.CreateLeaseListingViewModel.CreatedBy = user.Id;
+            viewModel.CreateLeaseListingViewModel.CreatedAt = DateTime.Now;
 
-            var leaseListingModel = viewModel.CreateLeaseListing.ToLeaseListingModel();
+            var leaseListingModel = viewModel.CreateLeaseListingViewModel.ToLeaseListingModel();
             await _unitOfWork.LeaseListing.AddAsync(leaseListingModel);
 
             // ✅ Handle file upload only on submit
-            if (actionType == "Submit" && viewModel.CreateLeaseListing.CreateFileUploadListViewModel?.CreateFileUploadsViewModel != null)
+            if (actionType == "Submit" && viewModel.CreateLeaseListingViewModel.CreateFileUploadListViewModel?.CreateFileUploadsViewModel != null)
             {
                 var uploadPath = CreateFilePath(leaseListingModel.Id);
                 await CreateFileUploadData(
-                    viewModel.CreateLeaseListing.CreateFileUploadListViewModel.CreateFileUploadsViewModel,
+                    viewModel.CreateLeaseListingViewModel.CreateFileUploadListViewModel.CreateFileUploadsViewModel,
                     leaseListingModel.Id,
                     transactionType.Id,
-                    viewModel.CreateLeaseListing.DocumentTypeList,
+                    viewModel.CreateLeaseListingViewModel.DocumentTypeList,
                     uploadPath
                 );
             }
-            leaseListingModel.TransactionType = viewModel.CreateLeaseListing.TransactionType;
+            leaseListingModel.TransactionType = viewModel.CreateLeaseListingViewModel.TransactionType;
             // ✅ Notify Deal Admin only if it's a submission
-            if (viewModel.CreateLeaseListing.DealStatusId == 1)
+            if (viewModel.CreateLeaseListingViewModel.DealStatusId == 1)
             {
                 await NotifyDealAdminAsync(user, leaseListingModel);
             }
@@ -1065,7 +1065,7 @@ namespace Intl.Realty.Firm.Controllers
             var assignments = await _unitOfWork.DocumentTypeAssignment.GetAllAsync(x => !x.IsDeleted, includeProperties: "TransactionType,DocumentType");
             var types = await _unitOfWork.DocumentType.GetAllAsync(x => !x.IsDeleted);
 
-            viewModel.CreateLeaseListing.DocumentTypeList =
+            viewModel.CreateLeaseListingViewModel.DocumentTypeList =
                 _documentTransactionService.GetDocumentTypesFromDocumentTypeAssignment(
                     transactionTypeName,
                     assignments.ToList(),

@@ -382,13 +382,13 @@
                                         }
                                         @foreach (DocumentTypeAssignment item in Model.EditSaleListingViewModel.DocumentTypeAssignmentList!)
                                         {
-                                            <tr data-document-type-id="@item.Id">
+                                            <tr data-document-type-id="@item.DocumentType.Id">
                                                 <td style="width: 30%">
                                                     @Html.DisplayFor(modelItem => item.DocumentType.Description)
                                                 </td>
                                                 <input type="hidden"
                                                        asp-for="EditSaleListingViewModel.CreateFileUploadListViewModel.CreateFileUploadsViewModel[i].DocumentTypeId"
-                                                       value="@item.Id" />
+                                                       value="@item.DocumentType.Id" />
                                                 <td id="isRequired">
                                                     @if (item.IsRequired == true)
                                                     {
