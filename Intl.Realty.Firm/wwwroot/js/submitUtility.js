@@ -2,12 +2,13 @@
     formId,
     dealStatusDropdownSelector,
     isAdminLike,
+    fileErrorScrollTargetId,
     validateTabs = defaultValidateAllTabs,
-    validateFilesFn = defaultValidateFiles,
-    fileErrorScrollTargetId
+    validateFilesFn = defaultValidateFiles
 }) {
     const $form = $(`#${formId}`);
 
+    // Handle Save/Submit Button Clicks
     $('#btnSave').click(() => $('#ActionTypeHidden').val('save'));
     $('#btnSubmit').click(() => $('#ActionTypeHidden').val('submit'));
 
@@ -27,8 +28,9 @@
         }
 
         if (actionType === 'submit') {
-            const fileValidation = validateFilesFn();
-            if (!fileValidation.success) {
+            const result = validateFilesFn();
+
+            if (!result.success) {
                 e.preventDefault();
                 if (fileErrorScrollTargetId) {
                     document.getElementById(fileErrorScrollTargetId)?.scrollIntoView({ behavior: "smooth", block: "center" });
@@ -37,22 +39,23 @@
                 Swal.fire({
                     icon: "error",
                     title: "Missing Required Documents",
-                    html: fileValidation.message,
+                    html: result.message,
                     confirmButtonColor: "#d33"
                 });
                 return false;
             }
 
-            // ✅ Agent always defaults to status = 1
+            // Default DealStatusId = 1 on submit if user is not admin-like
             if (!isAdminLike && dealStatusDropdownSelector) {
-                // Fallback: manually inject hidden field if dropdown isn't present
+                const prefix = detectViewModelPrefix();
+                const fallbackName = `${prefix}.DealStatusId`;
+
                 if ($(dealStatusDropdownSelector).length === 0) {
-                    $('#ListFormId').append('<input type="hidden" name="EditLeaseCoopViewModel.DealStatusId" value="1" />');
+                    $form.append(`<input type="hidden" name="${fallbackName}" value="1" />`);
                 } else {
                     $(dealStatusDropdownSelector).val("1");
                 }
             }
-
 
             $('#confirmSubmitModal').modal('show');
             e.preventDefault();
@@ -68,12 +71,9 @@
         }
     });
 
-    // Final confirmations
-    $(document).on('click', '#btnConfirmSave', function () {
-        $form.off('submit').submit();
-    });
+    $(document).on('click', '#btnConfirmSave', () => $form.off('submit').submit());
 
-    $(document).on('click', '#btnConfirmSubmit', function () {
+    $(document).on('click', '#btnConfirmSubmit', () => {
         $("#submitSpinner").show();
         $('#btnSubmit').prop('disabled', true).html('<span class="spinner-border spinner-border-sm me-2"></span>Submitting...');
         $form.off('submit').submit();
@@ -81,8 +81,7 @@
 }
 
 
-
-// ✅ Validates required fields across all tabs
+// ✅ Tab Validation (Highlights missing required fields)
 function defaultValidateAllTabs() {
     let hasErrors = false;
     let firstErrorTab = null;
@@ -112,7 +111,7 @@ function defaultValidateAllTabs() {
 }
 
 
-// ✅ Validates required document types (new or uploaded)
+// ✅ File Validation (Checks new and already uploaded files)
 function defaultValidateFiles(documentTypes = []) {
     const entityType = detectEntityType();
     const entityId = detectEntityId();
@@ -120,8 +119,8 @@ function defaultValidateFiles(documentTypes = []) {
 
     let missing = [];
 
-    console.log("🧾 Starting file validation...");
-    console.log("📎 Uploaded Document Types:", uploadedDocumentTypes);
+    console.log("🧾 Validating uploaded files...");
+    console.log("📎 Server-uploaded document types:", uploadedDocumentTypes);
 
     $("#tblApplicantFiles tbody tr").each(function () {
         const docTypeId = parseInt($(this).data("document-type-id"));
@@ -130,32 +129,26 @@ function defaultValidateFiles(documentTypes = []) {
 
         const docType = documentTypes.find(d => d.Id === docTypeId);
         if (!docType) {
-            console.warn(`❓ Document type ID ${docTypeId} not found in provided documentTypes list.`);
+            console.warn(`❓ Document type ID ${docTypeId} not in list.`);
             return;
         }
 
         const isRequired = docType.IsRequired;
         const alreadyUploaded = uploadedDocumentTypes.some(u => {
-            const uploadedId = parseInt(u.id ?? u.Id); // defensive
+            const uploadedId = parseInt(u.id ?? u.Id); // Defensive fallback
             return uploadedId === docTypeId;
         });
 
-        console.log(`📄 Checking: "${docType.Description}" (ID: ${docTypeId})`);
-        console.log(`   ↪ Required: ${isRequired}, Already Uploaded: ${alreadyUploaded}, Has New File: ${hasNewFile}`);
-
-        if (isRequired && alreadyUploaded) {
-            $(fileInput).removeClass("border-danger");
-            showAlreadyUploadedIndicator(fileInput);
-            console.log(`✅ Already uploaded. Skipping validation.`);
-            return;
-        }
-
-        if (isRequired && !hasNewFile) {
-            const docLabel = docType.Description ?? `Document`;
-            missing.push(`<li>${docLabel}</li>`);
-            $(fileInput).addClass("border-danger");
-            removeUploadIndicator(fileInput);
-            console.log(`❌ Missing required document: ${docLabel}`);
+        if (isRequired) {
+            if (alreadyUploaded || hasNewFile) {
+                $(fileInput).removeClass("border-danger");
+                alreadyUploaded ? showAlreadyUploadedIndicator(fileInput) : removeUploadIndicator(fileInput);
+            } else {
+                const docLabel = docType.Description ?? `Document`;
+                missing.push(`<li>${docLabel}</li>`);
+                $(fileInput).addClass("border-danger");
+                removeUploadIndicator(fileInput);
+            }
         } else {
             $(fileInput).removeClass("border-danger");
             removeUploadIndicator(fileInput);
@@ -163,27 +156,22 @@ function defaultValidateFiles(documentTypes = []) {
     });
 
     if (missing.length > 0) {
-        console.warn("🚫 Validation failed. Missing documents:", missing);
         return {
             success: false,
             message: `<b>The following required documents are missing:</b><ul>${missing.join("")}</ul>`
         };
     }
 
-    console.log("✅ All required files are present.");
     return { success: true, message: "" };
 }
 
 
-
-
-
-// ✅ Fetch full document type objects that were uploaded
+// ✅ Gets uploaded document types via AJAX (synchronous)
 function getUploadedDocumentTypes(entityType, entityId) {
     let uploadedDocs = [];
 
     if (!entityType || !entityId) {
-        console.warn("Missing entityType or entityId for uploaded doc check.");
+        console.warn("⚠️ No entity type or ID — skipping file validation for existing uploads.");
         return uploadedDocs;
     }
 
@@ -193,17 +181,18 @@ function getUploadedDocumentTypes(entityType, entityId) {
         data: { [`${entityType.toLowerCase()}Id`]: entityId },
         async: false,
         success: function (data) {
-            uploadedDocs = data; // full objects with Id, IsRequired, etc.
+            uploadedDocs = data;
         },
         error: function () {
-            console.error(`Failed to fetch uploaded document types for ${entityType}`);
+            console.error(`❌ Failed to load uploaded files for ${entityType}`);
         }
     });
 
     return uploadedDocs;
 }
 
-// ✅ Detect ViewModel prefix from form inputs
+
+// ✅ Determines ViewModel prefix (e.g., EditSaleListingViewModel)
 function detectViewModelPrefix() {
     const input = document.querySelector('input[name*="ViewModel"]');
     if (!input) return "";
@@ -212,7 +201,7 @@ function detectViewModelPrefix() {
 }
 
 
-// ✅ From prefix → get entity
+// ✅ Maps ViewModel prefix to entity/controller
 function detectEntityType() {
     const prefix = detectViewModelPrefix();
     if (prefix.includes("SaleListing")) return "SaleListing";
@@ -223,13 +212,15 @@ function detectEntityType() {
 }
 
 
-// ✅ Detect ID from hidden input
+// ✅ Extracts entity ID for Edit pages
 function detectEntityId() {
     const prefix = detectViewModelPrefix();
     const input = document.querySelector(`input[type="hidden"][name="${prefix}.Id"]`);
     return input ? input.value : null;
 }
 
+
+// ✅ UI helper to show "Uploaded" badge next to file input
 function showAlreadyUploadedIndicator(fileInput) {
     const $fileInput = $(fileInput);
     const $existing = $fileInput.siblings(".upload-status");
@@ -246,5 +237,3 @@ function showAlreadyUploadedIndicator(fileInput) {
 function removeUploadIndicator(fileInput) {
     $(fileInput).siblings(".upload-status").remove();
 }
-
-

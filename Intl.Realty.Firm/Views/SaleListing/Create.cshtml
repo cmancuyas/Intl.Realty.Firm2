@@ -1,6 +1,7 @@
 ﻿@using Intl.Realty.Firm.Model.Model
 @using Intl.Realty.Firm.Model.ViewModel.SaleListingVM
 @using Intl.Realty.Firm.Model.ViewModel.Shared
+@using Newtonsoft.Json
 
 @model CreateSaleListingWithTabMenuViewModel
 
@@ -21,7 +22,8 @@
     <div class="data-form row justify-content-center">
         <div class="col-md-8 card w-100 mt-4 p-4">
             <h1 class="text-blue mb-3">Create Sale Listing</h1>
-            <form asp-action="Create"
+            <form id="ListFormId"
+                  asp-action="Create"
                   asp-controller="SaleListing"
                   class="mb-5"
                   method="post"
@@ -295,13 +297,13 @@
                                         }
                                         @foreach (DocumentTypeAssignment item in Model.CreateSaleListingViewModel.DocumentTypeAssignmentList!)
                                         {
-                                            <tr data-document-type-id="@item.Id">
+                                            <tr data-document-type-id="@item.DocumentType.Id">
                                                 <td style="width: 30%">
                                                     @Html.DisplayFor(modelItem => item.DocumentType.Description)
                                                 </td>
                                                 <input type="hidden"
                                                        asp-for="CreateSaleListingViewModel.CreateFileUploadListViewModel.CreateFileUploadsViewModel[i].DocumentTypeId"
-                                                       value="@item.Id" />
+                                                       value="@item.DocumentType.Id" />
                                                 <td id="isRequired">
                                                     @if (item.IsRequired == true)
                                                     {
@@ -375,142 +377,20 @@
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
     <script src="~/js/viewDataTableUtility.js" asp-append-version="true"></script>
+    <script src="~/js/submitUtility.js" asp-append-version="true"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-    <script type="text/javascript">
+    <script>
+        const documentTypes = @Html.Raw(JsonConvert.SerializeObject(Model.CreateSaleListingViewModel.DocumentTypeList));
+
         $(document).ready(function () {
-            $('#btnSave').click(() => $('#ActionTypeHidden').val('save'));
-            $('#btnSubmit').click(() => $('#ActionTypeHidden').val('submit'));
-
-            $('form').on('submit', function (e) {
-                const actionType = $('#ActionTypeHidden').val();
-                const hasErrors = validateAllTabs();
-
-                if (hasErrors) {
-                    e.preventDefault();
-                    Swal.fire({
-                        icon: "error",
-                        title: "Form Incomplete",
-                        text: "Please complete all required fields.",
-                        confirmButtonColor: "#d33"
-                    });
-                    return false;
-                }
-
-                if (actionType === "submit") {
-                    const { missingRequiredFiles, invalidFiles } = validateFiles();
-
-                    if (missingRequiredFiles.length > 0) {
-                        e.preventDefault();
-                        Swal.fire({
-                            icon: "error",
-                            title: "Missing Required Documents",
-                            html: "<ul style='text-align:left;'>" +
-                                missingRequiredFiles.map(name => `<li>${name}</li>`).join('') + "</ul>",
-                            confirmButtonColor: "#d33"
-                        });
-                        return false;
-                    }
-
-                    if (invalidFiles.length > 0) {
-                        e.preventDefault();
-                        Swal.fire({
-                            icon: "error",
-                            title: "Invalid Files Detected",
-                            html: "<ul style='text-align:left;'>" +
-                                invalidFiles.map(msg => `<li>${msg}</li>`).join('') + "</ul>",
-                            confirmButtonColor: "#d33"
-                        });
-                        return false;
-                    }
-
-                    $('#submitSpinner').show();
-                    $('#btnSubmit').prop('disabled', true).html('<span class="spinner-border spinner-border-sm me-2"></span>Submitting...');
-                }
-
-                if (actionType === "save") {
-                    // Optional: You can show a modal confirmation here
-                    $('#submitSpinner').show();
-                    $('#btnSave').prop('disabled', true).html('<span class="spinner-border spinner-border-sm me-2"></span>Saving...');
-                }
-            });
-
-            function validateAllTabs() {
-                let hasErrors = false;
-                let firstErrorTab = null;
-
-                $(".tab-pane").each(function () {
-                    const tabId = $(this).attr("id");
-
-                    $(this).find("input, textarea, select").each(function () {
-                        const isRequired = $(this).attr("data-val-required") !== undefined;
-                        const isEmpty = !$(this).val()?.trim();
-
-                        if (isRequired && isEmpty) {
-                            $(this).addClass("border-danger");
-                            hasErrors = true;
-
-                            if (!firstErrorTab) firstErrorTab = tabId;
-                        } else {
-                            $(this).removeClass("border-danger");
-                        }
-                    });
-                });
-
-                if (firstErrorTab) {
-                    $('.nav-tabs button[data-bs-target="#' + firstErrorTab + '"]').tab("show");
-                }
-
-                return hasErrors;
-            }
-
-            function validateFiles() {
-                const allowedExtensions = ['pdf', 'doc', 'docx', 'xls', 'xlsx'];
-                const maxFileSizeMB = 100;
-                const missingRequiredFiles = [];
-                const invalidFiles = [];
-
-                $('#tblApplicantFiles tbody tr').each(function () {
-                    const isRequired = $(this).find('#isRequired').text().trim() === "Required";
-                    const fileInput = $(this).find('input[type="file"]')[0];
-                    const files = fileInput.files;
-                    const hasFile = files.length > 0;
-
-                    $(fileInput).removeClass("border-danger border-success");
-
-                    if (isRequired && !hasFile) {
-                        $(fileInput).addClass("border-danger");
-                        missingRequiredFiles.push($(this).find("td:first").text().trim());
-                    }
-
-                    for (let i = 0; i < files.length; i++) {
-                        const file = files[i];
-                        const fileName = file.name;
-                        const fileSizeMB = file.size / (1024 * 1024);
-                        const fileExtension = fileName.split('.').pop().toLowerCase();
-
-                        if (!allowedExtensions.includes(fileExtension)) {
-                            invalidFiles.push(`${fileName} - Invalid file type`);
-                            $(fileInput).addClass("border-danger");
-                        } else if (fileSizeMB > maxFileSizeMB) {
-                            invalidFiles.push(`${fileName} - Exceeds ${maxFileSizeMB}MB`);
-                            $(fileInput).addClass("border-danger");
-                        } else {
-                            $(fileInput).addClass("border-success");
-                        }
-                    }
-                });
-
-                return { missingRequiredFiles, invalidFiles };
-            }
-
-            $("input, textarea, select").on("input change", function () {
-                if ($(this).val().trim()) {
-                    $(this).removeClass("border-danger");
-                }
+            initializeSubmitHandlers({
+                formId: "ListFormId", // ensure your form has this ID
+                dealStatusDropdownSelector: '[name="CreateSaleListingViewModel.DealStatusId"]',
+                isAdminLike: false, // or use Razor logic if roles apply here too
+                fileErrorScrollTargetId: "fileUploads", // or your tab ID
+                validateFilesFn: () => defaultValidateFiles(documentTypes)
             });
         });
-
     </script>
-
 }
