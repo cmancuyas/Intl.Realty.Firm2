@@ -14,7 +14,7 @@
 
     <div class="row justify-content-center">
         <div class="col-md-12 card p-4">
-            <h1 class="text-blue mb-0">Edit DealTransactionNumberRange</h1>
+            <h1 class="text-blue mb-0">Edit Deal Transaction Number Range</h1>
             <hr class="my-4" />
             <form asp-action="Edit"
                   asp-controller="DealTransactionNumberRange"
@@ -22,6 +22,10 @@
                   enctype="multipart/form-data">
                 <input type="hidden" asp-for="EditDealTransactionNumberRange.Id" />
                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                <input type="hidden" name="EditDealTransactionNumberRange.RowVersion"
+                       value="@Convert.ToBase64String(Model.EditDealTransactionNumberRange.RowVersion)" />
+
 
                 <div class="tab-page">
 @*                     <ul class="nav nav-tabs" id="administrationManagementTab" role="tablist">
@@ -102,7 +106,7 @@
                 <hr class="my-5" />
                 <div class="form-group d-flex justify-content-center gap-4">
                     <input type="button" value="Cancel" class="btn btn-secondary w-15" onclick="window.location.href='@Url.Action("Index", "DealTransactionNumberRange")'" />
-                    <button type="reset" class="btn btn-secondary w-15" onclick="$('.text-danger').hide();">@* Reset</button> *@
+                    @* <button type="reset" class="btn btn-secondary w-15" onclick="$('.text-danger').hide();">Reset</button> *@
                     <button type="submit" class="btn btn-primary w-15" onclick="$('.text-danger').show();">Submit</button>
                 </div>
             </form>

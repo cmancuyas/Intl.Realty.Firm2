@@ -18,6 +18,10 @@
             <form asp-action="Create" asp-controller="DealTransactionNumberRange" method="post" enctype="multipart/form-data">
                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
+                <input type="hidden" name="CreateDealTransactionNumberRange.RowVersion"
+                       value="@Convert.ToBase64String(Model.CreateDealTransactionNumberRange.RowVersion)" />
+
+
                 <div class="tab-page">
                     @*                     <ul class="nav nav-tabs" id="consultantStatusManagementTab" role="tablist">
                     @foreach (var item in Model.Menus)
