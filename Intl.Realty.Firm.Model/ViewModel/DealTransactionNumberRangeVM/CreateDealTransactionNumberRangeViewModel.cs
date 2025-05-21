@@ -11,7 +11,8 @@ namespace Intl.Realty.Firm.Model.ViewModel.DealTransactionNumberRangeVM
         [MaxLength(15)]
         [Required(ErrorMessage = "The Number Range field is required.")]
         public string NumberRange { get; set; } = string.Empty;
-
+        [Timestamp]
+        public byte[] RowVersion { get; set; } = Array.Empty<byte>();
         [Required]
         public bool IsActive { get; set; }
         [Required]

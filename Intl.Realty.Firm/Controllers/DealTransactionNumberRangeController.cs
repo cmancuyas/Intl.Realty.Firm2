@@ -69,40 +69,46 @@ namespace Intl.Realty.Firm.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(CreateDealTransactionNumberRangeWithTabMenuViewModel viewModel)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                // to get current user ID
-                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-                // to get current user info
-                var user = await _userManager.FindByIdAsync(userId!);
-
-                string controllerName = this.ControllerContext.RouteData.Values["controller"]!.ToString()!;
-
-                viewModel.CreateDealTransactionNumberRange.IsActive = true;
-                viewModel.CreateDealTransactionNumberRange.IsDeleted = false;
-                viewModel.CreateDealTransactionNumberRange.CreatedBy = user!.Id;
-                viewModel.CreateDealTransactionNumberRange.CreatedAt = DateTime.Now;
-
-                var validateTransactionNumberRange = LinqExtensions.AndAlso<DealTransactionNumberRange>(x => x.IsDeleted == false, x => x.Year == viewModel.CreateDealTransactionNumberRange.Year);
-                var checkIfExists = await _unitOfWork.DealTransactionNumberRange.GetAsync(validateTransactionNumberRange);
-                if (checkIfExists == null)
-                {
-                    var model = viewModel.CreateDealTransactionNumberRange.ToDealTransactionNumberRangeModel();
-                    await _unitOfWork.DealTransactionNumberRange.AddAsync(model);
-                }
-                else
-                {
-                    ModelState.AddModelError(string.Empty, $"{controllerName} already exists");
-                    return View();
-                }
-
+                return View(viewModel);
             }
+
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var user = await _userManager.FindByIdAsync(userId!);
+            string controllerName = this.ControllerContext.RouteData.Values["controller"]!.ToString()!;
+
+            // Set audit fields
+            viewModel.CreateDealTransactionNumberRange.IsActive = true;
+            viewModel.CreateDealTransactionNumberRange.IsDeleted = false;
+            viewModel.CreateDealTransactionNumberRange.CreatedBy = user!.Id;
+            viewModel.CreateDealTransactionNumberRange.CreatedAt = DateTime.Now;
+
+            // Check if a DealTransactionNumberRange already exists for the same year
+            var validateTransactionNumberRange = LinqExtensions.AndAlso<DealTransactionNumberRange>(
+                x => x.IsDeleted == false,
+                x => x.Year == viewModel.CreateDealTransactionNumberRange.Year
+            );
+
+            var checkIfExists = await _unitOfWork.DealTransactionNumberRange.GetAsync(validateTransactionNumberRange);
+
+            if (checkIfExists != null)
+            {
+                ModelState.AddModelError(string.Empty, $"{controllerName} for year {viewModel.CreateDealTransactionNumberRange.Year} already exists.");
+                return View(viewModel);
+            }
+
+            // Map and add new entity
+            var model = viewModel.CreateDealTransactionNumberRange.ToDealTransactionNumberRangeModel();
+
+            await _unitOfWork.DealTransactionNumberRange.AddAsync(model);
+            await _unitOfWork.SaveChangesAsync(); // Ensure the new rowversion is tracked properly
 
             return RedirectToAction(nameof(Index), new { addSuccess = true });
         }
 
 
+        [HttpGet]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -165,41 +171,57 @@ namespace Intl.Realty.Firm.Controllers
             if (id == 0)
             {
                 string controllerName = this.ControllerContext.RouteData.Values["controller"]!.ToString()!;
-                NotFoundViewModel notFoundViewModel = new NotFoundViewModel();
-                notFoundViewModel.ErrorTitle = ($"{controllerName} not found");
-                notFoundViewModel.ErrorMessage = ($"{controllerName} with {id} cannot be found!");
-                notFoundViewModel.ControllerName = controllerName;
-                notFoundViewModel.ControllerAction = "Index";
+                NotFoundViewModel notFoundViewModel = new NotFoundViewModel
+                {
+                    ErrorTitle = $"{controllerName} not found",
+                    ErrorMessage = $"{controllerName} with {id} cannot be found!",
+                    ControllerName = controllerName,
+                    ControllerAction = "Index"
+                };
 
                 return View("NotFound", notFoundViewModel);
             }
 
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                // to get current user ID
-                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-                // to get current user info
-                var user = await _userManager.FindByIdAsync(userId!);
-
-                var modelFromDb = await _unitOfWork.DealTransactionNumberRange.GetAsync(x => x.Id == viewModel.EditDealTransactionNumberRange.Id);
-
-                string controllerName = this.ControllerContext.RouteData.Values["controller"]!.ToString()!;
-
-                var model = viewModel.EditDealTransactionNumberRange.ToDealTransactionNumberRangeModel();
-
-                model.CreatedAt = modelFromDb.CreatedAt;
-                model.CreatedBy = modelFromDb.CreatedBy;
-
-                model.UpdatedAt = DateTime.Now;
-                model.UpdatedBy = user!.Id;
-
-                await _unitOfWork.DealTransactionNumberRange.UpdateAsync(model);
+                return View(viewModel);
             }
 
-            return RedirectToAction(nameof(Index), new { editSuccess = true });
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var user = await _userManager.FindByIdAsync(userId!);
 
+            var modelFromDb = await _unitOfWork.DealTransactionNumberRange
+                .GetAsync(x => x.Id == viewModel.EditDealTransactionNumberRange.Id);
+
+            if (modelFromDb == null)
+            {
+                ModelState.AddModelError("", "The record you attempted to edit was deleted by another user.");
+                return View(viewModel);
+            }
+
+            var updatedModel = viewModel.EditDealTransactionNumberRange.ToDealTransactionNumberRangeModel();
+
+            // Preserve audit + concurrency values
+            updatedModel.CreatedAt = modelFromDb.CreatedAt;
+            updatedModel.CreatedBy = modelFromDb.CreatedBy;
+            updatedModel.UpdatedAt = DateTime.Now;
+            updatedModel.UpdatedBy = user!.Id;
+            updatedModel.RowVersion = viewModel.EditDealTransactionNumberRange.RowVersion;
+
+            try
+            {
+                await _unitOfWork.DealTransactionNumberRange.UpdateAsync(updatedModel);
+                await _unitOfWork.SaveChangesAsync();
+
+                return RedirectToAction(nameof(Index), new { editSuccess = true });
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                ModelState.AddModelError("", "This record was modified by another user after you loaded the page. Please reload and try again.");
+                return View(viewModel);
+            }
         }
+
         [HttpGet]
         public async Task<IActionResult> Preview(int id)
         {

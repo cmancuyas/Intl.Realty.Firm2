@@ -28,6 +28,7 @@ namespace Intl.Realty.Firm.Utility.Mapper
                 Year = model.Year,
                 CurrentNumber = model.CurrentNumber,
                 NumberRange = model.NumberRange,
+                RowVersion = model.RowVersion,
 
                 IsActive = model.IsActive,
                 IsDeleted = model.IsDeleted,
@@ -47,6 +48,7 @@ namespace Intl.Realty.Firm.Utility.Mapper
                     Year = x.Year,
                     CurrentNumber = x.CurrentNumber,
                     NumberRange = x.NumberRange,
+                    RowVersion = x.RowVersion,
 
                     IsActive = x.IsActive,
                     IsDeleted = x.IsDeleted,
@@ -67,6 +69,7 @@ namespace Intl.Realty.Firm.Utility.Mapper
                 Year = viewModel.Year,
                 CurrentNumber = viewModel.CurrentNumber,
                 NumberRange = viewModel.NumberRange,
+                RowVersion = viewModel.RowVersion,
 
                 IsActive = viewModel.IsActive,
                 IsDeleted = viewModel.IsDeleted,
@@ -83,6 +86,7 @@ namespace Intl.Realty.Firm.Utility.Mapper
                 Year = viewModel.Year,
                 CurrentNumber = viewModel.CurrentNumber,
                 NumberRange = viewModel.NumberRange,
+                RowVersion = viewModel.RowVersion,
 
                 IsActive = viewModel.IsActive,
                 IsDeleted = viewModel.IsDeleted,
