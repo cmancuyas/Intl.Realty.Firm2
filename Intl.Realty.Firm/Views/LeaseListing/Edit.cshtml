@@ -39,7 +39,9 @@
                   asp-controller="LeaseListing"
                   method="post"
                   enctype="multipart/form-data">
-
+                <input type="hidden" id="ActionTypeHidden" name="actionType" />
+                <input type="hidden" name="EditLeaseListingViewModel.RowVersion"
+                       value="@Convert.ToBase64String(Model.EditLeaseListingViewModel.RowVersion)" />
                 <input type="hidden" asp-for="EditLeaseListingViewModel.Id" />
                 <input type="hidden" asp-for="EditLeaseListingViewModel.DealTransactionNumber" />
 
@@ -129,7 +131,7 @@
                         <div class="row">
                             <div class="col-md-6 mt-3">
                                 <label asp-for="EditLeaseListingViewModel.EditIRFDealLeaseListingViewModel.FinalLeasePrice" class="fw-bolder">Final Lease Price</label>
-                                <input asp-for="EditLeaseListingViewModel.EditIRFDealLeaseListingViewModel.FinalLeasePrice" class="form-control" />
+                                <input asp-for="EditLeaseListingViewModel.EditIRFDealLeaseListingViewModel.FinalLeasePrice" class="form-control" type="number" min="0" />
                                 <span asp-validation-for="EditLeaseListingViewModel.EditIRFDealLeaseListingViewModel.FinalLeasePrice" class="text-danger"></span>
                             </div>
                             <div class="col-md-6 mt-3">
@@ -139,7 +141,7 @@
                             </div>
                             <div class="col-md-6 mt-3">
                                 <label asp-for="EditLeaseListingViewModel.EditIRFDealLeaseListingViewModel.DepositAmount" class="fw-bolder">Deposit Amount</label>
-                                <input asp-for="EditLeaseListingViewModel.EditIRFDealLeaseListingViewModel.DepositAmount" class="form-control" />
+                                <input asp-for="EditLeaseListingViewModel.EditIRFDealLeaseListingViewModel.DepositAmount" class="form-control" type="number" min="0" />
                                 <span asp-validation-for="EditLeaseListingViewModel.EditIRFDealLeaseListingViewModel.DepositAmount" class="text-danger"></span>
                             </div>
                             <div class="col-md-6 mt-3">
@@ -194,12 +196,12 @@
                         <div class="row">
                             <div class="col-md-6 mt-3">
                                 <label asp-for="EditLeaseListingViewModel.EditIRFDealLeaseListingViewModel.Commission.ListingCommissionPercentage" class="fw-bolder">Listing Commission %</label>
-                                <input asp-for="EditLeaseListingViewModel.EditIRFDealLeaseListingViewModel.Commission.ListingCommissionPercentage" class="form-control" type="number" step="0.01" />
+                                <input asp-for="EditLeaseListingViewModel.EditIRFDealLeaseListingViewModel.Commission.ListingCommissionPercentage" class="form-control" type="number" step="0.01" min="0" />
                                 <span asp-validation-for="EditLeaseListingViewModel.EditIRFDealLeaseListingViewModel.Commission.ListingCommissionPercentage" class="text-danger"></span>
                             </div>
                             <div class="col-md-6 mt-3">
                                 <label asp-for="EditLeaseListingViewModel.EditIRFDealLeaseListingViewModel.Commission.BuyingCommissionPercentage" class="fw-bolder">Buying Commission %</label>
-                                <input asp-for="EditLeaseListingViewModel.EditIRFDealLeaseListingViewModel.Commission.BuyingCommissionPercentage" class="form-control" type="number" step="0.01" />
+                                <input asp-for="EditLeaseListingViewModel.EditIRFDealLeaseListingViewModel.Commission.BuyingCommissionPercentage" class="form-control" type="number" step="0.01" min="0" />
                                 <span asp-validation-for="EditLeaseListingViewModel.EditIRFDealLeaseListingViewModel.Commission.BuyingCommissionPercentage" class="text-danger"></span>
                             </div>
                             <div class="col-md-6 mt-3">
@@ -402,39 +404,35 @@
                 <span asp-validation-for="IsDeleted" class="text-danger"></span>
                 </div>
                 </div> *@
-                <hr class="my-5" />
-                <input type="hidden" id="ActionTypeHidden" name="actionType" value="" />
-                <div id="submitSpinner" style="display:none;" class="text-center me-4">
-                    <div class="spinner-border text-primary" role="status"></div>
+                <div class="mt-4">
+                    @await Html.PartialAsync("~/Views/Shared/Transaction/_EditActionButtons.cshtml", Model.EditLeaseListingViewModel.DealStatusId)
                 </div>
-                @await Html.PartialAsync("~/Views/Shared/Transaction/_EditActionButtons.cshtml", Model.EditLeaseListingViewModel.DealStatusId)
+
+
 
             </form>
         </div>
     </div>
 </div>
 
-<partial name="~/Views/Shared/Modal/_ConfirmSaveModal.cshtml" />
-
 @section Scripts {
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
-    <script src="~/js/viewdatatableutility.js"></script>
+    <script src="~/js/viewDataTableUtility.js" asp-append-version="true"></script>
     <script src="~/js/submitUtility.js" asp-append-version="true"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-    <script src="~/js/submitUtility.js" asp-append-version="true"></script>
     <script>
-        const documentTypes = @Html.Raw(JsonConvert.SerializeObject(Model.EditLeaseListingViewModel.DocumentTypeList));
+        const documentTypeAssignments = @Html.Raw(JsonConvert.SerializeObject(Model.EditLeaseListingViewModel.DocumentTypeAssignmentList));
 
         $(document).ready(function () {
             initializeSubmitHandlers({
-                formId: "ListFormId",
-                dealStatusDropdownSelector: '[name="EditLeaseListingViewModel.DealStatusId"]',
-                isAdminLike: @((isAdmin || isSuperAdmin || isDealAdmin).ToString().ToLower()),
-                fileErrorScrollTargetId: "fileUploads",
-                validateFilesFn: () => defaultValidateFiles(documentTypes)
+                formId: "ListFormId", // ✅ match your form's actual ID
+                dealStatusDropdownSelector: '[name="EditLeaseListingViewModel.DealStatusId"]', // ✅ or adjust to match input name
+                isAdminLike: false, // ✅ or dynamically set via Razor logic
+                fileErrorScrollTargetId: "fileUploads", // ✅ your tab/section ID
+                documentTypeAssignment: documentTypeAssignments
             });
         });
     </script>

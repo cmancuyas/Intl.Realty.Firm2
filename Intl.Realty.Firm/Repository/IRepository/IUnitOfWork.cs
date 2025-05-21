@@ -1,4 +1,6 @@
-﻿namespace Intl.Realty.Firm.Repository.IRepository
+﻿using Microsoft.EntityFrameworkCore.Storage;
+
+namespace Intl.Realty.Firm.Repository.IRepository
 {
     public interface IUnitOfWork
     {
@@ -24,5 +26,6 @@
         IAgentReferralRepository AgentReferral { get; }
         Task SaveChangesAsync();
         void SaveChanges();
+        Task<IDbContextTransaction> BeginTransactionAsync();
     }
 }

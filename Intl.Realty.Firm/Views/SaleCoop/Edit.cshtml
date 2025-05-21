@@ -39,9 +39,12 @@
             asp-controller="SaleCoop"
             method="post"
             enctype="multipart/form-data">
+                <input type="hidden" id="ActionTypeHidden" name="actionType" />
 
                 <input type="hidden" asp-for="EditSaleCoopViewModel.Id" />
                 <input type="hidden" asp-for="EditSaleCoopViewModel.DealTransactionNumber" />
+                <input type="hidden" name="EditSaleCoopViewModel.RowVersion"
+                       value="@Convert.ToBase64String(Model.EditSaleCoopViewModel.RowVersion)" />
 
                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
@@ -439,39 +442,38 @@
                 <span asp-validation-for="IsDeleted" class="text-danger"></span>
                 </div>
                 </div> *@
-                <hr class="my-5" />
-                <input type="hidden" id="ActionTypeHidden" name="actionType" value="" />
-                <div id="submitSpinner" style="display:none;" class="text-center me-4">
-                    <div class="spinner-border text-primary" role="status"></div>
+                <div class="mt-4">
+                    @await Html.PartialAsync("~/Views/Shared/Transaction/_EditActionButtons.cshtml", Model.EditSaleCoopViewModel.DealStatusId)
                 </div>
-                @await Html.PartialAsync("~/Views/Shared/Transaction/_EditActionButtons.cshtml", Model.EditSaleCoopViewModel.DealStatusId)
+
+
+
             </form>
         </div>
     </div>
 </div>
 
-<partial name="~/Views/Shared/Modal/_ConfirmSaveModal.cshtml" />
+
 
 
 @section Scripts {
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
-    <script src="~/js/viewdatatableutility.js"></script>
+    <script src="~/js/viewDataTableUtility.js" asp-append-version="true"></script>
     <script src="~/js/submitUtility.js" asp-append-version="true"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-    <script src="~/js/submitUtility.js" asp-append-version="true"></script>
     <script>
-        const documentTypes = @Html.Raw(JsonConvert.SerializeObject(Model.EditSaleCoopViewModel.DocumentTypeList));
+        const documentTypeAssignments = @Html.Raw(JsonConvert.SerializeObject(Model.EditSaleCoopViewModel.DocumentTypeAssignmentList));
 
         $(document).ready(function () {
             initializeSubmitHandlers({
-                formId: "ListFormId",
-                dealStatusDropdownSelector: '[name="EditSaleCoopViewModel.DealStatusId"]',
-                isAdminLike: @((isAdmin || isSuperAdmin || isDealAdmin).ToString().ToLower()),
-                fileErrorScrollTargetId: "fileUploads",
-                validateFilesFn: () => defaultValidateFiles(documentTypes)
+                formId: "ListFormId", // ✅ match your form's actual ID
+                dealStatusDropdownSelector: '[name="EditSaleCoopViewModel.DealStatusId"]', // ✅ or adjust to match input name
+                isAdminLike: false, // ✅ or dynamically set via Razor logic
+                fileErrorScrollTargetId: "fileUploads", // ✅ your tab/section ID
+                documentTypeAssignment: documentTypeAssignments
             });
         });
     </script>

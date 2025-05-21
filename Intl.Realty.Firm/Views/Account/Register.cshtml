@@ -1,175 +1,160 @@
 ﻿@using Intl.Realty.Firm.Model.ViewModel.AccountVM
-
 @model RegisterViewModel
 
-<container>
+<div>
     <form asp-action="Register" asp-controller="Account" method="post">
-
         <input type="hidden" id="RegisterViewModelToken" name="Token" />
 
         <div class="row m-0 p-0 page-registration">
-            <div class="col-md-4 col-sm-12 page-registration-container left-part m-none">
-            </div>
+            <div class="col-md-4 col-sm-12 page-registration-container left-part m-none"></div>
             <div class="col-md-8 col-sm-12 page-registration-container right-part">
                 <div class="d-flex flex-column w-80">
                     <div class="w-100">
                         <div asp-validation-summary="All" class="text-danger"></div>
+                        <div id="formAlert" class="alert alert-danger d-none" role="alert"></div>
 
                         <div class="mb-5">
                             <h3 class="page-title fw-bolder mb-0">Please enter your details</h3>
                         </div>
 
+                        <!-- Full Name -->
                         <label class="fw-bolder">Full Name</label>
                         <div class="row">
                             <div class="col-md-6 mb-3">
-                                @Html.TextBoxFor(m => m.FirstName,
-                                         new
-                                         {
-                                             @class = "form-control",
-                                             @id = "firstName",
-                                             @name = "firstName",
-                                             @placeholder = "First Name"
-                                         })
+                                @Html.TextBoxFor(m => m.FirstName, new { @class = "form-control", placeholder = "First Name" })
                                 @Html.ValidationMessageFor(m => m.FirstName, "", new { @class = "text-danger" })
                             </div>
                             <div class="col-md-6 mb-3">
-                                @Html.TextBoxFor(m => m.LastName,
-                                         new
-                                         {
-                                             @class = "form-control",
-                                             @id = "lastName",
-                                             @name = "lastName",
-                                             @placeholder = "Last Name"
-                                         })
+                                @Html.TextBoxFor(m => m.LastName, new { @class = "form-control", placeholder = "Last Name" })
                                 @Html.ValidationMessageFor(m => m.LastName, "", new { @class = "text-danger" })
                             </div>
                         </div>
-                        <div class="row mb-3">
-                            <div class="col-md-12">
-                                <label class="fw-bolder">Email Address</label>
-                                @Html.TextBoxFor(m => m.Email,
-                                         new
-                                         {
-                                             @class = "form-control",
-                                             @id = "emailAddress",
-                                             @name = "emailAddress",
-                                             @placeholder = "example@domain.com",
-                                             @type = "email"
-                                         }
-                                         )
-                                @Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-danger" })
-                            </div>
+
+                        <!-- Email -->
+                        <div class="mb-3">
+                            <label class="fw-bolder">Email Address</label>
+                            @Html.TextBoxFor(m => m.Email, new { @class = "form-control", type = "email", placeholder = "example@domain.com" })
+                            @Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-danger" })
                         </div>
 
-                        <div class="row mb-4">
-                            <div class="col-md-12">
-                                <label class="fw-bolder">Contact Number</label>
-                                @Html.TextBoxFor(m => m.Phone,
-                                         new
-                                         {
-                                             @class = "form-control",
-                                             @id = "contactNumber",
-                                             @name = "contactNumber",
-                                             @placeholder = "(+1) 999 999 9999"
-                                         })
-                                @Html.ValidationMessageFor(m => m.Phone, "", new { @class = "text-danger" })
-                            </div>
+                        <!-- Phone -->
+                        <div class="mb-4">
+                            <label class="fw-bolder">Contact Number</label>
+                            @Html.TextBoxFor(m => m.Phone, new { @class = "form-control", placeholder = "(+1) 999 999 9999" })
+                            @Html.ValidationMessageFor(m => m.Phone, "", new { @class = "text-danger" })
                         </div>
 
-                        
+                        <!-- Passwords -->
                         <div class="row">
                             <div class="col-md-6 mb-3">
                                 <label class="fw-bolder">Password</label>
-                                @Html.TextBoxFor(m => m.Password,
-                                         new
-                                         {
-                                             @class = "form-control",
-                                             @id = "Password",
-                                             @name = "Password",
-                                             @type = "password"
-                                         })
+                                @Html.PasswordFor(m => m.Password, new { @class = "form-control", id = "Password" })
                                 @Html.ValidationMessageFor(m => m.Password, "", new { @class = "text-danger" })
                             </div>
                             <div class="col-md-6 mb-3">
                                 <label class="fw-bolder">Confirm Password</label>
-                                @Html.TextBoxFor(m => m.ConfirmPassword,
-                                         new
-                                         {
-                                             @class = "form-control",
-                                             @id = "ConfirmPassword",
-                                             @name = "ConfirmPassword",
-                                             @type = "password"
-                                         })
+                                @Html.PasswordFor(m => m.ConfirmPassword, new { @class = "form-control", id = "ConfirmPassword" })
                                 @Html.ValidationMessageFor(m => m.ConfirmPassword, "", new { @class = "text-danger" })
                             </div>
                         </div>
-                        <div class="form-check">
-                            <label class="form-check-label" for="togglePassword">
-                                <input class="form-check-input" type="checkbox" value="" id="togglePassword">
-                                Show Password
-                            </label>
+
+                        <!-- Toggle Password -->
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="checkbox" id="togglePassword" />
+                            <label class="form-check-label" for="togglePassword">Show Password</label>
                         </div>
 
-                        <div class="form-check mt-4">
-                            <label class="form-check-label" for="userAgreement">
-                                @Html.CheckBoxFor(m => m.UserAgreement, new { @class = "form-check-input" })
-
+                        <!-- User Agreement -->
+                        <div class="form-check mt-4 mb-2">
+                            @Html.CheckBoxFor(m => m.UserAgreement, new { @class = "form-check-input", id = "UserAgreement" })
+                            <label class="form-check-label" for="UserAgreement">
                                 <span class="text-danger">
-                                    By creating an account, you agree to our <a href="#" class="text-danger">User Agreement</a> and have read and acknowledged the <a href="#" class="text-danger">Data Privacy Statement</a>.
+                                    By creating an account, you agree to our <a href="#" class="text-danger">User Agreement</a> and the <a href="#" class="text-danger">Data Privacy Statement</a>.
                                 </span>
                             </label>
-                            @Html.ValidationMessageFor(m => m.UserAgreement, "", new { @class = "text-danger" })
+                            @Html.ValidationMessageFor(m => m.UserAgreement, "", new { @class = "text-danger d-block mt-1" })
                         </div>
 
+                        <!-- Buttons -->
                         <div class="row mt-5">
                             <div class="col-md-12 cta-controls">
                                 <button type="button" id="loginBtn" class="btn btn-secondary cta ms-3" onclick="window.location.href='@Url.Action("Login", "Account")'">Go back to Login</button>
-                                <button type="submit" id="submitBtn" class="btn btn-primary cta btnSubmit ms-3">Sign Up</button>
+
+                                <button type="submit" id="submitBtn" class="btn btn-primary cta btnSubmit ms-3">
+                                    <span id="submitText">Sign Up</span>
+                                    <span id="submitSpinner" class="spinner-border spinner-border-sm d-none ms-2" role="status" aria-hidden="true"></span>
+                                </button>
                             </div>
+                        </div>
+
+                        <!-- Success Message -->
+                        <div id="successMessage" class="alert alert-success d-none mt-3">
+                            Registration successful! Redirecting...
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </form>
-</container>
-<div id="successMessage" class="alert alert-success d-none mt-3">
-    Registration successful! Redirecting...
 </div>
 
-
-<script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
-
 @section Scripts {
+    @await Html.PartialAsync("_ValidationScriptsPartial")
 
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
     <script>
         $(document).ready(function () {
             feather.replace();
             togglePassword();
-            // toggleUserAgreementCheckBox();
+            setupUserAgreementCheckbox();
+
+            const $form = $('form[asp-action="Register"]');
+            const $btn = $('#submitBtn');
+            const $spinner = $('#submitSpinner');
+            const $text = $('#submitText');
+            const $userAgreement = $('#UserAgreement');
+            const $alert = $('#formAlert');
+
+            $form.on('submit', function (e) {
+                $alert.addClass('d-none').text('');
+                $spinner.addClass('d-none');
+                $text.text('Sign Up');
+                $btn.prop('disabled', false);
+
+                if (!$userAgreement.is(':checked')) {
+                    e.preventDefault();
+                    showBootstrapAlert("You must agree to the User Agreement and Privacy Statement.");
+                    return;
+                }
+
+                if (!this.checkValidity()) {
+                    e.preventDefault();
+                    this.reportValidity();
+                    return;
+                }
+
+                $spinner.removeClass('d-none');
+                $text.text('Signing Up...');
+                $btn.prop('disabled', true);
+            });
         });
 
-        function toggleUserAgreementCheckBox()
-        {
-            $('#UserAgreement').click(function(){
-                if (this.checked) {
-                    $(this).attr("value", "true");
-                } else {
-                    $(this).attr("value", "false");
-                }
-            })
-        }
-
         function togglePassword() {
-            $('#togglePassword').click(function () {
-                var type = $(this).is(':checked') ? 'text' : 'password';
-
+            $('#togglePassword').on('change', function () {
+                const type = this.checked ? 'text' : 'password';
                 $('#Password, #ConfirmPassword').attr('type', type);
             });
         }
 
+        function setupUserAgreementCheckbox() {
+            $('#UserAgreement').on('change', function () {
+                $(this).val(this.checked ? "true" : "false");
+            });
+        }
+
+        function showBootstrapAlert(message) {
+            const $alert = $('#formAlert');
+            $alert.removeClass('d-none').text(message);
+            setTimeout(() => $alert.addClass('d-none').text(''), 5000);
+        }
     </script>
 }

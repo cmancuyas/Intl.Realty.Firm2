@@ -20,5 +20,8 @@ namespace Intl.Realty.Firm.Model.ViewModel.SaleCoopVM
         public string? CreatedByFullName { get; set; }
         public string? UpdatedByFullName { get; set; }
         public string? DeletedByFullName { get; set; }
+        // 🔒 Add this for concurrency control
+        [Timestamp]
+        public byte[] RowVersion { get; set; } = Array.Empty<byte>();
     }
 }

@@ -28,9 +28,11 @@
                   asp-controller="LeaseCoop"
                   method="post"
                   enctype="multipart/form-data">
+                <input type="hidden" id="ActionTypeHidden" name="actionType" />
                 <input asp-for="CreateLeaseCoopViewModel.DealTransactionNumber" hidden />
-                <div asp-validation-summary="All" class="text-danger"></div>
-
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <input type="hidden" name="CreateLeaseCoopViewModel.RowVersion"
+                       value="@Convert.ToBase64String(Model.CreateLeaseCoopViewModel.RowVersion)" />
                 <div class="tab-page">
                     <!-- Dropdown for Mobile -->
                     <div class="dropdown d-md-none mb-3">
@@ -101,7 +103,7 @@
                         <div class="row">
                             <div class="col-md-6 mt-3">
                                 <label asp-for="CreateLeaseCoopViewModel.CreateIRFDealLeaseCoopViewModel.FinalLeasePrice" class="fw-bolder">Final Lease Price</label>
-                                <input asp-for="CreateLeaseCoopViewModel.CreateIRFDealLeaseCoopViewModel.FinalLeasePrice" class="form-control" />
+                                <input asp-for="CreateLeaseCoopViewModel.CreateIRFDealLeaseCoopViewModel.FinalLeasePrice" class="form-control" type="number" min="0" />
                                 <span asp-validation-for="CreateLeaseCoopViewModel.CreateIRFDealLeaseCoopViewModel.FinalLeasePrice" class="text-danger"></span>
                             </div>
                             <div class="col-md-6 mt-3">
@@ -111,7 +113,7 @@
                             </div>
                             <div class="col-md-6 mt-3">
                                 <label asp-for="CreateLeaseCoopViewModel.CreateIRFDealLeaseCoopViewModel.DepositAmount" class="fw-bolder">Deposit Amount</label>
-                                <input asp-for="CreateLeaseCoopViewModel.CreateIRFDealLeaseCoopViewModel.DepositAmount" class="form-control" />
+                                <input asp-for="CreateLeaseCoopViewModel.CreateIRFDealLeaseCoopViewModel.DepositAmount" class="form-control" type="number" min="0" />
                                 <span asp-validation-for="CreateLeaseCoopViewModel.CreateIRFDealLeaseCoopViewModel.DepositAmount" class="text-danger"></span>
                             </div>
                             <div class="col-md-6 mt-3">
@@ -288,7 +290,6 @@
                 </div>
 
                 <hr class="my-5" />
-                <input type="hidden" id="ActionTypeHidden" name="actionType" />
                 @{
                     var buttonModel = new CreateActionButtonsViewModel
                     {
@@ -314,18 +315,19 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script>
-        const documentTypes = @Html.Raw(JsonConvert.SerializeObject(Model.CreateLeaseCoopViewModel.DocumentTypeList));
+        const documentTypeAssignments = @Html.Raw(JsonConvert.SerializeObject(Model.CreateLeaseCoopViewModel.DocumentTypeAssignmentList));
 
         $(document).ready(function () {
             initializeSubmitHandlers({
-                formId: "ListFormId", // ensure your form has this ID
-                dealStatusDropdownSelector: '[name="CreateLeaseCoopViewModel.DealStatusId"]',
-                isAdminLike: false, // or use Razor logic if roles apply here too
-                fileErrorScrollTargetId: "fileUploads", // or your tab ID
-                validateFilesFn: () => defaultValidateFiles(documentTypes)
+                formId: "ListFormId", // ✅ match your form's actual ID
+                dealStatusDropdownSelector: '[name="CreateLeaseCoopViewModel.DealStatusId"]', // ✅ or adjust to match input name
+                isAdminLike: false, // ✅ or dynamically set via Razor logic
+                fileErrorScrollTargetId: "fileUploads", // ✅ your tab/section ID
+                documentTypeAssignment: documentTypeAssignments
             });
         });
     </script>
 }
+
 
 

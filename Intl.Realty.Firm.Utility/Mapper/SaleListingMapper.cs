@@ -31,6 +31,7 @@ namespace Intl.Realty.Firm.Utility.Mapper
                 IRFDealId = model.IRFDealId,
                 DealStatusId = model.DealStatusId,
                 DateSubmitted = model.DateSubmitted,
+                RowVersion = model.RowVersion,
 
                 Notes = model.Notes,
 
@@ -57,6 +58,7 @@ namespace Intl.Realty.Firm.Utility.Mapper
                     IRFDealId = x.IRFDealId,
                     DealStatusId = x.DealStatusId,
                     DateSubmitted = x.DateSubmitted,
+                    RowVersion = x.RowVersion,
 
                     CreatedByFullName = x.CreatedByFullName,
                     UpdatedByFullName = x.UpdatedByFullName,
@@ -94,6 +96,7 @@ namespace Intl.Realty.Firm.Utility.Mapper
                 DealTransactionNumber = viewModel.DealTransactionNumber,
                 CreatedByFullName = viewModel.CreatedByFullName,
                 Notes = viewModel.Notes,
+                RowVersion = viewModel.RowVersion,
 
                 IsActive = viewModel.IsActive,
                 IsDeleted = viewModel.IsDeleted,
@@ -113,7 +116,7 @@ namespace Intl.Realty.Firm.Utility.Mapper
                 DealStatusId = viewModel.DealStatusId,
                 DateSubmitted = viewModel.DateSubmitted,
                 DealTransactionNumber = viewModel.DealTransactionNumber,
-
+                RowVersion = viewModel.RowVersion,
                 UpdatedByFullName = viewModel.UpdatedByFullName,
                 Notes = viewModel.Notes,
 
@@ -208,7 +211,7 @@ namespace Intl.Realty.Firm.Utility.Mapper
                     TransactionTypeId = x.TransactionTypeId,
                     IRFDealId = x.IRFDealId,
                     DealStatusId = x.DealStatusId,
-
+                    RowVersion = x.RowVersion,
                     TransactionType = x.TransactionType,
                     IRFDeal = x.IRFDeal,
                     DealStatus = x.DealStatus,
@@ -249,7 +252,7 @@ namespace Intl.Realty.Firm.Utility.Mapper
             viewModel.CreatedByFullName = createdByUser.FirstName + " " + createdByUser.LastName;
             viewModel.UpdatedByFullName = updatedByUser!.FirstName + " " + updatedByUser!.LastName;
             viewModel.DeletedByFullName = deletedByUser!.FirstName + " " + deletedByUser!.LastName;
-
+            viewModel.RowVersion = model.RowVersion;
             return viewModel;
         }
     }

@@ -24,5 +24,7 @@ namespace Intl.Realty.Firm.Model.ViewModel.AllDealsVM
         public string? DeletedByFullName { get; set; } = string.Empty;
         public DateTime? DeletedAt { get; set; }
         public Guid? DeletedBy { get; set; }
+        [Timestamp]
+        public byte[] RowVersion { get; set; } = Array.Empty<byte>();
     }
 }

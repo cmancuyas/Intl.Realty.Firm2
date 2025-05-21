@@ -29,5 +29,8 @@ namespace Intl.Realty.Firm.Model.Model
         public string CreatedByFullName { get; set; } = string.Empty;
         public string? UpdatedByFullName { get; set; } = string.Empty;
         public string? DeletedByFullName { get; set; } = string.Empty;
+        // 🔒 Add this for concurrency control
+        [Timestamp]
+        public byte[] RowVersion { get; set; } = Array.Empty<byte>();
     }
 }

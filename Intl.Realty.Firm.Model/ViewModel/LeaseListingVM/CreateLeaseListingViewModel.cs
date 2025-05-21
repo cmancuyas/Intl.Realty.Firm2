@@ -25,5 +25,8 @@ namespace Intl.Realty.Firm.Model.ViewModel.LeaseListingVM
         public DealStatus? DealStatus { get; set; }
         public IEnumerable<DocumentType>? DocumentTypeList { get; set; }
         public IEnumerable<DocumentTypeAssignment>? DocumentTypeAssignmentList { get; set; }
+        // 🔒 Add this for concurrency control
+        [Timestamp]
+        public byte[] RowVersion { get; set; } = Array.Empty<byte>();
     }
 }

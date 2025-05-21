@@ -14,25 +14,14 @@
     bool isSavedStatus = Model == 1;
 }
 
-<div class="form-group d-flex justify-content-center gap-4">
+<div class="form-group d-flex justify-content-center gap-4 mb-5">
     <a href="##" onClick="history.go(-1); return false;" class="btn btn-outline-secondary w-15">
         Back
     </a>
-
-    <!-- ✅ Save: for everyone -->
-    <button type="submit" id="btnSave" class="btn btn-outline-primary w-15">
+    <button type="button" id="btnSave" class="btn btn-outline-primary w-15">
         Save as Draft
     </button>
-
-
-@*     <!-- ✅ Edit Request: Admins & Agents when status is "Saved" -->
-    @if (isAgent)
-    {
-        <button type="button" id="btnEditRequest" data-bs-toggle="modal" data-bs-target="#sendEditRequestModal" class="btn btn-primary w-15">
-            Edit Request
-        </button>
-    } *@
-
-    <button type="submit" id="btnSubmit" class="btn btn-primary w-15">Submit</button>
-
+    <button type="button" id="btnSubmit" class="btn btn-primary w-15">
+        Submit
+    </button>
 </div>
