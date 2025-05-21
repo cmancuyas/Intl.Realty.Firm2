@@ -156,7 +156,24 @@ namespace Intl.Realty.Firm.Controllers
             viewModel.CreateLeaseCoopViewModel.TransactionTypeId = transactionType.Id;
             viewModel.CreateLeaseCoopViewModel.CreatedByFullName = $"{user.FirstName} {user.LastName}";
 
-            await UpdateTransactionNumber();
+            var numberRange = await _unitOfWork.DealTransactionNumberRange
+                                .GetAsync(x => !x.IsDeleted && x.Year == DateTime.Now.Year);
+
+            try
+            {
+                if (numberRange != null)
+                {
+                    numberRange.CurrentNumber += 1;
+                    await _unitOfWork.DealTransactionNumberRange.UpdateAsync(numberRange);
+                    await _unitOfWork.SaveChangesAsync();
+                }
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                ModelState.AddModelError("", "Transaction number was updated by another user. Please try again.");
+                return View("Index", viewModel);
+            }
+
             await PopulateDocumentTypesAsync(viewModel, transactionTypeName);
             SetTabMenus(viewModel, "IRFDetails1");
 

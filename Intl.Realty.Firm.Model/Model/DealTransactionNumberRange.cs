@@ -13,5 +13,7 @@ namespace Intl.Realty.Firm.Model.Model
         [Required]
         [MaxLength(15)]
         public string NumberRange { get; set; } = string.Empty;
+        [Timestamp]
+        public byte[] RowVersion { get; set; } = Array.Empty<byte>();
     }
 }

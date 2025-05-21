@@ -158,12 +158,21 @@ namespace Intl.Realty.Firm.Controllers
             var numberRange = await _unitOfWork.DealTransactionNumberRange
                 .GetAsync(x => !x.IsDeleted && x.Year == DateTime.Now.Year);
 
-            if (numberRange != null)
+            try
             {
-                numberRange.CurrentNumber += 1;
-                await _unitOfWork.DealTransactionNumberRange.UpdateAsync(numberRange);
-                _unitOfWork.SaveChanges();
+                if (numberRange != null)
+                {
+                    numberRange.CurrentNumber += 1;
+                    await _unitOfWork.DealTransactionNumberRange.UpdateAsync(numberRange);
+                    await _unitOfWork.SaveChangesAsync();
+                }
             }
+            catch (DbUpdateConcurrencyException)
+            {
+                ModelState.AddModelError("", "Transaction number was updated by another user. Please try again.");
+                return View("Index", viewModel);
+            }
+
 
             var documentTypeAssignments = await _unitOfWork.DocumentTypeAssignment.GetAllAsync(x => !x.IsDeleted, includeProperties: "TransactionType,DocumentType");
             var documentTypes = await _unitOfWork.DocumentType.GetAllAsync(x => !x.IsDeleted);

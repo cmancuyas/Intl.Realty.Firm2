@@ -160,12 +160,22 @@ namespace Intl.Realty.Firm.Controllers
             viewModel.CreateSaleListingViewModel.TransactionTypeId = transactionType.Id;
 
             // Update DealTransactionNumberRange
-            var numberRange = await _unitOfWork.DealTransactionNumberRange.GetAsync(x => !x.IsDeleted && x.Year == DateTime.Now.Year);
-            if (numberRange != null)
+            var numberRange = await _unitOfWork.DealTransactionNumberRange
+                .GetAsync(x => !x.IsDeleted && x.Year == DateTime.Now.Year);
+
+            try
             {
-                numberRange.CurrentNumber += 1;
-                await _unitOfWork.DealTransactionNumberRange.UpdateAsync(numberRange);
-                _unitOfWork.SaveChanges();
+                if (numberRange != null)
+                {
+                    numberRange.CurrentNumber += 1;
+                    await _unitOfWork.DealTransactionNumberRange.UpdateAsync(numberRange);
+                    await _unitOfWork.SaveChangesAsync();
+                }
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                ModelState.AddModelError("", "Transaction number was updated by another user. Please try again.");
+                return View("Index", viewModel);
             }
 
             // Prepare document types
