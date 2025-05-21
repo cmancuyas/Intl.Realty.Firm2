@@ -138,14 +138,8 @@ namespace Intl.Realty.Firm.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(CreateLeaseCoopWithTabMenuViewModel viewModel, string actionType)
         {
-            if (actionType == "save")
-            {
-                viewModel.CreateLeaseCoopViewModel.DealStatusId = 2; // Draft
-            }
-            else if (actionType == "submit")
-            {
-                viewModel.CreateLeaseCoopViewModel.DealStatusId = 1; // Submitted
-            }
+            // Set DealStatusId
+            viewModel.CreateLeaseCoopViewModel.DealStatusId = actionType.ToLower() == "submit" ? 1 : 2;
 
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var user = await _userManager.FindByIdAsync(userId!);
@@ -156,85 +150,110 @@ namespace Intl.Realty.Firm.Controllers
             viewModel.CreateLeaseCoopViewModel.TransactionTypeId = transactionType.Id;
             viewModel.CreateLeaseCoopViewModel.CreatedByFullName = $"{user.FirstName} {user.LastName}";
 
-            var numberRange = await _unitOfWork.DealTransactionNumberRange
-                                .GetAsync(x => !x.IsDeleted && x.Year == DateTime.Now.Year);
+            using var transaction = await _unitOfWork.BeginTransactionAsync();
 
             try
             {
+                // 🔢 Concurrency-safe number range increment
+                var numberRange = await _unitOfWork.DealTransactionNumberRange
+                    .GetAsync(x => !x.IsDeleted && x.Year == DateTime.Now.Year);
+
                 if (numberRange != null)
                 {
                     numberRange.CurrentNumber += 1;
                     await _unitOfWork.DealTransactionNumberRange.UpdateAsync(numberRange);
                     await _unitOfWork.SaveChangesAsync();
                 }
+
+                var documentTypeAssignments = await _unitOfWork.DocumentTypeAssignment.GetAllAsync(
+                    x => !x.IsDeleted,
+                    includeProperties: "TransactionType,DocumentType"
+                );
+                var documentTypes = await _unitOfWork.DocumentType.GetAllAsync(x => !x.IsDeleted);
+
+                viewModel.CreateLeaseCoopViewModel.DocumentTypeList = _documentTransactionService
+                    .GetDocumentTypesFromDocumentTypeAssignment(transactionTypeName, documentTypeAssignments.ToList(), documentTypes.ToList());
+
+                SetTabMenus(viewModel, "IRFDetails1");
+
+                // 🛑 Stop if validation fails on "Submit"
+                if (actionType.ToLower() == "submit" && !ModelState.IsValid)
+                {
+                    var notification = _notificationService.Notify(
+                        "Please review the form for errors. All required fields must be filled correctly.",
+                        "Validation Failed",
+                        NotificationType.error
+                    );
+
+                    TempData["Message"] = JsonConvert.SerializeObject(notification);
+                    return View("Index", viewModel);
+                }
+
+                // ➕ Create IRF Deal
+                var irfDealModel = viewModel.CreateLeaseCoopViewModel
+                    .CreateIRFDealLeaseCoopViewModel?.ToIRFDealModel();
+
+                irfDealModel!.CreatedAt = DateTime.Now;
+                irfDealModel.CreatedBy = user.Id;
+                irfDealModel.IsActive = true;
+                irfDealModel.IsDeleted = false;
+
+                await _unitOfWork.IRFDeal.AddAsync(irfDealModel);
+                await _unitOfWork.SaveChangesAsync();
+
+                var newIRFDeal = await _unitOfWork.IRFDeal.GetAsync(x => x.Id == irfDealModel.Id);
+                viewModel.CreateLeaseCoopViewModel.IRFDealId = newIRFDeal!.Id;
+
+                viewModel.CreateLeaseCoopViewModel.CreateIRFDealLeaseCoopViewModel!.CreatedAt = newIRFDeal.CreatedAt;
+                viewModel.CreateLeaseCoopViewModel.CreateIRFDealLeaseCoopViewModel.CreatedBy = newIRFDeal.CreatedBy;
+                viewModel.CreateLeaseCoopViewModel.CreateIRFDealLeaseCoopViewModel.IsActive = newIRFDeal.IsActive;
+
+                // 🔐 Set base properties
+                viewModel.CreateLeaseCoopViewModel.IsActive = true;
+                viewModel.CreateLeaseCoopViewModel.IsDeleted = false;
+                viewModel.CreateLeaseCoopViewModel.CreatedBy = user.Id;
+                viewModel.CreateLeaseCoopViewModel.CreatedAt = DateTime.Now;
+
+                var leaseCoopModel = viewModel.CreateLeaseCoopViewModel.ToLeaseCoopModel();
+                await _unitOfWork.LeaseCoop.AddAsync(leaseCoopModel);
+                await _unitOfWork.SaveChangesAsync();
+
+                // 📂 File Uploads
+                if (actionType.ToLower() == "submit" &&
+                    viewModel.CreateLeaseCoopViewModel.CreateFileUploadListViewModel?.CreateFileUploadsViewModel != null)
+                {
+                    var uploadPath = CreateFilePath(leaseCoopModel.Id);
+                    await CreateFileUploadData(
+                        viewModel.CreateLeaseCoopViewModel.CreateFileUploadListViewModel.CreateFileUploadsViewModel,
+                        leaseCoopModel.Id,
+                        transactionType.Id,
+                        viewModel.CreateLeaseCoopViewModel.DocumentTypeList,
+                        uploadPath
+                    );
+                }
+
+                leaseCoopModel.TransactionType = transactionType;
+
+                // 📩 Notify Deal Admin on Submit
+                if (viewModel.CreateLeaseCoopViewModel.DealStatusId == 1)
+                {
+                    await SendDealAdminNotification(user, leaseCoopModel);
+                }
+
+                await transaction.CommitAsync();
+                return RedirectToAction(nameof(Index), new { addSuccess = true });
             }
             catch (DbUpdateConcurrencyException)
             {
+                await transaction.RollbackAsync();
                 ModelState.AddModelError("", "Transaction number was updated by another user. Please try again.");
                 return View("Index", viewModel);
             }
-
-            await PopulateDocumentTypesAsync(viewModel, transactionTypeName);
-            SetTabMenus(viewModel, "IRFDetails1");
-
-            // If this is a "Submit", run validations
-            if (actionType == "Submit" && !ModelState.IsValid)
+            catch (Exception)
             {
-                var notification = _notificationService.Notify(
-                    "Please review the form for errors. All required fields must be filled correctly.",
-                    "Validation Failed",
-                    NotificationType.error
-                );
-
-                TempData["Message"] = JsonConvert.SerializeObject(notification);
-                return View("Index", viewModel);
+                await transaction.RollbackAsync();
+                throw;
             }
-
-            // Create IRF Deal
-            var irfDealModel = viewModel.CreateLeaseCoopViewModel.CreateIRFDealLeaseCoopViewModel?.ToIRFDealModel();
-            irfDealModel!.CreatedAt = DateTime.Now;
-            irfDealModel.CreatedBy = user.Id;
-            irfDealModel.IsActive = true;
-            irfDealModel.IsDeleted = false;
-
-            await _unitOfWork.IRFDeal.AddAsync(irfDealModel);
-            var newIRFDeal = await _unitOfWork.IRFDeal.GetAsync(x => x.Id == irfDealModel.Id);
-
-            viewModel.CreateLeaseCoopViewModel.IRFDealId = newIRFDeal!.Id;
-            viewModel.CreateLeaseCoopViewModel.CreateIRFDealLeaseCoopViewModel!.CreatedAt = newIRFDeal.CreatedAt;
-            viewModel.CreateLeaseCoopViewModel.CreateIRFDealLeaseCoopViewModel.CreatedBy = newIRFDeal.CreatedBy;
-            viewModel.CreateLeaseCoopViewModel.CreateIRFDealLeaseCoopViewModel.IsActive = newIRFDeal.IsActive;
-
-            // Set DealStatus
-            viewModel.CreateLeaseCoopViewModel.IsActive = true;
-            viewModel.CreateLeaseCoopViewModel.IsDeleted = false;
-            viewModel.CreateLeaseCoopViewModel.CreatedBy = user.Id;
-            viewModel.CreateLeaseCoopViewModel.CreatedAt = DateTime.Now;
-
-            var leaseCoopModel = viewModel.CreateLeaseCoopViewModel.ToLeaseCoopModel();
-            await _unitOfWork.LeaseCoop.AddAsync(leaseCoopModel);
-
-            // File Upload only on Submit
-            if (actionType == "Submit" && viewModel.CreateLeaseCoopViewModel.CreateFileUploadListViewModel?.CreateFileUploadsViewModel != null)
-            {
-                var uploadPath = CreateFilePath(leaseCoopModel.Id);
-                await CreateFileUploadData(
-                    viewModel.CreateLeaseCoopViewModel.CreateFileUploadListViewModel.CreateFileUploadsViewModel,
-                    leaseCoopModel.Id,
-                    transactionType.Id,
-                    viewModel.CreateLeaseCoopViewModel.DocumentTypeList,
-                    uploadPath
-                );
-            }
-            leaseCoopModel.TransactionType = viewModel.CreateLeaseCoopViewModel.TransactionType;
-
-            // Notify Deal Admin only on Submit
-            if (viewModel.CreateLeaseCoopViewModel.DealStatusId == 1)
-            {
-                await SendDealAdminNotification(user, leaseCoopModel);
-            }
-
-            return RedirectToAction(nameof(Index), new { addSuccess = true });
         }
 
 
@@ -422,35 +441,30 @@ namespace Intl.Realty.Firm.Controllers
             if (id == 0)
                 return NotFoundResultWithMessage("LeaseCoop", id);
 
-            var dealStatusIEnum = await _unitOfWork.DealStatus.GetAllAsync(x => x.IsActive == true && !x.IsDeleted);
-            viewModel.EditLeaseCoopViewModel.DealStatusList = dealStatusIEnum.ToList();
+            var dealStatusList = await _unitOfWork.DealStatus.GetAllAsync(x => x.IsActive && !x.IsDeleted);
+            viewModel.EditLeaseCoopViewModel.DealStatusList = dealStatusList.ToList();
 
             if (!ModelState.IsValid)
                 return View(viewModel);
 
-            // ✅ Get current user ID and parse to GUID
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (!Guid.TryParse(userId, out Guid parsedUserId))
                 throw new InvalidOperationException("Invalid user ID - cannot convert to GUID.");
 
             var user = await _userManager.FindByIdAsync(userId!);
 
-            // ✅ Load LeaseCoop model (EF-tracked)
             var leaseCoopModel = await _unitOfWork.LeaseCoop.GetAsync(
                 x => x.Id == id,
                 includeProperties: "IRFDeal,TransactionType,DealStatus",
                 tracked: true);
 
-
             if (leaseCoopModel == null)
                 return NotFoundResultWithMessage("LeaseCoop", id);
 
-            // ✅ Load transaction type
             var transactionType = await _unitOfWork.TransactionType.GetAsync(x => x.Id == leaseCoopModel.TransactionTypeId);
             viewModel.EditLeaseCoopViewModel.TransactionType = transactionType;
             viewModel.EditLeaseCoopViewModel.TransactionTypeId = transactionType.Id;
 
-            // ✅ Rebuild document type list
             var documentTypeAssignments = await _unitOfWork.DocumentTypeAssignment
                 .GetAllAsync(x => !x.IsDeleted, includeProperties: "TransactionType,DocumentType");
 
@@ -462,50 +476,65 @@ namespace Intl.Realty.Firm.Controllers
                     documentTypeAssignments.ToList(),
                     documentTypes.ToList());
 
-            // ✅ Filter file uploads
             leaseCoopModel.FileUploads = FilterFileUploadsWithFilesOnly(leaseCoopModel.FileUploads);
 
-            // ✅ Update IRFDeal (independently)
-            var irfDealDb = await _unitOfWork.IRFDeal.GetAsync(x => x.Id == leaseCoopModel.IRFDealId, tracked: true);
-            var editedData = viewModel.EditLeaseCoopViewModel.EditIRFDealLeaseCoopViewModel;
+            using var transaction = await _unitOfWork.BeginTransactionAsync();
 
-            if (irfDealDb != null && editedData != null)
+            try
             {
-                irfDealDb.UpdateFromViewModel(editedData, parsedUserId);
-                await _unitOfWork.IRFDeal.UpdateAsync(irfDealDb);
+                var irfDealDb = await _unitOfWork.IRFDeal.GetAsync(x => x.Id == leaseCoopModel.IRFDealId, tracked: true);
+                var editedData = viewModel.EditLeaseCoopViewModel.EditIRFDealLeaseCoopViewModel;
+
+                if (irfDealDb != null && editedData != null)
+                {
+                    irfDealDb.UpdateFromViewModel(editedData, parsedUserId);
+                    irfDealDb.UpdatedAt = DateTime.Now;
+                    irfDealDb.UpdatedBy = parsedUserId;
+                    await _unitOfWork.IRFDeal.UpdateAsync(irfDealDb);
+                }
+
+                leaseCoopModel.DealStatusId = viewModel.EditLeaseCoopViewModel.DealStatusId;
+                leaseCoopModel.Notes = viewModel.EditLeaseCoopViewModel.Notes;
+                leaseCoopModel.DateSubmitted = DateTime.Now;
+                leaseCoopModel.IsActive = true;
+                leaseCoopModel.UpdatedAt = DateTime.Now;
+                leaseCoopModel.UpdatedBy = parsedUserId;
+
+                // 🔒 Concurrency token
+                leaseCoopModel.RowVersion = viewModel.EditLeaseCoopViewModel.RowVersion;
+
+                await _unitOfWork.SaveChangesAsync();
+
+                var uploadPath = CreateFilePath(leaseCoopModel.Id);
+                var fileUploadVM = viewModel.EditLeaseCoopViewModel.CreateFileUploadListViewModel?.CreateFileUploadsViewModel;
+
+                if (fileUploadVM != null)
+                {
+                    await CreateFileUploadData(
+                        fileUploadVM,
+                        leaseCoopModel.Id,
+                        transactionType.Id,
+                        viewModel.EditLeaseCoopViewModel.DocumentTypeList,
+                        uploadPath
+                    );
+                }
+
+                await transaction.CommitAsync();
+                return RedirectToAction(nameof(Index), new { editSuccess = true });
             }
-
-            // ✅ Update main LeaseCoop properties
-            var isAgent = await _userManager.IsInRoleAsync(user, "Agent");
-            leaseCoopModel.DealStatusId = viewModel.EditLeaseCoopViewModel.DealStatusId;
-            leaseCoopModel.Notes = viewModel.EditLeaseCoopViewModel.Notes;
-            leaseCoopModel.DateSubmitted = DateTime.Now;
-            leaseCoopModel.IsActive = true;
-            leaseCoopModel.UpdatedAt = DateTime.Now;
-            leaseCoopModel.UpdatedBy = parsedUserId;
-
-            //leaseCoopModel.IRFDeal = null; // optional: avoid nav re-persisting
-
-            // ✅ Persist changes (entity is tracked)
-            await _unitOfWork.SaveChangesAsync();
-
-            // ✅ Handle file uploads
-            var uploadPath = CreateFilePath(leaseCoopModel.Id);
-            var fileUploadVM = viewModel.EditLeaseCoopViewModel.CreateFileUploadListViewModel?.CreateFileUploadsViewModel;
-
-            if (fileUploadVM != null)
+            catch (DbUpdateConcurrencyException)
             {
-                await CreateFileUploadData(
-                    fileUploadVM,
-                    leaseCoopModel.Id,
-                    transactionType.Id,
-                    viewModel.EditLeaseCoopViewModel.DocumentTypeList,
-                    uploadPath
-                );
+                await transaction.RollbackAsync();
+                ModelState.AddModelError(string.Empty, "This record was modified by another user after you opened it. Please reload and try again.");
+                return View(viewModel);
             }
-
-            return RedirectToAction(nameof(Index), new { editSuccess = true });
+            catch (Exception)
+            {
+                await transaction.RollbackAsync();
+                throw;
+            }
         }
+
 
 
         private IActionResult NotFoundResultWithMessage(string entityName, int id)

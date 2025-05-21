@@ -1,5 +1,6 @@
 ﻿using Intl.Realty.Firm.DataAccess;
 using Intl.Realty.Firm.Repository.IRepository;
+using Microsoft.EntityFrameworkCore.Storage;
 
 namespace Intl.Realty.Firm.Repository
 {
@@ -59,6 +60,10 @@ namespace Intl.Realty.Firm.Repository
         public void SaveChanges()
         {
             _db.SaveChanges();
+        }
+        public async Task<IDbContextTransaction> BeginTransactionAsync()
+        {
+            return await _db.Database.BeginTransactionAsync();
         }
 
     }

@@ -19,9 +19,9 @@
     var isSuperAdmin = await _userManager.IsInRoleAsync(user!, "SuperAdmin");
 }
 
+<partial name="~/Views/Shared/Modal/_ConfirmSaveModal.cshtml" />
 <partial name="~/Views/Shared/Modal/_ConfirmSubmitModal.cshtml" />
 <partial name="~/Views/Shared/Modal/_ConfirmSuccessModal.cshtml" />
-<partial name="~/Views/Shared/Modal/_ConfirmSaveModal.cshtml" />
 
 <div class="page-controller mb-5">
     @*    <a href="@Url.Action("Index","SaleListing")" class="text-decoration-none text-blue d-flex mb-4">
@@ -39,7 +39,10 @@
                   asp-controller="SaleListing"
                   method="post"
                   enctype="multipart/form-data">
+                <input type="hidden" id="ActionTypeHidden" name="actionType" />
 
+                <input type="hidden" name="EditSaleListingViewModel.RowVersion"
+                       value="@Convert.ToBase64String(Model.EditSaleListingViewModel.RowVersion)" />
                 <input type="hidden" asp-for="EditSaleListingViewModel.Id" />
                 <input type="hidden" asp-for="EditSaleListingViewModel.DealTransactionNumber" />
 
@@ -444,15 +447,10 @@
                 <span asp-validation-for="IsDeleted" class="text-danger"></span>
                 </div>
                 </div> *@
-                <hr class="my-5" />
-                <input type="hidden" id="ActionTypeHidden" name="actionType" value="" />
-                <div id="submitSpinner" style="display:none;" class="text-center me-4">
-                    <div class="spinner-border text-primary" role="status"></div>
-                </div>
-                @if (Model.EditSaleListingViewModel.DealStatus != null)
-                {
+                <div class="mt-4">
                     @await Html.PartialAsync("~/Views/Shared/Transaction/_EditActionButtons.cshtml", Model.EditSaleListingViewModel.DealStatusId)
-                }
+                </div>
+
 
 
             </form>
@@ -460,29 +458,27 @@
     </div>
 </div>
 
-<partial name="~/Views/Shared/Modal/_ConfirmSaveModal.cshtml" />
+
 
 @section Scripts {
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
-    <script src="~/js/viewdatatableutility.js"></script>
+    <script src="~/js/viewDataTableUtility.js" asp-append-version="true"></script>
     <script src="~/js/submitUtility.js" asp-append-version="true"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-    <script src="~/js/submitUtility.js" asp-append-version="true"></script>
     <script>
-        const documentTypes = @Html.Raw(JsonConvert.SerializeObject(Model.EditSaleListingViewModel.DocumentTypeList));
+        const documentTypeAssignments = @Html.Raw(JsonConvert.SerializeObject(Model.EditSaleListingViewModel.DocumentTypeAssignmentList));
 
         $(document).ready(function () {
             initializeSubmitHandlers({
-                formId: "ListFormId",
-                dealStatusDropdownSelector: '[name="EditSaleListingViewModel.DealStatusId"]',
-                isAdminLike: @((isAdmin || isSuperAdmin || isDealAdmin).ToString().ToLower()),
-                fileErrorScrollTargetId: "fileUploads",
-                validateFilesFn: () => defaultValidateFiles(documentTypes)
+                formId: "ListFormId", // ✅ match your form's actual ID
+                dealStatusDropdownSelector: '[name="EditSaleListingViewModel.DealStatusId"]', // ✅ or adjust to match input name
+                isAdminLike: false, // ✅ or dynamically set via Razor logic
+                fileErrorScrollTargetId: "fileUploads", // ✅ your tab/section ID
+                documentTypeAssignment: documentTypeAssignments
             });
         });
     </script>
-
 }

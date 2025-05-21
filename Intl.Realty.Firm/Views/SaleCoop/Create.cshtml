@@ -26,8 +26,14 @@
                   asp-controller="SaleCoop"
                   method="post"
                   enctype="multipart/form-data">
+                <input type="hidden" id="ActionTypeHidden" name="actionType" />
+
                 <input asp-for="CreateSaleCoopViewModel.DealTransactionNumber" hidden />
-                <div asp-validation-summary="All" class="text-danger"></div>
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                <input type="hidden" name="CreateSaleCoopViewModel.RowVersion"
+                       value="@Convert.ToBase64String(Model.CreateSaleCoopViewModel.RowVersion)" />
+
 
                 <div class="tab-page">
                     <!-- Dropdown for Mobile -->
@@ -343,7 +349,7 @@
                     </div>
 
                 </div>
-                <input type="hidden" id="ActionTypeHidden" name="actionType" />
+
                 <hr class="my-5" />
                 @{
                     var buttonModel = new CreateActionButtonsViewModel
@@ -371,15 +377,15 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script>
-        const documentTypes = @Html.Raw(JsonConvert.SerializeObject(Model.CreateSaleCoopViewModel.DocumentTypeList));
+        const documentTypeAssignments = @Html.Raw(JsonConvert.SerializeObject(Model.CreateSaleCoopViewModel.DocumentTypeAssignmentList));
 
         $(document).ready(function () {
             initializeSubmitHandlers({
-                formId: "ListFormId",
-                dealStatusDropdownSelector: '[name="CreateSaleCoopViewModel.DealStatusId"]',
-                isAdminLike: false,
-                fileErrorScrollTargetId: "fileUploads",
-                validateFilesFn: () => defaultValidateFiles(documentTypes)
+                formId: "ListFormId", // ✅ match your form's actual ID
+                dealStatusDropdownSelector: '[name="CreateSaleCoopViewModel.DealStatusId"]', // ✅ or adjust to match input name
+                isAdminLike: false, // ✅ or dynamically set via Razor logic
+                fileErrorScrollTargetId: "fileUploads", // ✅ your tab/section ID
+                documentTypeAssignment: documentTypeAssignments
             });
         });
     </script>

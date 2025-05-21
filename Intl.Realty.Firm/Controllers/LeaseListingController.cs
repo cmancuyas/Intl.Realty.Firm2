@@ -139,14 +139,8 @@ namespace Intl.Realty.Firm.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(CreateLeaseListingWithTabMenuViewModel viewModel, string actionType)
         {
-            if (actionType == "save")
-            {
-                viewModel.CreateLeaseListingViewModel.DealStatusId = 2; // Draft
-            }
-            else if (actionType == "submit")
-            {
-                viewModel.CreateLeaseListingViewModel.DealStatusId = 1; // Submitted
-            }
+            // Set deal status
+            viewModel.CreateLeaseListingViewModel.DealStatusId = actionType.ToLower() == "submit" ? 1 : 2;
 
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var user = await _userManager.FindByIdAsync(userId!);
@@ -157,84 +151,110 @@ namespace Intl.Realty.Firm.Controllers
             viewModel.CreateLeaseListingViewModel.TransactionTypeId = transactionType.Id;
             viewModel.CreateLeaseListingViewModel.CreatedByFullName = $"{user.FirstName} {user.LastName}";
 
-            // number Range
-            var numberRange = await _unitOfWork.DealTransactionNumberRange
-                    .GetAsync(x => !x.IsDeleted && x.Year == DateTime.Now.Year);
+            // Begin transaction to group all operations
+            using var transaction = await _unitOfWork.BeginTransactionAsync();
 
             try
             {
+                // 🔢 Number Range Handling with concurrency
+                var numberRange = await _unitOfWork.DealTransactionNumberRange
+                    .GetAsync(x => !x.IsDeleted && x.Year == DateTime.Now.Year);
+
                 if (numberRange != null)
                 {
                     numberRange.CurrentNumber += 1;
                     await _unitOfWork.DealTransactionNumberRange.UpdateAsync(numberRange);
-                    await _unitOfWork.SaveChangesAsync();
+                    await _unitOfWork.SaveChangesAsync(); // must save here so EF tracks updated rowversion
                 }
+
+                var documentTypeAssignments = await _unitOfWork.DocumentTypeAssignment.GetAllAsync(
+                    x => !x.IsDeleted,
+                    includeProperties: "TransactionType,DocumentType"
+                );
+                var documentTypes = await _unitOfWork.DocumentType.GetAllAsync(x => !x.IsDeleted);
+
+                viewModel.CreateLeaseListingViewModel.DocumentTypeList = _documentTransactionService
+                    .GetDocumentTypesFromDocumentTypeAssignment(transactionTypeName, documentTypeAssignments.ToList(), documentTypes.ToList());
+
+                ApplyTabMenu(viewModel, "IRFDetails1");
+
+                if (actionType.ToLower() == "submit" && !ModelState.IsValid)
+                {
+                    var notification = _notificationService.Notify(
+                        "Please review the form for errors. All required fields must be filled correctly.",
+                        "Validation Failed",
+                        NotificationType.error
+                    );
+                    TempData["Message"] = JsonConvert.SerializeObject(notification);
+                    return View("Index", viewModel);
+                }
+
+                // IRF Deal creation
+                var createIRFDealModel = viewModel.CreateLeaseListingViewModel
+                    .CreateIRFDealLeaseListingViewModel?.ToIRFDealModel();
+
+                createIRFDealModel!.CreatedAt = DateTime.Now;
+                createIRFDealModel.CreatedBy = user.Id;
+                createIRFDealModel.IsActive = true;
+                createIRFDealModel.IsDeleted = false;
+
+                await _unitOfWork.IRFDeal.AddAsync(createIRFDealModel);
+                await _unitOfWork.SaveChangesAsync();
+
+                var newIRFDeal = await _unitOfWork.IRFDeal.GetAsync(x => x.Id == createIRFDealModel.Id);
+
+                viewModel.CreateLeaseListingViewModel.IRFDealId = newIRFDeal!.Id;
+                viewModel.CreateLeaseListingViewModel.CreateIRFDealLeaseListingViewModel!.IsActive = newIRFDeal.IsActive;
+                viewModel.CreateLeaseListingViewModel.CreateIRFDealLeaseListingViewModel.CreatedBy = newIRFDeal.CreatedBy;
+                viewModel.CreateLeaseListingViewModel.CreateIRFDealLeaseListingViewModel.CreatedAt = newIRFDeal.CreatedAt;
+
+                // Main lease listing setup
+                var leaseListingModel = viewModel.CreateLeaseListingViewModel.ToLeaseListingModel();
+                leaseListingModel.IsActive = true;
+                leaseListingModel.IsDeleted = false;
+                leaseListingModel.CreatedBy = user.Id;
+                leaseListingModel.CreatedAt = DateTime.Now;
+
+                await _unitOfWork.LeaseListing.AddAsync(leaseListingModel);
+                await _unitOfWork.SaveChangesAsync(); // so leaseListingModel.Id is available
+
+                // Handle file uploads (on submit only)
+                if (actionType.ToLower() == "submit" &&
+                    viewModel.CreateLeaseListingViewModel.CreateFileUploadListViewModel?.CreateFileUploadsViewModel != null)
+                {
+                    var uploadPath = CreateFilePath(leaseListingModel.Id);
+                    await CreateFileUploadData(
+                        viewModel.CreateLeaseListingViewModel.CreateFileUploadListViewModel.CreateFileUploadsViewModel,
+                        leaseListingModel.Id,
+                        transactionType.Id,
+                        viewModel.CreateLeaseListingViewModel.DocumentTypeList,
+                        uploadPath
+                    );
+                }
+
+                leaseListingModel.TransactionType = transactionType;
+
+                if (viewModel.CreateLeaseListingViewModel.DealStatusId == 1) // submitted
+                {
+                    await NotifyDealAdminAsync(user, leaseListingModel);
+                }
+
+                await transaction.CommitAsync();
+                return RedirectToAction(nameof(Index), new { addSuccess = true });
             }
             catch (DbUpdateConcurrencyException)
             {
+                await transaction.RollbackAsync();
                 ModelState.AddModelError("", "Transaction number was updated by another user. Please try again.");
                 return View("Index", viewModel);
             }
-
-            await PopulateDocumentTypesAsync(viewModel, transactionTypeName);
-            ApplyTabMenu(viewModel, "IRFDetails1");
-
-            // ✅ Run validations only if submitting
-            if (actionType == "Submit" && !ModelState.IsValid)
+            catch (Exception)
             {
-                var notification = _notificationService.Notify(
-                    "Please review the form for errors. All required fields must be filled correctly.",
-                    "Validation Failed",
-                    NotificationType.error
-                );
-                TempData["Message"] = JsonConvert.SerializeObject(notification);
-                return View("Index", viewModel);
+                await transaction.RollbackAsync();
+                throw;
             }
-
-            // ✅ Create IRF Deal
-            var createIRFDealModel = viewModel.CreateLeaseListingViewModel.CreateIRFDealLeaseListingViewModel?.ToIRFDealModel();
-            createIRFDealModel!.CreatedAt = DateTime.Now;
-            createIRFDealModel.CreatedBy = user.Id;
-            createIRFDealModel.IsActive = true;
-            createIRFDealModel.IsDeleted = false;
-
-            await _unitOfWork.IRFDeal.AddAsync(createIRFDealModel);
-            var newIRFDeal = await _unitOfWork.IRFDeal.GetAsync(x => x.Id == createIRFDealModel.Id);
-
-            viewModel.CreateLeaseListingViewModel.IRFDealId = newIRFDeal!.Id;
-            viewModel.CreateLeaseListingViewModel.CreateIRFDealLeaseListingViewModel!.IsActive = newIRFDeal.IsActive;
-            viewModel.CreateLeaseListingViewModel.CreateIRFDealLeaseListingViewModel.CreatedBy = newIRFDeal.CreatedBy;
-            viewModel.CreateLeaseListingViewModel.CreateIRFDealLeaseListingViewModel.CreatedAt = newIRFDeal.CreatedAt;
-
-            viewModel.CreateLeaseListingViewModel.IsActive = true;
-            viewModel.CreateLeaseListingViewModel.IsDeleted = false;
-            viewModel.CreateLeaseListingViewModel.CreatedBy = user.Id;
-            viewModel.CreateLeaseListingViewModel.CreatedAt = DateTime.Now;
-
-            var leaseListingModel = viewModel.CreateLeaseListingViewModel.ToLeaseListingModel();
-            await _unitOfWork.LeaseListing.AddAsync(leaseListingModel);
-
-            // ✅ Handle file upload only on submit
-            if (actionType == "Submit" && viewModel.CreateLeaseListingViewModel.CreateFileUploadListViewModel?.CreateFileUploadsViewModel != null)
-            {
-                var uploadPath = CreateFilePath(leaseListingModel.Id);
-                await CreateFileUploadData(
-                    viewModel.CreateLeaseListingViewModel.CreateFileUploadListViewModel.CreateFileUploadsViewModel,
-                    leaseListingModel.Id,
-                    transactionType.Id,
-                    viewModel.CreateLeaseListingViewModel.DocumentTypeList,
-                    uploadPath
-                );
-            }
-            leaseListingModel.TransactionType = viewModel.CreateLeaseListingViewModel.TransactionType;
-            // ✅ Notify Deal Admin only if it's a submission
-            if (viewModel.CreateLeaseListingViewModel.DealStatusId == 1)
-            {
-                await NotifyDealAdminAsync(user, leaseListingModel);
-            }
-
-            return RedirectToAction(nameof(Index), new { addSuccess = true });
         }
+
 
 
         private async Task<List<InternalEmail>> GetDealAdminEmails()
@@ -432,20 +452,18 @@ namespace Intl.Realty.Firm.Controllers
             if (id == 0)
                 return NotFoundResultWithMessage("LeaseListing", id);
 
-            var dealStatusIEnum = await _unitOfWork.DealStatus.GetAllAsync(x => x.IsActive == true && !x.IsDeleted);
-            viewModel.EditLeaseListingViewModel.DealStatusList = dealStatusIEnum.ToList();
+            var dealStatusList = await _unitOfWork.DealStatus.GetAllAsync(x => x.IsActive && !x.IsDeleted);
+            viewModel.EditLeaseListingViewModel.DealStatusList = dealStatusList.ToList();
 
             if (!ModelState.IsValid)
                 return View(viewModel);
 
-            // ✅ Get current user and validate ID
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (!Guid.TryParse(userId, out Guid parsedUserId))
                 throw new InvalidOperationException("Invalid user ID - cannot convert to GUID.");
 
             var user = await _userManager.FindByIdAsync(userId!);
 
-            // ✅ Load LeaseListing model (tracked)
             var leaseListingModel = await _unitOfWork.LeaseListing.GetAsync(
                 x => x.Id == id,
                 includeProperties: "IRFDeal,TransactionType,DealStatus",
@@ -454,15 +472,12 @@ namespace Intl.Realty.Firm.Controllers
             if (leaseListingModel == null)
                 return NotFoundResultWithMessage("LeaseListing", id);
 
-            // ✅ Load transaction type
             var transactionType = await _unitOfWork.TransactionType.GetAsync(x => x.Id == leaseListingModel.TransactionTypeId);
             viewModel.EditLeaseListingViewModel.TransactionType = transactionType;
             viewModel.EditLeaseListingViewModel.TransactionTypeId = transactionType.Id;
 
-            // ✅ Rebuild document type list
             var documentTypeAssignments = await _unitOfWork.DocumentTypeAssignment
                 .GetAllAsync(x => !x.IsDeleted, includeProperties: "TransactionType,DocumentType");
-
             var documentTypes = await _unitOfWork.DocumentType.GetAllAsync(x => !x.IsDeleted);
 
             viewModel.EditLeaseListingViewModel.DocumentTypeList = _documentTransactionService
@@ -471,49 +486,65 @@ namespace Intl.Realty.Firm.Controllers
                     documentTypeAssignments.ToList(),
                     documentTypes.ToList());
 
-            // ✅ Filter file uploads
             leaseListingModel.FileUploads = FilterFileUploadsWithFilesOnly(leaseListingModel.FileUploads);
 
-            // ✅ Update IRFDeal safely
-            var irfDealDb = await _unitOfWork.IRFDeal.GetAsync(x => x.Id == leaseListingModel.IRFDealId, tracked: true);
-            var editedIRFData = viewModel.EditLeaseListingViewModel.EditIRFDealLeaseListingViewModel;
+            using var transaction = await _unitOfWork.BeginTransactionAsync();
 
-            if (irfDealDb != null && editedIRFData != null)
+            try
             {
-                irfDealDb.UpdateFromViewModel(editedIRFData, parsedUserId);
-                await _unitOfWork.IRFDeal.UpdateAsync(irfDealDb);
+                var irfDealDb = await _unitOfWork.IRFDeal.GetAsync(x => x.Id == leaseListingModel.IRFDealId, tracked: true);
+                var editedIRFData = viewModel.EditLeaseListingViewModel.EditIRFDealLeaseListingViewModel;
+
+                if (irfDealDb != null && editedIRFData != null)
+                {
+                    irfDealDb.UpdateFromViewModel(editedIRFData, parsedUserId);
+                    irfDealDb.UpdatedAt = DateTime.Now;
+                    irfDealDb.UpdatedBy = parsedUserId;
+                    await _unitOfWork.IRFDeal.UpdateAsync(irfDealDb);
+                }
+
+                leaseListingModel.DealStatusId = viewModel.EditLeaseListingViewModel.DealStatusId;
+                leaseListingModel.Notes = viewModel.EditLeaseListingViewModel.Notes;
+                leaseListingModel.DateSubmitted = DateTime.Now;
+                leaseListingModel.IsActive = true;
+                leaseListingModel.UpdatedAt = DateTime.Now;
+                leaseListingModel.UpdatedBy = parsedUserId;
+
+                // 🔒 Concurrency check
+                leaseListingModel.RowVersion = viewModel.EditLeaseListingViewModel.RowVersion;
+
+                await _unitOfWork.SaveChangesAsync();
+
+                var uploadPath = CreateFilePath(leaseListingModel.Id);
+                var fileUploadVM = viewModel.EditLeaseListingViewModel.CreateFileUploadListViewModel?.CreateFileUploadsViewModel;
+
+                if (fileUploadVM != null)
+                {
+                    await CreateFileUploadData(
+                        fileUploadVM,
+                        leaseListingModel.Id,
+                        transactionType.Id,
+                        viewModel.EditLeaseListingViewModel.DocumentTypeList,
+                        uploadPath
+                    );
+                }
+
+                await transaction.CommitAsync();
+                return RedirectToAction(nameof(Index), new { editSuccess = true });
             }
-
-            // ✅ Update LeaseListing properties
-            var isAgent = await _userManager.IsInRoleAsync(user, "Agent");
-            leaseListingModel.DealStatusId = viewModel.EditLeaseListingViewModel.DealStatusId;
-            leaseListingModel.Notes = viewModel.EditLeaseListingViewModel.Notes;
-            leaseListingModel.DateSubmitted = DateTime.Now;
-            leaseListingModel.IsActive = true;
-            leaseListingModel.UpdatedAt = DateTime.Now;
-            leaseListingModel.UpdatedBy = parsedUserId;
-            //leaseListingModel.IRFDeal = null; // 🔒 Prevent EF from tracking unwanted changes
-
-            // ✅ Save changes (tracked entity)
-            await _unitOfWork.SaveChangesAsync();
-
-            // ✅ Handle file uploads
-            var uploadPath = CreateFilePath(leaseListingModel.Id);
-            var fileUploadVM = viewModel.EditLeaseListingViewModel.CreateFileUploadListViewModel?.CreateFileUploadsViewModel;
-
-            if (fileUploadVM != null)
+            catch (DbUpdateConcurrencyException)
             {
-                await CreateFileUploadData(
-                    fileUploadVM,
-                    leaseListingModel.Id,
-                    transactionType.Id,
-                    viewModel.EditLeaseListingViewModel.DocumentTypeList,
-                    uploadPath
-                );
+                await transaction.RollbackAsync();
+                ModelState.AddModelError(string.Empty, "This record was modified by another user after you loaded the form. Please reload and try again.");
+                return View(viewModel);
             }
-
-            return RedirectToAction(nameof(Index), new { editSuccess = true });
+            catch (Exception)
+            {
+                await transaction.RollbackAsync();
+                throw;
+            }
         }
+
 
         private IActionResult NotFoundResultWithMessage(string entityName, int id)
         {

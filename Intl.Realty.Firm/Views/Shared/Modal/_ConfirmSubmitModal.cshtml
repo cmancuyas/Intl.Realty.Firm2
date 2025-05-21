@@ -1,16 +1,18 @@
-﻿<div class="modal fade" id="confirmSubmitModal" tabindex="-1" role="dialog" aria-labelledby="confirmSubmitModalLabel" aria-hidden="true" data-backdrop="static">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-body d-flex flex-column align-items-center py-5">
-                <div class="text-white bg-blue p-3 rounded-circle">
-                    <i data-feather="check-circle" width="80" height="80"></i>
+﻿<div class="modal fade" id="confirmSubmitModal" tabindex="-1" aria-labelledby="confirmSubmitModalLabel" aria-hidden="true" data-bs-backdrop="static">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content text-center">
+            <div class="modal-body py-5 d-flex flex-column align-items-center">
+                <div class="text-white bg-dark p-3 rounded-circle">
+                    <i data-feather="check-circle" width="60" height="60"></i>
                 </div>
-                <h1 class="text-blue fw-bold pt-4 letter-space-1">Submit Transaction</h1>
-                <span class="fw-medium letter-space-1">Are you sure you want to submit?</span>
-            </div>
-            <div class="d-flex justify-content-center mb-5 gap-4">
-                <button type="button" class="btn btn-secondary w-25" id="btnCancel" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
-                <button type="button" class="btn btn-primary w-25" id="btnConfirmSubmit">Confirm</button>
+                <h5 class="text-dark fw-bold pt-4" id="confirmSubmitModalLabel">Submit Transaction</h5>
+                <p class="fw-medium">Are you sure you want to submit?</p>
+
+                <!-- 👇 Matching Save Modal Style -->
+                <div class="d-flex justify-content-center gap-3 mt-4 flex-wrap">
+                    <button type="button" class="btn btn-outline-secondary px-4" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-dark px-4" id="btnConfirmSubmit">Confirm</button>
+                </div>
             </div>
         </div>
     </div>

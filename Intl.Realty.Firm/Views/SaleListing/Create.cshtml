@@ -9,9 +9,10 @@
     ViewData["Title"] = "Create";
     Layout = "~/Views/Shared/_LayoutAfterLogin.cshtml";
 }
+<partial name="~/Views/Shared/Modal/_ConfirmSaveModal.cshtml" />
 <partial name="~/Views/Shared/Modal/_ConfirmSubmitModal.cshtml" />
 <partial name="~/Views/Shared/Modal/_ConfirmSuccessModal.cshtml" />
-<partial name="~/Views/Shared/Modal/_ConfirmSaveModal.cshtml" />
+
 <div class="page-controller mb-5">
     @*     <a href="@Url.Action("Index","SaleListing")" class="text-decoration-none text-blue d-flex mb-4">
     <i data-feather="chevron-left"></i><span>Back</span>
@@ -28,9 +29,12 @@
                   class="mb-5"
                   method="post"
                   enctype="multipart/form-data">
-                <div asp-validation-summary="All" class="text-danger"></div>
+                <input type="hidden" id="ActionTypeHidden" name="actionType" />
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <input type="hidden" id="ActionTypeHidden" name="actionType" />
                 <input asp-for="CreateSaleListingViewModel.DealTransactionNumber" hidden />
-
+                <input type="hidden" name="SaleListingViewModel.RowVersion"
+                       value="@Convert.ToBase64String(Model.CreateSaleListingViewModel.RowVersion)" />
                 <div class="tab-page">
                     <!-- Dropdown for Mobile -->
                     <div class="dropdown d-md-none mb-3">
@@ -352,15 +356,14 @@
                 </div>
 
                 <hr class="my-5" />
-                <input type="hidden" id="ActionTypeHidden" name="actionType" />
                 @{
                     var buttonModel = new CreateActionButtonsViewModel
-            {
-                ControllerName = "SaleListing",
-                ShowSave = true,
-                ShowSubmit = true,
-                ShowCancel = true
-            };
+                    {
+                        ControllerName = "SaleListing",
+                        ShowSave = true,
+                        ShowSubmit = true,
+                        ShowCancel = true
+                    };
                 }
 
                 @await Html.PartialAsync("~/Views/Shared/Transaction/_CreateActionButtons.cshtml", buttonModel)
@@ -381,15 +384,15 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script>
-        const documentTypes = @Html.Raw(JsonConvert.SerializeObject(Model.CreateSaleListingViewModel.DocumentTypeList));
+        const documentTypeAssignments = @Html.Raw(JsonConvert.SerializeObject(Model.CreateSaleListingViewModel.DocumentTypeAssignmentList));
 
         $(document).ready(function () {
             initializeSubmitHandlers({
-                formId: "ListFormId", // ensure your form has this ID
-                dealStatusDropdownSelector: '[name="CreateSaleListingViewModel.DealStatusId"]',
-                isAdminLike: false, // or use Razor logic if roles apply here too
-                fileErrorScrollTargetId: "fileUploads", // or your tab ID
-                validateFilesFn: () => defaultValidateFiles(documentTypes)
+                formId: "ListFormId", // ✅ match your form's actual ID
+                dealStatusDropdownSelector: '[name="CreateSaleListingViewModel.DealStatusId"]', // ✅ or adjust to match input name
+                isAdminLike: false, // ✅ or dynamically set via Razor logic
+                fileErrorScrollTargetId: "fileUploads", // ✅ your tab/section ID
+                documentTypeAssignment: documentTypeAssignments
             });
         });
     </script>
