@@ -16,7 +16,8 @@
                 Please tell us more about your login issue!
             </h2>
             <p class="text-center text-muted w-75 mx-auto mb-4" style="font-size: 0.95rem;">
-                We kindly request that all inquiries submitted via this form be those pertaining to login issues. For any other issues, please login and submit a request. All unrelated inquiries submitted via this form will not be addressed.
+                We kindly request that all inquiries submitted via this form be those pertaining to login issues.
+                For any other issues, please login and submit a request. All unrelated inquiries submitted via this form will not be addressed.
             </p>
 
             <div class="container-fluid w-75 px-0">
@@ -36,10 +37,16 @@
                                 <span asp-validation-for="Description" class="text-danger"></span>
                             </div>
 
-                            <button type="submit" class="btn btn-primary w-100 mt-2" id="submitBtn">
-                                <span id="btnText">Submit</span>
-                                <span id="spinner" class="spinner-border spinner-border-sm ms-2 d-none" role="status" aria-hidden="true"></span>
-                            </button>
+                            <div class="d-flex justify-content-between align-items-center flex-wrap mt-2 gap-2">
+                                <a asp-action="Login" asp-controller="Account" class="small text-muted text-decoration-none d-flex align-items-center">
+                                    <i data-feather="arrow-left" class="me-1"></i> Back to Login
+                                </a>
+
+                                <button type="submit" class="btn btn-primary" id="submitBtn">
+                                    <span id="btnText">Submit</span>
+                                    <span id="spinner" class="spinner-border spinner-border-sm ms-2 d-none" role="status" aria-hidden="true"></span>
+                                </button>
+                            </div>
                         </form>
                     </div>
                 </div>
@@ -48,7 +55,14 @@
     </div>
 </container>
 
+<style>
+    a.text-muted.text-decoration-none:hover {
+        text-decoration: underline;
+    }
+</style>
+
 @section Scripts {
+    <script src="https://unpkg.com/feather-icons"></script>
     <script>
         document.getElementById("supportForm").addEventListener("submit", function () {
             const btn = document.getElementById("submitBtn");
@@ -59,5 +73,7 @@
             spinner.classList.remove("d-none");
             btnText.textContent = "Submitting...";
         });
+
+        feather.replace(); // ✅ Activate Feather icons
     </script>
 }
