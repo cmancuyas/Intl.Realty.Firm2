@@ -1,0 +1,127 @@
+﻿@{
+    ViewData["Title"] = "Step-by-Step Instructions";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container py-5">
+    <h2 class="text-center mb-4 fw-bold">Having Trouble Logging In?</h2>
+    <p class="text-center text-muted mb-5">Follow these step-by-step instructions to reset your password or confirm your email address.</p>
+
+    <div class="scroll-wrapper">
+        <div class="container py-5">
+
+            @* STEP 1 *@
+            <div class="mb-5">
+                <h5 class="fw-bold">Step 1: Go to the Login Page</h5>
+                <p>Navigate to the application's login page.</p>
+                <div class="text-center">
+                    <img src="~/files/img/login-instructions/step1-login-page.png" class="img-fluid rounded border" alt="Login Page Screenshot" />
+                </div>
+            </div>
+
+            @* STEP 2 *@
+            <div class="mb-5">
+                <h5 class="fw-bold">Step 2: Click <em>Forgot Password</em></h5>
+                <p>Click on the “Forgot Password?” link below the password field.</p>
+                <div class="text-center">
+                    <img src="~/files/img/login-instructions/step2-forgot-password.png" class="img-fluid rounded border" alt="Forgot Password Screenshot" />
+                </div>
+            </div>
+
+            @* STEP 3 *@
+            <div class="mb-5">
+                <h5 class="fw-bold">Step 3: Enter Your Email Address</h5>
+                <p>Provide the email address you used during registration, then submit the form.</p>
+                <div class="text-center">
+                    <img src="~/files/img/login-instructions/step3-enter-email.png" class="img-fluid rounded border" alt="Enter Email Screenshot" />
+                </div>
+            </div>
+
+            @* STEP 4 *@
+            <div class="mb-5">
+                <h5 class="fw-bold">Step 4: Response Based on Your Email Status</h5>
+                <p>
+                    If your email is <strong>already confirmed</strong>, you'll see a message saying that password reset instructions have been sent.
+                </p>
+                <div class="text-center">
+                    <img src="~/files/img/login-instructions/step4-forgot-password.png" class="img-fluid rounded border" alt="Password Reset Sent Screenshot" />
+                </div>
+
+                <p class="mt-4">
+                    If your email is <strong>not confirmed</strong>, you’ll see a prompt to request a confirmation link. Click the button to receive it.
+                </p>
+                <div class="text-center">
+                    <img src="~/files/img/login-instructions/step4-email-not-confirmed-button.png" class="img-fluid rounded border" alt="Email Confirmation Prompt Screenshot" />
+                </div>
+            </div>
+
+            @* STEP 5 *@
+            <div class="mb-5">
+                <h5 class="fw-bold">Step 5: Check Your Inbox and Spam Folder</h5>
+                <p>Check both your Inbox and Spam folders for the email.</p>
+
+                <p>If your email is <strong>confirmed</strong>, you will receive a password reset email:</p>
+                <div class="text-center">
+                    <img src="~/files/img/login-instructions/step6-email-received-forgot-password.png" class="img-fluid rounded border" alt="Password Reset Email Screenshot" />
+                </div>
+
+                <p class="mt-4">If your email is <strong>not confirmed</strong>, you will receive an email asking you to confirm your account:</p>
+                <div class="text-center">
+                    <img src="~/files/img/login-instructions/step6-email-received-confirmation.png" class="img-fluid rounded border" alt="Email Confirmation Screenshot" />
+                </div>
+            </div>
+
+            @* STEP 6 *@
+            <div class="mb-5">
+                <h5 class="fw-bold">Step 6: Click the Link</h5>
+                <p>Click the link in the email to either reset your password or confirm your account.</p>
+
+                <p>If you received an email confirmation link:</p>
+                <div class="text-center">
+                    <img src="~/files/img/login-instructions/step7-click-link-email-confirmation.png" class="img-fluid rounded border" alt="Email Confirmation Link Screenshot" />
+                </div>
+
+                <p class="mt-4">If you received a password reset link:</p>
+                <div class="text-center">
+                    <img src="~/files/img/login-instructions/step7-click-link-email-forgot-password.png" class="img-fluid rounded border" alt="Password Reset Link Screenshot" />
+                </div>
+            </div>
+
+            @* STEP 7 *@
+            <div class="mb-5">
+                <h5 class="fw-bold">Step 7: Reset Password / Email Confirmation</h5>
+                <p>
+                    If you're resetting your password, you’ll be directed to this page where you can create a new password.
+                </p>
+                <div class="text-center">
+                    <img src="~/files/img/login-instructions/step8-click-link-email-forgot-password-page.png" class="img-fluid rounded border" alt="Reset Password Page Screenshot" />
+                </div>
+
+                <p class="mt-4">If you're confirming your email, you’ll see a confirmation success message:</p>
+                <div class="text-center">
+                    <img src="~/files/img/login-instructions/step8-click-link-email-confirmed-page.png" class="img-fluid rounded border" alt="Email Confirmed Page Screenshot" />
+                </div>
+            </div>
+
+            @* STEP 8 *@
+            <div class="mb-5">
+                <h5 class="fw-bold">Step 8: Login to Your Account</h5>
+                <p>Return to the login page and sign in with your updated or confirmed credentials to access your dashboard.</p>
+                <div class="text-center">
+                    <img src="~/files/img/login-instructions/step9-login-successfully.png" class="img-fluid rounded border" alt="Login Successful Screenshot" />
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .scroll-wrapper {
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        overflow-y: auto;
+    }
+</style>
