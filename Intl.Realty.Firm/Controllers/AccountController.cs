@@ -37,7 +37,12 @@ namespace Intl.Realty.Firm.Controllers
             _googleCaptchaService = googleCaptchaService;
             _configurationService = configurationService;
         }
-
+        [HttpGet]
+        [AllowAnonymous]
+        public async Task<IActionResult> DetailedInstructions()
+        {
+            return View();
+        }
         [AcceptVerbs("Get", "Post")]
         public async Task<IActionResult> Logout()
         {
