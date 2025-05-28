@@ -444,19 +444,21 @@ namespace Intl.Realty.Firm.Controllers
             var dealStatusList = await _unitOfWork.DealStatus.GetAllAsync(x => x.IsActive && !x.IsDeleted);
             viewModel.EditLeaseCoopViewModel.DealStatusList = dealStatusList.ToList();
 
+            var actionType = Request.Form["actionType"];
+
             if (!ModelState.IsValid)
             {
-                var isAdminLike = isAdmin || isSuperAdmin || isDealAdmin;
-
-                if (actionType == "save" && isAdminLike)
+                if (actionType == "save")
                 {
-                    // Skip validation errors
+                    // Skip validation errors on Save
+                    // Optionally log validation issues for auditing
                 }
                 else
                 {
-                    return View(viewModel);
+                    return View(viewModel); // enforce on Submit
                 }
             }
+
 
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (!Guid.TryParse(userId, out Guid parsedUserId))
