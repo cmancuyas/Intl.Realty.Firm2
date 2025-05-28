@@ -383,15 +383,17 @@
     <script src="~/js/submitUtility.js" asp-append-version="true"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
+    @* Submit Handler Initialization *@
     <script>
         const documentTypeAssignments = @Html.Raw(JsonConvert.SerializeObject(Model.CreateSaleListingViewModel.DocumentTypeAssignmentList));
+        const isAdminLike = @((User.IsInRole("Admin") || User.IsInRole("SuperAdmin") || User.IsInRole("DealAdmin")).ToString().ToLower());
 
         $(document).ready(function () {
             initializeSubmitHandlers({
-                formId: "ListFormId", // ✅ match your form's actual ID
-                dealStatusDropdownSelector: '[name="CreateSaleListingViewModel.DealStatusId"]', // ✅ or adjust to match input name
-                isAdminLike: false, // ✅ or dynamically set via Razor logic
-                fileErrorScrollTargetId: "fileUploads", // ✅ your tab/section ID
+                formId: "ListFormId", // 🔁 Matches your <form id="ListFormId">
+                dealStatusDropdownSelector: '[name="CreateSaleListingViewModel.DealStatusId"]',
+                isAdminLike: isAdminLike,
+                fileErrorScrollTargetId: "fileUploads", // 🔁 scroll to this div on file error
                 documentTypeAssignment: documentTypeAssignments
             });
         });

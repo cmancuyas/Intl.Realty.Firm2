@@ -461,22 +461,27 @@
 
 
 @section Scripts {
+    @* Load ASP.NET Core validation partial *@
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
+
+    @* JS Utilities & Plugins *@
     <script src="~/js/viewDataTableUtility.js" asp-append-version="true"></script>
     <script src="~/js/submitUtility.js" asp-append-version="true"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
+    @* Submit Handler Init *@
     <script>
         const documentTypeAssignments = @Html.Raw(JsonConvert.SerializeObject(Model.EditSaleListingViewModel.DocumentTypeAssignmentList));
+        const isAdminLike = @((User.IsInRole("Admin") || User.IsInRole("SuperAdmin") || User.IsInRole("DealAdmin")).ToString().ToLower());
 
         $(document).ready(function () {
             initializeSubmitHandlers({
-                formId: "ListFormId", // ✅ match your form's actual ID
-                dealStatusDropdownSelector: '[name="EditSaleListingViewModel.DealStatusId"]', // ✅ or adjust to match input name
-                isAdminLike: false, // ✅ or dynamically set via Razor logic
-                fileErrorScrollTargetId: "fileUploads", // ✅ your tab/section ID
+                formId: "ListFormId", // 🔁 Actual form ID in the DOM
+                dealStatusDropdownSelector: '[name="EditSaleListingViewModel.DealStatusId"]', // 🔁 Matches Razor binding
+                isAdminLike: isAdminLike,
+                fileErrorScrollTargetId: "fileUploads", // 🔁 Scroll target for validation
                 documentTypeAssignment: documentTypeAssignments
             });
         });

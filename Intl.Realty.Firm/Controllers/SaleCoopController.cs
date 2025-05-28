@@ -448,8 +448,21 @@ namespace Intl.Realty.Firm.Controllers
             var dealStatusList = await _unitOfWork.DealStatus.GetAllAsync(x => x.IsActive && !x.IsDeleted);
             viewModel.EditSaleCoopViewModel.DealStatusList = dealStatusList.ToList();
 
+            var actionType = Request.Form["actionType"];
+
             if (!ModelState.IsValid)
-                return View(viewModel);
+            {
+                if (actionType == "save")
+                {
+                    // Skip validation errors on Save
+                    // Optionally log validation issues for auditing
+                }
+                else
+                {
+                    return View(viewModel); // enforce on Submit
+                }
+            }
+
 
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (!Guid.TryParse(userId, out Guid parsedUserId))
