@@ -445,7 +445,18 @@ namespace Intl.Realty.Firm.Controllers
             viewModel.EditLeaseCoopViewModel.DealStatusList = dealStatusList.ToList();
 
             if (!ModelState.IsValid)
-                return View(viewModel);
+            {
+                var isAdminLike = isAdmin || isSuperAdmin || isDealAdmin;
+
+                if (actionType == "save" && isAdminLike)
+                {
+                    // Skip validation errors
+                }
+                else
+                {
+                    return View(viewModel);
+                }
+            }
 
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (!Guid.TryParse(userId, out Guid parsedUserId))

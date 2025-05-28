@@ -306,28 +306,34 @@
     </div>
 </div>
 
+
+
 @section Scripts {
+    @* ASP.NET Core client-side validation *@
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
+
+    @* JS Utilities and Plugins *@
     <script src="~/js/viewDataTableUtility.js" asp-append-version="true"></script>
     <script src="~/js/submitUtility.js" asp-append-version="true"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
+    @* Submit Handler Initialization *@
     <script>
         const documentTypeAssignments = @Html.Raw(JsonConvert.SerializeObject(Model.CreateLeaseCoopViewModel.DocumentTypeAssignmentList));
+        const isAdminLike = @((User.IsInRole("Admin") || User.IsInRole("SuperAdmin") || User.IsInRole("DealAdmin")).ToString().ToLower());
 
         $(document).ready(function () {
             initializeSubmitHandlers({
-                formId: "ListFormId", // ✅ match your form's actual ID
-                dealStatusDropdownSelector: '[name="CreateLeaseCoopViewModel.DealStatusId"]', // ✅ or adjust to match input name
-                isAdminLike: false, // ✅ or dynamically set via Razor logic
-                fileErrorScrollTargetId: "fileUploads", // ✅ your tab/section ID
+                formId: "ListFormId",
+                dealStatusDropdownSelector: '[name="CreateLeaseCoopViewModel.DealStatusId"]',
+                isAdminLike: isAdminLike,
+                fileErrorScrollTargetId: "fileUploads",
                 documentTypeAssignment: documentTypeAssignments
             });
         });
     </script>
 }
-
 
 

@@ -72,9 +72,7 @@ async function defaultValidateFilesAsync(documentTypeAssignment = []) {
 
 // ✅ AJAX: Get uploaded document types
 async function getUploadedDocumentTypesAsync(entityType, entityId) {
-    if (!entityType || !entityId) {
-        return [];
-    }
+    if (!entityType || !entityId) return [];
 
     try {
         const response = await $.ajax({
@@ -146,7 +144,7 @@ function resetSubmitButton() {
     $("#submitSpinner").hide();
 }
 
-// ✅ Main Submit Handler
+// ✅ Main Submit Handler (with formId usage)
 function initializeSubmitHandlers({
     formId,
     dealStatusDropdownSelector,
@@ -159,9 +157,16 @@ function initializeSubmitHandlers({
     const $form = $(`#${formId}`);
     let isSubmitting = false;
 
-    // Cancel Save resets state
-    $('#confirmSaveModal').on('hidden.bs.modal', resetSaveButton);
-    $('#confirmSubmitModal').on('hidden.bs.modal', resetSubmitButton);
+    // Reset state
+    $('#confirmSaveModal').on('hidden.bs.modal', () => {
+        isSubmitting = false;
+        resetSaveButton();
+    });
+
+    $('#confirmSubmitModal').on('hidden.bs.modal', () => {
+        isSubmitting = false;
+        resetSubmitButton();
+    });
 
     $('#btnSave').on('click', () => {
         $('#ActionTypeHidden').val('save');
@@ -179,7 +184,7 @@ function initializeSubmitHandlers({
                 text: "Please complete all required fields.",
                 confirmButtonColor: "#d33"
             });
-            resetSubmitButton(); // Reset if error
+            resetSubmitButton();
             return;
         }
 
@@ -195,7 +200,7 @@ function initializeSubmitHandlers({
                 html: result.message,
                 confirmButtonColor: "#d33"
             });
-            resetSubmitButton(); // Reset if file error
+            resetSubmitButton();
             return;
         }
 
@@ -214,6 +219,7 @@ function initializeSubmitHandlers({
     });
 
     // ✅ Confirm Save
+    // ✅ Confirm Save (always set DealStatusId to 2)
     $(document).on('click', '#btnConfirmSave', () => {
         if (isSubmitting) return;
         isSubmitting = true;
@@ -222,8 +228,20 @@ function initializeSubmitHandlers({
             .prop('disabled', true)
             .html('<span class="spinner-border spinner-border-sm me-2"></span>Saving...');
 
-        $form.submit();
+        // Force DealStatusId = 2
+        const statusSelector = document.querySelector(dealStatusDropdownSelector);
+        if (statusSelector) {
+            statusSelector.value = "2";
+        } else {
+            // fallback hidden input
+            const prefix = detectViewModelPrefix();
+            const fallbackName = `${prefix}.DealStatusId`;
+            $(`#${formId}`).append(`<input type="hidden" name="${fallbackName}" value="2" />`);
+        }
+
+        document.getElementById(formId).submit();
     });
+
 
     // ✅ Confirm Submit
     $(document).on('click', '#btnConfirmSubmit', () => {
@@ -235,6 +253,6 @@ function initializeSubmitHandlers({
             .prop('disabled', true)
             .html('<span class="spinner-border spinner-border-sm me-2"></span>Submitting...');
 
-        $form.submit();
+        document.getElementById(formId).submit();
     });
 }
