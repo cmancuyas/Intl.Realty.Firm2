@@ -795,6 +795,7 @@ namespace Intl.Realty.Firm.Controllers
             var isAgent = await _userManager.IsInRoleAsync(user!, "Agent");
             var isDealAdmin = await _userManager.IsInRoleAsync(user!, "DealAdmin");
             var isTeamLeader = await _userManager.IsInRoleAsync(user!, "TeamLeader");
+            var isSuperUser = await _userManager.IsInRoleAsync(user!, "SuperUser");
 
             // EF-backed query
             var result = _unitOfWork.LeaseCoop.AsQueryable(
@@ -803,7 +804,7 @@ namespace Intl.Realty.Firm.Controllers
             );
 
             // Role-based filtering
-            if (!(isAdmin || isSuperAdmin))
+            if (!(isAdmin || isSuperAdmin || isSuperUser))
             {
                 if (isAgent)
                 {

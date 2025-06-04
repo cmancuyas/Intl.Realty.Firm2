@@ -109,7 +109,7 @@ namespace Intl.Realty.Firm.Controllers
             viewModel.CreateLeaseListingViewModel.DealTransactionNumber = paddedNumberRange;
 
             var documentTypeAssignmentIEnum = await _unitOfWork.DocumentTypeAssignment.GetAllAsync(x => x.IsDeleted == false, includeProperties: "TransactionType,DocumentType");
-            
+
             viewModel.CreateLeaseListingViewModel.DocumentTypeAssignmentList = documentTypeAssignmentIEnum.Where(x => x.TransactionType.Id == transactionType.Id).ToList(); // DocumentTypeAssignmentList
 
             var documentTypeIEnum = await _unitOfWork.DocumentType.GetAllAsync(x => x.IsDeleted == false);
@@ -373,69 +373,69 @@ namespace Intl.Realty.Firm.Controllers
             try
             {
 
-            var model = await _unitOfWork.LeaseListing.GetAsync(x => x.Id == id, includeProperties: "TransactionType,IRFDeal,DealStatus");
+                var model = await _unitOfWork.LeaseListing.GetAsync(x => x.Id == id, includeProperties: "TransactionType,IRFDeal,DealStatus");
 
-            string controllerName = this.ControllerContext.RouteData.Values["controller"]!.ToString()!;
+                string controllerName = this.ControllerContext.RouteData.Values["controller"]!.ToString()!;
 
-            if (model == null)
-            {
-                NotFoundViewModel notFoundViewModel = new NotFoundViewModel();
-                notFoundViewModel.ErrorTitle = ($"{controllerName} not found");
-                notFoundViewModel.ErrorMessage = ($"{controllerName} with {id} cannot be found!");
-                notFoundViewModel.ControllerName = controllerName;
-                notFoundViewModel.ControllerAction = "Index";
+                if (model == null)
+                {
+                    NotFoundViewModel notFoundViewModel = new NotFoundViewModel();
+                    notFoundViewModel.ErrorTitle = ($"{controllerName} not found");
+                    notFoundViewModel.ErrorMessage = ($"{controllerName} with {id} cannot be found!");
+                    notFoundViewModel.ControllerName = controllerName;
+                    notFoundViewModel.ControllerAction = "Index";
 
-                return View("NotFound", notFoundViewModel);
-            }
-            EditLeaseListingWithTabMenuViewModel viewModel = new EditLeaseListingWithTabMenuViewModel();
+                    return View("NotFound", notFoundViewModel);
+                }
+                EditLeaseListingWithTabMenuViewModel viewModel = new EditLeaseListingWithTabMenuViewModel();
 
-            // to get current user ID
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                // to get current user ID
+                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-            // to get current user info
-            var user = await _userManager.FindByIdAsync(userId!);
+                // to get current user info
+                var user = await _userManager.FindByIdAsync(userId!);
 
-            viewModel.EditLeaseListingViewModel = model.ToEditLeaseListingViewModel();
+                viewModel.EditLeaseListingViewModel = model.ToEditLeaseListingViewModel();
 
-            viewModel.EditLeaseListingViewModel.DealStatus = model.DealStatus;
+                viewModel.EditLeaseListingViewModel.DealStatus = model.DealStatus;
 
-            viewModel.EditLeaseListingViewModel.UpdatedByFullName = user!.FirstName + " " + user.LastName;
-            viewModel.EditLeaseListingViewModel.UpdatedBy = user!.Id;
-            viewModel.EditLeaseListingViewModel.UpdatedAt = DateTime.Now;
+                viewModel.EditLeaseListingViewModel.UpdatedByFullName = user!.FirstName + " " + user.LastName;
+                viewModel.EditLeaseListingViewModel.UpdatedBy = user!.Id;
+                viewModel.EditLeaseListingViewModel.UpdatedAt = DateTime.Now;
 
-            var fileUploads = await _unitOfWork.FileUpload.GetAllAsync(x => x.LeaseListingId == model.Id, includeProperties: "LeaseListing,TransactionType,DocumentType");
+                var fileUploads = await _unitOfWork.FileUpload.GetAllAsync(x => x.LeaseListingId == model.Id, includeProperties: "LeaseListing,TransactionType,DocumentType");
 
-            var fileUploadsWithFiles = FilterFileUploadsWithFilesOnly(fileUploads.ToList());
+                var fileUploadsWithFiles = FilterFileUploadsWithFilesOnly(fileUploads.ToList());
 
-            viewModel.EditLeaseListingViewModel.FileUploads = fileUploadsWithFiles;
+                viewModel.EditLeaseListingViewModel.FileUploads = fileUploadsWithFiles;
 
-            var documentTypeAssignmentIEnum = await _unitOfWork.DocumentTypeAssignment.GetAllAsync(x => x.IsDeleted == false, includeProperties: "TransactionType,DocumentType");
-            var documentTypeIEnum = await _unitOfWork.DocumentType.GetAllAsync(x => x.IsActive==true && x.IsDeleted == false);
-            var documentTypeAssignmentList = documentTypeAssignmentIEnum.ToList();
+                var documentTypeAssignmentIEnum = await _unitOfWork.DocumentTypeAssignment.GetAllAsync(x => x.IsDeleted == false, includeProperties: "TransactionType,DocumentType");
+                var documentTypeIEnum = await _unitOfWork.DocumentType.GetAllAsync(x => x.IsActive == true && x.IsDeleted == false);
+                var documentTypeAssignmentList = documentTypeAssignmentIEnum.ToList();
 
-            viewModel.EditLeaseListingViewModel.DocumentTypeAssignmentList = documentTypeAssignmentList.Where(x => x.TransactionType.Id == model.TransactionType.Id).ToList(); // DocumentTypeAssignmentList
+                viewModel.EditLeaseListingViewModel.DocumentTypeAssignmentList = documentTypeAssignmentList.Where(x => x.TransactionType.Id == model.TransactionType.Id).ToList(); // DocumentTypeAssignmentList
 
-            var documentTypeList = documentTypeIEnum.ToList();
-            viewModel.EditLeaseListingViewModel.DocumentTypeList = _documentTransactionService
-                                                            .GetDocumentTypesFromDocumentTypeAssignment(model.TransactionType!.Description,
-                                                                                                        documentTypeAssignmentList,
-                                                                                                        documentTypeList);
-            var dealStatusIEnum = await _unitOfWork.DealStatus.GetAllAsync(x => x.IsActive == true && !x.IsDeleted);
-            viewModel.EditLeaseListingViewModel.DealStatusList = dealStatusIEnum.ToList();
+                var documentTypeList = documentTypeIEnum.ToList();
+                viewModel.EditLeaseListingViewModel.DocumentTypeList = _documentTransactionService
+                                                                .GetDocumentTypesFromDocumentTypeAssignment(model.TransactionType!.Description,
+                                                                                                            documentTypeAssignmentList,
+                                                                                                            documentTypeList);
+                var dealStatusIEnum = await _unitOfWork.DealStatus.GetAllAsync(x => x.IsActive == true && !x.IsDeleted);
+                viewModel.EditLeaseListingViewModel.DealStatusList = dealStatusIEnum.ToList();
 
-            var menus = EditDealTransactionTabMenuData.GetEditDealTransactionTabMenuData();
+                var menus = EditDealTransactionTabMenuData.GetEditDealTransactionTabMenuData();
 
-            string menuName = "IRFDetails1";
+                string menuName = "IRFDetails1";
 
-            foreach (var menu in menus.Where(x => x.Menu == menuName))
-            {
-                menu.IsActive = "active";
-                menu.IsSelected = "true";
-            }
+                foreach (var menu in menus.Where(x => x.Menu == menuName))
+                {
+                    menu.IsActive = "active";
+                    menu.IsSelected = "true";
+                }
 
-            viewModel.Menus = menus;
+                viewModel.Menus = menus;
 
-            return View(viewModel);
+                return View(viewModel);
 
             }
             catch (Exception ex)
@@ -802,6 +802,7 @@ namespace Intl.Realty.Firm.Controllers
             var isAgent = await _userManager.IsInRoleAsync(user!, "Agent");
             var isDealAdmin = await _userManager.IsInRoleAsync(user!, "DealAdmin");
             var isTeamLeader = await _userManager.IsInRoleAsync(user!, "TeamLeader");
+            var isSuperUser = await _userManager.IsInRoleAsync(user!, "SuperUser");
 
             // Initialize query
             var result = await _unitOfWork.LeaseListing.AsQueryableAsync(
@@ -810,7 +811,7 @@ namespace Intl.Realty.Firm.Controllers
             );
 
             // 🔹 Apply role-based filtering
-            if (!(isAdmin || isSuperAdmin))
+            if (!(isAdmin || isSuperAdmin || isSuperUser))
             {
                 if (isAgent)
                 {
