@@ -821,6 +821,7 @@ namespace Intl.Realty.Firm.Controllers
             var isAgent = await _userManager.IsInRoleAsync(user!, "Agent");
             var isDealAdmin = await _userManager.IsInRoleAsync(user!, "DealAdmin");
             var isTeamLeader = await _userManager.IsInRoleAsync(user!, "TeamLeader");
+            var isSuperUser = await _userManager.IsInRoleAsync(user!, "SuperUser");
 
             // Initialize query
             var result = await _unitOfWork.SaleListing.AsQueryableAsync(
@@ -829,7 +830,7 @@ namespace Intl.Realty.Firm.Controllers
             );
 
             // 🔹 Apply role-based filtering
-            if (!(isAdmin || isSuperAdmin))
+            if (!(isAdmin || isSuperAdmin || isSuperUser))
             {
                 if (isAgent)
                 {
