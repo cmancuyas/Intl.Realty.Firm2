@@ -226,8 +226,7 @@ namespace Intl.Realty.Firm.Controllers
             var transactionTypeList = transactionTypeIEnum.ToList();
             viewModel.TransactionTypes = _documentTransactionService
                                                     .GetTransactionTypesFromDocumentTypeAssignment(model.Description,
-                                                                                                transactionTypeAssignmentList,
-                                                                                                transactionTypeList);
+                                                                                                transactionTypeAssignmentList);
 
             return View(viewModel);
         }

@@ -117,8 +117,7 @@ namespace Intl.Realty.Firm.Controllers
             var documentTypeList = documentTypeIEnum.ToList();
             viewModel.CreateLeaseListingViewModel.DocumentTypeList = _documentTransactionService
                                                             .GetDocumentTypesFromDocumentTypeAssignment(transactionTypeName,
-                                                                                                        documentTypeAssignmentList,
-                                                                                                        documentTypeList);
+                                                                                                        documentTypeAssignmentList);
 
             var menus = CreateDealTransactionTabMenuData.GetCreateDealTransactionTabMenuData();
 
@@ -174,7 +173,7 @@ namespace Intl.Realty.Firm.Controllers
                 var documentTypes = await _unitOfWork.DocumentType.GetAllAsync(x => !x.IsDeleted);
 
                 viewModel.CreateLeaseListingViewModel.DocumentTypeList = _documentTransactionService
-                    .GetDocumentTypesFromDocumentTypeAssignment(transactionTypeName, documentTypeAssignments.ToList(), documentTypes.ToList());
+                    .GetDocumentTypesFromDocumentTypeAssignment(transactionTypeName, documentTypeAssignments.ToList());
 
                 ApplyTabMenu(viewModel, "IRFDetails1");
 
@@ -338,7 +337,7 @@ namespace Intl.Realty.Firm.Controllers
                 }
                 else
                 {
-                    _logger.LogInformation($"Transaction Type - {transactionTypeId}, Document Type - {createFileUploadDocumentType.Id}");
+                    _logger.LogInformation($"Document Type Id not found for: Transaction Type - {transactionTypeId}, Document Type - {createFileUpload.DocumentTypeId}");
                     // Log or handle the case where DocumentType is not found
                     continue; // Skip this iteration
                 }
@@ -425,8 +424,7 @@ namespace Intl.Realty.Firm.Controllers
                 var documentTypeList = documentTypeIEnum.ToList();
                 viewModel.EditLeaseListingViewModel.DocumentTypeList = _documentTransactionService
                                                                 .GetDocumentTypesFromDocumentTypeAssignment(model.TransactionType!.Description,
-                                                                                                            documentTypeAssignmentList,
-                                                                                                            documentTypeList);
+                                                                                                            documentTypeAssignmentList);
                 var dealStatusIEnum = await _unitOfWork.DealStatus.GetAllAsync(x => x.IsActive == true && !x.IsDeleted);
                 viewModel.EditLeaseListingViewModel.DealStatusList = dealStatusIEnum.ToList();
 
@@ -503,8 +501,7 @@ namespace Intl.Realty.Firm.Controllers
             viewModel.EditLeaseListingViewModel.DocumentTypeList = _documentTransactionService
                 .GetDocumentTypesFromDocumentTypeAssignment(
                     transactionType.Description,
-                    documentTypeAssignments.ToList(),
-                    documentTypes.ToList());
+                    documentTypeAssignments.ToList());
 
             leaseListingModel.FileUploads = FilterFileUploadsWithFilesOnly(leaseListingModel.FileUploads);
 
@@ -1138,8 +1135,7 @@ namespace Intl.Realty.Firm.Controllers
             viewModel.CreateLeaseListingViewModel.DocumentTypeList =
                 _documentTransactionService.GetDocumentTypesFromDocumentTypeAssignment(
                     transactionTypeName,
-                    assignments.ToList(),
-                    types.ToList()
+                    assignments.ToList()
                 );
         }
 
