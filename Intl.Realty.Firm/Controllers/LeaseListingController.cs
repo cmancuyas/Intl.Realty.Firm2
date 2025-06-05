@@ -334,6 +334,13 @@ namespace Intl.Realty.Firm.Controllers
                 if (createFileUploadDocumentType != null)
                 {
                     updatedUploadPath = Path.Combine(uploadPath, _transactionTypeName, createFileUploadDocumentType.Description + "\\");
+                    createFileUpload.DocumentTypeId = createFileUploadDocumentType.Id;
+                }
+                else
+                {
+                    _logger.LogInformation($"Transaction Type - {transactionTypeId}, Document Type - {createFileUploadDocumentType.Id}");
+                    // Log or handle the case where DocumentType is not found
+                    continue; // Skip this iteration
                 }
 
                 var files = createFileUploadViewModel.Files;

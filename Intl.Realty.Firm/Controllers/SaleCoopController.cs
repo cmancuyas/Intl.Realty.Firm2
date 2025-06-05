@@ -1,6 +1,7 @@
 ﻿using Intl.Realty.Firm.Helper;
 using Intl.Realty.Firm.Model.Menu;
 using Intl.Realty.Firm.Model.Model;
+using Intl.Realty.Firm.Model.Model.Identity;
 using Intl.Realty.Firm.Model.ViewModel;
 using Intl.Realty.Firm.Model.ViewModel.FileUploadVM;
 using Intl.Realty.Firm.Model.ViewModel.SaleCoopVM;
@@ -31,6 +32,7 @@ namespace Intl.Realty.Firm.Controllers
         private readonly IDocumentTransactionService _documentTransactionService;
         private readonly INotificationService _notificationService;
         private readonly IEmailService _emailService;
+        private readonly ILogger<SaleCoopController> _logger;
         private readonly string _backupFileDirectory = "\\wwwroot\\Files\\Uploads\\";
         private readonly string _transactionTypeName = "SaleCoop";
         public SaleCoopController(IUnitOfWork unitOfWork,
@@ -40,9 +42,11 @@ namespace Intl.Realty.Firm.Controllers
                                     UserManager<ApplicationUser> userManager,
                                     IDocumentTransactionService documentTransactionService,
                                     INotificationService notificationService,
-                                    IEmailService emailService
+                                    IEmailService emailService,
+                                    ILogger<SaleCoopController> logger
                                                                         )
         {
+
             _unitOfWork = unitOfWork;
             _exportService = exportService;
             _configurationService = configurationService;
@@ -51,6 +55,7 @@ namespace Intl.Realty.Firm.Controllers
             _documentTransactionService = documentTransactionService;
             _notificationService = notificationService;
             _emailService = emailService;
+            _logger = logger;
         }
         public IActionResult Index()
         {
@@ -338,6 +343,13 @@ namespace Intl.Realty.Firm.Controllers
                 if (createFileUploadDocumentType != null)
                 {
                     updatedUploadPath = Path.Combine(uploadPath, _transactionTypeName, createFileUploadDocumentType.Description + "\\");
+                    createFileUpload.DocumentTypeId = createFileUploadDocumentType.Id;
+                }
+                else
+                {
+                    _logger.LogInformation($"Transaction Type - {transactionTypeId}, Document Type - {createFileUploadDocumentType.Id}");
+                    // Log or handle the case where DocumentType is not found
+                    continue; // Skip this iteration
                 }
 
                 var files = createFileUploadViewModel.Files;

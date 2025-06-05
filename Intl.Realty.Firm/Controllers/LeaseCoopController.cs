@@ -31,6 +31,7 @@ namespace Intl.Realty.Firm.Controllers
         private readonly IDocumentTransactionService _documentTransactionService;
         private readonly INotificationService _notificationService;
         private readonly IEmailService _emailService;
+        private readonly ILogger<LeaseCoopController> _logger;
         private readonly string _backupFileDirectory = "\\wwwroot\\Files\\Uploads\\";
         private readonly string _transactionTypeName = "LeaseCoop";
         public LeaseCoopController(IUnitOfWork unitOfWork,
@@ -40,7 +41,8 @@ namespace Intl.Realty.Firm.Controllers
                                     UserManager<ApplicationUser> userManager,
                                     IDocumentTransactionService documentTransactionService,
                                     INotificationService notificationService,
-                                    IEmailService emailService
+                                    IEmailService emailService,
+                                    ILogger<LeaseCoopController> logger
                                                                         )
         {
             _unitOfWork = unitOfWork;
@@ -51,6 +53,7 @@ namespace Intl.Realty.Firm.Controllers
             _documentTransactionService = documentTransactionService;
             _notificationService = notificationService;
             _emailService = emailService;
+            _logger = logger;
         }
         public IActionResult Index()
         {
@@ -334,6 +337,13 @@ namespace Intl.Realty.Firm.Controllers
                 if (createFileUploadDocumentType != null)
                 {
                     updatedUploadPath = Path.Combine(uploadPath, _transactionTypeName, createFileUploadDocumentType.Description + "\\");
+                    createFileUpload.DocumentTypeId = createFileUploadDocumentType.Id;
+                }
+                else
+                {
+                    _logger.LogInformation($"Transaction Type - {transactionTypeId}, Document Type - {createFileUploadDocumentType.Id}");
+                    // Log or handle the case where DocumentType is not found
+                    continue; // Skip this iteration
                 }
 
                 var files = createFileUploadViewModel.Files;
