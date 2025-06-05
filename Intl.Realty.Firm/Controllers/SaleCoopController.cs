@@ -120,8 +120,7 @@ namespace Intl.Realty.Firm.Controllers
             var documentTypeList = documentTypeIEnum.ToList();
             viewModel.CreateSaleCoopViewModel.DocumentTypeList = _documentTransactionService
                                                             .GetDocumentTypesFromDocumentTypeAssignment(transactionTypeName,
-                                                                                                        documentTypeAssignmentList,
-                                                                                                        documentTypeList);
+                                                                                                        documentTypeAssignmentList);
 
             var menus = CreateDealTransactionTabMenuData.GetCreateDealTransactionTabMenuData();
 
@@ -175,7 +174,7 @@ namespace Intl.Realty.Firm.Controllers
                 var documentTypes = await _unitOfWork.DocumentType.GetAllAsync(x => !x.IsDeleted);
 
                 viewModel.CreateSaleCoopViewModel.DocumentTypeList = _documentTransactionService
-                    .GetDocumentTypesFromDocumentTypeAssignment(transactionTypeName, documentTypeAssignments.ToList(), documentTypes.ToList());
+                    .GetDocumentTypesFromDocumentTypeAssignment(transactionTypeName, documentTypeAssignments.ToList());
 
                 viewModel.Menus = CreateDealTransactionTabMenuData.GetCreateDealTransactionTabMenuData().Select(m =>
                 {
@@ -347,7 +346,7 @@ namespace Intl.Realty.Firm.Controllers
                 }
                 else
                 {
-                    _logger.LogInformation($"Transaction Type - {transactionTypeId}, Document Type - {createFileUploadDocumentType.Id}");
+                    _logger.LogInformation($"Document Type Id not found for: Transaction Type - {transactionTypeId}, Document Type - {createFileUpload.DocumentTypeId}");
                     // Log or handle the case where DocumentType is not found
                     continue; // Skip this iteration
                 }
@@ -431,8 +430,7 @@ namespace Intl.Realty.Firm.Controllers
             var documentTypeList = documentTypeIEnum.ToList();
             viewModel.EditSaleCoopViewModel.DocumentTypeList = _documentTransactionService
                                                             .GetDocumentTypesFromDocumentTypeAssignment(model.TransactionType!.Description,
-                                                                                                        documentTypeAssignmentList,
-                                                                                                        documentTypeList);
+                                                                                                        documentTypeAssignmentList);
             var dealStatusIEnum = await _unitOfWork.DealStatus.GetAllAsync(x => x.IsActive == true && !x.IsDeleted);
             viewModel.EditSaleCoopViewModel.DealStatusList = dealStatusIEnum.ToList();
 
@@ -500,7 +498,7 @@ namespace Intl.Realty.Firm.Controllers
             var documentTypes = await _unitOfWork.DocumentType.GetAllAsync(x => !x.IsDeleted);
 
             viewModel.EditSaleCoopViewModel.DocumentTypeList = _documentTransactionService
-                .GetDocumentTypesFromDocumentTypeAssignment(transactionType.Description, documentTypeAssignments.ToList(), documentTypes.ToList());
+                .GetDocumentTypesFromDocumentTypeAssignment(transactionType.Description, documentTypeAssignments.ToList());
 
             saleCoopModel.FileUploads = FilterFileUploadsWithFilesOnly(saleCoopModel.FileUploads);
 

@@ -222,8 +222,7 @@ namespace Intl.Realty.Firm.Controllers
             var documentTypeList = documentTypeIEnum.ToList();
             viewModel.DocumentTypes = _documentTransactionService
                                                     .GetDocumentTypesFromDocumentTypeAssignment(model.Description,
-                                                                                                documentTypeAssignmentList,
-                                                                                                documentTypeList);
+                                                                                                documentTypeAssignmentList);
 
             return View(viewModel);
         }
