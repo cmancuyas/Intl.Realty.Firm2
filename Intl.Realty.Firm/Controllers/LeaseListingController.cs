@@ -1200,25 +1200,6 @@ namespace Intl.Realty.Firm.Controllers
             viewModel.Menus = menus;
         }
 
-        private async Task NotifyDealAdminAsync(ApplicationUser user, LeaseListing leaseListing)
-        {
-            var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-            var dealLink = Url.Action("Login", "Account", new { id = leaseListing.Id, token }, Request.Scheme);
-            var dealAdminEmails = await GetDealAdminEmails();
-            var userRoles = await _userManager.GetRolesAsync(user);
-
-            var emailRequest = EmailRequest.SendNotificationWhenDealIsSubmitted(
-                user,
-                userRoles,
-                leaseListing.TransactionType.Description,
-                dealAdminEmails,
-                leaseListing.DealTransactionNumber,
-                dealLink!
-            );
-
-            await _emailService.SendEmailAsync(emailRequest);
-        }
-
         #endregion
     }
 }
