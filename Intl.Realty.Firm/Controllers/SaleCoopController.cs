@@ -251,13 +251,19 @@ namespace Intl.Realty.Firm.Controllers
                     if (!allRoleNames.Contains(creatorRole, StringComparer.OrdinalIgnoreCase))
                         allRoleNames.Add(creatorRole);
 
-                    var mailRequest = EmailRequest.SendNotificationWhenDealIsSubmitted(
+                    // Generate all individualized mail requests
+                    var mailRequests = EmailRequest.SendNotificationWhenDealIsSubmitted(
                         user, allRoleNames, transactionType.Description, allRecipientEmails,
                         saleCoopModel.DealTransactionNumber, dealLink!
                     );
 
-                    await _emailService.SendEmailAsync(mailRequest);
+                    // Send each mail individually (personalized)
+                    foreach (var mailRequest in mailRequests)
+                    {
+                        await _emailService.SendEmailAsync(mailRequest);
+                    }
                 }
+
 
                 await transaction.CommitAsync();
                 return RedirectToAction(nameof(Index), new { addSuccess = true });
@@ -552,7 +558,6 @@ namespace Intl.Realty.Firm.Controllers
                 }
 
                 // ===== EMAIL NOTIFICATION (if submitted) =====
-                // If you only want to notify on "Submit", check the actionType and DealStatusId
                 if (actionType == "submit" && saleCoopModel.DealStatusId == 1)
                 {
                     var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
@@ -571,13 +576,18 @@ namespace Intl.Realty.Firm.Controllers
                     if (!allRoleNames.Contains(creatorRole, StringComparer.OrdinalIgnoreCase))
                         allRoleNames.Add(creatorRole);
 
-                    var mailRequest = EmailRequest.SendNotificationWhenDealIsSubmitted(
+                    // Send personalized email to each recipient
+                    var mailRequests = EmailRequest.SendNotificationWhenDealIsSubmitted(
                         user, allRoleNames, transactionType.Description, allRecipientEmails,
                         saleCoopModel.DealTransactionNumber, dealLink!
                     );
 
-                    await _emailService.SendEmailAsync(mailRequest);
+                    foreach (var mailRequest in mailRequests)
+                    {
+                        await _emailService.SendEmailAsync(mailRequest);
+                    }
                 }
+
 
                 await transaction.CommitAsync();
                 return RedirectToAction(nameof(Index), new { editSuccess = true });

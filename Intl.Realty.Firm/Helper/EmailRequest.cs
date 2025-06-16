@@ -46,32 +46,43 @@ namespace Intl.Realty.Firm.Helper
             return mailRequest;
         }
 
-        public static MailRequest SendNotificationWhenDealIsSubmitted(
-            ApplicationUser user,
-            IList<string> roleNames,
-            string transactionTypeName,
-            List<string> emails,
-            string dealId,
-            string dealLink)
+        public static List<MailRequest> SendNotificationWhenDealIsSubmitted(
+                                        ApplicationUser user,
+                                        IList<string> roleNames,
+                                        string transactionTypeName,
+                                        List<string> emails,
+                                        string dealId,
+                                        string dealLink)
         {
-            var emailString = string.Join(",", emails.Distinct(StringComparer.OrdinalIgnoreCase));
-            var roleString = string.Join(",", roleNames.Distinct(StringComparer.OrdinalIgnoreCase));
+            var mailRequests = new List<MailRequest>();
+            var creatorEmail = user.Email?.Trim().ToLowerInvariant();
 
-            var template = EmailTemplate.SendNotificationWhenDealIsSubmitted(
-                user,
-                roleString,
-                transactionTypeName,
-                dealId,
-                dealLink
-            );
-
-            var mailRequest = new MailRequest
+            foreach (var email in emails.Distinct(StringComparer.OrdinalIgnoreCase))
             {
-                ToEmail = emailString,
-                Subject = "do not reply " + dealId,
-                Body = template
-            };
-            return mailRequest;
+                bool isCreator = (email.Trim().ToLowerInvariant() == creatorEmail);
+
+                // For admins, use all roleNames; for creator, use their full name
+                var recipientName = isCreator
+                    ? $"{user.FirstName} {user.LastName}"
+                    : string.Join(",", roleNames.Distinct(StringComparer.OrdinalIgnoreCase));
+
+                var template = EmailTemplate.SendNotificationWhenDealIsSubmitted(
+                    user,
+                    recipientName,
+                    transactionTypeName,
+                    dealId,
+                    dealLink,
+                    isCreator
+                );
+
+                mailRequests.Add(new MailRequest
+                {
+                    ToEmail = email,
+                    Subject = "do not reply " + dealId,
+                    Body = template
+                });
+            }
+            return mailRequests;
         }
 
 

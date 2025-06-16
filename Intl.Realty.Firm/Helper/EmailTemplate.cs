@@ -138,24 +138,42 @@ namespace Intl.Realty.Firm.Helper
 
         public static string SendNotificationWhenDealIsSubmitted(
             ApplicationUser user,
-            string roleString,
+            string recipientName,      // The name or role for greeting
             string transactionTypeName,
             string dealId,
-            string dealLink)
+            string dealLink,
+            bool isCreator = false     // <--- NEW
+        )
         {
-            string template =
-                $@"<html>
-           <meta charset=""utf-8"">
-          <body>
-          <p>Good day <strong>{roleString},</strong></p>
-          <p>{user.FirstName} {user.LastName} created Deal ID: <strong>{transactionTypeName} - {dealId}</strong>.</p>
-          <p>Click this link to login and review.</p>
-          <p><strong>{dealLink}</strong></p>
-          <p>Thank you.</p>
-          </body>
-          </html>";
+            string greeting;
+            string body;
+
+            if (isCreator)
+            {
+                greeting = $"Good day <strong>{user.FirstName} {user.LastName},</strong>";
+                body = $@"You have created Deal ID: <strong>{transactionTypeName} - {dealId}</strong>.<br/>
+                  Click this link to login to view.<br/>
+                  <strong>{dealLink}</strong>";
+            }
+            else
+            {
+                greeting = $"Good day <strong>{recipientName},</strong>";
+                body = $@"{user.FirstName} {user.LastName} created Deal ID: <strong>{transactionTypeName} - {dealId}</strong>.<br/>
+                  Click this link to login and review.<br/>
+                  <strong>{dealLink}</strong>";
+            }
+
+            string template = $@"<html>
+                                <meta charset=""utf-8"">
+                                <body>
+                                    <p>{greeting}</p>
+                                    <p>{body}</p>
+                                    <p>Thank you.</p>
+                                </body>
+                                </html>";
             return template;
         }
+
 
         public static string SendRequestToEditTheDeal(ApplicationUser user, 
                                                      string userRole,
