@@ -252,13 +252,19 @@ namespace Intl.Realty.Firm.Controllers
                     if (!allRoleNames.Contains(creatorRole, StringComparer.OrdinalIgnoreCase))
                         allRoleNames.Add(creatorRole);
 
-                    var mailRequest = EmailRequest.SendNotificationWhenDealIsSubmitted(
+                    // Generate all individualized mail requests
+                    var mailRequests = EmailRequest.SendNotificationWhenDealIsSubmitted(
                         user, allRoleNames, transactionType.Description, allRecipientEmails,
                         leaseListingModel.DealTransactionNumber, dealLink!
                     );
 
-                    await _emailService.SendEmailAsync(mailRequest);
+                    // Send each mail individually (personalized)
+                    foreach (var mailRequest in mailRequests)
+                    {
+                        await _emailService.SendEmailAsync(mailRequest);
+                    }
                 }
+
 
 
                 await transaction.CommitAsync();
@@ -585,13 +591,18 @@ namespace Intl.Realty.Firm.Controllers
                     if (!allRoleNames.Contains(creatorRole, StringComparer.OrdinalIgnoreCase))
                         allRoleNames.Add(creatorRole);
 
-                    var mailRequest = EmailRequest.SendNotificationWhenDealIsSubmitted(
+                    // Create individualized mail requests (one per recipient, right greeting)
+                    var mailRequests = EmailRequest.SendNotificationWhenDealIsSubmitted(
                         user, allRoleNames, transactionType.Description, allRecipientEmails,
                         leaseListingModel.DealTransactionNumber, dealLink!
                     );
 
-                    await _emailService.SendEmailAsync(mailRequest);
+                    foreach (var mailRequest in mailRequests)
+                    {
+                        await _emailService.SendEmailAsync(mailRequest);
+                    }
                 }
+
 
                 await transaction.CommitAsync();
                 return RedirectToAction(nameof(Index), new { editSuccess = true });
