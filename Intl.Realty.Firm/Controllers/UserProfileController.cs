@@ -94,6 +94,42 @@ namespace Intl.Realty.Firm.Controllers
 
             return View(viewModel);
         }
+        [HttpGet]
+        public async Task<IActionResult> EditDetails(Guid id)
+        {
+            var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == id);
+            if (user == null) return NotFound();
+
+            var viewModel = user.ToUserProfileViewModel();
+            return View(viewModel);
+        }
+        [HttpPost]
+        public async Task<IActionResult> EditDetails(UserProfileViewModel viewModel)
+        {
+            var user = await _userManager.FindByIdAsync(viewModel.Id.ToString());
+            if (user == null)
+            {
+                TempData["ErrorMessage"] = "User not found.";
+                return RedirectToAction("Index", new { id = viewModel.Id });
+            }
+
+            // Update properties
+            user.FirstName = viewModel.FirstName?.Trim();
+            user.LastName = viewModel.LastName?.Trim();
+
+            var result = await _userManager.UpdateAsync(user);
+            if (result.Succeeded)
+            {
+                TempData["SuccessMessage"] = "Profile updated successfully.";
+                return RedirectToAction("Index", new { id = user.Id });
+            }
+            else
+            {
+                TempData["ErrorMessage"] = "Failed to update profile.";
+                return View(viewModel);
+            }
+        }
+
 
 
         [HttpPost]

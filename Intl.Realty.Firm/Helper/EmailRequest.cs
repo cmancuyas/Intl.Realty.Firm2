@@ -46,21 +46,24 @@ namespace Intl.Realty.Firm.Helper
             return mailRequest;
         }
 
-        public static MailRequest SendNotificationWhenDealIsSubmitted(ApplicationUser user, 
-                                                                     IList<string> userRoles, string transactionTypeName, 
-                                                                     List<InternalEmail> emails, string dealId, string dealLink)
+        public static MailRequest SendNotificationWhenDealIsSubmitted(
+            ApplicationUser user,
+            IList<string> roleNames,
+            string transactionTypeName,
+            List<string> emails,
+            string dealId,
+            string dealLink)
         {
-            var emailString = string.Empty;
-            foreach (var email in emails)
-            {
-                emailString += email.Email + ",";
-            }
+            var emailString = string.Join(",", emails.Distinct(StringComparer.OrdinalIgnoreCase));
+            var roleString = string.Join(",", roleNames.Distinct(StringComparer.OrdinalIgnoreCase));
 
-            var userRole = userRoles.FirstOrDefault();
-
-            emailString = emailString.Remove(emailString.Length - 1,1);
-
-            var template = EmailTemplate.SendNotificationWhenDealIsSubmitted(user, userRole!, transactionTypeName, emails, dealId, dealLink);
+            var template = EmailTemplate.SendNotificationWhenDealIsSubmitted(
+                user,
+                roleString,
+                transactionTypeName,
+                dealId,
+                dealLink
+            );
 
             var mailRequest = new MailRequest
             {
@@ -70,6 +73,7 @@ namespace Intl.Realty.Firm.Helper
             };
             return mailRequest;
         }
+
 
         public static MailRequest SendRequestToEditTheDeal(ApplicationUser user, 
                                                            IList<string> userRoles, 

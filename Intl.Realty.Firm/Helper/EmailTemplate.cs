@@ -136,29 +136,24 @@ namespace Intl.Realty.Firm.Helper
         }
 
 
-        public static string SendNotificationWhenDealIsSubmitted(ApplicationUser user, string userRole, string transactionTypeName, List<InternalEmail> emails, string dealId, string dealLink)
+        public static string SendNotificationWhenDealIsSubmitted(
+            ApplicationUser user,
+            string roleString,
+            string transactionTypeName,
+            string dealId,
+            string dealLink)
         {
-            var roleString = string.Empty;
-            foreach(InternalEmail email in emails)
-            {
-                roleString += email.RoleName + ",";
-            }
-            roleString = roleString.Remove(roleString.Length - 1, 1);
-
             string template =
-                    @$"<html>
-                     <meta charset=""utf-8"">
-                    <body>
-                    <p>Good day <strong>{roleString},</strong></p>
-                    <p><span style=""background-color:transparent;color:#000000;font-family:Arial,sans-serif;font-size:11pt;""><span style=""font-style:normal;font-variant:normal;font-weight:400;text-decoration:none;vertical-align:baseline;white-space:pre-wrap;"">{userRole} {user.FirstName} {user.LastName} created Deal ID: <strong>{transactionTypeName} - {dealId}</strong>.&nbsp;</span></span></p>
-                    <p><span style=""background-color:transparent;color:#000000;font-family:Arial,sans-serif;font-size:11pt;""><span style=""font-style:normal;font-variant:normal;font-weight:400;text-decoration:none;vertical-align:baseline;white-space:pre-wrap;"">Click this link to login and review.&nbsp;</span></span></p>
-                    <p><strong>{dealLink}</strong>
-                    <p>&nbsp;</p>
-                    <p>
-                        <meta charset=""utf-8""><span style=""background-color:transparent;color:#000000;font-family:Arial,sans-serif;font-size:11pt;""><span style=""font-style:normal;font-variant:normal;font-weight:400;text-decoration:none;vertical-align:baseline;white-space:pre-wrap;"">Thank you.&nbsp;</span></span>
-                    </p>
-                    </body>
-                    </html>";
+                $@"<html>
+           <meta charset=""utf-8"">
+          <body>
+          <p>Good day <strong>{roleString},</strong></p>
+          <p>{user.FirstName} {user.LastName} created Deal ID: <strong>{transactionTypeName} - {dealId}</strong>.</p>
+          <p>Click this link to login and review.</p>
+          <p><strong>{dealLink}</strong></p>
+          <p>Thank you.</p>
+          </body>
+          </html>";
             return template;
         }
 

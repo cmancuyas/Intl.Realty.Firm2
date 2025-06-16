@@ -1,0 +1,59 @@
+﻿@model Intl.Realty.Firm.Model.ViewModel.UserProfileVM.UserProfileViewModel
+@{
+    ViewData["Title"] = "Edit Profile Details";
+    Layout = "~/Views/Shared/_LayoutAfterLogin.cshtml";
+}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-sm p-4">
+                <h4 class="mb-3 text-blue">Edit Profile Details</h4>
+                <form asp-action="EditDetails" asp-controller="UserProfile" method="post">
+                    <input type="hidden" name="Id" value="@Model.Id" />
+                    <div class="mb-3">
+                        <label for="firstNameInput" class="form-label"><strong>First Name</strong></label>
+                        <input type="text" class="form-control" id="firstNameInput" name="FirstName" value="@Model.FirstName" required maxlength="100" />
+                    </div>
+                    <div class="mb-3">
+                        <label for="lastNameInput" class="form-label"><strong>Last Name</strong></label>
+                        <input type="text" class="form-control" id="lastNameInput" name="LastName" value="@Model.LastName" required maxlength="100" />
+                    </div>
+                    <div class="mb-3">
+                        <label for="emailInput" class="form-label"><strong>Email</strong></label>
+                        <input type="email" class="form-control" id="emailInput" name="Email" value="@Model.Email" disabled />
+                    </div>
+                    <button type="submit" class="btn btn-success" id="saveBtn">
+                        <span id="saveBtnSpinner" class="spinner-border spinner-border-sm me-2" style="display:none;" role="status" aria-hidden="true"></span>
+                        Save Changes
+                    </button>
+
+                    <a href="@Url.Action("Index", "UserProfile", new { id = Model.Id })" class="btn btn-outline-secondary ms-2">Cancel</a>
+                </form>
+                @if (TempData["SuccessMessage"] != null)
+                {
+                    <div class="alert alert-success mt-3">@TempData["SuccessMessage"]</div>
+                }
+                @if (TempData["ErrorMessage"] != null)
+                {
+                    <div class="alert alert-danger mt-3">@TempData["ErrorMessage"]</div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            var form = document.querySelector("form");
+            var saveBtn = document.getElementById("saveBtn");
+            var spinner = document.getElementById("saveBtnSpinner");
+
+            if (form && saveBtn && spinner) {
+                form.addEventListener("submit", function () {
+                    saveBtn.disabled = true;
+                    spinner.style.display = "inline-block";
+                });
+            }
+        });
+    </script>
+}
