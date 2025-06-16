@@ -233,10 +233,33 @@ namespace Intl.Realty.Firm.Controllers
 
                 leaseListingModel.TransactionType = transactionType;
 
-                if (viewModel.CreateLeaseListingViewModel.DealStatusId == 1) // submitted
+                // 📩 Notify DealAdmin(s) AND creator on submit
+                if (viewModel.CreateLeaseListingViewModel.DealStatusId == 1)
                 {
-                    await NotifyDealAdminAsync(user, leaseListingModel);
+                    var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+                    var dealLink = Url.Action("Login", "Account", new { id = leaseListingModel.Id, token }, Request.Scheme);
+
+                    var dealAdminEmails = await GetDealAdminEmails();
+                    var userRoles = await _userManager.GetRolesAsync(user);
+
+                    // Build recipient lists (avoid duplicates)
+                    var allRecipientEmails = dealAdminEmails.Select(e => e.Email).ToList();
+                    if (!allRecipientEmails.Contains(user.Email, StringComparer.OrdinalIgnoreCase))
+                        allRecipientEmails.Add(user.Email);
+
+                    var allRoleNames = dealAdminEmails.Select(e => e.RoleName).ToList();
+                    string creatorRole = userRoles.FirstOrDefault() ?? "Deal Creator";
+                    if (!allRoleNames.Contains(creatorRole, StringComparer.OrdinalIgnoreCase))
+                        allRoleNames.Add(creatorRole);
+
+                    var mailRequest = EmailRequest.SendNotificationWhenDealIsSubmitted(
+                        user, allRoleNames, transactionType.Description, allRecipientEmails,
+                        leaseListingModel.DealTransactionNumber, dealLink!
+                    );
+
+                    await _emailService.SendEmailAsync(mailRequest);
                 }
+
 
                 await transaction.CommitAsync();
                 return RedirectToAction(nameof(Index), new { addSuccess = true });
@@ -545,9 +568,34 @@ namespace Intl.Realty.Firm.Controllers
                         uploadPath
                     );
                 }
+                if (actionType == "submit" && leaseListingModel.DealStatusId == 1)
+                {
+                    var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+                    var dealLink = Url.Action("Login", "Account", new { id = leaseListingModel.Id, token }, Request.Scheme);
+
+                    var dealAdminEmails = await GetDealAdminEmails();
+                    var userRoles = await _userManager.GetRolesAsync(user);
+
+                    var allRecipientEmails = dealAdminEmails.Select(e => e.Email).ToList();
+                    if (!allRecipientEmails.Contains(user.Email, StringComparer.OrdinalIgnoreCase))
+                        allRecipientEmails.Add(user.Email);
+
+                    var allRoleNames = dealAdminEmails.Select(e => e.RoleName).ToList();
+                    string creatorRole = userRoles.FirstOrDefault() ?? "Deal Creator";
+                    if (!allRoleNames.Contains(creatorRole, StringComparer.OrdinalIgnoreCase))
+                        allRoleNames.Add(creatorRole);
+
+                    var mailRequest = EmailRequest.SendNotificationWhenDealIsSubmitted(
+                        user, allRoleNames, transactionType.Description, allRecipientEmails,
+                        leaseListingModel.DealTransactionNumber, dealLink!
+                    );
+
+                    await _emailService.SendEmailAsync(mailRequest);
+                }
 
                 await transaction.CommitAsync();
                 return RedirectToAction(nameof(Index), new { editSuccess = true });
+
             }
             catch (DbUpdateConcurrencyException)
             {

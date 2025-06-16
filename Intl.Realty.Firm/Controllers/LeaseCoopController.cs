@@ -236,11 +236,33 @@ namespace Intl.Realty.Firm.Controllers
 
                 leaseCoopModel.TransactionType = transactionType;
 
-                // 📩 Notify Deal Admin on Submit
+                // 📩 Notify Deal Admin and Deal Creator on Submit
                 if (viewModel.CreateLeaseCoopViewModel.DealStatusId == 1)
                 {
-                    await SendDealAdminNotification(user, leaseCoopModel);
+                    var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+                    var dealLink = Url.Action("Login", "Account", new { id = leaseCoopModel.Id, token }, Request.Scheme);
+
+                    var dealAdminEmails = await GetDealAdminEmails();
+                    var userRoles = await _userManager.GetRolesAsync(user);
+
+                    // Build recipient lists (avoid duplicates)
+                    var allRecipientEmails = dealAdminEmails.Select(e => e.Email).ToList();
+                    if (!allRecipientEmails.Contains(user.Email, StringComparer.OrdinalIgnoreCase))
+                        allRecipientEmails.Add(user.Email);
+
+                    var allRoleNames = dealAdminEmails.Select(e => e.RoleName).ToList();
+                    string creatorRole = userRoles.FirstOrDefault() ?? "Deal Creator";
+                    if (!allRoleNames.Contains(creatorRole, StringComparer.OrdinalIgnoreCase))
+                        allRoleNames.Add(creatorRole);
+
+                    var mailRequest = EmailRequest.SendNotificationWhenDealIsSubmitted(
+                        user, allRoleNames, transactionType.Description, allRecipientEmails,
+                        leaseCoopModel.DealTransactionNumber, dealLink!
+                    );
+
+                    await _emailService.SendEmailAsync(mailRequest);
                 }
+
 
                 await transaction.CommitAsync();
                 return RedirectToAction(nameof(Index), new { addSuccess = true });
@@ -459,14 +481,12 @@ namespace Intl.Realty.Firm.Controllers
                 if (actionType == "save")
                 {
                     // Skip validation errors on Save
-                    // Optionally log validation issues for auditing
                 }
                 else
                 {
                     return View(viewModel); // enforce on Submit
                 }
             }
-
 
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (!Guid.TryParse(userId, out Guid parsedUserId))
@@ -539,6 +559,33 @@ namespace Intl.Realty.Firm.Controllers
                     );
                 }
 
+                // ===== EMAIL NOTIFICATION (if submitted) =====
+                if (actionType == "submit" && leaseCoopModel.DealStatusId == 1)
+                {
+                    var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+                    var dealLink = Url.Action("Login", "Account", new { id = leaseCoopModel.Id, token }, Request.Scheme);
+
+                    var dealAdminEmails = await GetDealAdminEmails();
+                    var userRoles = await _userManager.GetRolesAsync(user);
+
+                    // Build recipient lists (avoid duplicates)
+                    var allRecipientEmails = dealAdminEmails.Select(e => e.Email).ToList();
+                    if (!allRecipientEmails.Contains(user.Email, StringComparer.OrdinalIgnoreCase))
+                        allRecipientEmails.Add(user.Email);
+
+                    var allRoleNames = dealAdminEmails.Select(e => e.RoleName).ToList();
+                    string creatorRole = userRoles.FirstOrDefault() ?? "Deal Creator";
+                    if (!allRoleNames.Contains(creatorRole, StringComparer.OrdinalIgnoreCase))
+                        allRoleNames.Add(creatorRole);
+
+                    var mailRequest = EmailRequest.SendNotificationWhenDealIsSubmitted(
+                        user, allRoleNames, transactionType.Description, allRecipientEmails,
+                        leaseCoopModel.DealTransactionNumber, dealLink!
+                    );
+
+                    await _emailService.SendEmailAsync(mailRequest);
+                }
+
                 await transaction.CommitAsync();
                 return RedirectToAction(nameof(Index), new { editSuccess = true });
             }
@@ -554,7 +601,6 @@ namespace Intl.Realty.Firm.Controllers
                 throw;
             }
         }
-
 
 
         private IActionResult NotFoundResultWithMessage(string entityName, int id)

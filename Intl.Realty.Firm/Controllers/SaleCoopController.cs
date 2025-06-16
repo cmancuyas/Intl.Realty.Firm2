@@ -156,7 +156,7 @@ namespace Intl.Realty.Firm.Controllers
 
             try
             {
-                // 🔢 Concurrency-safe deal number increment
+                // Concurrency-safe deal number increment
                 var numberRange = await _unitOfWork.DealTransactionNumberRange
                     .GetAsync(x => !x.IsDeleted && x.Year == DateTime.Now.Year);
 
@@ -194,7 +194,7 @@ namespace Intl.Realty.Firm.Controllers
                     return View("Index", viewModel);
                 }
 
-                // ➕ IRF Deal creation
+                // IRF Deal creation
                 var irfDeal = viewModel.CreateSaleCoopViewModel.CreateIRFDealSaleCoopViewModel?.ToIRFDealModel();
                 irfDeal!.CreatedAt = DateTime.Now;
                 irfDeal.CreatedBy = user.Id;
@@ -209,7 +209,7 @@ namespace Intl.Realty.Firm.Controllers
                 viewModel.CreateSaleCoopViewModel.CreateIRFDealSaleCoopViewModel.CreatedBy = newIRFDeal.CreatedBy;
                 viewModel.CreateSaleCoopViewModel.CreateIRFDealSaleCoopViewModel.IsActive = newIRFDeal.IsActive;
 
-                // 📝 Finalize SaleCoop creation
+                // Finalize SaleCoop creation
                 viewModel.CreateSaleCoopViewModel.IsActive = true;
                 viewModel.CreateSaleCoopViewModel.IsDeleted = false;
                 viewModel.CreateSaleCoopViewModel.CreatedBy = user.Id;
@@ -219,7 +219,7 @@ namespace Intl.Realty.Firm.Controllers
                 await _unitOfWork.SaleCoop.AddAsync(saleCoopModel);
                 await _unitOfWork.SaveChangesAsync();
 
-                // 📂 Handle uploads (submit only)
+                // Handle uploads (submit only)
                 if (actionType.ToLower() == "submit" &&
                     viewModel.CreateSaleCoopViewModel.CreateFileUploadListViewModel?.CreateFileUploadsViewModel != null)
                 {
@@ -233,7 +233,7 @@ namespace Intl.Realty.Firm.Controllers
                     );
                 }
 
-                // 📩 Notify Deal Admin (on submit)
+                // Notify Deal Admin and Deal Creator (on submit)
                 if (viewModel.CreateSaleCoopViewModel.DealStatusId == 1)
                 {
                     var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
@@ -241,8 +241,18 @@ namespace Intl.Realty.Firm.Controllers
                     var dealAdminEmails = await GetDealAdminEmails();
                     var userRoles = await _userManager.GetRolesAsync(user);
 
+                    // Build recipient lists (avoid duplicate emails/roles)
+                    var allRecipientEmails = dealAdminEmails.Select(e => e.Email).ToList();
+                    if (!allRecipientEmails.Contains(user.Email, StringComparer.OrdinalIgnoreCase))
+                        allRecipientEmails.Add(user.Email);
+
+                    var allRoleNames = dealAdminEmails.Select(e => e.RoleName).ToList();
+                    string creatorRole = userRoles.FirstOrDefault() ?? "Deal Creator";
+                    if (!allRoleNames.Contains(creatorRole, StringComparer.OrdinalIgnoreCase))
+                        allRoleNames.Add(creatorRole);
+
                     var mailRequest = EmailRequest.SendNotificationWhenDealIsSubmitted(
-                        user, userRoles, transactionType.Description, dealAdminEmails,
+                        user, allRoleNames, transactionType.Description, allRecipientEmails,
                         saleCoopModel.DealTransactionNumber, dealLink!
                     );
 
@@ -264,6 +274,7 @@ namespace Intl.Realty.Firm.Controllers
                 throw;
             }
         }
+
 
         private async Task<List<InternalEmail>> GetDealAdminEmails()
         {
@@ -473,7 +484,6 @@ namespace Intl.Realty.Firm.Controllers
                 }
             }
 
-
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (!Guid.TryParse(userId, out Guid parsedUserId))
                 throw new InvalidOperationException("Invalid user ID - cannot convert to GUID.");
@@ -541,6 +551,34 @@ namespace Intl.Realty.Firm.Controllers
                     await CreateFileUploadData(fileUploadVM, saleCoopModel.Id, transactionType.Id, viewModel.EditSaleCoopViewModel.DocumentTypeList, uploadPath);
                 }
 
+                // ===== EMAIL NOTIFICATION (if submitted) =====
+                // If you only want to notify on "Submit", check the actionType and DealStatusId
+                if (actionType == "submit" && saleCoopModel.DealStatusId == 1)
+                {
+                    var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+                    var dealLink = Url.Action("Login", "Account", new { id = saleCoopModel.Id, token }, Request.Scheme);
+
+                    var dealAdminEmails = await GetDealAdminEmails();
+                    var userRoles = await _userManager.GetRolesAsync(user);
+
+                    // Build recipient lists (avoid duplicates)
+                    var allRecipientEmails = dealAdminEmails.Select(e => e.Email).ToList();
+                    if (!allRecipientEmails.Contains(user.Email, StringComparer.OrdinalIgnoreCase))
+                        allRecipientEmails.Add(user.Email);
+
+                    var allRoleNames = dealAdminEmails.Select(e => e.RoleName).ToList();
+                    string creatorRole = userRoles.FirstOrDefault() ?? "Deal Creator";
+                    if (!allRoleNames.Contains(creatorRole, StringComparer.OrdinalIgnoreCase))
+                        allRoleNames.Add(creatorRole);
+
+                    var mailRequest = EmailRequest.SendNotificationWhenDealIsSubmitted(
+                        user, allRoleNames, transactionType.Description, allRecipientEmails,
+                        saleCoopModel.DealTransactionNumber, dealLink!
+                    );
+
+                    await _emailService.SendEmailAsync(mailRequest);
+                }
+
                 await transaction.CommitAsync();
                 return RedirectToAction(nameof(Index), new { editSuccess = true });
             }
@@ -556,8 +594,6 @@ namespace Intl.Realty.Firm.Controllers
                 throw;
             }
         }
-
-
 
         private IActionResult NotFoundResultWithMessage(string entityName, int id)
         {
