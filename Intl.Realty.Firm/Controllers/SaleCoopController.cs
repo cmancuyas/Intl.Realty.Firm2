@@ -6,6 +6,7 @@ using Intl.Realty.Firm.Model.ViewModel;
 using Intl.Realty.Firm.Model.ViewModel.FileUploadVM;
 using Intl.Realty.Firm.Model.ViewModel.SaleCoopVM;
 using Intl.Realty.Firm.Models;
+using Intl.Realty.Firm.Models.Auxiliary;
 using Intl.Realty.Firm.Models.DataTable;
 using Intl.Realty.Firm.Repository.IRepository;
 using Intl.Realty.Firm.Service.IService;
@@ -232,7 +233,6 @@ namespace Intl.Realty.Firm.Controllers
                         uploadPath
                     );
                 }
-
                 // Notify Deal Admin and Deal Creator (on submit)
                 if (viewModel.CreateSaleCoopViewModel.DealStatusId == 1)
                 {
@@ -257,12 +257,45 @@ namespace Intl.Realty.Firm.Controllers
                         saleCoopModel.DealTransactionNumber, dealLink!
                     );
 
-                    // Send each mail individually (personalized)
+                    // ---- FAIL-SAFE SENDING ----
+                    const int maxRetries = 2;
+                    const int retryDelayMilliseconds = 2000;
+                    var failedEmails = new List<MailRequest>();
+
                     foreach (var mailRequest in mailRequests)
                     {
-                        await _emailService.SendEmailAsync(mailRequest);
+                        bool sent = false;
+                        Exception? lastException = null;
+
+                        for (int attempt = 1; attempt <= maxRetries; attempt++)
+                        {
+                            try
+                            {
+                                await _emailService.SendEmailAsync(mailRequest);
+                                sent = true;
+                                break; // Success, exit retry loop
+                            }
+                            catch (Exception ex)
+                            {
+                                lastException = ex;
+                                _logger.LogWarning(ex, $"Attempt {attempt} to send email to {mailRequest.ToEmail} failed.");
+                                if (attempt < maxRetries)
+                                    await Task.Delay(retryDelayMilliseconds);
+                            }
+                        }
+
+                        if (!sent)
+                        {
+                            _logger.LogError(lastException, $"All {maxRetries} attempts to send email to {mailRequest.ToEmail} failed. Email Request: {System.Text.Json.JsonSerializer.Serialize(mailRequest)}");
+                            failedEmails.Add(mailRequest);
+                            // Optionally: notify admin/support here
+                        }
                     }
+
+                    // Optionally: handle or alert on failedEmails here
+                    // if (failedEmails.Any()) { /* ... */ }
                 }
+
 
 
                 await transaction.CommitAsync();
@@ -582,11 +615,45 @@ namespace Intl.Realty.Firm.Controllers
                         saleCoopModel.DealTransactionNumber, dealLink!
                     );
 
+                    // ---- FAIL-SAFE SENDING ----
+                    const int maxRetries = 2;
+                    const int retryDelayMilliseconds = 2000;
+                    var failedEmails = new List<MailRequest>();
+
                     foreach (var mailRequest in mailRequests)
                     {
-                        await _emailService.SendEmailAsync(mailRequest);
+                        bool sent = false;
+                        Exception? lastException = null;
+
+                        for (int attempt = 1; attempt <= maxRetries; attempt++)
+                        {
+                            try
+                            {
+                                await _emailService.SendEmailAsync(mailRequest);
+                                sent = true;
+                                break; // Success, exit retry loop
+                            }
+                            catch (Exception ex)
+                            {
+                                lastException = ex;
+                                _logger.LogWarning(ex, $"Attempt {attempt} to send email to {mailRequest.ToEmail} failed.");
+                                if (attempt < maxRetries)
+                                    await Task.Delay(retryDelayMilliseconds);
+                            }
+                        }
+
+                        if (!sent)
+                        {
+                            _logger.LogError(lastException, $"All {maxRetries} attempts to send email to {mailRequest.ToEmail} failed. Email Request: {System.Text.Json.JsonSerializer.Serialize(mailRequest)}");
+                            failedEmails.Add(mailRequest);
+                            // Optionally: notify admin/support here
+                        }
                     }
+
+                    // Optionally: handle or alert on failedEmails here
+                    // if (failedEmails.Any()) { /* ... */ }
                 }
+
 
 
                 await transaction.CommitAsync();
