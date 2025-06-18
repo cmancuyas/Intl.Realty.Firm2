@@ -331,17 +331,25 @@
                                                             <td class="w-5 ps-2">
                                                                 @fileUpload.OriginalFileName
                                                             </td>
-                                                            <td class="w-5 ps-2">
-                                                                <a asp-action="Download" asp-route-id="@fileUpload.Id" class="btn btn-secondary" data-position-id="@fileUpload.Id">
+                                                             <td class="w-5 ps-2">
+                                                                <!-- Download -->
+                                                                <a asp-action="Download" asp-route-id="@fileUpload.Id" class="btn btn-secondary" data-position-id="@fileUpload.Id" target="_blank">
                                                                     Download
                                                                 </a>
-                                                                <a id="btnDeleteFile" asp-action="DeleteFile" asp-controller="SaleCoop" asp-route-id="@fileUpload.Id" class="btn btn-secondary" data-position-id="@fileUpload.Id">
-                                                                    Delete
-                                                                </a>
-                                                                <a id="btnDeleteFile" asp-action="PreviewFile" asp-controller="SaleCoop" asp-route-id="@fileUpload.Id" class="btn btn-secondary" data-position-id="@fileUpload.Id">
+                                                                <!-- Delete (secure POST with confirmation) -->
+                                                                <form asp-action="DeleteFile" asp-controller="SaleCoop" asp-route-id="@fileUpload.Id" method="post" class="delete-file-form" style="display:inline;">
+                                                                    <button type="button" class="btn btn-danger btn-delete-file" data-file-id="@fileUpload.Id">
+                                                                        Delete
+                                                                    </button>
+                                                                </form>
+
+
+                                                                <!-- Preview -->
+                                                                <a asp-action="PreviewFile" asp-controller="SaleCoop" asp-route-id="@fileUpload.Id" class="btn btn-secondary" data-position-id="@fileUpload.Id" target="_blank">
                                                                     Preview
                                                                 </a>
                                                             </td>
+
                                                         </tr>
                                                     }
                                                 }
@@ -474,6 +482,28 @@
                 fileErrorScrollTargetId: "fileUploads",
                 documentTypeAssignment: documentTypeAssignments
             });
+            
+            $('.btn-delete-file').on('click', function (e) {
+                e.preventDefault();
+                var $btn = $(this);
+                var $form = $btn.closest('form');
+
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: "This will permanently delete the file.",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#aaa',
+                    confirmButtonText: 'Yes, delete it!'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $form.submit();
+                    }
+                });
+            });
         });
+
     </script>
+
 }

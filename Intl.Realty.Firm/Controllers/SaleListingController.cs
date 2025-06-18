@@ -464,9 +464,9 @@ namespace Intl.Realty.Firm.Controllers
                 viewModel.EditSaleListingViewModel.UpdatedBy = user!.Id;
                 viewModel.EditSaleListingViewModel.UpdatedAt = DateTime.Now;
 
-                var fileUploads = await _unitOfWork.FileUpload.GetAllAsync(x => x.SaleListingId == model.Id && x.IsActive && x.IsDeleted, includeProperties: "SaleListing,TransactionType,DocumentType");
+                var fileUploads = await _unitOfWork.FileUpload.GetAllAsync(x => x.SaleListingId == model.Id && x.IsActive && !x.IsDeleted, includeProperties: "SaleListing,TransactionType,DocumentType");
 
-                //var fileUploadsWithFiles = FilterFileUploadsWithFilesOnly(fileUploads.ToList());
+                var fileUploadsWithFiles = FilterFileUploadsWithFilesOnly(fileUploads.ToList());
 
                 viewModel.EditSaleListingViewModel.FileUploads = fileUploads.ToList();
 
@@ -873,7 +873,7 @@ namespace Intl.Realty.Firm.Controllers
 
             return NotFound();
         }
-        [HttpGet]
+        [HttpPost]
         public async Task<IActionResult> DeleteFile(int id)
         {
             var fileUpload = await _unitOfWork.FileUpload.GetAsync(x => x.Id == id);
