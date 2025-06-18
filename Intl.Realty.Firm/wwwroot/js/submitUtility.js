@@ -35,28 +35,38 @@ async function defaultValidateFilesAsync(documentTypeAssignment = []) {
 
     let missing = [];
 
-    $("#tblApplicantFiles tbody tr").each(function () {
-        const docTypeId = parseInt($(this).data("document-type-id"));
-        const fileInput = $(this).find('input[type="file"]')[0];
-        const hasNewFile = fileInput?.files?.length > 0;
+    // Loop through all assignments, not just visible rows!
+    documentTypeAssignment.forEach((docTypeAssign, i) => {
+        const docTypeId = docTypeAssign.DocumentType?.Id;
+        const isRequired = docTypeAssign?.IsRequired === true || docTypeAssign?.IsRequired === "true";
+        const docLabel = docTypeAssign?.DocumentType?.Description ?? `Document`;
 
-        const docType = documentTypeAssignment.find(d => d.DocumentType?.Id === docTypeId);
-        const isRequired = docType?.IsRequired === true || docType?.IsRequired === "true";
+        // 1. Check if uploaded before (already on server)
         const alreadyUploaded = uploadedDocumentTypes.some(u => parseInt(u.id ?? u.Id) === docTypeId);
+
+        // 2. Check if user selected a file *now*
+        // Find the file input by matching its data-document-type-id attribute
+        const fileInput = $(`#tblApplicantFiles tbody tr[data-document-type-id="${docTypeId}"]`).find('input[type="file"]')[0];
+        const hasNewFile = fileInput && fileInput.files && fileInput.files.length > 0;
 
         if (isRequired) {
             if (alreadyUploaded || hasNewFile) {
-                $(fileInput).removeClass("border-danger");
-                alreadyUploaded ? showAlreadyUploadedIndicator(fileInput) : removeUploadIndicator(fileInput);
+                if (fileInput) {
+                    $(fileInput).removeClass("border-danger");
+                    alreadyUploaded ? showAlreadyUploadedIndicator(fileInput) : removeUploadIndicator(fileInput);
+                }
             } else {
-                const docLabel = docType?.DocumentType?.Description ?? `Document`;
                 missing.push(`<li>${docLabel}</li>`);
-                $(fileInput).addClass("border-danger");
-                removeUploadIndicator(fileInput);
+                if (fileInput) {
+                    $(fileInput).addClass("border-danger");
+                    removeUploadIndicator(fileInput);
+                }
             }
         } else {
-            $(fileInput).removeClass("border-danger");
-            removeUploadIndicator(fileInput);
+            if (fileInput) {
+                $(fileInput).removeClass("border-danger");
+                removeUploadIndicator(fileInput);
+            }
         }
     });
 
@@ -69,6 +79,7 @@ async function defaultValidateFilesAsync(documentTypeAssignment = []) {
 
     return { success: true, message: "" };
 }
+
 
 // ✅ AJAX: Get uploaded document types
 async function getUploadedDocumentTypesAsync(entityType, entityId) {

@@ -279,49 +279,42 @@
                                                 </tr>
                                             </thead>
                                             <tbody id="fileTableBody">
-
-                                                @foreach (DocumentType item in Model.EditLeaseListingViewModel.DocumentTypeList!)
+                                                @foreach (var fileUpload in Model.EditLeaseListingViewModel.FileUploads!)
                                                 {
-                                                    <tr class="border-bottom">
-                                                        <td class="p-2">
-                                                            <span class="mt-3 ms-2 mb-1">@item.Description</span>
-                                                        </td>
-                                                        @{
-                                                            var filesWithDocumentTypeId = Model.EditLeaseListingViewModel.FileUploads!.Where(x => x.DocumentTypeId == item.Id);
+                                                    var docType = Model.EditLeaseListingViewModel.DocumentTypeList!
+                                                        .FirstOrDefault(dt => dt.Id == fileUpload.DocumentTypeId);
 
-                                                            if (filesWithDocumentTypeId != null)
-                                                            {
-                                                                @foreach (var fileUpload in filesWithDocumentTypeId)
-                                                                {
-                                                                    <td class="w-5 ps-2">
-                                                                        @fileUpload.OriginalFileName
-                                                                    </td>
-
-                                                                    <td class="w-5 ps-2">
-                                                                        <a asp-action="Download" asp-route-id="@fileUpload.Id" class="btn btn-secondary" data-position-id="@fileUpload.Id">
-                                                                            Download
-                                                                        </a>
-                                                                        <a id="btnDeleteFile" asp-action="DeleteFile" asp-controller="LeaseListing" asp-route-id="@fileUpload.Id" class="btn btn-secondary" data-position-id="@fileUpload.Id">
-                                                                            Delete
-                                                                        </a>
-                                                                        <a id="btnDeleteFile" asp-action="PreviewFile" asp-controller="LeaseListing" asp-route-id="@fileUpload.Id" class="btn btn-secondary" data-position-id="@fileUpload.Id">
-                                                                            Preview
-                                                                        </a>
-                                                                    </td>
-                                                                }
-                                                            }
-                                                        }
-                                                    </tr>
+                                                    if (docType != null)
+                                                    {
+                                                        <tr class="border-bottom">
+                                                            <td class="p-2">
+                                                                <span class="mt-3 ms-2 mb-1">@docType.Description</span>
+                                                            </td>
+                                                            <td class="w-5 ps-2">
+                                                                @fileUpload.OriginalFileName
+                                                            </td>
+                                                            <td class="w-5 ps-2">
+                                                                <a asp-action="Download" asp-route-id="@fileUpload.Id" class="btn btn-secondary" data-position-id="@fileUpload.Id">
+                                                                    Download
+                                                                </a>
+                                                                <a id="btnDeleteFile" asp-action="DeleteFile" asp-controller="LeaseListing" asp-route-id="@fileUpload.Id" class="btn btn-secondary" data-position-id="@fileUpload.Id">
+                                                                    Delete
+                                                                </a>
+                                                                <a id="btnDeleteFile" asp-action="PreviewFile" asp-controller="LeaseListing" asp-route-id="@fileUpload.Id" class="btn btn-secondary" data-position-id="@fileUpload.Id">
+                                                                    Preview
+                                                                </a>
+                                                            </td>
+                                                        </tr>
+                                                    }
                                                 }
-
                                             </tbody>
                                         </table>
                                     </div>
                                 </div>
                             </div>
                         </div>
-
                     </div>
+
 
                     <div class="tab-pane" id="createFileUploads" aria-labelledby="createFileUploads-tab" style="background-color:white;">
                         <div class="row d-flex justify-content-center m-0">
