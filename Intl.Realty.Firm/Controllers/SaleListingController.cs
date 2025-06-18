@@ -915,8 +915,8 @@ namespace Intl.Realty.Firm.Controllers
         public async Task<JsonResult> GetDocumentTypesThatHasFileUploads(int saleListingId)
         {
             var fileUploads = await _unitOfWork.FileUpload.GetAllAsync(
-                x => x.SaleListingId == saleListingId 
-                //&& !x.IsDeleted && x.IsActive
+                x => x.SaleListingId == saleListingId
+                && !x.IsDeleted && x.IsActive
             );
 
             // Only get DocumentTypeId (no null check needed, not nullable!)
