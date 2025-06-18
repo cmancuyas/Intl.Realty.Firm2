@@ -466,9 +466,9 @@ namespace Intl.Realty.Firm.Controllers
 
                 var fileUploads = await _unitOfWork.FileUpload.GetAllAsync(x => x.SaleListingId == model.Id && x.IsActive && x.IsDeleted, includeProperties: "SaleListing,TransactionType,DocumentType");
 
-                var fileUploadsWithFiles = FilterFileUploadsWithFilesOnly(fileUploads.ToList());
+                //var fileUploadsWithFiles = FilterFileUploadsWithFilesOnly(fileUploads.ToList());
 
-                viewModel.EditSaleListingViewModel.FileUploads = fileUploadsWithFiles;
+                viewModel.EditSaleListingViewModel.FileUploads = fileUploads.ToList();
 
                 var documentTypeAssignmentIEnum = await _unitOfWork.DocumentTypeAssignment.GetAllAsync(x => x.IsDeleted == false, includeProperties: "TransactionType,DocumentType");
                 var documentTypeIEnum = await _unitOfWork.DocumentType.GetAllAsync(x => x.IsActive && x.IsDeleted == false);
