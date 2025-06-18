@@ -805,6 +805,12 @@ namespace Intl.Realty.Firm.Utility.Mapper
             entity.LandLordPhoneNumber = viewModel.LandLordDetails.LandLordPhoneNumber;
             entity.LandLordEmailAddress = viewModel.LandLordDetails.LandLordEmailAddress;
 
+            // Listing
+            entity.ListingAgentName = viewModel.ListingInfo.ListingAgentName;
+            entity.BuyerBrokerageFax = viewModel.ListingInfo.ListingBrokerageFax;
+            entity.BuyerBrokerage = viewModel.ListingInfo.ListingBrokerage;
+
+
             // 💼 Commission (only BuyingCommission is used for LeaseCoop)
             entity.BuyingCommissionPercentage = viewModel.Commission.BuyingCommissionPercentage;
 

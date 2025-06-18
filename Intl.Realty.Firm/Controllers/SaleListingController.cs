@@ -550,8 +550,8 @@ namespace Intl.Realty.Firm.Controllers
 
             // Rebuild document type list
             var documentTypeAssignments = await _unitOfWork.DocumentTypeAssignment
-                .GetAllAsync(x => !x.IsDeleted, includeProperties: "TransactionType,DocumentType");
-            var documentTypes = await _unitOfWork.DocumentType.GetAllAsync(x => !x.IsDeleted);
+                .GetAllAsync(x => x.IsActive && !x.IsDeleted, includeProperties: "TransactionType,DocumentType");
+            //var documentTypes = await _unitOfWork.DocumentType.GetAllAsync(x => !x.IsDeleted);
 
             viewModel.EditSaleListingViewModel.DocumentTypeList = _documentTransactionService
                 .GetDocumentTypesFromDocumentTypeAssignment(
