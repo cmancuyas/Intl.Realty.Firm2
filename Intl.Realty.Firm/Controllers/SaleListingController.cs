@@ -911,17 +911,24 @@ namespace Intl.Realty.Firm.Controllers
             return Json(record);
         }
 
+        [HttpGet]
         public async Task<JsonResult> GetDocumentTypesThatHasFileUploads(int saleListingId)
         {
-            var fileUploads = await _unitOfWork.FileUpload.GetAllAsync(x => x.SaleListingId == saleListingId && x.IsDeleted == false && x.IsActive);
-            var documentTypeIds = fileUploads.Select(x => x.DocumentTypeId).ToArray();
+            var fileUploads = await _unitOfWork.FileUpload.GetAllAsync(
+                x => x.SaleListingId == saleListingId
+                && !x.IsDeleted && x.IsActive
+            );
 
-            var documentTypes = await _unitOfWork.DocumentType.GetAllAsync(x =>
-                documentTypeIds.Contains(x.Id) &&
-                x.IsActive &&
-                !x.IsDeleted);
-            return Json(documentTypes);
+            // Only get DocumentTypeId (no null check needed, not nullable!)
+            var documentTypeIds = fileUploads
+                .Select(x => x.DocumentTypeId)
+                .Distinct()
+                .ToArray();
+
+            return Json(documentTypeIds);
         }
+
+
         [HttpPost]
         public async Task<IActionResult> GetSaleListingList([FromBody] DtParameters dtParameters)
         {

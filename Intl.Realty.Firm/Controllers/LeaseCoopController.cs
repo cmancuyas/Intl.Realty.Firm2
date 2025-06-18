@@ -895,17 +895,21 @@ namespace Intl.Realty.Firm.Controllers
             return Json(record);
         }
 
+        [HttpGet]
         public async Task<JsonResult> GetDocumentTypesThatHasFileUploads(int leaseCoopId)
         {
-            var fileUploads = await _unitOfWork.FileUpload.GetAllAsync(x => x.LeaseCoopId == leaseCoopId);
-            var documentTypeIds = fileUploads.Select(x => x.DocumentTypeId).ToArray();
+            var fileUploads = await _unitOfWork.FileUpload.GetAllAsync(
+                x => x.LeaseCoopId == leaseCoopId 
+                //&& x.IsActive && !x.IsDeleted
+            );
+            var documentTypeIds = fileUploads
+                .Select(x => x.DocumentTypeId)
+                .Distinct()
+                .ToArray();
 
-            var documentTypes = await _unitOfWork.DocumentType.GetAllAsync(x =>
-                documentTypeIds.Contains(x.Id) &&
-                x.IsActive &&
-                !x.IsDeleted);
-            return Json(documentTypes);
+            return Json(documentTypeIds);
         }
+
 
         [HttpPost]
         public async Task<IActionResult> GetLeaseCoopList([FromBody] DtParameters dtParameters)
