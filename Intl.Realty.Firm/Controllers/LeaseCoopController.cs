@@ -865,14 +865,24 @@ namespace Intl.Realty.Firm.Controllers
         [HttpGet]
         public async Task<IActionResult> DeleteFile(int id)
         {
+            // to get current user ID
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            // to get current user info
+            var user = await _userManager.FindByIdAsync(userId!);
+
             var fileUpload = await _unitOfWork.FileUpload.GetAsync(x => x.Id == id);
             if (fileUpload != null)
             {
-                await _unitOfWork.FileUpload.RemoveAsync(fileUpload);
+                fileUpload.IsDeleted = true;
+                fileUpload.DeletedAt = DateTime.UtcNow;
+                fileUpload.DeletedBy = user.Id;
+
+                await _unitOfWork.FileUpload.UpdateAsync(fileUpload);
 
                 var isSuccess = await _fileHandlerService.DeleteFile(fileUpload.FullPath);
 
-                return RedirectToAction(nameof(Edit), new { id = fileUpload.LeaseCoopId });
+                return RedirectToAction(nameof(Edit), new { id = fileUpload.SaleCoopId });
             }
 
             return NotFound();
@@ -899,8 +909,8 @@ namespace Intl.Realty.Firm.Controllers
         public async Task<JsonResult> GetDocumentTypesThatHasFileUploads(int leaseCoopId)
         {
             var fileUploads = await _unitOfWork.FileUpload.GetAllAsync(
-                x => x.LeaseCoopId == leaseCoopId 
-                //&& x.IsActive && !x.IsDeleted
+                x => x.LeaseCoopId == leaseCoopId
+                && x.IsActive && !x.IsDeleted
             );
             var documentTypeIds = fileUploads
                 .Select(x => x.DocumentTypeId)

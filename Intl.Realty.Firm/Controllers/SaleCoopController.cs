@@ -864,10 +864,20 @@ namespace Intl.Realty.Firm.Controllers
         [HttpGet]
         public async Task<IActionResult> DeleteFile(int id)
         {
+            // to get current user ID
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            // to get current user info
+            var user = await _userManager.FindByIdAsync(userId!);
+
             var fileUpload = await _unitOfWork.FileUpload.GetAsync(x => x.Id == id);
             if (fileUpload != null)
             {
-                await _unitOfWork.FileUpload.RemoveAsync(fileUpload);
+                fileUpload.IsDeleted = true;
+                fileUpload.DeletedAt = DateTime.UtcNow;
+                fileUpload.DeletedBy = user.Id;
+
+                await _unitOfWork.FileUpload.UpdateAsync(fileUpload);
 
                 var isSuccess = await _fileHandlerService.DeleteFile(fileUpload.FullPath);
 
