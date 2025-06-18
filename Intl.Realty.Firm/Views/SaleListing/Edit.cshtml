@@ -369,29 +369,33 @@
                     <div class="tab-pane" id="createFileUploads" aria-labelledby="createFileUploads-tab" style="background-color:white;">
                         <div class="row d-flex justify-content-center m-0">
                             <div class="col-md-12">
-                                <h5 class="text-blue mb-4">Please match your uploaded file based on the Document Type for Sale Listing.<span class="s-required">*</span></h5>
+                                <h5 class="text-blue mb-4">
+                                    Please match your uploaded file based on the Document Type for Sale Listing.
+                                    <span class="s-required">*</span>
+                                </h5>
                                 <table class="table dataTable" id="tblApplicantFiles" width="100%">
                                     <thead>
                                         <tr>
                                             <th style="width: 30%">Document Type</th>
                                             <th>Is Required?</th>
                                             <th>Uploaded Document</th>
-
                                         </tr>
                                     </thead>
+                                    @{
+                                        // Make sure we have a List for safe indexing
+                                        var docAssignments = Model.EditSaleListingViewModel.DocumentTypeAssignmentList.ToList();
+                                    }
                                     <tbody>
-                                        @{
-                                            int i = 0;
-                                        }
-                                        @foreach (DocumentTypeAssignment item in Model.EditSaleListingViewModel.DocumentTypeAssignmentList!)
+                                        @for (int i = 0; i < docAssignments.Count; i++)
                                         {
+                                            var item = docAssignments[i];
                                             <tr data-document-type-id="@item.DocumentType.Id">
                                                 <td style="width: 30%">
-                                                    @Html.DisplayFor(modelItem => item.DocumentType.Description)
+                                                    @item.DocumentType.Description
+                                                    <input type="hidden"
+                                                           name="EditSaleListingViewModel.CreateFileUploadListViewModel.CreateFileUploadsViewModel[@i].DocumentTypeId"
+                                                           value="@item.DocumentType.Id" />
                                                 </td>
-                                                <input type="hidden"
-                                                       asp-for="EditSaleListingViewModel.CreateFileUploadListViewModel.CreateFileUploadsViewModel[i].DocumentTypeId"
-                                                       value="@item.DocumentType.Id" />
                                                 <td id="isRequired">
                                                     @if (item.IsRequired == true)
                                                     {
@@ -403,9 +407,9 @@
                                                     }
                                                 </td>
                                                 <td>
-                                                    <input asp-for="EditSaleListingViewModel.CreateFileUploadListViewModel.CreateFileUploadsViewModel[i].Files"
+                                                    <input type="file"
+                                                           name="EditSaleListingViewModel.CreateFileUploadListViewModel.CreateFileUploadsViewModel[@i].Files"
                                                            id="fileListDropDown_@i"
-                                                           type="file"
                                                            class="file"
                                                            multiple
                                                            data-show-upload="false"
@@ -413,20 +417,17 @@
                                                            accept="application/all"
                                                            data-show-caption="true"
                                                            data-show-preview="false"
-                                                    @* onchange="fileSelected(this)" *@
-                                                           data-msg-placeholder="Select {files} for upload...">
+                                                           data-msg-placeholder="Select {files} for upload..." />
+                                                    <!-- Optional debug: <span style="font-size:11px;color:gray;">Index: @i, DocTypeId: @item.DocumentType.Id</span> -->
                                                 </td>
-                                                @{
-                                                    i++;
-                                                }
                                             </tr>
                                         }
                                     </tbody>
                                 </table>
                             </div>
                         </div>
-
                     </div>
+
 
                     <div class="tab-pane" id="notes" aria-labelledby="notes-tab" style="background-color:white;">
                         <div class="col-md-12 mt-4">
