@@ -42,7 +42,7 @@ async function defaultValidateFilesAsync(documentTypeAssignment = []) {
         const docLabel = docTypeAssign?.DocumentType?.Description ?? `Document`;
 
         // 1. Check if uploaded before (already on server)
-        const alreadyUploaded = uploadedDocumentTypes.some(u => parseInt(u.id ?? u.Id) === docTypeId);
+        const alreadyUploaded = uploadedDocumentTypes.includes(docTypeId);
 
         // 2. Check if user selected a file *now*
         // Find the file input by matching its data-document-type-id attribute
