@@ -464,7 +464,7 @@ namespace Intl.Realty.Firm.Controllers
                 viewModel.EditSaleListingViewModel.UpdatedBy = user!.Id;
                 viewModel.EditSaleListingViewModel.UpdatedAt = DateTime.Now;
 
-                var fileUploads = await _unitOfWork.FileUpload.GetAllAsync(x => x.SaleListingId == model.Id, includeProperties: "SaleListing,TransactionType,DocumentType");
+                var fileUploads = await _unitOfWork.FileUpload.GetAllAsync(x => x.SaleListingId == model.Id && x.IsActive && x.IsDeleted, includeProperties: "SaleListing,TransactionType,DocumentType");
 
                 var fileUploadsWithFiles = FilterFileUploadsWithFilesOnly(fileUploads.ToList());
 

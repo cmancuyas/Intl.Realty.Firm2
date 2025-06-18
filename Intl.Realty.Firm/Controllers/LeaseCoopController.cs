@@ -471,7 +471,7 @@ namespace Intl.Realty.Firm.Controllers
             viewModel.EditLeaseCoopViewModel.UpdatedBy = user!.Id;
             viewModel.EditLeaseCoopViewModel.UpdatedAt = DateTime.Now;
 
-            var fileUploads = await _unitOfWork.FileUpload.GetAllAsync(x => x.LeaseCoopId == model.Id, includeProperties: "LeaseCoop,TransactionType,DocumentType");
+            var fileUploads = await _unitOfWork.FileUpload.GetAllAsync(x => x.LeaseCoopId == model.Id && x.IsActive && x.IsDeleted, includeProperties: "LeaseCoop,TransactionType,DocumentType");
 
             var fileUploadsWithFiles = FilterFileUploadsWithFilesOnly(fileUploads.ToList());
 
