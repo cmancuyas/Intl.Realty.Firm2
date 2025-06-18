@@ -324,8 +324,9 @@
                                             <tbody id="fileTableBody">
                                                 @foreach (var fileUpload in Model.EditSaleListingViewModel.FileUploads!)
                                                 {
+                                                    // Only get the docType if it is NOT deleted
                                                     var docType = Model.EditSaleListingViewModel.DocumentTypeList!
-                                                        .FirstOrDefault(dt => dt.Id == fileUpload.DocumentTypeId);
+                                                        .FirstOrDefault(dt => dt.Id == fileUpload.DocumentTypeId && (dt.IsDeleted == null || dt.IsDeleted == false));
 
                                                     if (docType != null)
                                                     {
@@ -337,28 +338,21 @@
                                                                 @fileUpload.OriginalFileName
                                                             </td>
                                                             <td class="w-5 ps-2">
-                                                                <!-- Download -->
-                                                                <a asp-action="Download" asp-route-id="@fileUpload.Id" class="btn btn-secondary" data-position-id="@fileUpload.Id" target="_blank">
+                                                                <a asp-action="Download" asp-route-id="@fileUpload.Id" class="btn btn-secondary" target="_blank">
                                                                     Download
                                                                 </a>
-                                                                <!-- Delete (Form POST, safe for delete) -->
-                                                                <form asp-action="DeleteFile" asp-controller="SaleListing" asp-route-id="@fileUpload.Id" method="post" class="delete-file-form" style="display:inline;">
-                                                                    <button type="button" class="btn btn-danger btn-delete-file" data-position-id="@fileUpload.Id">
-                                                                        Delete
-                                                                    </button>
-                                                                </form>
-
-                                                                <!-- Preview (New Tab) -->
-                                                                <a asp-action="PreviewFile" asp-controller="SaleListing" asp-route-id="@fileUpload.Id" class="btn btn-secondary" data-position-id="@fileUpload.Id" target="_blank">
+                                                                <button type="button" class="btn btn-danger btn-delete-file" data-file-id="@fileUpload.Id">
+                                                                    Delete
+                                                                </button>
+                                                                <a asp-action="PreviewFile" asp-controller="SaleListing" asp-route-id="@fileUpload.Id" class="btn btn-secondary" target="_blank">
                                                                     Preview
                                                                 </a>
                                                             </td>
-
-
                                                         </tr>
                                                     }
                                                 }
                                             </tbody>
+
                                         </table>
                                     </div>
                                 </div>
@@ -489,8 +483,7 @@
             $('.btn-delete-file').on('click', function (e) {
                 e.preventDefault();
                 var $btn = $(this);
-                var $form = $btn.closest('form');
-
+                var fileId = $btn.data('file-id');
                 Swal.fire({
                     title: 'Are you sure?',
                     text: "This will permanently delete the file.",
@@ -501,7 +494,22 @@
                     confirmButtonText: 'Yes, delete it!'
                 }).then((result) => {
                     if (result.isConfirmed) {
-                        $form.submit();
+                        $.ajax({
+                            url: '/SaleListing/DeleteFileAjax/' + fileId,
+                            type: 'POST',
+                            headers: {
+                                'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
+                            },
+                            success: function (res) {
+                                if (res.success) {
+                                    Swal.fire('Deleted!', 'File has been deleted.', 'success').then(() => {
+                                        location.reload();
+                                    });
+                                } else {
+                                    Swal.fire('Error!', 'Could not delete the file.', 'error');
+                                }
+                            }
+                        });
                     }
                 });
             });

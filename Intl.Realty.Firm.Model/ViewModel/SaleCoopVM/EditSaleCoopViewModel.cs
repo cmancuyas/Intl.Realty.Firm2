@@ -25,7 +25,7 @@ namespace Intl.Realty.Firm.Model.ViewModel.SaleCoopVM
         public int DealStatusId { get; set; }
         public TransactionType? TransactionType { get; set; }
         public DealStatus? DealStatus { get; set; }
-        public IEnumerable<DocumentType>? DocumentTypeList { get; set; }
+        public List<DocumentType>? DocumentTypeList { get; set; }
         public IEnumerable<DocumentTypeAssignment>? DocumentTypeAssignmentList { get; set; }
         public IEnumerable<DealStatus>? DealStatusList { get; set; }
         public string UpdatedByFullName { get; set; } = string.Empty;

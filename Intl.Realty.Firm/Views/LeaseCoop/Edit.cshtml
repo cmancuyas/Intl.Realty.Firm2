@@ -260,8 +260,9 @@
                                             <tbody id="fileTableBody">
                                                 @foreach (var fileUpload in Model.EditLeaseCoopViewModel.FileUploads!)
                                                 {
-                                                    // Find the doc type
-                                                    var docType = Model.EditLeaseCoopViewModel.DocumentTypeList!.FirstOrDefault(dt => dt.Id == fileUpload.DocumentTypeId);
+                                                    // Find doc type, but only if it's active/not deleted
+                                                    var docType = Model.EditLeaseCoopViewModel.DocumentTypeList!
+                                                        .FirstOrDefault(dt => dt.Id == fileUpload.DocumentTypeId && (dt.IsDeleted == null || dt.IsDeleted == false));
                                                     if (docType != null)
                                                     {
                                                         <tr class="border-bottom">
@@ -272,27 +273,21 @@
                                                                 @fileUpload.OriginalFileName
                                                             </td>
                                                             <td class="w-5 ps-2">
-                                                                <!-- Download -->
-                                                                <a asp-action="Download" asp-route-id="@fileUpload.Id" class="btn btn-secondary" data-position-id="@fileUpload.Id" target="_blank">
+                                                                <a asp-action="Download" asp-route-id="@fileUpload.Id" class="btn btn-secondary" target="_blank">
                                                                     Download
                                                                 </a>
-                                                                <!-- Delete (POST form, secure and confirmed) -->
-                                                                <form asp-action="DeleteFile" asp-controller="LeaseCoop" asp-route-id="@fileUpload.Id" method="post" class="delete-file-form" style="display:inline;">
-                                                                    <button type="button" class="btn btn-danger btn-delete-file" data-position-id="@fileUpload.Id">
-                                                                        Delete
-                                                                    </button>
-                                                                </form>
-
-                                                                <!-- Preview -->
-                                                                <a asp-action="PreviewFile" asp-controller="LeaseCoop" asp-route-id="@fileUpload.Id" class="btn btn-secondary" data-position-id="@fileUpload.Id" target="_blank">
+                                                                <button type="button" class="btn btn-danger btn-delete-file" data-file-id="@fileUpload.Id">
+                                                                    Delete
+                                                                </button>
+                                                                <a asp-action="PreviewFile" asp-controller="LeaseCoop" asp-route-id="@fileUpload.Id" class="btn btn-secondary" target="_blank">
                                                                     Preview
                                                                 </a>
                                                             </td>
-
                                                         </tr>
                                                     }
                                                 }
                                             </tbody>
+
                                         </table>
                                     </div>
                                 </div>
@@ -323,42 +318,48 @@
                                         var docAssignments = Model.EditLeaseCoopViewModel.DocumentTypeAssignmentList.ToList();
                                     }
                                     <tbody>
-                                        @for (int i = 0; i < docAssignments.Count; i++)
-                                        {
-                                            var item = docAssignments[i];
-                                            <tr data-document-type-id="@item.DocumentType.Id">
-                                                <td style="width: 30%">
-                                                    @item.DocumentType.Description
-                                                    <input type="hidden"
-                                                           name="EditLeaseCoopViewModel.CreateFileUploadListViewModel.CreateFileUploadsViewModel[@i].DocumentTypeId"
-                                                           value="@item.DocumentType.Id" />
-                                                </td>
-                                                <td id="isRequired">
-                                                    @if (item.IsRequired == true)
-                                                    {
-                                                        <label class="status-active">Required</label>
-                                                    }
-                                                    else if (item.IsRequired == false)
-                                                    {
-                                                        <label class="status-inactive pe-cursor">Not Required</label>
-                                                    }
-                                                </td>
-                                                <td>
-                                                    <input type="file"
-                                                           name="EditLeaseCoopViewModel.CreateFileUploadListViewModel.CreateFileUploadsViewModel[@i].Files"
-                                                           id="fileListDropDown_@i"
-                                                           class="file"
-                                                           multiple
-                                                           data-show-upload="false"
-                                                           data-allowed-file-extensions='["pdf","doc","docx","xls","xlsx"]'
-                                                           accept="application/all"
-                                                           data-show-caption="true"
-                                                           data-show-preview="false"
-                                                           data-msg-placeholder="Select {files} for upload..." />
-                                                    <!-- Optional: <span style="font-size:11px;color:gray;">Index: @i, DocTypeId: @item.DocumentType.Id</span> -->
-                                                </td>
-                                            </tr>
-                                        }
+                                            @for (int i = 0; i < docAssignments.Count; i++)
+                                            {
+                                                var item = docAssignments[i];
+                                                var alreadyUploaded = Model.EditLeaseCoopViewModel.FileUploads.Any(f => f.DocumentTypeId == item.DocumentType.Id);
+
+                                                <tr data-document-type-id="@item.DocumentType.Id">
+                                                    <td style="width: 30%">
+                                                        @item.DocumentType.Description
+                                                        @if(alreadyUploaded)
+                                                        {
+                                                            <span class="badge bg-success ms-1">File Uploaded</span>
+                                                        }
+                                                        <input type="hidden"
+                                                               name="EditLeaseCoopViewModel.CreateFileUploadListViewModel.CreateFileUploadsViewModel[@i].DocumentTypeId"
+                                                               value="@item.DocumentType.Id" />
+                                                    </td>
+                                                    <td id="isRequired">
+                                                        @if (item.IsRequired == true)
+                                                        {
+                                                            <label class="status-active">Required</label>
+                                                        }
+                                                        else if (item.IsRequired == false)
+                                                        {
+                                                            <label class="status-inactive pe-cursor">Not Required</label>
+                                                        }
+                                                    </td>
+                                                    <td>
+                                                        <input type="file"
+                                                               name="EditLeaseCoopViewModel.CreateFileUploadListViewModel.CreateFileUploadsViewModel[@i].Files"
+                                                               id="fileListDropDown_@i"
+                                                               class="file"
+                                                               multiple
+                                                               data-show-upload="false"
+                                                               data-allowed-file-extensions='["pdf","doc","docx","xls","xlsx"]'
+                                                               accept="application/all"
+                                                               data-show-caption="true"
+                                                               data-show-preview="false"
+                                                               data-msg-placeholder="Select {files} for upload..." />
+                                                    </td>
+                                                </tr>
+                                            }
+
                                     </tbody>
                                 </table>
                             </div>
@@ -425,24 +426,38 @@
             });
 
             $('.btn-delete-file').on('click', function (e) {
-                e.preventDefault();
-                var $btn = $(this);
-                var $form = $btn.closest('form');
-
-                Swal.fire({
-                    title: 'Are you sure?',
-                    text: "This will permanently delete the file.",
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#d33',
-                    cancelButtonColor: '#aaa',
-                    confirmButtonText: 'Yes, delete it!'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        $form.submit();
-                    }
-                });
-            });
+                 e.preventDefault();
+                 var $btn = $(this);
+                 var fileId = $btn.data('file-id');
+                 Swal.fire({
+                     title: 'Are you sure?',
+                     text: "This will permanently delete the file.",
+                     icon: 'warning',
+                     showCancelButton: true,
+                     confirmButtonColor: '#d33',
+                     cancelButtonColor: '#aaa',
+                     confirmButtonText: 'Yes, delete it!'
+                 }).then((result) => {
+                     if (result.isConfirmed) {
+                         $.ajax({
+                             url: '/LeaseCoop/DeleteFileAjax/' + fileId,
+                             type: 'POST',
+                             headers: {
+                                 'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
+                             },
+                             success: function (res) {
+                                 if (res.success) {
+                                     Swal.fire('Deleted!', 'File has been deleted.', 'success').then(() => {
+                                         location.reload(); // reload to update the file list
+                                     });
+                                 } else {
+                                     Swal.fire('Error!', 'Could not delete the file.', 'error');
+                                 }
+                             }
+                         });
+                     }
+                 });
+             });
         });
     </script>
 }
