@@ -465,7 +465,7 @@ namespace Intl.Realty.Firm.Controllers
             viewModel.EditSaleCoopViewModel.UpdatedBy = user!.Id;
             viewModel.EditSaleCoopViewModel.UpdatedAt = DateTime.Now;
 
-            var fileUploads = await _unitOfWork.FileUpload.GetAllAsync(x => x.SaleCoopId == model.Id && x.IsActive && x.IsDeleted, includeProperties: "SaleCoop,TransactionType,DocumentType");
+            var fileUploads = await _unitOfWork.FileUpload.GetAllAsync(x => x.SaleCoopId == model.Id && x.IsActive && !x.IsDeleted, includeProperties: "SaleCoop,TransactionType,DocumentType");
 
             //var fileUploadsWithFiles = FilterFileUploadsWithFilesOnly(fileUploads.ToList());
 
@@ -861,7 +861,7 @@ namespace Intl.Realty.Firm.Controllers
 
             return NotFound();
         }
-        [HttpGet]
+        [HttpPost]
         public async Task<IActionResult> DeleteFile(int id)
         {
             // to get current user ID

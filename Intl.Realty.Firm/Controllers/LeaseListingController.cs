@@ -472,7 +472,7 @@ namespace Intl.Realty.Firm.Controllers
                 viewModel.EditLeaseListingViewModel.UpdatedBy = user!.Id;
                 viewModel.EditLeaseListingViewModel.UpdatedAt = DateTime.Now;
 
-                var fileUploads = await _unitOfWork.FileUpload.GetAllAsync(x => x.LeaseListingId == model.Id && x.IsActive && x.IsDeleted, includeProperties: "LeaseListing,TransactionType,DocumentType");
+                var fileUploads = await _unitOfWork.FileUpload.GetAllAsync(x => x.LeaseListingId == model.Id && x.IsActive && !x.IsDeleted, includeProperties: "LeaseListing,TransactionType,DocumentType");
 
                 //var fileUploadsWithFiles = FilterFileUploadsWithFilesOnly(fileUploads.ToList());
 
@@ -867,7 +867,7 @@ namespace Intl.Realty.Firm.Controllers
 
             return NotFound();
         }
-        [HttpGet]
+        [HttpPost]
         public async Task<IActionResult> DeleteFile(int id)
         {
             // to get current user ID
