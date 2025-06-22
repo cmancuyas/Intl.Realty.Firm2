@@ -138,6 +138,7 @@ builder.Services.AddTransient<IEmailService, EmailService>();
 builder.Services.AddTransient<IDocumentTransactionService, DocumentTransactionService>();
 builder.Services.AddTransient<INotificationService, NotificationService>();
 builder.Services.AddTransient<IGoogleCaptchaService, GoogleCaptchaService>();
+builder.Services.AddScoped<IDealTransactionNumberService, DealTransactionNumberService>();
 
 builder.Services.Configure<FormOptions>(o =>
 {
