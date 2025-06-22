@@ -3,12 +3,13 @@ using Intl.Realty.Firm.Model.Model;
 using Intl.Realty.Firm.Model.ViewModel;
 using Intl.Realty.Firm.Model.ViewModel.FileUploadVM;
 using Intl.Realty.Firm.Model.ViewModel.LeaseCoopVM;
-using Intl.Realty.Firm.Model.ViewModel.LeaseCoopVM;
 using Intl.Realty.Firm.Models;
 using Intl.Realty.Firm.Models.Auxiliary;
 using Intl.Realty.Firm.Models.DataTable;
 using Intl.Realty.Firm.Repository.IRepository;
+using Intl.Realty.Firm.Service;
 using Intl.Realty.Firm.Service.IService;
+using Intl.Realty.Firm.Utilities;
 using Intl.Realty.Firm.Utility.Mapper;
 using Intl.Realty.Firm.Utility.MenuData;
 using Intl.Realty.Firm.Utility.Utilities;
@@ -34,6 +35,7 @@ namespace Intl.Realty.Firm.Controllers
         private readonly INotificationService _notificationService;
         private readonly IEmailService _emailService;
         private readonly ILogger<LeaseCoopController> _logger;
+        private readonly IDealTransactionNumberService _numberService;
         private readonly string _backupFileDirectory = "\\wwwroot\\Files\\Uploads\\";
         private readonly string _transactionTypeName = "LeaseCoop";
         public LeaseCoopController(IUnitOfWork unitOfWork,
@@ -44,7 +46,8 @@ namespace Intl.Realty.Firm.Controllers
                                     IDocumentTransactionService documentTransactionService,
                                     INotificationService notificationService,
                                     IEmailService emailService,
-                                    ILogger<LeaseCoopController> logger
+                                    ILogger<LeaseCoopController> logger,
+                                    IDealTransactionNumberService numberService
                                                                         )
         {
             _unitOfWork = unitOfWork;
@@ -56,6 +59,7 @@ namespace Intl.Realty.Firm.Controllers
             _notificationService = notificationService;
             _emailService = emailService;
             _logger = logger;
+            _numberService = numberService;
         }
         public IActionResult Index()
         {
@@ -86,7 +90,7 @@ namespace Intl.Realty.Firm.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            var yearValidation = LinqExtensions.AndAlso<DealTransactionNumberRange>(x => x.IsDeleted == false, x => x.Year == DateTime.Now.Year);
+            var yearValidation = LinqExtensions.AndAlso<DealTransactionNumberRange>(x => x.IsActive && !x.IsDeleted, x => x.Year == DateTime.Now.Year);
 
             var numberRange = await _unitOfWork.DealTransactionNumberRange.GetAsync(yearValidation);
             if (numberRange == null)
@@ -158,16 +162,11 @@ namespace Intl.Realty.Firm.Controllers
 
             try
             {
-                // 🔢 Concurrency-safe number range increment
-                var numberRange = await _unitOfWork.DealTransactionNumberRange
-                    .GetAsync(x => !x.IsDeleted && x.Year == DateTime.Now.Year);
+                int nextNumber = await _numberService.GetNextTransactionNumberAsync(DateTime.Now.Year);
 
-                if (numberRange != null)
-                {
-                    numberRange.CurrentNumber += 1;
-                    await _unitOfWork.DealTransactionNumberRange.UpdateAsync(numberRange);
-                    await _unitOfWork.SaveChangesAsync();
-                }
+                viewModel.CreateLeaseCoopViewModel.DealTransactionNumber =
+                    TransactionHelper.BuildDealTransactionNumber(
+                        viewModel.CreateLeaseCoopViewModel.TransactionTypeId, nextNumber);
 
                 var documentTypeAssignments = await _unitOfWork.DocumentTypeAssignment.GetAllAsync(
                     x => !x.IsDeleted,
