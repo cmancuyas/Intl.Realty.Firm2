@@ -1,0 +1,19 @@
+﻿@model Intl.Realty.Firm.Model.ViewModel.NotFoundViewModel
+
+@{
+    ViewBag.Title = Model?.ErrorTitle ?? "Error";
+    Layout = "~/Views/Shared/_LayoutAfterLogin.cshtml";
+}
+
+<div class="container d-flex justify-content-center align-items-center min-vh-100">
+    <div class="text-center">
+        <img src="~/files/img/notfound.jpg" alt="Error Image" class="img-fluid mb-4" style="max-width: 400px;" />
+
+        <h1 class="text-danger fw-bold">@Model?.ErrorTitle</h1>
+        <p class="text-muted">@Model?.ErrorMessage</p>
+
+        <a asp-controller="@Model?.ControllerName" asp-action="@Model?.ControllerAction" class="btn btn-primary mt-3">
+            Return to @Model?.ControllerName Home
+        </a>
+    </div>
+</div>

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Intl.Realty.Firm.Model.ViewModel;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 
@@ -13,40 +14,56 @@ namespace Intl.Realty.Firm.Controllers
         {
             _logger = logger;
         }
+        [AllowAnonymous]
         [Route("Error/{statusCode}")]
         public IActionResult HttpStatusCodeHandler(int statusCode)
         {
             var statusCodeResult = HttpContext.Features.Get<IStatusCodeReExecuteFeature>();
 
+            var model = new NotFoundViewModel
+            {
+                ControllerName = "Home",
+                ControllerAction = "Index"
+            };
+
             switch (statusCode)
             {
+                case 403:
+                    model.ErrorTitle = "403 - Forbidden";
+                    model.ErrorMessage = "You are not authorized to access this resource.";
+                    break;
                 case 404:
-                    ViewBag.ErrorMessage = "Sorry, the resource you requested could not be found";
-                    ViewBag.Path = statusCodeResult!.OriginalPath;
-                    ViewBag.QS = statusCodeResult.OriginalQueryString;
-
-                    _logger.LogWarning($"404 Error occurred. Path = {statusCodeResult.OriginalPath}" +
-                                        $"and QueryString = {statusCodeResult.OriginalQueryString}");
+                    model.ErrorTitle = "404 - Page Not Found";
+                    model.ErrorMessage = "The page you are looking for might have been removed, had its name changed, or is temporarily unavailable.";
+                    break;
+                default:
+                    model.ErrorTitle = $"Error {statusCode}";
+                    model.ErrorMessage = "An unexpected error occurred.";
                     break;
             }
 
-
-            return View("NotFound");
+            return View("Error", model);
         }
+
         [Route("Error")]
         [AllowAnonymous]
         public IActionResult Error()
         {
             var exceptionDetails = HttpContext.Features.Get<IExceptionHandlerPathFeature>();
 
-            ViewBag.ExceptionPath = exceptionDetails!.Path;
-            ViewBag.ExceptionMessage = exceptionDetails.Error.Message;
-            ViewBag.Stacktrace = exceptionDetails.Error.StackTrace;
+            var model = new NotFoundViewModel
+            {
+                ErrorTitle = "Application Error",
+                ErrorMessage = "Something went wrong while processing your request.",
+                ControllerName = "Home",
+                ControllerAction = "Index"
+            };
 
-            _logger.LogError($"The path {exceptionDetails.Path} threw an exception {exceptionDetails.Error}.");
+            _logger.LogError($"Path: {exceptionDetails?.Path} threw an exception: {exceptionDetails?.Error}");
 
-            return View("Error");
+            return View("Error", model);
         }
+
     }
 }
 

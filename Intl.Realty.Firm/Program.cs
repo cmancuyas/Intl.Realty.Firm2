@@ -29,19 +29,22 @@ Log.Logger = new LoggerConfiguration()
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Configuration
-    .AddUserSecrets<Program>();
+// Load secrets
+builder.Configuration.AddUserSecrets<Program>();
 
-// ✅ Set non-commercial license
+// Set non-commercial license for EPPlus
 ExcelPackage.License.SetNonCommercialPersonal("Kyle Bouchard");
 
 builder.Host.UseSerilog();
-// Add services to the container.
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString(name: "DefaultConnection")));
 
+// Add database context
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+// Google CAPTCHA config
 builder.Services.Configure<GoogleCaptchaConfig>(builder.Configuration.GetSection("GoogleReCaptcha"));
 
+// Identity
 builder.Services.AddIdentity<ApplicationUser, ApplicationRole>(options =>
 {
     options.Password.RequiredLength = 8;
@@ -54,70 +57,57 @@ builder.Services.AddIdentity<ApplicationUser, ApplicationRole>(options =>
     options.Lockout.MaxFailedAccessAttempts = 5;
     options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
 
-}).AddEntityFrameworkStores<ApplicationDbContext>()
+})
+.AddEntityFrameworkStores<ApplicationDbContext>()
 .AddDefaultTokenProviders()
 .AddTokenProvider<CustomEmailConfirmationTokenProvider<ApplicationUser>>("CustomEmailConfirmation");
 
+// Token lifespan configs
 builder.Services.Configure<DataProtectionTokenProviderOptions>(options =>
     options.TokenLifespan = TimeSpan.FromHours(5));
+builder.Services.Configure<CustomEmailConfirmationTokenProviderOptions>(options =>
+    options.TokenLifespan = TimeSpan.FromDays(3));
 
-builder.Services.Configure<CustomEmailConfirmationTokenProviderOptions>(options => options.TokenLifespan = TimeSpan.FromDays(3));
+// MVC & JSON
+builder.Services
+    .AddControllersWithViews(options =>
+    {
+        var policy = new AuthorizationPolicyBuilder()
+            .RequireAuthenticatedUser()
+            .Build();
+        options.Filters.Add(new AuthorizeFilter(policy));
+    })
+    .AddXmlSerializerFormatters()
+    .AddNewtonsoftJson(options =>
+    {
+        options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
+        options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
+        options.SerializerSettings.PreserveReferencesHandling = Newtonsoft.Json.PreserveReferencesHandling.Objects;
+    });
 
-builder.Services.AddMvc(options =>
-{
-    var policy = new AuthorizationPolicyBuilder()
-                        .RequireAuthenticatedUser()
-                        .Build();
-    options.Filters.Add(new AuthorizeFilter(policy));
-}).AddXmlSerializerFormatters();
-// Add services to the container.
-builder.Services.AddControllersWithViews();
-
+// Application cookie
 builder.Services.ConfigureApplicationCookie(options =>
 {
     options.AccessDeniedPath = new PathString("/Administration/AccessDenied");
 });
 
+// Authorization policies
 builder.Services.AddAuthorization(options =>
 {
-    // Claims Policy
-    options.AddPolicy("CreateRolePolicy",
-        policy => policy
-        //.RequireClaim("Create Role", "true"));
-        .AddRequirements(new ManageAdminRolesAndClaimsRequirement())
+    options.AddPolicy("CreateRolePolicy", policy =>
+        policy.AddRequirements(new ManageAdminRolesAndClaimsRequirement()));
 
-        );
+    options.AddPolicy("DeleteRolePolicy", policy =>
+        policy.AddRequirements(new ManageAdminRolesAndClaimsRequirement()));
 
-    options.AddPolicy("DeleteRolePolicy",
-            policy => policy
-            //.RequireClaim("Delete Role", "true"));
-            .AddRequirements(new ManageAdminRolesAndClaimsRequirement())
+    options.AddPolicy("EditRolePolicy", policy =>
+        policy.AddRequirements(new ManageAdminRolesAndClaimsRequirement()));
 
-            );
-
-    options.AddPolicy("EditRolePolicy",
-            policy => policy
-
-            .AddRequirements(new ManageAdminRolesAndClaimsRequirement())
-
-            //.RequireAssertion(context =>
-            //context.User.IsInRole("SuperAdmin") || context.User.IsInRole("Admin") ||
-            //context.User.HasClaim(claim => claim.Type == "Edit Role" && claim.Value == "true" &&
-            //context.User.IsInRole("DealAdmin") 
-            //))
-
-            //.RequireClaim("Edit Role", "true")
-            //.RequireRole("Admin")
-            //.RequireRole("DealAdmin")
-            //.RequireRole("SuperAdmin")
-            );
-    //options.InvokeHandlersAfterFailure = false;
-    //Roles Policy 
-    options.AddPolicy("AdminRolePolicy",
-        policy => policy
-                .RequireRole("Admin", "DealAdmin"));
+    options.AddPolicy("AdminRolePolicy", policy =>
+        policy.RequireRole("Admin", "DealAdmin"));
 });
 
+// Service Registrations
 builder.Services.AddTransient(typeof(IExportService<>), typeof(ExportService<>));
 builder.Services.AddScoped<IExcelService, ExcelService>();
 builder.Services.AddScoped<ICsvService, CsvService>();
@@ -140,6 +130,7 @@ builder.Services.AddTransient<INotificationService, NotificationService>();
 builder.Services.AddTransient<IGoogleCaptchaService, GoogleCaptchaService>();
 builder.Services.AddScoped<IDealTransactionNumberService, DealTransactionNumberService>();
 
+// Form upload limits
 builder.Services.Configure<FormOptions>(o =>
 {
     o.ValueLengthLimit = int.MaxValue;
@@ -166,54 +157,47 @@ builder.WebHost.ConfigureKestrel(c =>
 {
     c.Limits.KeepAliveTimeout = TimeSpan.FromMinutes(100);
 });
+
+// Email settings
 builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
 
-builder.Services.AddMvc().AddNewtonsoftJson(options =>
-{
-    options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
-    options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
-    options.SerializerSettings.PreserveReferencesHandling = Newtonsoft.Json.PreserveReferencesHandling.Objects;
-});
-
-builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
-
-// 🔍 Verify EmailSettings loaded correctly
 var emailConfig = builder.Configuration.GetSection("EmailSettings").Get<EmailSettings>();
 Log.Information("📧 Email Host: {Host}, Port: {Port}, User: {User}, Password Exists: {HasPassword}",
     emailConfig?.Host, emailConfig?.Port, emailConfig?.Email,
     !string.IsNullOrWhiteSpace(emailConfig?.Password));
 
+// -------------------- Build App --------------------
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// -------------------- Middleware --------------------
 if (app.Environment.IsDevelopment())
 {
-    app.UseDeveloperExceptionPage(); // ? Enabled ONLY in Development
+    app.UseDeveloperExceptionPage();
 }
 else
 {
-    app.UseExceptionHandler("/Home/Error"); // ? Redirects users to a friendly error page
-    app.UseHsts(); // ? Enforce HTTPS for security
+    app.UseExceptionHandler("/Error");
+    app.UseHsts();
 }
 
-// Handle status codes like 404, 500
+// Handle status codes (e.g., 404, 403)
 app.UseStatusCodePagesWithReExecute("/Error/{0}");
-
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
-// 🔥 Add this:
+
 app.UseStaticFiles(new StaticFileOptions
 {
     FileProvider = new PhysicalFileProvider(
         Path.Combine(builder.Environment.ContentRootPath, "Uploads")),
     RequestPath = "/uploads"
 });
+
 app.UseRouting();
+app.UseAuthentication();
+app.UseAuthorization();
 
-app.UseAuthentication(); // identifying who the user is
-app.UseAuthorization(); // identifying what the user can do
-
+// Default route
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Account}/{action=Login}/{id?}");
