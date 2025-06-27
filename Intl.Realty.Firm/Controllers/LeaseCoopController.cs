@@ -976,7 +976,7 @@ namespace Intl.Realty.Firm.Controllers
             {
                 if (isAgent)
                 {
-                    result = result.Where(x => x.CreatedBy == user!.Id && x.DealStatus!.Id == 2); // Saved
+                    result = result.Where(x => x.CreatedBy == user!.Id && (x.DealStatus!.Id == 2 || x.DealStatus!.Id == 5)); // Saved, Return to agent
                 }
                 else if (isDealAdmin)
                 {
