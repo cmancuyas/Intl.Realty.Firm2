@@ -210,3 +210,44 @@ function toggleStatusLabelSoftDelete() {
     const isDeleted = $('#isDeletedCheckbox').is(':checked');
     $('#lblStatusSoftDelete').toggleClass('text-primary', isDeleted).toggleClass('text-muted', !isDeleted).text(isDeleted ? "IsDeleted" : "NotDeleted");
 }
+
+
+let resetUserId = null;
+let resetUserEmail = null;
+
+function showResetPasswordModal(userId, email) {
+    resetUserId = userId;
+    resetUserEmail = email;
+    $('#resetUserEmail').text(email);
+    $('#resetPasswordModalResult').hide();
+    $('#resetPasswordModalError').hide();
+    $('#resetPasswordModalContent').show();
+    $('#resetPasswordModalFooter').show();
+    $('#resetPasswordModal').modal('show');
+}
+
+$('#confirmResetPasswordBtn').on('click', function () {
+    $(this).prop('disabled', true);
+
+    $.ajax({
+        url: '/Account/AdminResetPassword',
+        method: 'POST',
+        data: { userId: resetUserId },
+        success: function (response) {
+            if (response.success) {
+                $('#generatedPassword').text(response.generatedPassword);
+                $('#resetPasswordModalContent').hide();
+                $('#resetPasswordModalFooter').hide();
+                $('#resetPasswordModalResult').show();
+            } else {
+                $('#resetPasswordModalError').text(response.error).show();
+            }
+        },
+        error: function () {
+            $('#resetPasswordModalError').text('An error occurred.').show();
+        },
+        complete: function () {
+            $('#confirmResetPasswordBtn').prop('disabled', false);
+        }
+    });
+});
