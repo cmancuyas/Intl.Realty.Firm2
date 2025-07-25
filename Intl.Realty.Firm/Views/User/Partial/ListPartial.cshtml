@@ -92,6 +92,32 @@
     </div>
 
 </div>
+<div class="modal fade" id="resetPasswordModal" tabindex="-1" aria-labelledby="resetPasswordModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="resetPasswordModalLabel">Reset User Password</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div id="resetPasswordModalContent">
+                    <p>Reset password for: <span id="resetUserEmail"></span></p>
+                </div>
+                <div id="resetPasswordModalResult" style="display:none;">
+                    <div class="alert alert-success">
+                        <strong>New Password:</strong> <code id="generatedPassword"></code><br>
+                        <small>Copy and provide this password to the user. It will not be shown again.</small>
+                    </div>
+                </div>
+                <div id="resetPasswordModalError" class="alert alert-danger" style="display:none;"></div>
+            </div>
+            <div class="modal-footer" id="resetPasswordModalFooter">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" id="confirmResetPasswordBtn" class="btn btn-danger">Generate New Password</button>
+            </div>
+        </div>
+    </div>
+</div>
 
 <style>
     .blurry {
@@ -191,16 +217,19 @@
                 {
                     targets: 4,
                     data: "id",
-                    render: function (data) {
+                    render: function (data, type, row) {
                         return data ? `
                             <a class='btn btn-secondary' href='#' onclick='preview(this)'>Preview</a>
                             <a class='btn btn-secondary' href='#' onclick='edit(this)'>Edit</a>
                             <a class='btn btn-secondary' href='#' onclick='manageUserRoles(this)'>Manage Roles</a>
                             <a class='btn btn-secondary' href='#' onclick='manageUserClaims(this)'>Manage Claims</a>
+                            <a class='btn btn-danger' href='#' onclick='showResetPasswordModal("${data}", "${row.email}")'>Reset Password</a>
                         ` : "-";
                     },
                     orderable: false
                 }
+
+
             ]
         });
     }

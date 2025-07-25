@@ -592,5 +592,47 @@ namespace Intl.Realty.Firm.Controllers
                 return View("Error");
             }
         }
+
+        [Authorize(Roles = "Admin,SuperAdmin")]
+        [HttpPost]
+        public async Task<IActionResult> AdminResetPassword(string userId)
+        {
+            if (string.IsNullOrWhiteSpace(userId))
+                return Json(new { success = false, error = "Invalid request." });
+
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+                return Json(new { success = false, error = "User not found." });
+
+            string newPassword = GenerateRandomPassword(12);
+            var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+            var result = await _userManager.ResetPasswordAsync(user, token, newPassword);
+
+            if (result.Succeeded)
+            {
+                return Json(new { success = true, generatedPassword = newPassword });
+            }
+            else
+            {
+                string error = string.Join("; ", result.Errors.Select(e => e.Description));
+                return Json(new { success = false, error });
+            }
+        }
+
+        public static string GenerateRandomPassword(int length = 12)
+        {
+            const string valid = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789!@$%";
+            var res = new char[length];
+            using (var rng = System.Security.Cryptography.RandomNumberGenerator.Create())
+            {
+                var bytes = new byte[length];
+                rng.GetBytes(bytes);
+                for (int i = 0; i < length; i++)
+                {
+                    res[i] = valid[bytes[i] % valid.Length];
+                }
+            }
+            return new string(res);
+        }
     }
 }
