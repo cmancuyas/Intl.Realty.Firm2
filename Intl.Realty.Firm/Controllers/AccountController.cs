@@ -268,7 +268,7 @@ namespace Intl.Realty.Firm.Controllers
 
             _logger.LogInformation("Confirmation email resent to: {Email}", user.Email);
 
-            return RedirectToAction("ConfirmationEmailSent");
+            return View("ConfirmEmailSuccess");
         }
 
         // ✅ Reset Password - Show Reset Form
