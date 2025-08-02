@@ -75,7 +75,7 @@ namespace Intl.Realty.Firm.Controllers
                     DepartmentId = user.DepartmentId,
                     EmploymentStatusId = user.EmploymentStatusId,
                     EmailStatusId = user.EmailStatusId,
-                    EmailConfirmed = true,
+                    EmailConfirmed = user.EmailConfirmed,
                     ProfileImageId = user.ProfileImageId,
                     Claims = (await _userManager.GetClaimsAsync(user))
                         .Select(x => $"{x.Type} : {x.Value}")

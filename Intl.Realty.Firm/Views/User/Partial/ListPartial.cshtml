@@ -81,6 +81,7 @@
                                 <th class="text-start">FirstName</th>
                                 <th class="text-start">LastName</th>
                                 <th class="text-start">Email</th>
+                                <th class="text-start">Email Confirmation</th>
                                 <th class="text-start">Email Status</th>
                                 <th class="text-start">Action</th>
                             </tr>
@@ -203,14 +204,25 @@
                 { data: "lastName", title: "Lastname", render: data => data && data !== "N/A" ? data : "-" },
                 { data: "email", title: "Email", render: data => data && data !== "N/A" ? data : "-" },
                 {
+                    data: "emailConfirmed",
+                    title: "Email Confirmation",
+                    render: function (data, type, row) {
+                        debugger;
+                        if (data === true) {
+                            return '<p><label class="status-ongoing pe-cursor">Confirmed</label></p>';
+                        } else {
+                            return '<p><label class="status-pending pe-cursor">Not yet confirmed</label></p>';
+                        }
+                    }
+                },
+                {
                     data: "emailStatus",
                     title: "Email Status",
                     render: function (data, type, row) {
                         const statusMap = {
-                            1: { class: "status-ongoing", label: "Confirmed" },
-                            2: { class: "status-pending", label: "Not Confirmed" },
-                            3: { class: "status-reviewed", label: "Rejected" },
-                            4: { class: "status-inactive", label: "Cancelled" }
+                            1: { class: "status-ongoing", label: "Active" },
+                            2: { class: "status-reviewed", label: "Rejected" },
+                            3: { class: "status-inactive", label: "Cancelled" }
                         };
 
                         const status = statusMap[row.emailStatusId] || { class: "status-unknown", label: "Unknown" };
