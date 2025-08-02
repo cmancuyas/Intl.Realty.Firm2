@@ -81,7 +81,7 @@
                                 <th class="text-start">FirstName</th>
                                 <th class="text-start">LastName</th>
                                 <th class="text-start">Email</th>
-                                <th class="text-start">Email Confirmation</th>
+                                <th class="text-start">Email Status</th>
                                 <th class="text-start">Action</th>
                             </tr>
                         </thead>
@@ -203,14 +203,20 @@
                 { data: "lastName", title: "Lastname", render: data => data && data !== "N/A" ? data : "-" },
                 { data: "email", title: "Email", render: data => data && data !== "N/A" ? data : "-" },
                 {
-                    data: "emailConfirmed",
+                    data: "emailStatus",
                     title: "Email Status",
                     render: function (data, type, row) {
-                        if (data === true) {
-                            return '<p><label class="status-ongoing pe-cursor">Confirmed</label></p>';
-                        } else {
-                            return '<p><label class="status-pending pe-cursor">Not yet confirmed</label></p>';
-                        }
+                        const statusMap = {
+                            1: { class: "status-ongoing", label: "Confirmed" },
+                            2: { class: "status-pending", label: "Not Confirmed" },
+                            3: { class: "status-reviewed", label: "Rejected" },
+                            4: { class: "status-inactive", label: "Cancelled" }
+                        };
+
+                        const status = statusMap[row.emailStatusId] || { class: "status-unknown", label: "Unknown" };
+                        const description = row.emailStatusDescription || status.label;
+
+                        return `<p><label class="${status.class} pe-cursor">${description}</label></p>`;
                     }
                 },
 

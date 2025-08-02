@@ -13,7 +13,8 @@
         "contactEmails-tab": "/ContactEmail/Index",
         "provinces-tab": "/Province/Index",
         "dealTransactionNumberRanges-tab": "/DealTransactionNumberRange/Index",
-        "agentReferrals-tab": "/AgentReferral/Index"
+        "agentReferrals-tab": "/AgentReferral/Index",
+        "emailStatuses-tab": "/EmailStatus/Index",
     };
 
     // Desktop Tab Navigation

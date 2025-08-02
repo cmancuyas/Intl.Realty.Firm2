@@ -16,11 +16,14 @@ namespace Intl.Realty.Firm.Model.Model
 
         [ForeignKey("EmploymentStatus")]
         public int EmploymentStatusId { get; set; }
+        [ForeignKey("EmailStatus")]
+        public int EmailStatusId { get; set; }
 
         public bool UserAgreement { get; set; }
         public DateTime RegistrationDate { get; set; }
         public virtual Department? Department { get; set; }
         public virtual EmploymentStatus? EmploymentStatus { get; set; }
+        public virtual EmailStatus? EmailStatus { get; set; }
 
         // 🔹 Self-referencing foreign key to link an Agent to a TeamLeader
         [ForeignKey("TeamLeader")]
