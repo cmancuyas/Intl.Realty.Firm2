@@ -33,6 +33,7 @@ namespace Intl.Realty.Firm.DataAccess
         public DbSet<ContactEmail> ContactEmails { get; set; }
         public DbSet<ProfileImage> ProfileImages { get; set; }
         public DbSet<AgentReferral> AgentReferrals { get; set; }
+        public DbSet<EmailStatus> EmailStatuses { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -68,7 +69,11 @@ namespace Intl.Realty.Firm.DataAccess
             new EmploymentStatus { Id = 2, Code = "2", Description = "Inactive" },
             new EmploymentStatus { Id = 3, Code = "3", Description = "Blacklisted" }
                 );
-
+            modelBuilder.Entity<EmailStatus>().HasData(
+            new EmailStatus { Id = 1, Code = "1", Description = "Active" },
+            new EmailStatus { Id = 2, Code = "2", Description = "Rejected" },
+            new EmailStatus { Id = 3, Code = "3", Description = "Cancelled" }
+                );
             modelBuilder.Entity<DealStatus>().HasData(
             new DealStatus { Id = 1, Code = "1", Description = "Submitted" },
             new DealStatus { Id = 2, Code = "2", Description = "Saved" }

@@ -74,14 +74,18 @@ namespace Intl.Realty.Firm.Controllers
                     LastName = user.LastName,
                     DepartmentId = user.DepartmentId,
                     EmploymentStatusId = user.EmploymentStatusId,
+                    EmailStatusId = user.EmailStatusId,
                     EmailConfirmed = user.EmailConfirmed,
                     ProfileImageId = user.ProfileImageId,
                     Claims = (await _userManager.GetClaimsAsync(user))
                         .Select(x => $"{x.Type} : {x.Value}")
-                        .ToList(),
+                        .ToList(),             
                     Roles = (await _userManager.GetRolesAsync(user)).ToList(),
-                    DepartmentList = (await _unitOfWork.Department.GetAllAsync(x => !x.IsDeleted)).ToList(),
-                    EmploymentStatusList = (await _unitOfWork.EmploymentStatus.GetAllAsync(x => !x.IsDeleted)).ToList()
+                    DepartmentList = (await _unitOfWork.Department.GetAllAsync(x => x.IsActive && !x.IsDeleted)).ToList(),
+                    EmploymentStatusList = (await _unitOfWork.EmploymentStatus.GetAllAsync(x => x.IsActive && !x.IsDeleted)).ToList(),
+                    EmailStatusList = (await _unitOfWork.EmailStatus.GetAllAsync(x => x.IsActive && !x.IsDeleted)).ToList(),
+                    EmailStatus = (await _unitOfWork.EmailStatus.GetAsync(x => x.Id == user.EmailStatusId)),
+                    EmploymentStatus = (await _unitOfWork.EmploymentStatus.GetAsync(x => x.Id == user.EmploymentStatusId)),
                 },
                 Menus = AdministrationTabMenuData.GetEditUserTabMenuData()
                     .Select(menu =>
@@ -107,6 +111,9 @@ namespace Intl.Realty.Firm.Controllers
             var employmentStatusIEnum = await _unitOfWork.EmploymentStatus.GetAllAsync(x => x.IsDeleted == false);
             viewModel.EditUser.EmploymentStatusList = employmentStatusIEnum.ToList();
 
+            var emailStatusIEnum = await _unitOfWork.EmailStatus.GetAllAsync(x => x.IsDeleted == false);
+            viewModel.EditUser.EmailStatusList = emailStatusIEnum.ToList();
+
             if (user == null)
             {
                 ViewBag.ErrorMessage = $"User with Id = {viewModel.EditUser.Id} cannot be found";
@@ -122,6 +129,7 @@ namespace Intl.Realty.Firm.Controllers
                 user.EmploymentStatusId = viewModel.EditUser.EmploymentStatusId;
                 user.ProfileImageId = viewModel.EditUser.ProfileImageId;
                 user.EmailConfirmed = viewModel.EditUser.EmailConfirmed;
+                user.EmailStatusId = viewModel.EditUser.EmailStatusId;
                 var result = await _userManager.UpdateAsync(user);
 
                 if (result.Succeeded)
@@ -440,7 +448,11 @@ namespace Intl.Realty.Firm.Controllers
 
             (orderCriteria, orderAscendingDirection) = InitializeOrderCriteria(dtParameters, orderCriteria, orderAscendingDirection);
 
-            var query = _userManager.Users.AsQueryable();
+            var query = _userManager.Users
+                .Include(u => u.EmailStatus)
+                .Include(u => u.Department)
+                .Include(u => u.EmploymentStatus)
+                .AsQueryable();
 
             Console.WriteLine($"Initial Total Users: {query.Count()}");
 
@@ -471,6 +483,18 @@ namespace Intl.Realty.Firm.Controllers
                     lastName = u.LastName ?? "N/A",
                     email = u.Email ?? "N/A",
                     emailConfirmed = u.EmailConfirmed,
+
+                    emailStatusId = u.EmailStatus != null ? u.EmailStatus.Id : (int?)null,
+                    emailStatusCode = u.EmailStatus != null ? u.EmailStatus.Code : null,
+                    emailStatusDescription = u.EmailStatus != null ? u.EmailStatus.Description : null,
+
+                    departmentId = u.Department != null ? u.Department.Id : (int?)null,
+                    departmentCode = u.Department != null ? u.Department.Code : null,
+                    departmentDescription = u.Department != null ? u.Department.Description : null,
+
+                    employmentStatusId = u.EmploymentStatus != null ? u.EmploymentStatus.Id : (int?)null,
+                    employmentStatusCode = u.EmploymentStatus != null ? u.EmploymentStatus.Code : null,
+                    employmentStatusDescription = u.EmploymentStatus != null ? u.EmploymentStatus.Description : null
                 })
                 .ToListAsync();
 

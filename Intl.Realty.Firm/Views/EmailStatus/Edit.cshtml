@@ -1,0 +1,136 @@
+﻿@using Intl.Realty.Firm.Model.ViewModel.EmailStatusVM
+
+@model EditEmailStatusWithTabMenuViewModel
+
+@{
+    ViewData["Title"] = "Edit";
+    Layout = "~/Views/Shared/_LayoutAfterLogin.cshtml";
+}
+
+<div class="page-controller mb-5">
+    <a href="@Url.Action("Index","EmailStatus")" class="text-decoration-none back d-flex mb-4">
+        <i data-feather="chevron-left"></i><span>Back</span>
+    </a>
+
+    <div class="row justify-content-center">
+        <div class="col-md-12 card p-4">
+            <h1 class="text-blue mb-0">Edit Email Status</h1>
+            <hr class="my-4" />
+            <form asp-action="Edit"
+                  asp-controller="EmailStatus"
+                  method="post"
+                  enctype="multipart/form-data">
+                <input type="hidden" asp-for="EditEmailStatus.Id" />
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                <div class="tab-page">
+@*                     <ul class="nav nav-tabs" id="administrationManagementTab" role="tablist">
+                        @foreach (var item in Model.Menus)
+                        {
+                            <li class="nav-item mx-0">
+                                <input type="hidden" id="menuId" name="menuId" value="@item.Id" />
+                                <button class="nav-link @item.IsActive"
+                                        id="@item.Tab"
+                                        data-bs-toggle="tab"
+                                        data-bs-target="#@item.Control"
+                                        type="button"
+                                        role="tab"
+                                        aria-controls="@item.Control"
+                                        aria-selected="@item.IsSelected">
+                                    @item.Description
+                                </button>
+                            </li>
+                        }
+                    </ul> *@
+                </div>
+
+                <div class="tab-content" style="border-bottom:none;background-color:white;">
+
+                    <div class="tab-pane active" id="EmailStatusDetails" aria-labelledby="EmailStatusDetails-tab" style="background-color:white;">
+
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label asp-for="EditEmailStatus.Code" class="control-label fw-bolder"></label>
+                                    <input asp-for="EditEmailStatus.Code" class="form-control" />
+                                    <span asp-validation-for="EditEmailStatus.Code" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label asp-for="EditEmailStatus.Description" class="control-label fw-bolder"></label>
+                                    <input asp-for="EditEmailStatus.Description" class="form-control" />
+                                    <span asp-validation-for="EditEmailStatus.Description" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row mb-4">
+                            <div class="col-md-12">
+                                <div class="form-check form-switch d-flex align-items-center gap-2">
+                                    <input id="isActiveCheckbox" class="form-check-input" type="checkbox" asp-for="EditEmailStatus.IsActive">
+                                    <label id="lblStatus" class="fw-bolder">Active</label>
+                                </div>
+                                <span asp-validation-for="EditEmailStatus.IsActive" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+                @*               <div class="row mb-4">
+                <div class="col-md-12">
+                <div class="form-check form-switch d-flex align-items-center gap-2">
+                <input id="isDeletedCheckbox" class="form-check-input" type="checkbox" asp-for="IsDeleted">
+                <label id="lblStatusSoftDelete" class="fw-bolder">Not Deleted</label>
+                </div>
+                <span asp-validation-for="IsDeleted" class="text-danger"></span>
+                </div>
+                </div> *@
+                <hr class="my-5" />
+                <div class="form-group d-flex justify-content-center gap-4">
+                    <input type="button" value="Cancel" class="btn btn-secondary w-15" onclick="window.location.href='@Url.Action("Index", "EmailStatus")'" />
+                    @* <button type="reset" class="btn btn-secondary w-15" onclick="$('.text-danger').hide();">Reset</button> *@
+                    <button type="submit" class="btn btn-primary w-15" onclick="$('.text-danger').show();">Submit</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            $('#isActiveCheckbox').on('click', toggleStatusLabels);
+            $('#isDeletedCheckbox').on('click', toggleStatusLabelSoftDelete);
+
+            toggleStatusLabels();
+            toggleStatusLabelSoftDelete();
+        });
+
+        function toggleStatusLabels() {
+            if ($('#isActiveCheckbox').is(':checked')) {
+                $('#lblStatus').css('color', '#0d6efd').text("Active");
+            } else {
+                $('#lblStatus').css('color', '#bfbfbf').text("Inactive");
+            }
+        }
+        function toggleStatusLabelSoftDelete() {
+
+            if ($('#isDeletedCheckbox').is(':checked')) {
+                $('#lblStatusSoftDelete').css('color', '#0d6efd').text("IsDeleted");
+            } else {
+                $('#lblStatusSoftDelete').css('color', '#bfbfbf').text("NotDeleted");
+            }
+        }
+    </script>
+
+}

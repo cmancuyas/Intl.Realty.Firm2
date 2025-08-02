@@ -24,6 +24,7 @@ namespace Intl.Realty.Firm.Repository.IRepository
         IContactEmailRepository ContactEmail { get; }
         IProfileImageRepository ProfileImage { get; }
         IAgentReferralRepository AgentReferral { get; }
+        IEmailStatusRepository EmailStatus { get; }
         Task SaveChangesAsync();
         void SaveChanges();
         Task<IDbContextTransaction> BeginTransactionAsync();

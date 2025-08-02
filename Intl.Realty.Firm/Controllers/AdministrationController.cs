@@ -263,6 +263,7 @@ namespace Intl.Realty.Firm.Controllers
                 LastName = user.LastName,
                 DepartmentId = user.DepartmentId,
                 EmploymentStatusId = user.EmploymentStatusId,
+                EmailStatusId = user.EmailStatusId,
                 ProfileImageId = user.ProfileImageId,
                 Claims = userClaims.Select(x => x.Type + " : " + x.Value).ToList(),
                 Roles = userRoles.ToList()

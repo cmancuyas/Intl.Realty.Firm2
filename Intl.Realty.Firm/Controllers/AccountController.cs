@@ -80,6 +80,13 @@ namespace Intl.Realty.Firm.Controllers
                 return View(viewModel); // ✅ Must return the view — not redirect
             }
 
+            if (user.EmailStatusId != 1)
+            {
+                ModelState.AddModelError(string.Empty, "Your account email status does not permit login. Please contact support.");
+                return View(viewModel);
+            }
+
+
             // ✅ Use SignInManager to check if email is confirmed
             var result = await _signInManager.PasswordSignInAsync(user, viewModel.Password, viewModel.RememberMe, lockoutOnFailure: true);
 
@@ -268,9 +275,20 @@ namespace Intl.Realty.Firm.Controllers
 
             _logger.LogInformation("Confirmation email resent to: {Email}", user.Email);
 
-            return View("ConfirmEmailSuccess");
+            return RedirectToAction("ResendConfirmEmailSent");
         }
-
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult ResendConfirmEmailSent()
+        {
+            return View();
+        }
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult ConfirmEmailSent()
+        {
+            return View();
+        }
         // ✅ Reset Password - Show Reset Form
         [HttpGet]
         [AllowAnonymous]
