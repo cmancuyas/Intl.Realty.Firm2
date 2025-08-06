@@ -431,6 +431,7 @@ namespace Intl.Realty.Firm.Controllers
                     LastName = viewModel.LastName,
                     DepartmentId = (viewModel.DepartmentId == 0) ? 1 : viewModel.DepartmentId,
                     EmploymentStatusId = 1,
+                    EmailStatusId = 1, // ✅ Default to "Active" status
                     ProfileImageId = viewModel.ProfileImageId,
                     UserAgreement = viewModel.UserAgreement,
                     RegistrationDate = DateTime.UtcNow,
