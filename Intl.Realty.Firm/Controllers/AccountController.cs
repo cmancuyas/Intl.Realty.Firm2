@@ -435,7 +435,8 @@ namespace Intl.Realty.Firm.Controllers
                     ProfileImageId = viewModel.ProfileImageId,
                     UserAgreement = viewModel.UserAgreement,
                     RegistrationDate = DateTime.UtcNow,
-                    TeamLeaderId = teamLeaderId // ✅ Assign the selected TeamLeader
+                    TeamLeaderId = teamLeaderId, // ✅ Assign the selected TeamLeader
+                    EmailConfirmed = true // Email confirmed upon registration
                 };
 
                 var result = await _userManager.CreateAsync(applicationUser, viewModel.Password);
@@ -463,7 +464,8 @@ namespace Intl.Realty.Firm.Controllers
                         await _signInManager.SignInAsync(applicationUser, isPersistent: false);
                     }
 
-                    return View("ConfirmEmailSent");
+                    //return View("ConfirmEmailSent");
+                    return View("RegistrationSuccessful");
                 }
 
                 foreach (var error in result.Errors)
@@ -482,7 +484,12 @@ namespace Intl.Realty.Firm.Controllers
 
             return View(viewModel);
         }
-
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult RegistrationSuccessful()
+        {
+            return View();
+        }
 
         [HttpGet]
         [AllowAnonymous]
