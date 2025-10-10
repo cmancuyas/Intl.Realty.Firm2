@@ -6,6 +6,17 @@
 <div class="training">
     <h1>Training</h1>
 
+    @* Show helpful message if user has no roles *@
+    @if (!User.IsInRole("Agent") && !User.IsInRole("Admin") && !User.IsInRole("SuperAdmin") && !User.IsInRole("TeamLeader") && !User.IsInRole("DealAdmin"))
+    {
+        <div class="alert alert-warning" role="alert">
+            <h4 class="alert-heading">Account Setup Required</h4>
+            <p>It appears your account is not fully set up yet. Please contact support to ensure your Agent role is properly assigned.</p>
+            <hr>
+            <p class="mb-0">If you believe this is an error, please contact <a href="mailto:reception@internationalrealtyfirm.com">reception@internationalrealtyfirm.com</a> for assistance.</p>
+        </div>
+    }
+
     <div class="container-fluid py-5 p-0">
         <div class="accordion" id="trainingAccordion">
             <!-- Commission Processing -->

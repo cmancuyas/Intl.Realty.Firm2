@@ -117,11 +117,29 @@ namespace Intl.Realty.Firm.Controllers
             // ✅ Redirect users based on role
             var userRoles = await _userManager.GetRolesAsync(user);
 
+            _logger.LogInformation("User {Email} has roles: {Roles}", user.Email, string.Join(", ", userRoles));
+
             var hasRole = userRoles.Any(); // ✅ Check if the user has any role
 
             if (hasRole)
             {
+                _logger.LogInformation("Redirecting user {Email} to Dashboard", user.Email);
                 return RedirectToAction("Dashboard", "Home");
+            }
+
+            _logger.LogWarning("User {Email} has no roles assigned, attempting to assign Agent role", user.Email);
+            
+            // ✅ Fallback: Try to assign Agent role if user has no roles
+            var fallbackRoleResult = await _userManager.AddToRoleAsync(user, "Agent");
+            if (fallbackRoleResult.Succeeded)
+            {
+                _logger.LogInformation("Successfully assigned Agent role to user {Email} during login fallback", user.Email);
+                return RedirectToAction("Dashboard", "Home");
+            }
+            else
+            {
+                _logger.LogError("Failed to assign Agent role to user {Email} during login fallback. Errors: {Errors}", 
+                    user.Email, string.Join(", ", fallbackRoleResult.Errors.Select(e => e.Description)));
             }
 
             return RedirectToAction("Index", "Training"); // ✅ Default fallback if no roles assigned
@@ -443,6 +461,23 @@ namespace Intl.Realty.Firm.Controllers
 
                 if (result.Succeeded)
                 {
+                    // ✅ Assign Agent role immediately after user creation
+                    var roleResult = await _userManager.AddToRoleAsync(applicationUser, "Agent");
+                    if (!roleResult.Succeeded)
+                    {
+                        _logger.LogError("Failed to assign Agent role to user {Email}. Errors: {Errors}", 
+                            applicationUser.Email, string.Join(", ", roleResult.Errors.Select(e => e.Description)));
+                        
+                        // Add role assignment errors to ModelState
+                        foreach (var error in roleResult.Errors)
+                        {
+                            ModelState.AddModelError("", $"Role assignment failed: {error.Description}");
+                        }
+                        return View(viewModel);
+                    }
+
+                    _logger.LogInformation("Successfully assigned Agent role to user {Email}", applicationUser.Email);
+
                     var token = await _userManager.GenerateEmailConfirmationTokenAsync(applicationUser);
                     var confirmationLink = Url.Action("ConfirmEmail", "Account",
                                                                 new { userId = applicationUser.Id, token = token }, Request.Scheme);
@@ -456,8 +491,6 @@ namespace Intl.Realty.Firm.Controllers
                     {
                         return RedirectToAction("AdminDashboard", "Home");
                     }
-
-                    await _userManager.AddToRoleAsync(applicationUser, "Agent");
 
                     if (viewModel.AutoSignInAfterRegister)
                     {

@@ -34,6 +34,45 @@ namespace Intl.Realty.Firm.Controllers
         {
             return View();
         }
+        [HttpPost]
+        public async Task<IActionResult> FixUsersWithoutRoles()
+        {
+            try
+            {
+                var usersWithoutRoles = await _userManager.Users
+                    .Where(u => !_userManager.GetRolesAsync(u).Result.Any())
+                    .ToListAsync();
+
+                var fixedCount = 0;
+                var errors = new List<string>();
+
+                foreach (var user in usersWithoutRoles)
+                {
+                    var result = await _userManager.AddToRoleAsync(user, "Agent");
+                    if (result.Succeeded)
+                    {
+                        fixedCount++;
+                        _logger.LogInformation("Fixed user {Email} by assigning Agent role", user.Email);
+                    }
+                    else
+                    {
+                        var errorMsg = $"Failed to fix user {user.Email}: {string.Join(", ", result.Errors.Select(e => e.Description))}";
+                        errors.Add(errorMsg);
+                        _logger.LogError(errorMsg);
+                    }
+                }
+
+                TempData["SuccessMessage"] = $"Successfully fixed {fixedCount} users. {(errors.Any() ? $"Errors: {string.Join("; ", errors)}" : "")}";
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error fixing users without roles");
+                TempData["ErrorMessage"] = $"Error occurred: {ex.Message}";
+            }
+
+            return RedirectToAction("ListUsers");
+        }
+
         [HttpGet]
         public async Task<IActionResult> ManageUserClaims(string userId)
         {
