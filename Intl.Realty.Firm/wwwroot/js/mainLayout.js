@@ -23,7 +23,7 @@
         { itemId: '#administratorNavItem', subNavClass: '.administratorSubNavItem', caret: '#administratorNavLink .caret' },
         { itemId: '#transactionManagementNavItem', subNavClass: '.transactionManagementSubNavItem', caret: '#transactionManagementNavLink .caret' },
         { itemId: '#informationPackageManagementNavItem', subNavClass: '.informationPackageManagementSubNavItem', caret: '#informationPackageManagementNavLink .caret' },
-        { itemId: '#irfProgramManagementNavItem', subNavClass: '.irfProgramManagementSubNavItem', caret: '#irfProgramPackageManagementNavLink .caret' },
+        { itemId: '#irfProgramManagementNavItem', subNavClass: '.irfProgramManagementSubNavItem', caret: '#irfProgramManagementNavLink .caret' },
         { itemId: '#irfBrandedWebsiteNavItem', subNavClass: '.irfBrandedWebsiteSubNavItem', caret: '#irfBrandedWebsiteNavLink .caret' },
         { itemId: '#purchaseIRFStocksNavItem', subNavClass: '.purchaseIRFStocksSubNavItem', caret: '#purchaseIRFStocksNavLink .caret' },
         { itemId: '#referAnAgentNavItem', subNavClass: '.referAnAgentSubNavItem', caret: '#referAnAgentNavLink .caret' },

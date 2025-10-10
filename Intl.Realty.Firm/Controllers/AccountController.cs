@@ -18,6 +18,7 @@ namespace Intl.Realty.Firm.Controllers
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
+        private readonly RoleManager<ApplicationRole> _roleManager;
         private readonly IEmailService _emailService;
         private readonly ILogger<AccountController> _logger;
         private readonly IGoogleCaptchaService _googleCaptchaService;
@@ -25,6 +26,7 @@ namespace Intl.Realty.Firm.Controllers
 
         public AccountController(UserManager<ApplicationUser> userManager,
                                 SignInManager<ApplicationUser> signInManager,
+                                RoleManager<ApplicationRole> roleManager,
                                 IEmailService emailService,
                                 ILogger<AccountController> logger,
                                 IGoogleCaptchaService googleCaptchaService,
@@ -32,6 +34,7 @@ namespace Intl.Realty.Firm.Controllers
         {
             _userManager = userManager;
             _signInManager = signInManager;
+            _roleManager = roleManager;
             _emailService = emailService;
             _logger = logger;
             _googleCaptchaService = googleCaptchaService;
@@ -48,6 +51,49 @@ namespace Intl.Realty.Firm.Controllers
         {
             await _signInManager.SignOutAsync();
             return RedirectToAction("Login", "Account");
+        }
+        
+        [HttpGet]
+        [AllowAnonymous]
+        public async Task<IActionResult> DebugAssignRole(string email = "uihome.co@gmail.com")
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+            if (user == null)
+            {
+                return Json(new { success = false, message = "User not found" });
+            }
+
+            var currentRoles = await _userManager.GetRolesAsync(user);
+            
+            // Remove all existing roles
+            if (currentRoles.Any())
+            {
+                await _userManager.RemoveFromRolesAsync(user, currentRoles);
+            }
+            
+            // Add Agent role
+            var result = await _userManager.AddToRoleAsync(user, "Agent");
+            
+            if (result.Succeeded)
+            {
+                // Refresh sign-in to update claims
+                await _signInManager.RefreshSignInAsync(user);
+                
+                return Json(new { 
+                    success = true, 
+                    message = $"Successfully assigned Agent role to {email}",
+                    previousRoles = currentRoles,
+                    newRoles = await _userManager.GetRolesAsync(user)
+                });
+            }
+            else
+            {
+                return Json(new { 
+                    success = false, 
+                    message = "Failed to assign role",
+                    errors = result.Errors.Select(e => e.Description)
+                });
+            }
         }
         [HttpGet]
         [AllowAnonymous]
@@ -134,6 +180,10 @@ namespace Intl.Realty.Firm.Controllers
             if (fallbackRoleResult.Succeeded)
             {
                 _logger.LogInformation("Successfully assigned Agent role to user {Email} during login fallback", user.Email);
+                
+                // ✅ Refresh the user's claims to include the new role
+                await _signInManager.RefreshSignInAsync(user);
+                
                 return RedirectToAction("Dashboard", "Home");
             }
             else
@@ -461,12 +511,27 @@ namespace Intl.Realty.Firm.Controllers
 
                 if (result.Succeeded)
                 {
+                    // ✅ Verify Agent role exists before assignment
+                    var agentRoleExists = await _roleManager.RoleExistsAsync("Agent");
+                    if (!agentRoleExists)
+                    {
+                        _logger.LogError("Agent role does not exist in the system. Cannot assign role to user {Email}", applicationUser.Email);
+                        ModelState.AddModelError("", "System configuration error: Agent role not found. Please contact support.");
+                        
+                        // Clean up the created user since role assignment failed
+                        await _userManager.DeleteAsync(applicationUser);
+                        return View(viewModel);
+                    }
+
                     // ✅ Assign Agent role immediately after user creation
                     var roleResult = await _userManager.AddToRoleAsync(applicationUser, "Agent");
                     if (!roleResult.Succeeded)
                     {
                         _logger.LogError("Failed to assign Agent role to user {Email}. Errors: {Errors}", 
                             applicationUser.Email, string.Join(", ", roleResult.Errors.Select(e => e.Description)));
+                        
+                        // Clean up the created user since role assignment failed
+                        await _userManager.DeleteAsync(applicationUser);
                         
                         // Add role assignment errors to ModelState
                         foreach (var error in roleResult.Errors)

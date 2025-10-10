@@ -82,9 +82,26 @@ namespace Intl.Realty.Firm.Service
 
                 _logger.LogInformation("✅ Email successfully sent to {Recipient}", mailRequest.ToEmail);
             }
+            catch (MailKit.Net.Smtp.SmtpProtocolException smtpEx)
+            {
+                _logger.LogError(smtpEx, "❌ SMTP Protocol Error sending email to {Recipient}. Error: {ErrorMessage}", 
+                    mailRequest.ToEmail, smtpEx.Message);
+                
+                // Provide specific guidance based on error message
+                if (smtpEx.Message.Contains("Maximum credits exceeded"))
+                {
+                    _logger.LogError("💳 SendGrid account has exceeded monthly email limits. Please check your SendGrid dashboard or upgrade your plan.");
+                }
+                else if (smtpEx.Message.Contains("Authentication failed"))
+                {
+                    _logger.LogError("🔑 SendGrid API key authentication failed. Please verify your API key is valid and active.");
+                }
+                
+                throw;
+            }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "❌ Error sending email to {Recipient}", mailRequest.ToEmail);
+                _logger.LogError(ex, "❌ Unexpected error sending email to {Recipient}", mailRequest.ToEmail);
                 throw;
             }
         }

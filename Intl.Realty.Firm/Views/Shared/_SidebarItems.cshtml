@@ -10,7 +10,33 @@
         </div>
         <div class="nav-bar-container">
             <ul id="navItems" class="navbar-nav mt-5">
-                @if (signInManager.IsSignedIn(User) && (User.IsInRole("SuperAdmin") || User.IsInRole("Admin") || User.Claims.Any(c => c.Type == System.Security.Claims.ClaimTypes.Role)))
+                @{
+                    var isSignedIn = signInManager.IsSignedIn(User);
+                    var hasSuperAdmin = User.IsInRole("SuperAdmin");
+                    var hasAdmin = User.IsInRole("Admin");
+                    var hasDealAdmin = User.IsInRole("DealAdmin");
+                    var hasAgent = User.IsInRole("Agent");
+                    var hasTeamLeader = User.IsInRole("TeamLeader");
+                    var hasAnyRole = hasSuperAdmin || hasAdmin || hasDealAdmin || hasAgent || hasTeamLeader;
+                }
+                
+                @* Debug info - remove this after testing *@
+                <!-- @if (isSignedIn)
+                {
+                    <li class="nav-item mx-2 mt-2 mb-1 rounded" style="background-color: #f8f9fa; padding: 5px; font-size: 12px;">
+                        <small>
+                            Debug: SignedIn=@isSignedIn, 
+                            SuperAdmin=@hasSuperAdmin, 
+                            Admin=@hasAdmin, 
+                            DealAdmin=@hasDealAdmin, 
+                            Agent=@hasAgent, 
+                            TeamLeader=@hasTeamLeader, 
+                            HasAnyRole=@hasAnyRole
+                        </small>
+                    </li>
+                } -->
+                
+                @if (isSignedIn && hasAnyRole)
                 {
                     <li id="dashboardNavItem" class="nav-item mx-2 mt-2 mb-1 rounded">
                         <a class="nav-link text-decoration-none d-flex align-items-center gap-3 ms-2 me-2 fw-bolder" asp-controller="Home" asp-action="Dashboard">
@@ -64,7 +90,7 @@
                     </ul>
                 </li>
 
-                @if (signInManager.IsSignedIn(User) && (User.IsInRole("SuperAdmin") || User.IsInRole("Admin") || User.Claims.Any(c => c.Type == System.Security.Claims.ClaimTypes.Role)))
+                @if (isSignedIn && hasAnyRole)
                 {
                     @* Upload New Transaction  *@
                     <li id="transactionManagementNavItem" class="nav-item mx-2 mt-2 mb-1 rounded pe-cursor">
