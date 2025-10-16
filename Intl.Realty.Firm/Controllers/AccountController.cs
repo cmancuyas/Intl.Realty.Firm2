@@ -383,107 +383,179 @@ namespace Intl.Realty.Firm.Controllers
         }
 
 
+        //_logger.LogInformation("🔍 Received reCAPTCHA Token: {Token}", viewModel.Token);
 
+        //var captchaResult = await _googleCaptchaService.VerifyToken(viewModel.Token);
+        //if (!captchaResult)
+        //{
+        //    _logger.LogError("❌ reCAPTCHA verification failed for user: {Email}", viewModel.Email);
+        //    ModelState.AddModelError("", "Captcha verification failed. Please try again.");
+        //    return View(viewModel);
+        //}
+
+        //_logger.LogInformation("✅ reCAPTCHA verification successful for user: {Email}", viewModel.Email);
 
         [HttpPost]
         [AllowAnonymous]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Register(RegisterViewModel viewModel)
         {
-            //_logger.LogInformation("🔍 Received reCAPTCHA Token: {Token}", viewModel.Token);
-
-            //var captchaResult = await _googleCaptchaService.VerifyToken(viewModel.Token);
-            //if (!captchaResult)
-            //{
-            //    _logger.LogError("❌ reCAPTCHA verification failed for user: {Email}", viewModel.Email);
-            //    ModelState.AddModelError("", "Captcha verification failed. Please try again.");
-            //    return View(viewModel);
-            //}
-
-            //_logger.LogInformation("✅ reCAPTCHA verification successful for user: {Email}", viewModel.Email);
+            // (Optional) reCAPTCHA — keep your original logic commented or re-enable as needed
+            // if (!await _googleCaptchaService.VerifyToken(viewModel.Token))
+            // {
+            //     _logger.LogError("❌ reCAPTCHA verification failed for user: {Email}", viewModel.Email);
+            //     ModelState.AddModelError(string.Empty, "Captcha verification failed. Please try again.");
+            //     await PopulateTeamLeadersAsync(viewModel);
+            //     return View(viewModel);
+            // }
 
             if (!viewModel.UserAgreement)
             {
-                ModelState.AddModelError("", "You must agree to the terms and conditions to register.");
+                ModelState.AddModelError(string.Empty, "You must agree to the terms and conditions to register.");
+            }
+
+            // If ModelState invalid, repopulate dropdowns and return
+            if (!ModelState.IsValid)
+            {
+                await PopulateTeamLeadersAsync(viewModel);
                 return View(viewModel);
             }
 
-            if (ModelState.IsValid)
+            // ---- Normalize & clear stale email from ModelState to avoid “sticky” errors ----
+            var trimmedEmail = viewModel.Email?.Trim();
+            ModelState.Remove(nameof(viewModel.Email));
+            viewModel.Email = trimmedEmail;
+
+            // ---- Early duplicate check (case-insensitive by Identity) ----
+            var existingUser = await _userManager.FindByEmailAsync(viewModel.Email);
+            if (existingUser != null)
             {
-                if (viewModel.DepartmentId == 0)
+                ModelState.AddModelError(nameof(viewModel.Email), "This email is already registered.");
+                await PopulateTeamLeadersAsync(viewModel);
+                return View(viewModel);
+            }
+
+            if (viewModel.DepartmentId == 0)
+            {
+                _logger.LogWarning("Register: Defaulting DepartmentId to 1 for user {Email}", viewModel.Email);
+            }
+
+            // Determine TeamLeader
+            Guid? teamLeaderId = viewModel.TeamLeaderId;
+            if (User.Identity?.IsAuthenticated == true && User.IsInRole("TeamLeader"))
+            {
+                if (Guid.TryParse(_userManager.GetUserId(User), out var currentTlId))
                 {
-                    _logger.LogWarning("Register: Defaulting DepartmentId to 1 for user {Email}", viewModel.Email);
-                }
-
-                // 🔹 Capture TeamLeader ID from the form dropdown
-                Guid? teamLeaderId = viewModel.TeamLeaderId;
-
-                // 🔹 If the current user is a TeamLeader, override the dropdown selection
-                if (User.Identity.IsAuthenticated && User.IsInRole("TeamLeader"))
-                {
-                    teamLeaderId = Guid.Parse(_userManager.GetUserId(User));
-                }
-
-                var applicationUser = new ApplicationUser
-                {
-                    UserName = viewModel.Email,
-                    Email = viewModel.Email,
-                    FirstName = viewModel.FirstName,
-                    LastName = viewModel.LastName,
-                    DepartmentId = (viewModel.DepartmentId == 0) ? 1 : viewModel.DepartmentId,
-                    EmploymentStatusId = 1,
-                    EmailStatusId = 1, // ✅ Default to "Active" status
-                    ProfileImageId = viewModel.ProfileImageId,
-                    UserAgreement = viewModel.UserAgreement,
-                    RegistrationDate = DateTime.UtcNow,
-                    TeamLeaderId = teamLeaderId, // ✅ Assign the selected TeamLeader
-                    EmailConfirmed = true // Email confirmed upon registration
-                };
-
-                var result = await _userManager.CreateAsync(applicationUser, viewModel.Password);
-
-                if (result.Succeeded)
-                {
-                    var token = await _userManager.GenerateEmailConfirmationTokenAsync(applicationUser);
-                    var confirmationLink = Url.Action("ConfirmEmail", "Account",
-                                                                new { userId = applicationUser.Id, token = token }, Request.Scheme);
-
-                    var mailRequest = EmailRequest.CreateRegistrationVerification(viewModel, confirmationLink!);
-                    await _emailService.SendEmailAsync(mailRequest);
-
-                    _logger.Log(LogLevel.Warning, confirmationLink);
-
-                    if (_signInManager.IsSignedIn(User) && (User.IsInRole("Admin") || User.IsInRole("SuperAdmin")))
-                    {
-                        return RedirectToAction("AdminDashboard", "Home");
-                    }
-
-                    await _userManager.AddToRoleAsync(applicationUser, "Agent");
-
-                    if (viewModel.AutoSignInAfterRegister)
-                    {
-                        await _signInManager.SignInAsync(applicationUser, isPersistent: false);
-                    }
-
-                    //return View("ConfirmEmailSent");
-                    return View("RegistrationSuccessful");
-                }
-
-                foreach (var error in result.Errors)
-                {
-                    ModelState.AddModelError("", error.Description);
+                    teamLeaderId = currentTlId;
                 }
             }
 
-            // 🔹 Reload TeamLeaders for the dropdown before returning the view
-            viewModel.TeamLeaders = (await _userManager.GetUsersInRoleAsync("TeamLeader"))
+            var applicationUser = new ApplicationUser
+            {
+                UserName = viewModel.Email,
+                Email = viewModel.Email,
+                FirstName = viewModel.FirstName,
+                LastName = viewModel.LastName,
+                DepartmentId = viewModel.DepartmentId == 0 ? 1 : viewModel.DepartmentId,
+                EmploymentStatusId = 1,
+                EmailStatusId = 1,   // Active
+                ProfileImageId = viewModel.ProfileImageId,
+                UserAgreement = viewModel.UserAgreement,
+                RegistrationDate = DateTime.UtcNow,
+                TeamLeaderId = teamLeaderId,
+                EmailConfirmed = true // keep your current behavior
+            };
+
+            var createResult = await _userManager.CreateAsync(applicationUser, viewModel.Password);
+            if (!createResult.Succeeded)
+            {
+                foreach (var error in createResult.Errors)
+                {
+                    // Route email-related errors to the Email field for better UX
+                    if ((error.Code?.IndexOf("Duplicate", StringComparison.OrdinalIgnoreCase) ?? -1) >= 0 ||
+                        (error.Description?.IndexOf("email", StringComparison.OrdinalIgnoreCase) ?? -1) >= 0)
+                    {
+                        ModelState.AddModelError(nameof(viewModel.Email), error.Description);
+                    }
+                    else
+                    {
+                        ModelState.AddModelError(string.Empty, error.Description);
+                    }
+                }
+
+                await PopulateTeamLeadersAsync(viewModel);
+                return View(viewModel);
+            }
+
+            // -------- Try to send email, but do not block role assignment on failure --------
+            try
+            {
+                var token = await _userManager.GenerateEmailConfirmationTokenAsync(applicationUser);
+                var confirmationLink = Url.Action(
+                    "ConfirmEmail",
+                    "Account",
+                    new { userId = applicationUser.Id, token },
+                    protocol: Request.Scheme);
+
+                var mailRequest = EmailRequest.CreateRegistrationVerification(viewModel, confirmationLink!);
+                await _emailService.SendEmailAsync(mailRequest);
+
+                _logger.LogInformation("Registration: confirmation email queued for {Email}.", applicationUser.Email);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Registration: failed to send confirmation email to {Email}. Continuing.", applicationUser.Email);
+                // Intentionally swallow exception — we still proceed to add role and succeed the flow
+            }
+
+            // -------- Always attempt to add Agent role (safety) --------
+            try
+            {
+                var addRoleResult = await _userManager.AddToRoleAsync(applicationUser, "Agent");
+                if (!addRoleResult.Succeeded)
+                {
+                    _logger.LogError("Registration: failed to add Agent role to {Email}. Errors: {Errors}",
+                        applicationUser.Email,
+                        string.Join("; ", addRoleResult.Errors.Select(e => $"{e.Code}:{e.Description}")));
+                }
+                else
+                {
+                    _logger.LogInformation("Registration: Agent role added to {Email}.", applicationUser.Email);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Registration: exception while adding Agent role to {Email}.", applicationUser.Email);
+                // Proceed regardless
+            }
+
+            // If an admin is creating users from an existing session
+            if (_signInManager.IsSignedIn(User) && (User.IsInRole("Admin") || User.IsInRole("SuperAdmin")))
+            {
+                return RedirectToAction("AdminDashboard", "Home");
+            }
+
+            if (viewModel.AutoSignInAfterRegister)
+            {
+                await _signInManager.SignInAsync(applicationUser, isPersistent: false);
+            }
+
+            return View("RegistrationSuccessful");
+        }
+
+        // Helper to repopulate team leaders for the dropdown
+        private async Task PopulateTeamLeadersAsync(RegisterViewModel vm)
+        {
+            vm.TeamLeaders = (await _userManager.GetUsersInRoleAsync("TeamLeader"))
                 .Select(tl => new SelectListItem
                 {
                     Value = tl.Id.ToString(),
                     Text = $"{tl.FirstName} {tl.LastName}"
-                }).ToList();
-
-            return View(viewModel);
+                })
+                .ToList();
         }
+
+
         [HttpGet]
         [AllowAnonymous]
         public IActionResult RegistrationSuccessful()
