@@ -6,7 +6,7 @@ namespace Intl.Realty.Firm.Model.ViewModel.Base.Concrete
     {
         [Required(ErrorMessage = "Seller's Email is required.")]
         [EmailAddress]
-        public string? SellerEmail { get; set; }
+        public string SellerEmail { get; set; } = string.Empty;
 
     }
 }
