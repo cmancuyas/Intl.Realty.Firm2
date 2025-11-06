@@ -6,6 +6,7 @@ using Intl.Realty.Firm.Model.ViewModel.SaleListingVM;
 using Intl.Realty.Firm.Models;
 using Intl.Realty.Firm.Models.Auxiliary;
 using Intl.Realty.Firm.Models.DataTable;
+using Intl.Realty.Firm.Models.Enum;
 using Intl.Realty.Firm.Repository.IRepository;
 using Intl.Realty.Firm.Service;
 using Intl.Realty.Firm.Service.IService;
@@ -125,6 +126,8 @@ namespace Intl.Realty.Firm.Controllers
                                                             .GetDocumentTypesFromDocumentTypeAssignment(transactionTypeName,
                                                                                                         documentTypeAssignmentList);
 
+            viewModel.CreateSaleListingViewModel.SignageIEnum = SelectListConverter.CreateSelectListFromEnum<Signage>();
+            viewModel.CreateSaleListingViewModel.DefaultSignage = 1;
             var menus = CreateDealTransactionTabMenuData.GetCreateDealTransactionTabMenuData();
 
             string controllerName = "IRFDetails1";
@@ -492,6 +495,9 @@ namespace Intl.Realty.Firm.Controllers
                 var dealStatusIEnum = await _unitOfWork.DealStatus.GetAllAsync(x => x.IsActive == true && !x.IsDeleted);
                 viewModel.EditSaleListingViewModel.DealStatusList = dealStatusIEnum.ToList();
 
+                viewModel.EditSaleListingViewModel.SignageIEnum = SelectListConverter.CreateSelectListFromEnum<Signage>();
+                viewModel.EditSaleListingViewModel.DefaultSignage = 1;
+
                 var menus = EditDealTransactionTabMenuData.GetEditDealTransactionTabMenuData();
 
                 string menuName = "IRFDetails1";
@@ -745,6 +751,13 @@ namespace Intl.Realty.Firm.Controllers
             }
 
             var viewModel = model.ToPreviewSaleListingViewModel();
+
+            var buyingCommissionSignage = (Signage)model.IRFDeal.BuyingCommissionSign;
+            viewModel.BuyingCommissionSignDescription = buyingCommissionSignage.GetDisplayName();
+
+            var listingCommissionSignage = (Signage)model.IRFDeal.ListingCommissionSign;
+            viewModel.ListingCommissionSignDescription = listingCommissionSignage.GetDisplayName();
+
             var fileUploadIEnum = await _unitOfWork.FileUpload.GetAllAsync(x => x.SaleListingId == model.Id && x.IsActive == true && !x.IsDeleted);
             viewModel.FileUploads = fileUploadIEnum.ToList();
             var users = _userManager.Users;

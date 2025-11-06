@@ -7,6 +7,7 @@ using Intl.Realty.Firm.Model.ViewModel.LeaseListingVM;
 using Intl.Realty.Firm.Models;
 using Intl.Realty.Firm.Models.Auxiliary;
 using Intl.Realty.Firm.Models.DataTable;
+using Intl.Realty.Firm.Models.Enum;
 using Intl.Realty.Firm.Repository.IRepository;
 using Intl.Realty.Firm.Service;
 using Intl.Realty.Firm.Service.IService;
@@ -125,6 +126,9 @@ namespace Intl.Realty.Firm.Controllers
             viewModel.CreateLeaseListingViewModel.DocumentTypeList = _documentTransactionService
                                                             .GetDocumentTypesFromDocumentTypeAssignment(transactionTypeName,
                                                                                                         documentTypeAssignmentList);
+
+            viewModel.CreateLeaseListingViewModel.SignageIEnum = SelectListConverter.CreateSelectListFromEnum<Signage>();
+            viewModel.CreateLeaseListingViewModel.DefaultSignage = 1;
 
             var menus = CreateDealTransactionTabMenuData.GetCreateDealTransactionTabMenuData();
 
@@ -500,6 +504,9 @@ namespace Intl.Realty.Firm.Controllers
                 var dealStatusIEnum = await _unitOfWork.DealStatus.GetAllAsync(x => x.IsActive == true && !x.IsDeleted);
                 viewModel.EditLeaseListingViewModel.DealStatusList = dealStatusIEnum.ToList();
 
+                viewModel.EditLeaseListingViewModel.SignageIEnum = SelectListConverter.CreateSelectListFromEnum<Signage>();
+                viewModel.EditLeaseListingViewModel.DefaultSignage = 1;
+
                 var menus = EditDealTransactionTabMenuData.GetEditDealTransactionTabMenuData();
 
                 string menuName = "IRFDetails1";
@@ -752,6 +759,13 @@ namespace Intl.Realty.Firm.Controllers
             }
 
             var viewModel = model.ToPreviewLeaseListingViewModel();
+
+            var buyingCommissionSignage = (Signage)model.IRFDeal.BuyingCommissionSign;
+            viewModel.BuyingCommissionSignDescription = buyingCommissionSignage.GetDisplayName();
+
+            var listingCommissionSignage = (Signage)model.IRFDeal.ListingCommissionSign;
+            viewModel.ListingCommissionSignDescription = listingCommissionSignage.GetDisplayName();
+
             var fileUploadIEnum = await _unitOfWork.FileUpload.GetAllAsync(x => x.LeaseListingId == model.Id && x.IsActive == true && !x.IsDeleted);
             viewModel.FileUploads = fileUploadIEnum.ToList();
             var users = _userManager.Users;

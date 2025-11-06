@@ -24,15 +24,17 @@ namespace Intl.Realty.Firm.Utility.Mapper
             var viewModel = new EditIRFDealSaleListingViewModel
             {
                 Id = model.Id,
-                PropertyAddress = model.PropertyAddress,
+                PropertyAddress = model.PropertyAddress??"",
                 FinalSalePrice = model.FinalSalePrice ?? 0,
-                FinalClosingDate = model.FinalClosingDate,
-                DepositAmount = model.DepositAmount,
-                DepositDate = model.DepositDate,
+                FinalClosingDate = model.FinalClosingDate??DateTime.UtcNow,
+                DepositAmount = model.DepositAmount??0,
+                DepositDate = model.DepositDate??DateTime.UtcNow,
                 Commission = new()
                 {
-                    ListingCommissionPercentage = model.ListingCommissionPercentage,
-                    BuyingCommissionPercentage = model.BuyingCommissionPercentage
+                    ListingCommissionSign = model.ListingCommissionSign??1,
+                    ListingCommission = model.ListingCommission??0,
+                    BuyingCommissionSign = model.BuyingCommissionSign ?? 1,
+                    BuyingCommission = model.BuyingCommission??0
                 },
                 IsActive = model.IsActive,
                 IsDeleted = model.IsDeleted,
@@ -73,14 +75,15 @@ namespace Intl.Realty.Firm.Utility.Mapper
             return new EditIRFDealSaleCoopViewModel
             {
                 Id = model.Id,
-                PropertyAddress = model.PropertyAddress,
+                PropertyAddress = model.PropertyAddress??"",
                 FinalSalePrice = model.FinalSalePrice ?? 0,
-                FinalClosingDate = model.FinalClosingDate,
-                DepositAmount = model.DepositAmount,
-                DepositDate = model.DepositDate,
+                FinalClosingDate = model.FinalClosingDate??DateTime.UtcNow,
+                DepositAmount = model.DepositAmount??0,
+                DepositDate = model.DepositDate ?? DateTime.UtcNow,
                 Commission = new()
                 {
-                    BuyingCommissionPercentage = model.BuyingCommissionPercentage
+                    BuyingCommissionSign = model.BuyingCommissionSign??1,
+                    BuyingCommission = model.BuyingCommission??0,
                 },
                 IsActive = model.IsActive,
                 IsDeleted = model.IsDeleted,
@@ -120,11 +123,11 @@ namespace Intl.Realty.Firm.Utility.Mapper
             return new EditIRFDealLeaseListingViewModel
             {
                 Id = model.Id,
-                PropertyAddress = model.PropertyAddress,
+                PropertyAddress = model.PropertyAddress ?? "",
                 FinalLeasePrice = model.FinalLeasePrice ?? 0,
-                FinalClosingDate = model.FinalClosingDate,
-                DepositAmount = model.DepositAmount,
-                DepositDate = model.DepositDate,
+                FinalClosingDate = model.FinalClosingDate ?? DateTime.UtcNow,
+                DepositAmount = model.DepositAmount??0,
+                DepositDate = model.DepositDate ?? DateTime.UtcNow,
 
                 // 🧑‍💼 Tenant Info
                 TenantDetails = new()
@@ -148,8 +151,10 @@ namespace Intl.Realty.Firm.Utility.Mapper
                 // 💼 Commission Info
                 Commission = new()
                 {
-                    ListingCommissionPercentage = model.ListingCommissionPercentage,
-                    BuyingCommissionPercentage = model.BuyingCommissionPercentage
+                    ListingCommissionSign = model.ListingCommissionSign??1,
+                    ListingCommission = model.ListingCommission ?? 0,
+                    BuyingCommissionSign = model.BuyingCommissionSign??1,
+                    BuyingCommission = model.BuyingCommission ?? 0
                 },
 
                 // 📋 Listing Info
@@ -174,11 +179,11 @@ namespace Intl.Realty.Firm.Utility.Mapper
             return new EditIRFDealLeaseCoopViewModel
             {
                 Id = model.Id,
-                PropertyAddress = model.PropertyAddress,
+                PropertyAddress = model.PropertyAddress??"",
                 FinalLeasePrice = model.FinalLeasePrice ?? 0,
-                FinalClosingDate = model.FinalClosingDate,
-                DepositAmount = model.DepositAmount,
-                DepositDate = model.DepositDate,
+                FinalClosingDate = model.FinalClosingDate ?? DateTime.UtcNow,
+                DepositAmount = model.DepositAmount ?? 0,
+                DepositDate = model.DepositDate ?? DateTime.UtcNow,
 
                 // 👤 Tenant
                 TenantDetails = new()
@@ -200,7 +205,8 @@ namespace Intl.Realty.Firm.Utility.Mapper
                 },
                 Commission = new()
                 {
-                    BuyingCommissionPercentage = model.BuyingCommissionPercentage
+                    BuyingCommissionSign = model.BuyingCommissionSign??1,
+                    BuyingCommission = model.BuyingCommission ?? 0
                 },
 
                 // ✅ Status
@@ -230,8 +236,10 @@ namespace Intl.Realty.Firm.Utility.Mapper
                     DepositDate = x.DepositDate,
                     BuyerName = x.BuyerName,
                     LandLordName = x.LandLordName,
-                    ListingCommissionPercentage = x.ListingCommissionPercentage,
-                    BuyingCommissionPercentage = x.BuyingCommissionPercentage,
+                    ListingCommissionSign = x.ListingCommissionSign,
+                    ListingCommission = x.ListingCommission,
+                    BuyingCommissionSign = x.BuyingCommissionSign,
+                    BuyingCommission = x.BuyingCommission,
                     ListingAgentName = x.ListingAgentName,
                     ListingBrokerage = x.ListingBrokerage,
                     ListingBrokerageFax = x.ListingBrokerageFax,
@@ -310,8 +318,10 @@ namespace Intl.Realty.Firm.Utility.Mapper
                 SellerBrokeragePhoneNumber = viewModel.SellerDetails.SellerBrokeragePhoneNumber,
                 // 💼 Commission
 
-                ListingCommissionPercentage = viewModel.Commission.ListingCommissionPercentage,
-                BuyingCommissionPercentage = viewModel.Commission.BuyingCommissionPercentage,
+                ListingCommissionSign = viewModel.Commission.ListingCommissionSign,
+                ListingCommission = viewModel.Commission.ListingCommission,
+                BuyingCommissionSign = viewModel.Commission.BuyingCommissionSign,
+                BuyingCommission = viewModel.Commission.BuyingCommission,
 
                 // 🧾 Metadata
                 IsActive = viewModel.IsActive,
@@ -358,7 +368,8 @@ namespace Intl.Realty.Firm.Utility.Mapper
                 SellerBrokeragePhoneNumber = viewModel.SellerDetails.SellerBrokeragePhoneNumber,
 
                 // 💼 Commission (Only Buying)
-                BuyingCommissionPercentage = viewModel.Commission.BuyingCommissionPercentage,
+                BuyingCommissionSign = viewModel.Commission.BuyingCommissionSign,
+                BuyingCommission = viewModel.Commission.BuyingCommission,
 
                 // 🧾 Metadata
                 IsActive = viewModel.IsActive,
@@ -397,8 +408,10 @@ namespace Intl.Realty.Firm.Utility.Mapper
                 ListingBrokerageFax = viewModel.ListingInfo.ListingBrokerageFax,
 
                 // 💼 Commission Info
-                ListingCommissionPercentage = viewModel.Commission.ListingCommissionPercentage,
-                BuyingCommissionPercentage = viewModel.Commission.BuyingCommissionPercentage,
+                ListingCommissionSign = viewModel.Commission.ListingCommissionSign,
+                ListingCommission = viewModel.Commission.ListingCommission,
+                BuyingCommissionSign = viewModel.Commission.BuyingCommissionSign,
+                BuyingCommission = viewModel.Commission.BuyingCommission,
 
                 // 📌 Metadata
                 IsActive = viewModel.IsActive,
@@ -422,7 +435,8 @@ namespace Intl.Realty.Firm.Utility.Mapper
                 TenantName = viewModel.TenantDetails.TenantName,
                 LandLordName = viewModel.LandLordDetails.LandLordName,
                 //ListingCommissionPercentage = viewModel.ListingCommissionPercentage,
-                BuyingCommissionPercentage = viewModel.Commission.BuyingCommissionPercentage,
+                BuyingCommissionSign = viewModel.Commission.BuyingCommissionSign,
+                BuyingCommission = viewModel.Commission.BuyingCommission,
                 ListingAgentName = viewModel.ListingInfo.ListingAgentName,
                 ListingBrokerage = viewModel.ListingInfo.ListingBrokerage,
                 ListingBrokerageFax = viewModel.ListingInfo.ListingBrokerageFax,
@@ -453,8 +467,10 @@ namespace Intl.Realty.Firm.Utility.Mapper
                 DepositAmount = viewModel.DepositAmount,
                 DepositDate = viewModel.DepositDate,
                 BuyerName = viewModel.BuyerDetails.BuyerName,
-                ListingCommissionPercentage = viewModel.Commission.ListingCommissionPercentage,
-                BuyingCommissionPercentage = viewModel.Commission.BuyingCommissionPercentage,
+                ListingCommissionSign = viewModel.Commission.ListingCommissionSign,
+                ListingCommission = viewModel.Commission.ListingCommission,
+                BuyingCommissionSign = viewModel.Commission.BuyingCommissionSign,
+                BuyingCommission = viewModel.Commission.BuyingCommission,
 
                 // 👤 Buyer
                 BuyerAgentName = viewModel.BuyerDetails.BuyerAgentName,
@@ -525,7 +541,8 @@ namespace Intl.Realty.Firm.Utility.Mapper
                 SellerBrokeragePhoneNumber = viewModel.SellerDetails.SellerBrokeragePhoneNumber,
 
                 // 💼 Commission (only buying for SaleCoop)
-                BuyingCommissionPercentage = viewModel.Commission.BuyingCommissionPercentage,
+                BuyingCommissionSign = viewModel.Commission.BuyingCommissionSign,
+                BuyingCommission = viewModel.Commission.BuyingCommission,
 
                 // 📌 Audit
                 IsActive = viewModel.IsActive,
@@ -565,8 +582,10 @@ namespace Intl.Realty.Firm.Utility.Mapper
                 ListingBrokerageFax = viewModel.ListingInfo.ListingBrokerageFax,
 
                 // 💼 Commission Info
-                ListingCommissionPercentage = viewModel.Commission.ListingCommissionPercentage,
-                BuyingCommissionPercentage = viewModel.Commission.BuyingCommissionPercentage,
+                ListingCommissionSign = viewModel.Commission.ListingCommissionSign,
+                ListingCommission = viewModel.Commission.ListingCommission,
+                BuyingCommissionSign = viewModel.Commission.BuyingCommissionSign,
+                BuyingCommission = viewModel.Commission.BuyingCommission,
 
                 // ✅ Audit
                 IsActive = viewModel.IsActive,
@@ -601,7 +620,8 @@ namespace Intl.Realty.Firm.Utility.Mapper
                 LandLordEmailAddress = viewModel.LandLordDetails.LandLordEmailAddress,
 
                 // 💼 Commission Info (only buying for LeaseCoop)
-                BuyingCommissionPercentage = viewModel.Commission.BuyingCommissionPercentage,
+                BuyingCommissionSign = viewModel.Commission.BuyingCommissionSign,
+                BuyingCommission = viewModel.Commission.BuyingCommission,
 
                 // ListingInfo is ignored here as it's not required in LeaseCoop
 
@@ -628,8 +648,10 @@ namespace Intl.Realty.Firm.Utility.Mapper
                     DepositDate = x.DepositDate,
                     BuyerName = x.BuyerName,
                     LandLordName = x.LandLordName,
-                    ListingCommissionPercentage = x.ListingCommissionPercentage,
-                    BuyingCommissionPercentage = x.BuyingCommissionPercentage,
+                    ListingCommissionSign = x.ListingCommissionSign,
+                    ListingCommission = x.ListingCommission,
+                    BuyingCommissionSign = x.BuyingCommissionSign,
+                    BuyingCommission = x.BuyingCommission,
                     ListingAgentName = x.ListingAgentName,
                     ListingBrokerage = x.ListingBrokerage,
                     ListingBrokerageFax = x.ListingBrokerageFax,
@@ -680,8 +702,10 @@ namespace Intl.Realty.Firm.Utility.Mapper
                 DepositDate = model.DepositDate,
                 BuyerName = model.BuyerName,
                 LandLordName = model.LandLordName,
-                ListingCommissionPercentage = model.ListingCommissionPercentage,
-                BuyingCommissionPercentage = model.BuyingCommissionPercentage,
+                ListingCommissionSign = model.ListingCommissionSign,
+                ListingCommission = model.ListingCommission,
+                BuyingCommissionSign = model.BuyingCommissionSign,
+                BuyingCommission = model.BuyingCommission,
                 ListingAgentName = model.ListingAgentName,
                 ListingBrokerage = model.ListingBrokerage,
                 ListingBrokerageFax = model.ListingBrokerageFax,
@@ -741,8 +765,10 @@ namespace Intl.Realty.Firm.Utility.Mapper
                     DepositDate = x.DepositDate,
                     BuyerName = x.BuyerName,
                     LandLordName = x.LandLordName,
-                    ListingCommissionPercentage = x.ListingCommissionPercentage,
-                    BuyingCommissionPercentage = x.BuyingCommissionPercentage,
+                    ListingCommissionSign = x.ListingCommissionSign,
+                    ListingCommission = x.ListingCommission,
+                    BuyingCommissionSign = x.BuyingCommissionSign,
+                    BuyingCommission = x.BuyingCommission,
                     ListingAgentName = x.ListingAgentName,
                     ListingBrokerage = x.ListingBrokerage,
                     ListingBrokerageFax = x.ListingBrokerageFax,
@@ -812,7 +838,8 @@ namespace Intl.Realty.Firm.Utility.Mapper
 
 
             // 💼 Commission (only BuyingCommission is used for LeaseCoop)
-            entity.BuyingCommissionPercentage = viewModel.Commission.BuyingCommissionPercentage;
+            entity.BuyingCommissionSign = viewModel.Commission.BuyingCommissionSign;
+            entity.BuyingCommission = viewModel.Commission.BuyingCommission;
 
             // ❌ Listing Info not included for LeaseCoop by requirement
 
@@ -851,8 +878,10 @@ namespace Intl.Realty.Firm.Utility.Mapper
             entity.ListingBrokerageFax = viewModel.ListingInfo.ListingBrokerageFax;
 
             // 💼 Commission
-            entity.BuyingCommissionPercentage = viewModel.Commission.BuyingCommissionPercentage;
-            entity.ListingCommissionPercentage = viewModel.Commission.ListingCommissionPercentage;
+            entity.BuyingCommissionSign = viewModel.Commission.BuyingCommissionSign;
+            entity.BuyingCommission = viewModel.Commission.BuyingCommission;
+            entity.ListingCommissionSign = viewModel.Commission.ListingCommissionSign;
+            entity.ListingCommission = viewModel.Commission.ListingCommission;
 
             // ✅ Audit
             entity.IsActive = viewModel.IsActive;
@@ -895,7 +924,8 @@ namespace Intl.Realty.Firm.Utility.Mapper
             entity.SellerBrokeragePhoneNumber = viewModel.SellerDetails.SellerBrokeragePhoneNumber;
 
             // 💼 Commission (only buying for SaleCoop)
-            entity.BuyingCommissionPercentage = viewModel.Commission.BuyingCommissionPercentage;
+            entity.BuyingCommissionSign = viewModel.Commission.BuyingCommissionSign;
+            entity.BuyingCommission = viewModel.Commission.BuyingCommission;
 
             // ✅ Audit
             entity.IsActive = viewModel.IsActive;
@@ -912,8 +942,10 @@ namespace Intl.Realty.Firm.Utility.Mapper
             entity.DepositAmount = viewModel.DepositAmount;
             entity.DepositDate = viewModel.DepositDate;
             entity.BuyerName = viewModel.BuyerDetails.BuyerName;
-            entity.ListingCommissionPercentage = viewModel.Commission.ListingCommissionPercentage;
-            entity.BuyingCommissionPercentage = viewModel.Commission.BuyingCommissionPercentage;
+            entity.ListingCommissionSign = viewModel.Commission.ListingCommissionSign;
+            entity.ListingCommission = viewModel.Commission.ListingCommission;
+            entity.BuyingCommissionSign = viewModel.Commission.BuyingCommissionSign;
+            entity.BuyingCommission = viewModel.Commission.BuyingCommission;
 
             entity.BuyerAgentName = viewModel.BuyerDetails.BuyerAgentName;
             entity.BuyerBrokerage = viewModel.BuyerDetails.BuyerBrokerage;

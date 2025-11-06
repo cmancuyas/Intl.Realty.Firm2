@@ -156,9 +156,36 @@
                         <h4 class="mt-5 text-blue">Commission</h4>
                         <div class="row">
                             <div class="col-md-6 mt-3">
-                                <label asp-for="CreateSaleCoopViewModel.CreateIRFDealSaleCoopViewModel.Commission.BuyingCommissionPercentage" class="fw-bolder">Buying Commission %</label>
-                                <input asp-for="CreateSaleCoopViewModel.CreateIRFDealSaleCoopViewModel.Commission.BuyingCommissionPercentage" class="form-control" type="number" min="0" />
-                                <span asp-validation-for="CreateSaleCoopViewModel.CreateIRFDealSaleCoopViewModel.Commission.BuyingCommissionPercentage" class="text-danger"></span>
+                                <div class="form-group">
+                                    <label class="control-label fw-bolder">Co-op Commission Signage</label>
+                                    <select id="CreateSaleCoopViewModel.CreateIRFDealSaleCoopViewModel.Commission.BuyingCommissionSign" name="CreateSaleCoopViewModel.CreateIRFDealSaleCoopViewModel.Commission.BuyingCommissionSign" class="form-select">
+                                        @{
+                                            @if (Model.CreateSaleCoopViewModel.SignageIEnum != null)
+                                            {
+                                                @foreach (var item in Model.CreateSaleCoopViewModel.SignageIEnum)
+                                                {
+                                                    int quarter = Convert.ToInt32(item.Value);
+                                                    if (quarter == Model.CreateSaleCoopViewModel.DefaultSignage)
+                                                    {
+                                                        <option value="@item.Value" selected>@item.Text</option>
+                                                    }
+                                                    else
+                                                    {
+                                                        <option value="@item.Value">@item.Text</option>
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    </select>
+
+                                    @Html.ValidationMessageFor(m => m.CreateSaleCoopViewModel.CreateIRFDealSaleCoopViewModel.Commission.BuyingCommissionSign, "", new { @class = "text-danger" })
+
+                                </div>
+                            </div>
+                            <div class="col-md-6 mt-3">
+                                <label asp-for="CreateSaleCoopViewModel.CreateIRFDealSaleCoopViewModel.Commission.BuyingCommission" class="fw-bolder">Co-op Commission</label>
+                                <input asp-for="CreateSaleCoopViewModel.CreateIRFDealSaleCoopViewModel.Commission.BuyingCommission" class="form-control" type="number" min="0" />
+                                <span asp-validation-for="CreateSaleCoopViewModel.CreateIRFDealSaleCoopViewModel.Commission.BuyingCommission" class="text-danger"></span>
                             </div>
                         </div>
                     </div>
