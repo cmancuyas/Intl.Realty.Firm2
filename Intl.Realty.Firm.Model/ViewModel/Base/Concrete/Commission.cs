@@ -5,12 +5,14 @@ namespace Intl.Realty.Firm.Model.ViewModel.Base.Concrete
 {
     public class Commission
     {
-        [Required(ErrorMessage = "The Listing Commission Percentage field is required.")]
+        public int ListingCommissionSign { get; set; } 
+        [Required(ErrorMessage = "The Total Commission field is required.")]
         [Column(TypeName = "decimal(18,2)")]
-        public decimal ListingCommissionPercentage { get; set; }
+        public decimal ListingCommission { get; set; }
 
-        [Required(ErrorMessage = "The Buying Commission Percentage field is required.")]
+        public int BuyingCommissionSign { get; set; } 
+        [Required(ErrorMessage = "The Buying Commission field is required.")]
         [Column(TypeName = "decimal(18,2)")]
-        public decimal BuyingCommissionPercentage { get; set; }
+        public decimal BuyingCommission { get; set; }
     }
 }

@@ -51,7 +51,7 @@
                 <div class="row mb-2">
                     <div class="col-md-6"><strong>Buyer Name:</strong><p>@Display(Model.IRFDeal.BuyerName)</p></div>
                     <div class="col-md-6"><strong>Landlord Name:</strong><p>@Display(Model.IRFDeal.LandLordName)</p></div>
-                    <div class="col-md-6"><strong>Buying Commission %:</strong><p>@DisplayDecimal(Model.IRFDeal.BuyingCommissionPercentage)</p></div>
+                    <div class="col-md-6"><strong>Buying Commission:</strong><p>@Model.BuyingCommissionSignDescription @DisplayDecimal(Model.IRFDeal.BuyingCommission)</p></div>
                 </div>
 
                 <div class="row mb-2">

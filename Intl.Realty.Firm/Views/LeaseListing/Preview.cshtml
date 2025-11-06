@@ -50,8 +50,8 @@
                 <div class="row mb-2">
                     <div class="col-md-6"><strong>Tenant Name:</strong><p>@Display(Model.IRFDeal.TenantName)</p></div>
                     <div class="col-md-6"><strong>Landlord Name:</strong><p>@Display(Model.IRFDeal.LandLordName)</p></div>
-                    <div class="col-md-6"><strong>Listing Commission %:</strong><p>@DisplayDecimal(Model.IRFDeal.ListingCommissionPercentage)</p></div>
-                    <div class="col-md-6"><strong>Buying Commission %:</strong><p>@DisplayDecimal(Model.IRFDeal.BuyingCommissionPercentage)</p></div>
+                    <div class="col-md-6"><strong>Listing Commission:</strong><p>@Model.ListingCommissionSignDescription @DisplayDecimal(Model.IRFDeal.ListingCommission)</p></div>
+                    <div class="col-md-6"><strong>Buying Commission:</strong><p>@Model.BuyingCommissionSignDescription @DisplayDecimal(Model.IRFDeal.BuyingCommission)</p></div>
                 </div>
 
                 <div class="row mb-2">

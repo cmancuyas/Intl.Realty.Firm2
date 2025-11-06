@@ -21,5 +21,6 @@ namespace Intl.Realty.Firm.Model.ViewModel.SaleCoopVM
         public string CreatedByFullName { get; set; } = string.Empty;
         public string? UpdatedByFullName { get; set; }
         public string? DeletedByFullName { get; set; }
+        public string? BuyingCommissionSignDescription { get; set; }
     }
 }

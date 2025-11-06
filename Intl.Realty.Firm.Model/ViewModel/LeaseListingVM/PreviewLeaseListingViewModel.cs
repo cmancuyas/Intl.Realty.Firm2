@@ -21,5 +21,7 @@ namespace Intl.Realty.Firm.Model.ViewModel.LeaseListingVM
         public string CreatedByFullName { get; set; } = string.Empty;
         public string? UpdatedByFullName { get; set; }
         public string? DeletedByFullName { get; set; }
+        public string? ListingCommissionSignDescription { get; set; }
+        public string? BuyingCommissionSignDescription { get; set; }
     }
 }

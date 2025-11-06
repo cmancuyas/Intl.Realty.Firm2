@@ -4,26 +4,29 @@ namespace Intl.Realty.Firm.Model.Model
 {
     public class TransactionTypeDetailsBase : BaseModel
     {
-        public string PropertyAddress { get; set; } = string.Empty;
+        public string? PropertyAddress { get; set; } = string.Empty;
 
         [Column(TypeName = "decimal(18,2)")]
         public decimal? FinalSalePrice { get; set; }
 
-        public DateTime FinalClosingDate { get; set; }
+        public DateTime? FinalClosingDate { get; set; }
 
         [Column(TypeName = "decimal(18,2)")]
-        public decimal DepositAmount { get; set; }
+        public decimal? DepositAmount { get; set; }
 
-        public DateTime DepositDate { get; set; }
+        public DateTime? DepositDate { get; set; }
 
-        public string BuyerName { get; set; } = string.Empty;
-        public string LandLordName { get; set; } = string.Empty;
+        public string? BuyerName { get; set; } = string.Empty;
+        public string? LandLordName { get; set; } = string.Empty;
+
+        public int? ListingCommissionSign { get; set; } 
 
         [Column(TypeName = "decimal(18,2)")]
-        public decimal ListingCommissionPercentage { get; set; }
+        public decimal? ListingCommission { get; set; }
+        public int? BuyingCommissionSign { get; set; } 
 
         [Column(TypeName = "decimal(18,2)")]
-        public decimal BuyingCommissionPercentage { get; set; }
+        public decimal? BuyingCommission { get; set; }
 
         public string? ListingAgentName { get; set; }
         public string? ListingBrokerage { get; set; }

@@ -59,7 +59,7 @@
                     </div>
 
                     <!-- Tab for Desktop -->
-                    <ul class="nav nav-tabs" id="consultantStatusManagementTab" role="tablist" style="border:none">
+                    <ul class="nav nav-tabs" id="leaseListingTab" role="tablist" style="border:none">
                         @foreach (var item in Model.Menus)
                         {
                             <li class="nav-item mx-0">
@@ -166,32 +166,98 @@
                         <!-- Section: Commission & Listing -->
                         <h4 class="mt-5 text-blue">Commission & Listing Info</h4>
                         <div class="row">
+                            <!-- Total Commission Signage -->
                             <div class="col-md-6 mt-3">
-                                <label asp-for="CreateLeaseListingViewModel.CreateIRFDealLeaseListingViewModel.Commission.ListingCommissionPercentage" class="fw-bolder">Listing Commission %</label>
-                                <input asp-for="CreateLeaseListingViewModel.CreateIRFDealLeaseListingViewModel.Commission.ListingCommissionPercentage" class="form-control" type="number" step="0.01" min="0" />
-                                <span asp-validation-for="CreateLeaseListingViewModel.CreateIRFDealLeaseListingViewModel.Commission.ListingCommissionPercentage" class="text-danger"></span>
+                                <div class="form-group">
+                                    <label class="control-label fw-bolder">Total Commission Signage</label>
+                                    <select id="CreateLeaseListingViewModel.CreateIRFDealLeaseListingViewModel.Commission.ListingCommissionSign"
+                                            name="CreateLeaseListingViewModel.CreateIRFDealLeaseListingViewModel.Commission.ListingCommissionSign"
+                                            class="form-select">
+                                        @if (Model.CreateLeaseListingViewModel.SignageIEnum != null)
+                                        {
+                                            foreach (var item in Model.CreateLeaseListingViewModel.SignageIEnum)
+                                            {
+                                                int signageValue = Convert.ToInt32(item.Value);
+                                                if (signageValue == Model.CreateLeaseListingViewModel.DefaultSignage)
+                                                {
+                                                    <option value="@item.Value" selected>@item.Text</option>
+                                                }
+                                                else
+                                                {
+                                                    <option value="@item.Value">@item.Text</option>
+                                                }
+                                            }
+                                        }
+                                    </select>
+                                    @Html.ValidationMessageFor(m => m.CreateLeaseListingViewModel.CreateIRFDealLeaseListingViewModel.Commission.ListingCommissionSign, "", new { @class = "text-danger" })
+                                </div>
                             </div>
+
+                            <!-- Total Commission -->
                             <div class="col-md-6 mt-3">
-                                <label asp-for="CreateLeaseListingViewModel.CreateIRFDealLeaseListingViewModel.Commission.BuyingCommissionPercentage" class="fw-bolder">Buying Commission %</label>
-                                <input asp-for="CreateLeaseListingViewModel.CreateIRFDealLeaseListingViewModel.Commission.BuyingCommissionPercentage" class="form-control" type="number" step="0.01" min="0" />
-                                <span asp-validation-for="CreateLeaseListingViewModel.CreateIRFDealLeaseListingViewModel.Commission.BuyingCommissionPercentage" class="text-danger"></span>
+                                <label asp-for="CreateLeaseListingViewModel.CreateIRFDealLeaseListingViewModel.Commission.ListingCommission" class="fw-bolder">Total Commission</label>
+                                <input asp-for="CreateLeaseListingViewModel.CreateIRFDealLeaseListingViewModel.Commission.ListingCommission" class="form-control" type="number" step="0.01" min="0" />
+                                <span asp-validation-for="CreateLeaseListingViewModel.CreateIRFDealLeaseListingViewModel.Commission.ListingCommission" class="text-danger"></span>
                             </div>
+
+                            <!-- Co-op Commission Signage -->
+                            <div class="col-md-6 mt-3">
+                                <div class="form-group">
+                                    <label class="control-label fw-bolder">Co-op Commission Signage</label>
+                                    <select id="CreateLeaseListingViewModel.CreateIRFDealLeaseListingViewModel.Commission.BuyingCommissionSign"
+                                            name="CreateLeaseListingViewModel.CreateIRFDealLeaseListingViewModel.Commission.BuyingCommissionSign"
+                                            class="form-select">
+                                        @if (Model.CreateLeaseListingViewModel.SignageIEnum != null)
+                                        {
+                                            foreach (var item in Model.CreateLeaseListingViewModel.SignageIEnum)
+                                            {
+                                                int signageValue = Convert.ToInt32(item.Value);
+                                                if (signageValue == Model.CreateLeaseListingViewModel.DefaultSignage)
+                                                {
+                                                    <option value="@item.Value" selected>@item.Text</option>
+                                                }
+                                                else
+                                                {
+                                                    <option value="@item.Value">@item.Text</option>
+                                                }
+                                            }
+                                        }
+                                    </select>
+                                    @Html.ValidationMessageFor(m => m.CreateLeaseListingViewModel.CreateIRFDealLeaseListingViewModel.Commission.BuyingCommissionSign, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+
+                            <!-- Co-op Buying Commission -->
+                            <div class="col-md-6 mt-3">
+                                <label asp-for="CreateLeaseListingViewModel.CreateIRFDealLeaseListingViewModel.Commission.BuyingCommission" class="fw-bolder">Co-op Buying Commission</label>
+                                <input asp-for="CreateLeaseListingViewModel.CreateIRFDealLeaseListingViewModel.Commission.BuyingCommission" class="form-control" type="number" step="0.01" min="0" />
+                                <span asp-validation-for="CreateLeaseListingViewModel.CreateIRFDealLeaseListingViewModel.Commission.BuyingCommission" class="text-danger"></span>
+                            </div>
+
+                            <!-- Listing Agent Name -->
                             <div class="col-md-6 mt-3">
                                 <label asp-for="CreateLeaseListingViewModel.CreateIRFDealLeaseListingViewModel.ListingInfo.ListingAgentName" class="fw-bolder">Listing Agent Name</label>
                                 <input asp-for="CreateLeaseListingViewModel.CreateIRFDealLeaseListingViewModel.ListingInfo.ListingAgentName" class="form-control" />
                                 <span asp-validation-for="CreateLeaseListingViewModel.CreateIRFDealLeaseListingViewModel.ListingInfo.ListingAgentName" class="text-danger"></span>
                             </div>
+
+                            <!-- Listing Brokerage -->
                             <div class="col-md-6 mt-3">
                                 <label asp-for="CreateLeaseListingViewModel.CreateIRFDealLeaseListingViewModel.ListingInfo.ListingBrokerage" class="fw-bolder">Listing Brokerage</label>
                                 <input asp-for="CreateLeaseListingViewModel.CreateIRFDealLeaseListingViewModel.ListingInfo.ListingBrokerage" class="form-control" />
                                 <span asp-validation-for="CreateLeaseListingViewModel.CreateIRFDealLeaseListingViewModel.ListingInfo.ListingBrokerage" class="text-danger"></span>
                             </div>
+
+                            <!-- Listing Brokerage Fax -->
                             <div class="col-md-6 mt-3">
                                 <label asp-for="CreateLeaseListingViewModel.CreateIRFDealLeaseListingViewModel.ListingInfo.ListingBrokerageFax" class="fw-bolder">Listing Brokerage Fax</label>
                                 <input asp-for="CreateLeaseListingViewModel.CreateIRFDealLeaseListingViewModel.ListingInfo.ListingBrokerageFax" class="form-control" />
                                 <span asp-validation-for="CreateLeaseListingViewModel.CreateIRFDealLeaseListingViewModel.ListingInfo.ListingBrokerageFax" class="text-danger"></span>
                             </div>
                         </div>
+
+
+
                     </div>
 
                     <div class="tab-pane" id="irfDetails2" aria-labelledby="irfDetails2-tab" style="background-color:white;">
@@ -299,7 +365,7 @@
                         </div>
                     </div>
 
-                    
+
                     <div class="tab-pane" id="notes" aria-labelledby="notes-tab" style="background-color:white;">
                         <div class="col-md-12 mt-4">
                             <div class="form-group">

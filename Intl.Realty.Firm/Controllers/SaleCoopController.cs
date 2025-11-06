@@ -1,17 +1,14 @@
 ﻿using Intl.Realty.Firm.Helper;
 using Intl.Realty.Firm.Model.Menu;
 using Intl.Realty.Firm.Model.Model;
-using Intl.Realty.Firm.Model.Model.Identity;
 using Intl.Realty.Firm.Model.ViewModel;
 using Intl.Realty.Firm.Model.ViewModel.FileUploadVM;
-using Intl.Realty.Firm.Model.ViewModel.SaleCoopVM;
-using Intl.Realty.Firm.Model.ViewModel.SaleCoopVM;
 using Intl.Realty.Firm.Model.ViewModel.SaleCoopVM;
 using Intl.Realty.Firm.Models;
 using Intl.Realty.Firm.Models.Auxiliary;
 using Intl.Realty.Firm.Models.DataTable;
+using Intl.Realty.Firm.Models.Enum;
 using Intl.Realty.Firm.Repository.IRepository;
-using Intl.Realty.Firm.Service;
 using Intl.Realty.Firm.Service.IService;
 using Intl.Realty.Firm.Utilities;
 using Intl.Realty.Firm.Utility.Mapper;
@@ -129,6 +126,9 @@ namespace Intl.Realty.Firm.Controllers
             viewModel.CreateSaleCoopViewModel.DocumentTypeList = _documentTransactionService
                                                             .GetDocumentTypesFromDocumentTypeAssignment(transactionTypeName,
                                                                                                         documentTypeAssignmentList);
+
+            viewModel.CreateSaleCoopViewModel.SignageIEnum = SelectListConverter.CreateSelectListFromEnum<Signage>();
+            viewModel.CreateSaleCoopViewModel.DefaultSignage = 1;
 
             var menus = CreateDealTransactionTabMenuData.GetCreateDealTransactionTabMenuData();
 
@@ -500,6 +500,9 @@ namespace Intl.Realty.Firm.Controllers
                 var dealStatusIEnum = await _unitOfWork.DealStatus.GetAllAsync(x => x.IsActive == true && !x.IsDeleted);
                 viewModel.EditSaleCoopViewModel.DealStatusList = dealStatusIEnum.ToList();
 
+                viewModel.EditSaleCoopViewModel.SignageIEnum = SelectListConverter.CreateSelectListFromEnum<Signage>();
+                viewModel.EditSaleCoopViewModel.DefaultSignage = 1;
+
                 var menus = EditDealTransactionTabMenuData.GetEditDealTransactionTabMenuData();
 
                 string menuName = "IRFDetails1";
@@ -752,6 +755,10 @@ namespace Intl.Realty.Firm.Controllers
             }
 
             var viewModel = model.ToPreviewSaleCoopViewModel();
+
+            var buyingCommissionSignage = (Signage)model.IRFDeal.BuyingCommissionSign;
+            viewModel.BuyingCommissionSignDescription = buyingCommissionSignage.GetDisplayName();
+
             var fileUploadIEnum = await _unitOfWork.FileUpload.GetAllAsync(x => x.SaleCoopId == model.Id && x.IsActive == true && !x.IsDeleted);
             viewModel.FileUploads = fileUploadIEnum.ToList();
             var users = _userManager.Users;

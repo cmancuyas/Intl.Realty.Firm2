@@ -21,10 +21,12 @@ namespace Intl.Realty.Firm.Model.ViewModel.LeaseListingVM
         public DateTime DepositDate { get; set; }
         public string BuyerName { get; set; } = string.Empty;
         public string LandLordName { get; set; } = string.Empty;
+        public int ListingCommissionSign { get; set; }
         [Column(TypeName = "decimal(18,2)")]
-        public decimal ListingCommissionPercentage { get; set; }
+        public decimal ListingCommission{ get; set; }
+        public int BuyingCommissionSign { get; set; }
         [Column(TypeName = "decimal(18,2)")]
-        public decimal BuyingCommissionPercentage { get; set; }
+        public decimal BuyingCommission { get; set; }
         public string ListingAgentName { get; set; } = string.Empty;
         public string ListingBrokerage { get; set; } = string.Empty;
         public string ListingBrokerageFax { get; set; } = string.Empty;

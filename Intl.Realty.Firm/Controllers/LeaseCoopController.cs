@@ -6,6 +6,7 @@ using Intl.Realty.Firm.Model.ViewModel.LeaseCoopVM;
 using Intl.Realty.Firm.Models;
 using Intl.Realty.Firm.Models.Auxiliary;
 using Intl.Realty.Firm.Models.DataTable;
+using Intl.Realty.Firm.Models.Enum;
 using Intl.Realty.Firm.Repository.IRepository;
 using Intl.Realty.Firm.Service;
 using Intl.Realty.Firm.Service.IService;
@@ -125,6 +126,9 @@ namespace Intl.Realty.Firm.Controllers
             viewModel.CreateLeaseCoopViewModel.DocumentTypeList = _documentTransactionService
                                                             .GetDocumentTypesFromDocumentTypeAssignment(transactionTypeName,
                                                                                                         documentTypeAssignmentList);
+
+            viewModel.CreateLeaseCoopViewModel.SignageIEnum = SelectListConverter.CreateSelectListFromEnum<Signage>();
+            viewModel.CreateLeaseCoopViewModel.DefaultSignage = 1;
 
             var menus = CreateDealTransactionTabMenuData.GetCreateDealTransactionTabMenuData();
 
@@ -500,6 +504,9 @@ namespace Intl.Realty.Firm.Controllers
                                                                                                             documentTypeAssignmentList);
                 var dealStatusIEnum = await _unitOfWork.DealStatus.GetAllAsync(x => x.IsActive == true && !x.IsDeleted);
                 viewModel.EditLeaseCoopViewModel.DealStatusList = dealStatusIEnum.ToList();
+
+                viewModel.EditLeaseCoopViewModel.SignageIEnum = SelectListConverter.CreateSelectListFromEnum<Signage>();
+                viewModel.EditLeaseCoopViewModel.DefaultSignage = 1;
 
                 var menus = EditDealTransactionTabMenuData.GetEditDealTransactionTabMenuData();
 
