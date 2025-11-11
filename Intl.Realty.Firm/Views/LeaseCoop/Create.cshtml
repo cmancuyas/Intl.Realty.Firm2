@@ -262,7 +262,13 @@
                                     </thead>
                                     @{
                                         // Convert to List for safe indexing
-                                        var docAssignments = Model.CreateLeaseCoopViewModel.DocumentTypeAssignmentList.ToList();
+                                        var docAssignments = Model.CreateLeaseCoopViewModel.DocumentTypeAssignmentList
+                                        .Where(x => !x.IsDeleted
+                                        && x.IsActive
+                                        && x.DocumentType != null
+                                        && !x.DocumentType.IsDeleted
+                                        && x.DocumentType.IsActive)
+                                        .ToList();
                                     }
                                     <tbody>
                                         @for (int i = 0; i < docAssignments.Count; i++)

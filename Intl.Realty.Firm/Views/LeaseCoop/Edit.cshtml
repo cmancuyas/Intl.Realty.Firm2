@@ -349,7 +349,13 @@
                                     </thead>
                                     @{
                                         // Make sure we have a List for proper indexing
-                                        var docAssignments = Model.EditLeaseCoopViewModel.DocumentTypeAssignmentList.ToList();
+                                        var docAssignments = Model.EditLeaseCoopViewModel.DocumentTypeAssignmentList
+                                        .Where(x => !x.IsDeleted
+                                        && x.IsActive
+                                        && x.DocumentType != null
+                                        && !x.DocumentType.IsDeleted
+                                        && x.DocumentType.IsActive)
+                                        .ToList();
                                     }
                                     <tbody>
                                             @for (int i = 0; i < docAssignments.Count; i++)
