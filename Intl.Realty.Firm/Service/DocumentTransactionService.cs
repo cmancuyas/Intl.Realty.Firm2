@@ -9,9 +9,9 @@ namespace Intl.Realty.Firm.Service
                                                                             List<DocumentTypeAssignment> documentTypeAssignments)
         {
             var documentTypes = documentTypeAssignments
-                .Where(x => x.TransactionType != null && x.TransactionType.Description == transactionTypeName)
+                .Where(x => x.TransactionType != null && x.TransactionType.Description == transactionTypeName && x.IsActive && !x.IsDeleted)
                 .Select(x => x.DocumentType)
-                .Where(dt => dt != null) // Safety check in case DocumentType is null
+                .Where(dt => dt != null && dt.IsActive && !dt.IsDeleted) // Safety check in case DocumentType is null
                 .Distinct()
                 .ToList();
 
@@ -22,9 +22,9 @@ namespace Intl.Realty.Firm.Service
                                                                                    List<DocumentTypeAssignment> documentTypeAssignments)
         {
             var transactionTypes = documentTypeAssignments
-                .Where(x => x.DocumentType != null && x.DocumentType.Description == documentTypeName)
+                .Where(x => x.DocumentType != null && x.DocumentType.Description == documentTypeName && x.IsActive && !x.IsDeleted)
                 .Select(x => x.TransactionType)
-                .Where(tt => tt != null) // Safety check if TransactionType is null
+                .Where(tt => tt != null && tt.IsActive && !tt.IsDeleted) // Safety check if TransactionType is null
                 .Distinct()
                 .ToList();
 

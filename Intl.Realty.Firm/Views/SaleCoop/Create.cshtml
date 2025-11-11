@@ -320,7 +320,13 @@
                                     </thead>
                                     @{
                                         // Convert to List for indexing in the for loop
-                                        var docAssignments = Model.CreateSaleCoopViewModel.DocumentTypeAssignmentList.ToList();
+                                        var docAssignments = Model.CreateSaleCoopViewModel.DocumentTypeAssignmentList
+                                        .Where(x => !x.IsDeleted
+                                        && x.IsActive
+                                        && x.DocumentType != null
+                                        && !x.DocumentType.IsDeleted
+                                        && x.DocumentType.IsActive)
+                                        .ToList();
                                     }
                                     <tbody>
                                         @for (int i = 0; i < docAssignments.Count; i++)
