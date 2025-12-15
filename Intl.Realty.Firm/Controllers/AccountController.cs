@@ -134,6 +134,7 @@ namespace Intl.Realty.Firm.Controllers
         {
             return View();
         }
+
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
@@ -189,10 +190,11 @@ namespace Intl.Realty.Firm.Controllers
                 return View("LoginIssueSupport", model);
             }
 
-            TempData["SuccessMessage"] = "Your login issue has been submitted successfully.";
-            return RedirectToAction("LoginIssueConfirmation");
-        }
+            // ✅ Show message on Login page
+            TempData["SuccessMessage"] = "Your login issue has been submitted successfully. Our support team will contact you shortly.";
 
+            return RedirectToAction("Login", "Account");
+        }
 
 
         // ✅ Forgot Password - Request Reset Email
