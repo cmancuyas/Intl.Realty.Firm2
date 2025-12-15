@@ -1,6 +1,11 @@
 ﻿@using Intl.Realty.Firm.Model.ViewModel.AccountVM
 @model RegisterViewModel
 
+@{
+    ViewData["Title"] = "Register";
+    Layout = "_Layout";
+}
+
 <div>
     <form asp-action="Register" asp-controller="Account" method="post" novalidate>
         @Html.AntiForgeryToken()
