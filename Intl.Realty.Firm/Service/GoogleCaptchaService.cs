@@ -13,30 +13,51 @@ namespace Intl.Realty.Firm.Service
         {
             _configurationService = configurationService;
         }
-        public async Task<bool> VerifyToken(string token)
+
+        public async Task<bool> VerifyToken(string? token, string expectedAction, double minScore = 0.5)
         {
+            if (string.IsNullOrWhiteSpace(token))
+                return false;
+
             try
             {
                 var secretKey = _configurationService.GetSecretKey();
-                var siteKey = _configurationService.GetSiteKey();
-                var url = $"https://www.google.com/recaptcha/api/siteverify?secret={secretKey}&response={token}";
+                if (string.IsNullOrWhiteSpace(secretKey))
+                    return false;
 
-                using(var client = new HttpClient())
-                {
-                    var httpResult = await client.GetAsync(url);
-                    if (httpResult.StatusCode != HttpStatusCode.OK)
-                    {
-                        return false;
-                    }
+                var url =
+                    $"https://www.google.com/recaptcha/api/siteverify" +
+                    $"?secret={WebUtility.UrlEncode(secretKey)}" +
+                    $"&response={WebUtility.UrlEncode(token)}";
 
-                    var responseString = await httpResult.Content.ReadAsStringAsync();
+                using var client = new HttpClient();
+                var httpResult = await client.GetAsync(url);
 
-                    var googleResult = JsonConvert.DeserializeObject<GoogleCaptchaResponse>(responseString);
+                if (httpResult.StatusCode != HttpStatusCode.OK)
+                    return false;
 
-                    return googleResult.Success && googleResult.Score >= 0.5;
-                }
-            } 
-            catch (Exception ex)
+                var responseString = await httpResult.Content.ReadAsStringAsync();
+                var googleResult = JsonConvert.DeserializeObject<GoogleCaptchaResponse>(responseString);
+
+                if (googleResult == null || !googleResult.Success)
+                    return false;
+
+                // v3: validate action to prevent token reuse across endpoints
+                if (!string.Equals(googleResult.Action, expectedAction, StringComparison.OrdinalIgnoreCase))
+                    return false;
+
+                // v3: validate score
+                if (googleResult.Score < minScore)
+                    return false;
+
+                // Optional hostname validation
+                // if (googleResult.Hostname is null) return false;
+                // var allowed = new[] { "irfconnect.com", "www.irfconnect.com" };
+                // if (!allowed.Contains(googleResult.Hostname, StringComparer.OrdinalIgnoreCase)) return false;
+
+                return true;
+            }
+            catch
             {
                 return false;
             }

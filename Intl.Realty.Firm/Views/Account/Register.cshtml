@@ -2,10 +2,13 @@
 @model RegisterViewModel
 
 <div>
-    <form asp-action="Register" asp-controller="Account" method="post">
+    <form asp-action="Register" asp-controller="Account" method="post" novalidate>
+        @Html.AntiForgeryToken()
+
+        <!-- reCAPTCHA v3 token (populated by _Layout.cshtml) -->
         <input type="hidden" id="RegisterViewModelToken" name="Token" />
 
-        <div class="row m-0 p-0 page-registration">
+        <div class="row page-registration m-0 p-0">
             <div class="col-md-4 col-sm-12 page-registration-container left-part m-none"></div>
             <div class="col-md-8 col-sm-12 page-registration-container right-part">
                 <div class="d-flex flex-column w-80">
@@ -65,11 +68,12 @@
                         </div>
 
                         <!-- User Agreement -->
-                        <div class="form-check mt-4 mb-2">
+                        <div class="form-check mb-2 mt-4">
                             @Html.CheckBoxFor(m => m.UserAgreement, new { @class = "form-check-input", id = "UserAgreement" })
                             <label class="form-check-label" for="UserAgreement">
                                 <span class="text-danger">
-                                    By creating an account, you agree to our <a href="#" class="text-danger">User Agreement</a> and the <a href="#" class="text-danger">Data Privacy Statement</a>.
+                                    By creating an account, you agree to our <a href="#" class="text-danger">User Agreement</a>
+                                    and the <a href="#" class="text-danger">Data Privacy Statement</a>.
                                 </span>
                             </label>
                             @Html.ValidationMessageFor(m => m.UserAgreement, "", new { @class = "text-danger d-block mt-1" })
@@ -78,16 +82,20 @@
                         <!-- Buttons -->
                         <div class="row mt-5">
                             <div class="col-md-12 cta-controls">
-                                <button type="button" id="loginBtn" class="btn btn-secondary cta ms-3" onclick="window.location.href='@Url.Action("Login", "Account")'">Go back to Login</button>
+                                <button type="button" id="loginBtn" class="btn btn-secondary cta ms-3"
+                                        onclick="window.location.href='@Url.Action("Login", "Account")'">
+                                    Go back to Login
+                                </button>
 
                                 <button type="submit" id="submitBtn" class="btn btn-primary cta btnSubmit ms-3">
                                     <span id="submitText">Sign Up</span>
-                                    <span id="submitSpinner" class="spinner-border spinner-border-sm d-none ms-2" role="status" aria-hidden="true"></span>
+                                    <span id="submitSpinner" class="spinner-border spinner-border-sm d-none ms-2"
+                                          role="status" aria-hidden="true"></span>
                                 </button>
                             </div>
                         </div>
 
-                        <!-- Success Message -->
+                        <!-- Success Message (optional, shown only if you set it somewhere) -->
                         <div id="successMessage" class="alert alert-success d-none mt-3">
                             Registration successful! Redirecting...
                         </div>
@@ -107,7 +115,9 @@
             togglePassword();
             setupUserAgreementCheckbox();
 
-            const $form = $('form[asp-action="Register"]');
+            // IMPORTANT: asp-action is not a real HTML attribute in the browser
+            const $form = $('form[action*="Register"]');
+
             const $btn = $('#submitBtn');
             const $spinner = $('#submitSpinner');
             const $text = $('#submitText');
@@ -132,6 +142,7 @@
                     return;
                 }
 
+                // Let _Layout.cshtml ensure captcha token exists before submit.
                 $spinner.removeClass('d-none');
                 $text.text('Signing Up...');
                 $btn.prop('disabled', true);

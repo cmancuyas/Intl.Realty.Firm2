@@ -10,17 +10,17 @@
 }
 
 <container>
-    <div class="row m-0 p-0 page-login">
+    <div class="row page-login m-0 p-0">
         <div class="col-md-6 col-sm-12 page-login-container left-part m-none">
             <img src="~/files/img/logo-irf-default.jpg" alt="Logo" class="img-fluid logo-login" />
         </div>
 
         <div class="col-md-6 col-sm-12 page-login-container right-part">
-            <div class="col-sm-12 mb-5 text-center x-none">
+            <div class="col-sm-12 x-none mb-5 text-center">
                 <img src="~/files/img/logo-irf-default.jpg" alt="Logo" class="img-fluid logo-login" />
             </div>
 
-            <h3 class="fw-bolder text-center mb-md-5 m-none">
+            <h3 class="fw-bolder mb-md-5 m-none text-center">
                 International Realty Firm
             </h3>
 
@@ -46,6 +46,11 @@
                 }
 
                 <form asp-action="Login" asp-controller="Account" method="post" novalidate>
+                    @Html.AntiForgeryToken()
+
+                    <!-- reCAPTCHA v3 token (populated by _Layout.cshtml) -->
+                    <input type="hidden" id="LoginToken" name="token" />
+
                     <div asp-validation-summary="All" class="text-danger mb-3"></div>
 
                     <div class="form-group mb-4">
@@ -65,32 +70,39 @@
                         <span asp-validation-for="Password" class="text-danger fst-italic"></span>
                     </div>
 
-                    @* ✅ Remember me + Forgot password aligned *@
+                    <!-- Remember me + Forgot password -->
                     <div class="d-flex justify-content-between align-items-center mb-4">
                         <div class="form-check">
                             <input asp-for="RememberMe" class="form-check-input" />
                             <label asp-for="RememberMe" class="form-check-label"></label>
                         </div>
-                        <a asp-action="ForgotPassword" asp-controller="Account" class="text-decoration-none cta-sign-up">Forgot Password?</a>
+                        <a asp-action="ForgotPassword" asp-controller="Account" class="text-decoration-none cta-sign-up">
+                            Forgot Password?
+                        </a>
                     </div>
 
-                    @* ✅ Sign in button with spinner placeholder *@
+                    <!-- Submit -->
                     <button type="submit" id="submitBtn" class="btn btn-primary w-100">
-                        <span class="spinner-border spinner-border-sm me-2 d-none" role="status" aria-hidden="true" id="spinner"></span>
+                        <span id="spinner" class="spinner-border spinner-border-sm d-none me-2"
+                              role="status" aria-hidden="true"></span>
                         Sign in
                     </button>
                 </form>
             </div>
 
-            <div class="d-flex gap-1 mt-3">
+            <div class="d-flex mt-3 gap-1">
                 <span class="text-secondary">Don't have an account?</span>
-                <a asp-action="Register" asp-controller="Account" class="text-decoration-none cta-sign-up">Sign Up</a>
+                <a asp-action="Register" asp-controller="Account" class="text-decoration-none cta-sign-up">
+                    Sign Up
+                </a>
             </div>
 
             <div class="d-flex justify-content-center mt-5">
-                <div class="text-center login-help-text" style="font-size: 0.875rem; color: #4a4a4a;">
+                <div class="login-help-text text-center">
                     Having trouble logging in?
-                    <a asp-controller="Account" asp-action="DetailedInstructions" style="color: #1a73e8; text-decoration: none;">
+                    <a asp-controller="Account"
+                       asp-action="DetailedInstructions"
+                       class="text-decoration-none">
                         Click here to see detailed instructions
                     </a>
                 </div>
@@ -99,71 +111,42 @@
         </div>
     </div>
 </container>
-<styles>
+
+<style>
     .login-help-text {
-    font-size: 0.875rem;
-    color: #4a4a4a;
+        font-size: 0.875rem;
+        color: #4a4a4a;
     }
+</style>
 
-
-</styles>
 @section Scripts {
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.5/dist/jquery.validate.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/jquery-validation-unobtrusive@3.2.12/dist/jquery.validate.unobtrusive.min.js"></script>
 
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
+    @await Html.PartialAsync("_ValidationScriptsPartial")
 
     <script>
-        console.log("✅ Scripts section loaded");
-
         $(document).ready(function () {
-            console.log("✅ DOM is ready");
 
             feather.replace();
-            console.log("✅ Feather icons replaced");
 
             // Toggle password visibility
-            $("#password-toggle").click(function () {
-                const passwordInput = $("#Password");
-                const isPassword = passwordInput.attr("type") === "password";
-                passwordInput.attr("type", isPassword ? "text" : "password");
-
-                console.log(`👁 Password visibility toggled: ${isPassword ? "showing" : "hiding"} password`);
+            $("#password-toggle").on("click", function () {
+                const input = $("#Password");
+                input.attr("type", input.attr("type") === "password" ? "text" : "password");
             });
 
             const form = $("form");
             const submitBtn = $("#submitBtn");
             const spinner = $("#spinner");
 
-            if (form.length) {
-                console.log("✅ Login form found");
-
-                form.on("submit", function (e) {
-                    console.log("📝 Form submitted");
-
-                    if (!form.valid()) {
-                        console.warn("⚠️ Client-side validation failed");
-
-                        const errors = $(".field-validation-error");
-                        console.log(`🚨 Found ${errors.length} validation error(s)`);
-
-                        errors.each(function () {
-                            console.log("❌", $(this).text());
-                        });
-                    } else {
-                        console.log("✅ Client-side validation passed");
-
-                        // ✅ Show spinner and disable button
-                        spinner.removeClass("d-none");
-                        submitBtn.prop("disabled", true);
-                    }
-                });
-            } else {
-                console.warn("⚠️ No form element found");
-            }
+            form.on("submit", function () {
+                if (form.valid()) {
+                    spinner.removeClass("d-none");
+                    submitBtn.prop("disabled", true);
+                }
+            });
         });
     </script>
 }

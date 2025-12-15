@@ -2,6 +2,6 @@
 {
     public interface IGoogleCaptchaService
     {
-        public Task<bool> VerifyToken(string token);
+        Task<bool> VerifyToken(string? token, string expectedAction, double minScore = 0.5);
     }
 }

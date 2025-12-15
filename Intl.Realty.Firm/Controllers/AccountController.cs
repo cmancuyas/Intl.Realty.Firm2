@@ -62,33 +62,36 @@ namespace Intl.Realty.Firm.Controllers
         }
         [HttpPost]
         [AllowAnonymous]
-        public async Task<IActionResult> Login(LoginViewModel viewModel, string? returnUrl)
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Login(LoginViewModel viewModel, string? returnUrl, string? token)
         {
             viewModel.ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
 
             if (!ModelState.IsValid)
+                return View(viewModel);
+
+            if (!await _googleCaptchaService.VerifyToken(token, expectedAction: "login", minScore: 0.5))
             {
+                ModelState.AddModelError(string.Empty, "Captcha verification failed. Please try again.");
                 return View(viewModel);
             }
 
+            // Load user only for EmailStatusId check + role redirect later
             var user = await _userManager.FindByEmailAsync(viewModel.Email);
 
-            // ✅ Prevent user enumeration: Always return the same error
-            if (user == null || !await _userManager.CheckPasswordAsync(user, viewModel.Password))
-            {
-                ModelState.AddModelError(string.Empty, "Invalid email or password");
-                return View(viewModel); // ✅ Must return the view — not redirect
-            }
-
-            if (user.EmailStatusId != 1)
+            // If user exists, enforce EmailStatus before attempting sign-in
+            if (user != null && user.EmailStatusId != 1)
             {
                 ModelState.AddModelError(string.Empty, "Your account email status does not permit login. Please contact support.");
                 return View(viewModel);
             }
 
-
-            // ✅ Use SignInManager to check if email is confirmed
-            var result = await _signInManager.PasswordSignInAsync(user, viewModel.Password, viewModel.RememberMe, lockoutOnFailure: true);
+            // Single sign-in call (handles password validation + lockout counters)
+            var result = await _signInManager.PasswordSignInAsync(
+                viewModel.Email,
+                viewModel.Password,
+                viewModel.RememberMe,
+                lockoutOnFailure: true);
 
             if (result.IsNotAllowed)
             {
@@ -97,36 +100,34 @@ namespace Intl.Realty.Firm.Controllers
             }
 
             if (result.IsLockedOut)
-            {
                 return RedirectToAction("Lockout");
-            }
 
             if (!result.Succeeded)
             {
-                ModelState.AddModelError(string.Empty, "Invalid login attempt");
+                ModelState.AddModelError(string.Empty, "Invalid email or password");
                 return View(viewModel);
             }
 
-            // ✅ Secure returnUrl handling
+            // Refresh user reference if it was null before (should not be null after successful sign-in)
+            user ??= await _userManager.FindByEmailAsync(viewModel.Email);
+
+            // Secure returnUrl handling
             if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
-            {
                 return Redirect(returnUrl);
-            }
+
             _logger.LogWarning("Suspicious return URL detected: {returnUrl}", returnUrl);
 
-            // ✅ Redirect users based on role
-            var userRoles = await _userManager.GetRolesAsync(user);
-
-            var hasRole = userRoles.Any(); // ✅ Check if the user has any role
-
-            if (hasRole)
+            // Redirect users based on role
+            if (user != null)
             {
-                return RedirectToAction("Dashboard", "Home");
+                var userRoles = await _userManager.GetRolesAsync(user);
+                if (userRoles.Any())
+                    return RedirectToAction("Dashboard", "Home");
             }
 
-            return RedirectToAction("Index", "Training"); // ✅ Default fallback if no roles assigned
-
+            return RedirectToAction("Index", "Training");
         }
+
         [HttpGet]
         [AllowAnonymous]
         public IActionResult LoginIssueSupport()
@@ -136,15 +137,26 @@ namespace Intl.Realty.Firm.Controllers
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> SubmitLoginIssue(SupportViewModel model)
+        public async Task<IActionResult> SubmitLoginIssue(SupportViewModel model, string? token)
         {
             _logger.LogInformation("📨 SubmitLoginIssue triggered. Email: {Email}", model.Email);
 
             if (!ModelState.IsValid)
             {
-                _logger.LogWarning("❌ ModelState invalid. Errors: {Errors}", string.Join(" | ", ModelState.Values
-                    .SelectMany(v => v.Errors)
-                    .Select(e => e.ErrorMessage)));
+                _logger.LogWarning(
+                    "❌ ModelState invalid. Errors: {Errors}",
+                    string.Join(" | ",
+                        ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage))
+                );
+
+                return View("LoginIssueSupport", model);
+            }
+
+            // ✅ reCAPTCHA v3 validation
+            if (!await _googleCaptchaService.VerifyToken(token, expectedAction: "login_issue", minScore: 0.5))
+            {
+                _logger.LogWarning("❌ reCAPTCHA failed for LoginIssueSupport. Email: {Email}", model.Email);
+                ModelState.AddModelError(string.Empty, "Captcha verification failed. Please try again.");
                 return View("LoginIssueSupport", model);
             }
 
@@ -160,21 +172,19 @@ namespace Intl.Realty.Firm.Controllers
                     return View("LoginIssueSupport", model);
                 }
 
-                var recipientString = string.Join(',', recipients);
-                var recipientStringCC = string.Join(',', recipientsCC);
+                var mailRequest = EmailRequest.SendEmailLoginIssue(
+                    model,
+                    string.Join(',', recipients),
+                    string.Join(',', recipientsCC)
+                );
 
-                _logger.LogInformation("📧 Preparing to send email to: {To}, CC: {CC}", recipientString, recipientStringCC);
-
-                var mailRequest = EmailRequest.SendEmailLoginIssue(model, recipientString, recipientStringCC);
-
-                _logger.LogInformation("📩 Calling SendEmailAsync...");
                 await _emailService.SendEmailAsync(mailRequest);
 
-                _logger.LogInformation("✅ SendEmailAsync completed for: {Email}", model.Email);
+                _logger.LogInformation("✅ Login issue email sent for {Email}", model.Email);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "❌ Exception in SubmitLoginIssue for: {Email}", model.Email);
+                _logger.LogError(ex, "❌ Error sending login issue email for {Email}", model.Email);
                 ModelState.AddModelError(string.Empty, "There was a problem sending your request. Please try again later.");
                 return View("LoginIssueSupport", model);
             }
@@ -182,6 +192,7 @@ namespace Intl.Realty.Firm.Controllers
             TempData["SuccessMessage"] = "Your login issue has been submitted successfully.";
             return RedirectToAction("LoginIssueConfirmation");
         }
+
 
 
         // ✅ Forgot Password - Request Reset Email
@@ -400,23 +411,21 @@ namespace Intl.Realty.Firm.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Register(RegisterViewModel viewModel)
         {
-            // (Optional) reCAPTCHA — keep your original logic commented or re-enable as needed
-            // if (!await _googleCaptchaService.VerifyToken(viewModel.Token))
-            // {
-            //     _logger.LogError("❌ reCAPTCHA verification failed for user: {Email}", viewModel.Email);
-            //     ModelState.AddModelError(string.Empty, "Captcha verification failed. Please try again.");
-            //     await PopulateTeamLeadersAsync(viewModel);
-            //     return View(viewModel);
-            // }
-
             if (!viewModel.UserAgreement)
             {
                 ModelState.AddModelError(string.Empty, "You must agree to the terms and conditions to register.");
             }
 
-            // If ModelState invalid, repopulate dropdowns and return
             if (!ModelState.IsValid)
             {
+                await PopulateTeamLeadersAsync(viewModel);
+                return View(viewModel);
+            }
+
+            if (!await _googleCaptchaService.VerifyToken(viewModel.Token, expectedAction: "register", minScore: 0.5))
+            {
+                _logger.LogWarning("reCAPTCHA failed for register: {Email}", viewModel.Email);
+                ModelState.AddModelError(string.Empty, "Captcha verification failed. Please try again.");
                 await PopulateTeamLeadersAsync(viewModel);
                 return View(viewModel);
             }
