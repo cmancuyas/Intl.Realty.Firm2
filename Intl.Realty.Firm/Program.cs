@@ -202,4 +202,22 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Account}/{action=Login}/{id?}");
 
+// Endpoint to receive Core Web Vitals (CWV) data
+
+app.MapPost("/cwv", async (HttpContext ctx) =>
+{
+    using var reader = new StreamReader(ctx.Request.Body);
+    var json = await reader.ReadToEndAsync();
+
+    ctx.RequestServices
+        .GetRequiredService<ILoggerFactory>()
+        .CreateLogger("CWV")
+        .LogInformation("CWV: {Json}", json);
+
+    return Results.Ok(new { ok = true });
+})
+.AllowAnonymous();
+
+
+
 app.Run();
