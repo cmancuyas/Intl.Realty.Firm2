@@ -124,6 +124,24 @@
             });
         });
     </script>
+    <script type="module">
+        import {onLCP, onINP, onCLS} from 'https://unpkg.com/web-vitals@4?module';
+
+        function send(metric) {
+          navigator.sendBeacon('/cwv', JSON.stringify({
+            name: metric.name,
+            value: metric.value,
+            rating: metric.rating,
+            id: metric.id,
+            url: location.pathname,
+            ts: Date.now()
+          }));
+        }
+
+        onLCP(send);
+        onINP(send);
+        onCLS(send);
+    </script>
 
     @await Html.PartialAsync("_NotificationPartial.cshtml")
     @await RenderSectionAsync("Scripts", required: false)
