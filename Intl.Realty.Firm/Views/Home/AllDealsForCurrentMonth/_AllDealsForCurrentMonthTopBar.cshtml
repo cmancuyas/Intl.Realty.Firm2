@@ -1,0 +1,90 @@
+﻿@using Intl.Realty.Firm.Model.Pagination
+
+@model PagerModel
+
+<style>
+    .page-link {
+        color: black !important;
+    }
+
+    .page-item.active .pageLink {
+        z-index: 3;
+        color: #fff;
+        background-color: red;
+        !important;
+        border-color: red;
+    }
+</style>
+
+<div class="container-fluid">
+    <div class="col-12 p-0 justify-content-end mt-4">
+        <form asp-action="Dashboard">
+            <span class="btn-group search-cta fr">
+                <input class="form-control" type="text"
+                       name="SearchText"
+                       value="@Model.SearchText"
+                       placeholder="Search Key" />
+
+                <input class="dashboard-search-btn btn btn-primary px-3" type="submit" value="Search" />
+            </span>
+        </form>
+    </div>
+
+    <div class="container mt-1">
+        <ul class="pagination justify-content-end">
+            @{
+                @if (Model.CurrentPage > 1)
+                {
+                    <li class="page-item">
+                        <a class="page-link" href="#" onclick="loadTopBarPaginationCurrentMonth('@Model.Action', 1, '@Model.PageSize', '@Model.SearchText','@Model.SortExpression','CurrentMonth' )">
+                            First
+                        </a>
+                    </li>
+
+                    <li class="page-item">
+                        <a class="page-link" href="#" onclick="loadTopBarPaginationCurrentMonth('@Model.Action', '@Model.CurrentPage - 1', '@Model.PageSize', '@Model.SearchText','@Model.SortExpression','CurrentMonth' )">
+                            Previous
+                        </a>
+                    </li>
+                }
+
+                @for (var pge = Model.StartPage; pge < Model.EndPage; pge++)
+                {
+                    <li class="page-item @(pge==Model.CurrentPage ? "active":"")">
+
+                        @if (pge != Model.CurrentPage)
+                        {
+                            <a class="page-link" href="#" onclick="loadTopBarPaginationCurrentMonth('@Model.Action', @pge, '@Model.PageSize', '@Model.SearchText','@Model.SortExpression','CurrentMonth' )">
+                                @pge
+                            </a>
+
+                        }
+                        else
+                        {
+                            <span class="page-link">@pge</span>
+                        }
+
+                    </li>
+                }
+
+
+                @if (Model.CurrentPage < Model.TotalPages)
+                {
+                    <li class="page-item">
+
+                        <a class="page-link" href="#" onclick="loadTopBarPaginationCurrentMonth('@Model.Action','@(Model.CurrentPage+1)', '@Model.PageSize', '@Model.SearchText','@Model.SortExpression','CurrentMonth' )">
+                            Next
+                        </a>
+                    </li>
+
+                    <li class="page-item">
+                        <a class="page-link" href="#" onclick="loadTopBarPaginationCurrentMonth('@Model.Action','@Model.TotalPages', '@Model.PageSize', '@Model.SearchText','@Model.SortExpression','CurrentMonth' )">
+                            Last
+                        </a>
+                    </li>
+                }
+            }
+        </ul>
+    </div>
+</div>
+

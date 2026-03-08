@@ -2,6 +2,8 @@
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 using Intl.Realty.Firm.DataAccess;
+using Intl.Realty.Firm.Model.Pagination;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Intl.Realty.Firm.Repository
 {
@@ -27,35 +29,29 @@ namespace Intl.Realty.Firm.Repository
             await _context.SaveChangesAsync();
         }
 
-        public async Task<T> GetAsync(Expression<Func<T, bool>> filter, string? includeProperties = null, bool tracked = false)
+        public async Task<T?> GetAsync(Expression<Func<T, bool>> filter, string? includeProperties = null, bool tracked = false)
         {
-            IQueryable<T> query;
-            if (tracked)
-            {
-                query = dbSet;
-            }
-            else
-            {
-                query = dbSet.AsNoTracking();
-            }
+            IQueryable<T> query = tracked ? dbSet : dbSet.AsNoTracking();
 
             query = query.Where(filter);
+
             if (!string.IsNullOrEmpty(includeProperties))
             {
-                foreach (var includeProp in includeProperties
-                    .Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
+                foreach (var includeProp in includeProperties.Split(',', StringSplitOptions.RemoveEmptyEntries))
                 {
                     query = query.Include(includeProp);
                 }
             }
-            return await query.FirstOrDefaultAsync() ?? query.FirstOrDefault()!;
 
+            return await query.FirstOrDefaultAsync();
         }
-        public async Task<IEnumerable<T>> GetAllAsync(Expression<Func<T, bool>>? filter = null, string?
-                                                    includeProperties = null,
-                                                    Func<IQueryable<T>, IOrderedQueryable<T>> orderBy = null!,
-                                                    bool tracked = false,
-                                                    int pageSize = 0, int pageNumber = 1)
+
+        public async Task<IEnumerable<T>>
+                GetAllAsync(Expression<Func<T, bool>>? filter = null,
+                            string? includeProperties = null,
+                            Func<IQueryable<T>, IOrderedQueryable<T>> orderBy = null!,
+                            bool tracked = false,
+                            int pageSize = 0, int pageNumber = 1)
         {
             IQueryable<T> query = dbSet;
 
@@ -93,11 +89,52 @@ namespace Intl.Realty.Firm.Repository
             }
             return await query.ToListAsync();
         }
-        public async Task UpdateAsync(T entity)
+
+        public async Task SaveChangesAsync()
         {
-            _context.Update(entity);
             await _context.SaveChangesAsync();
         }
+
+        /// <summary>
+        /// Updates an entire entity (all properties).
+        /// Automatically handles tracked vs. untracked states.
+        /// </summary>
+        public async Task UpdateAsync<TEntity>(TEntity entity) where TEntity : class
+        {
+            var entry = _context.Entry(entity);
+
+            if (entry.State == EntityState.Detached)
+            {
+                _context.Attach(entity);
+                entry.State = EntityState.Modified;
+            }
+
+            await SaveChangesAsync();
+        }
+
+        /// <summary>
+        /// Updates only specific properties of an entity.
+        /// Useful for PATCH-like scenarios or partial updates.
+        /// </summary>
+        public async Task UpdateAsync<TEntity>(
+            TEntity entity,
+            params Expression<Func<TEntity, object>>[] updatedProperties) where TEntity : class
+        {
+            var entry = _context.Entry(entity);
+
+            if (entry.State == EntityState.Detached)
+            {
+                _context.Attach(entity);
+            }
+
+            foreach (var property in updatedProperties)
+            {
+                entry.Property(property).IsModified = true;
+            }
+
+            await SaveChangesAsync();
+        }
+
         public async Task UpdateRangeAsync(IEnumerable<T> entities)
         {
             _context.UpdateRange(entities);
@@ -106,7 +143,8 @@ namespace Intl.Realty.Firm.Repository
 
         public async Task RemoveAsync(T entity)
         {
-            _context.Remove(entity);
+            dbSet.Attach(entity);
+            _context.Entry(entity).State = EntityState.Deleted;
             await _context.SaveChangesAsync();
         }
 
@@ -116,14 +154,13 @@ namespace Intl.Realty.Firm.Repository
             await _context.SaveChangesAsync();
         }
 
-        public async Task SaveChangesAsync()
-        {
-            await _context.SaveChangesAsync();
-        }
 
-        public Task<IQueryable<T>> AsQueryableAsync(Expression<Func<T, bool>>? filter = null,
-                                                    string? includeProperties = null,
-                                                    bool tracked = false)
+
+        public Task<IQueryable<T>> AsQueryableAsync(Expression<Func<T, bool>>? filter = null, string?
+                                                    includeProperties = null,
+                                                    Func<IQueryable<T>, IOrderedQueryable<T>> orderBy = null!,
+                                                    bool tracked = false,
+                                                    int pageSize = 0, int pageNumber = 1)
         {
             IQueryable<T> query = dbSet;
             if (tracked)
@@ -145,38 +182,58 @@ namespace Intl.Realty.Firm.Repository
                     query = query.Include(includeProp);
                 }
             }
-
+            if (pageSize > 0)
+            {
+                if (pageSize > 100)
+                {
+                    pageSize = 100;
+                }
+                query = query.Skip(pageSize * (pageNumber - 1)).Take(pageSize);
+            }
+            if (orderBy != null)
+            {
+                query = orderBy(query).AsQueryable();
+            }
             return Task.FromResult(query);
         }
 
-        public IQueryable<T> AsQueryable(Expression<Func<T, bool>>? filter = null,
-                                        string? includeProperties = null,
-                                        bool tracked = false)
+        public IQueryable<T> AsQueryable(
+            Expression<Func<T, bool>>? filter = null,
+            string? includeProperties = null,
+            Func<IQueryable<T>, IOrderedQueryable<T>>? orderBy = null,
+            bool tracked = false,
+            int pageSize = 0,
+            int pageNumber = 1)
         {
-            IQueryable<T> query = dbSet;
+            IQueryable<T> query = tracked ? dbSet : dbSet.AsNoTracking();
 
-            if (tracked)
-            {
-                query = dbSet;
-            }
-            else
-            {
-                query = dbSet.AsNoTracking();
-            }
             if (filter != null)
             {
                 query = query.Where(filter);
             }
-            if (includeProperties != null)
+
+            if (!string.IsNullOrWhiteSpace(includeProperties))
             {
-                foreach (var includeProp in includeProperties.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
+                foreach (var includeProp in includeProperties.Split(',', StringSplitOptions.RemoveEmptyEntries))
                 {
-                    query = query.Include(includeProp);
+                    query = query.Include(includeProp.Trim());
                 }
+            }
+
+            if (orderBy != null)
+            {
+                query = orderBy(query);
+            }
+
+            if (pageSize > 0)
+            {
+                pageSize = Math.Min(pageSize, 100); // enforce max page size
+                query = query.Skip(pageSize * (pageNumber - 1)).Take(pageSize);
             }
 
             return query;
         }
+
 
         public Task<int> CountAsync()
         {
@@ -188,5 +245,6 @@ namespace Intl.Realty.Firm.Repository
         {
             return dbSet.Count();
         }
+
     }
 }

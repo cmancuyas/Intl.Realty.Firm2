@@ -1,10 +1,32 @@
-﻿namespace Intl.Realty.Firm.Repository.IRepository
+﻿using Microsoft.EntityFrameworkCore.Storage;
+
+namespace Intl.Realty.Firm.Repository.IRepository
 {
     public interface IUnitOfWork
     {
+        IDealTransactionNumberRangeRepository DealTransactionNumberRange { get; }
+        IInternalEmailRepository InternalEmail { get; }
         IDepartmentRepository Department { get; }
+        IProvinceRepository Province { get; }
         IEmploymentStatusRepository EmploymentStatus { get; }
-        void SaveAsync();
-        void Save();
+        ITransactionTypeRepository TransactionType { get; }
+        IDocumentTypeRepository DocumentType { get; }
+        IDealStatusRepository DealStatus { get; }
+        IDocumentTypeAssignmentRepository DocumentTypeAssignment { get; }
+        IIRFDealRepository IRFDeal { get; }
+        IFileUploadRepository FileUpload { get; }
+        ISaleListingRepository SaleListing { get; }
+        ISaleCoopRepository SaleCoop { get; }
+        ILeaseListingRepository LeaseListing { get; }
+        ILeaseCoopRepository LeaseCoop { get; }
+        ICustomerRepository Customer { get; }
+        IEmailCategoryRepository EmailCategory { get; }
+        IContactEmailRepository ContactEmail { get; }
+        IProfileImageRepository ProfileImage { get; }
+        IAgentReferralRepository AgentReferral { get; }
+        IEmailStatusRepository EmailStatus { get; }
+        Task SaveChangesAsync();
+        void SaveChanges();
+        Task<IDbContextTransaction> BeginTransactionAsync();
     }
 }

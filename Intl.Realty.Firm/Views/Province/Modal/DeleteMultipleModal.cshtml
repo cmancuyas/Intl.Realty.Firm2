@@ -1,0 +1,44 @@
+﻿@using Intl.Realty.Firm.Model.ViewModel.ProvinceVM
+
+@model IEnumerable<DeleteProvinceViewModel>
+
+<partial name="~/Views/Shared/Modal/_DeleteModal.cshtml">
+
+<script type="text/javascript">
+$("#cancelBtn").click(function () {
+    closeModal();
+});
+
+$("#btnConfirmDelete").click(function () {
+    var viewModelList = '@Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model))';
+    viewModelList = JSON.parse(viewModelList);
+    let parameters = { viewModelList: viewModelList};
+    $.ajax({
+        url: '/Province/SoftDeleteMultiple/',
+        type: 'POST',
+        data: parameters,
+        contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+        success: function (data) {
+            // NOTE: TO DO better way of calling callback function from parent
+            closeModal();
+            // Swal.fire({
+            //     title: "Success!",
+            //     icon: "success",
+            //     confirmButtonText: "Ok",
+            //     confirmButtonColor: '#14984a'
+            // });
+            window.location.reload()
+            // $('#positionListPartialContainer').load('/Province/ProvinceListPartialView');
+
+        }
+    });
+
+});
+
+function closeModal() {
+    $("#deleteConfirmModal").modal("hide");
+    let elem = document.querySelector('#deleteConfirmModal');
+    elem.parentNode.removeChild(elem);
+}
+                           
+</script>

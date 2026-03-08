@@ -1,0 +1,26 @@
+﻿<script>
+    var msg = @(TempData["Message"] != null
+        ? Html.Raw(System.Text.Json.JsonSerializer.Serialize(TempData["Message"]))
+        : "undefined");
+
+    console.log("Message from TempData:", msg);
+
+    if (msg && msg !== "undefined") {
+        if (msg.Provider === "sweetAlert") {
+            Swal.fire({
+                title: msg.Title,
+                text: msg.Message,
+                icon: msg.Icon
+            });
+        } else if (msg.Provider === "toastr") {
+            const validTypes = ["success", "error", "info", "warning"];
+            const type = msg.Type?.toLowerCase();
+
+            if (validTypes.includes(type)) {
+                toastr[type](msg.Text, msg.Message);
+            } else {
+                console.warn("Invalid toastr type:", msg.Type);
+            }
+        }
+    }
+</script>

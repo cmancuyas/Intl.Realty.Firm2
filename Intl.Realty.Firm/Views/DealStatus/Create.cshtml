@@ -1,0 +1,98 @@
+@using Intl.Realty.Firm.Model.ViewModel.DealStatusVM
+
+@model CreateDealStatusWithTabMenuViewModel
+
+@{
+    ViewData["Title"] = "Create";
+    Layout = "~/Views/Shared/_LayoutAfterLogin.cshtml";
+}
+
+<div class="page-controller mb-5">
+    <a href="@Url.Action("Index","DealStatus")" class="text-decoration-none back d-flex mb-4">
+        <i data-feather="chevron-left"></i><span>Back</span>
+    </a>
+    <div class="row justify-content-center">
+        <div class="col-md-12 card p-4">
+            <h1 class="text-blue mb-0">Create Deal Status</h1>
+            <hr class="my-4" />
+            <form asp-action="Create"
+                  asp-controller="DealStatus"
+                  method="post"
+                  enctype="multipart/form-data">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                <div class="tab-page">
+                    @*                     <ul class="nav nav-tabs" id="consultantStatusManagementTab" role="tablist">
+                    @foreach (var item in Model.Menus)
+                    {
+                    <li class="nav-item mx-0">
+                    <input type="hidden" id="menuId" name="menuId" value="@item.Id" />
+                    <button class="nav-link @item.IsActive"
+                    id="@item.Tab"
+                    data-bs-toggle="tab"
+                    data-bs-target="#@item.Control"
+                    type="button"
+                    role="tab"
+                    aria-controls="@item.Control"
+                    aria-selected="@item.IsSelected">
+                    @item.Description
+                    </button>
+                    </li>
+                    }
+                    </ul> *@
+                </div>
+                <div class="tab-content" style="background-color:#FFF;padding:0;">
+
+                    <div class="tab-pane active" id="consultantDetails" aria-labelledby="consultantDetails-tab" style="background-color:white;">
+                        
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label asp-for="CreateDealStatus.Code" class="control-label fw-bolder">Code</label>
+                                    <input asp-for="CreateDealStatus.Code" class="form-control" />
+                                    <span asp-validation-for="CreateDealStatus.Code" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label asp-for="CreateDealStatus.Description" class="control-label fw-bolder">Description</label>
+                                    <input asp-for="CreateDealStatus.Description" class="form-control" />
+                                    <span asp-validation-for="CreateDealStatus.Description" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <hr class="my-5" />
+
+                <div class="form-group d-flex justify-content-center gap-4 mobile-ctas">
+                    <input type="button" value="Cancel" class="btn btn-secondary cta-button" onclick="window.location.href='@Url.Action("Index", "DealStatus")'" />
+                    @* <button type="reset" class="btn btn-secondary cta-button" onclick="$('.text-danger').hide();">Reset</button> *@
+                    <button type="submit" class="btn btn-primary cta-button" onclick="$('.text-danger').show();">Submit</button>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts {
+
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script src="~/js/viewDataTableUtility.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+        })
+
+
+
+    </script>
+}

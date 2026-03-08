@@ -1,0 +1,117 @@
+﻿@using Intl.Realty.Firm.Model.ViewModel.SaleListingVM
+
+@model PreviewSaleListingViewModel
+
+@{
+    ViewData["Title"] = "Preview";
+    Layout = "~/Views/Shared/_LayoutAfterLogin.cshtml";
+    string Display(string? value) => !string.IsNullOrWhiteSpace(value) ? value : "—";
+    string DisplayDecimal(decimal? value) => value.HasValue ? value.Value.ToString("N2") : "—";
+    string DisplayDate(DateTime? date) => date.HasValue ? date.Value.ToString("yyyy-MM-dd") : "—";
+}
+
+<div class="c-content">
+    <a href="##" class="back" onClick="history.go(-1); return false;">
+        <i data-feather="chevron-left"></i><span>Back</span>
+    </a>
+
+    <div class="preview-page mt-4">
+        <div class="row justify-content-center">
+            <div class="col-md-10 card p-5 mb-4">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h2 class="text-blue">Deal ID: @Model.DealTransactionNumber</h2>
+                    <button type="button" class="btn btn-secondary" onclick="location.href='@Url.Action("Edit", "SaleListing", new { id = Model.Id })'">
+                        Edit
+                    </button>
+                </div>
+
+                <hr />
+                <h4 class="text-blue mb-3">Header</h4>
+                <div class="row mb-3">
+                    <div class="col-md-4"><strong>Transaction Type:</strong><p>@Display(Model.TransactionType?.Description)</p></div>
+                    <div class="col-md-4"><strong>Deal Status:</strong><p>@Display(Model.DealStatus?.Description)</p></div>
+                    <div class="col-md-4"><strong>Date Submitted:</strong><p>@DisplayDate(Model.DateSubmitted)</p></div>
+                    <div class="col-md-4"><strong>Created By:</strong><p>@Display(Model.CreatedByFullName)</p></div>
+                    <div class="col-md-4"><strong>Created At:</strong><p>@DisplayDate(Model.CreatedAt)</p></div>
+                </div>
+
+                <hr />
+                <h4 class="text-blue mb-3">IRF Deal Details</h4>
+                <div class="row mb-3">
+                    <div class="col-md-6"><strong>Property Address:</strong><p>@Display(Model.IRFDeal.PropertyAddress)</p></div>
+                    <div class="col-md-6"><strong>Final Sale Price:</strong><p>@DisplayDecimal(Model.IRFDeal.FinalSalePrice)</p></div>
+                    <div class="col-md-6"><strong>Final Closing Date:</strong><p>@DisplayDate(Model.IRFDeal.FinalClosingDate)</p></div>
+                    <div class="col-md-6"><strong>Deposit Amount:</strong><p>@DisplayDecimal(Model.IRFDeal.DepositAmount)</p></div>
+                    <div class="col-md-6"><strong>Deposit Date:</strong><p>@DisplayDate(Model.IRFDeal.DepositDate)</p></div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-6"><strong>Buyer Name:</strong><p>@Display(Model.IRFDeal.BuyerName)</p></div>
+                    <div class="col-md-6"><strong>Landlord Name:</strong><p>@Display(Model.IRFDeal.LandLordName)</p></div>
+                    <div class="col-md-6"><strong>Listing Commission:</strong><p>@Model.ListingCommissionSignDescription @DisplayDecimal(Model.IRFDeal.ListingCommission)</p></div>
+                    <div class="col-md-6"><strong>Buying Commission:</strong><p>@Model.BuyingCommissionSignDescription  @DisplayDecimal(Model.IRFDeal.BuyingCommission)</p></div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-6"><strong>Listing Agent Name:</strong><p>@Display(Model.IRFDeal.ListingAgentName)</p></div>
+                    <div class="col-md-6"><strong>Listing Brokerage:</strong><p>@Display(Model.IRFDeal.ListingBrokerage)</p></div>
+                    <div class="col-md-6"><strong>Listing Brokerage Fax:</strong><p>@Display(Model.IRFDeal.ListingBrokerageFax)</p></div>
+                    <div class="col-md-6"><strong>Buyer Agent Name:</strong><p>@Display(Model.IRFDeal.BuyerAgentName)</p></div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-6"><strong>Buyer Brokerage:</strong><p>@Display(Model.IRFDeal.BuyerBrokerage)</p></div>
+                    <div class="col-md-6"><strong>Seller's Lawyer:</strong><p>@Display(Model.IRFDeal.SellerLawyer)</p></div>
+                    <div class="col-md-6"><strong>Seller's Lawyer Address:</strong><p>@Display(Model.IRFDeal.SellerLawyerAddress)</p></div>
+                    <div class="col-md-6"><strong>Seller's Phone:</strong><p>@Display(Model.IRFDeal.SellerEmail)</p></div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-6"><strong>Buyer's Lawyer:</strong><p>@Display(Model.IRFDeal.BuyerLawyer)</p></div>
+                    <div class="col-md-6"><strong>Buyer's Lawyer Address:</strong><p>@Display(Model.IRFDeal.BuyerLawyerAddress)</p></div>
+                    <div class="col-md-6"><strong>Buyer's Phone:</strong><p>@Display(Model.IRFDeal.BuyerEmail)</p></div>
+                    <div class="col-md-6"><strong>Buyer's Lawyer Email:</strong><p>@Display(Model.IRFDeal.BuyerLawyerEmail)</p></div>
+                </div>
+            </div>
+
+            <!-- 📂 Files Card -->
+            <div class="col-md-10 card p-4 mb-4">
+                <h4 class="text-blue mb-3">Associated Documents</h4>
+                <div class="table-responsive">
+                    <table class="table table-bordered">
+                        <thead class="table-light">
+                            <tr>
+                                <th>File Name</th>
+                                <th>Extension</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model.FileUploads != null && Model.FileUploads.Any())
+                            {
+                                foreach (var file in Model.FileUploads)
+                                {
+                                    <tr>
+                                        <td>@file.FileName</td>
+                                        <td>@file.FileExtension</td>
+                                    </tr>
+                                }
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td colspan="2">No associated files found.</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- 📝 Notes Card -->
+            <div class="col-md-10 card p-4 mb-5">
+                <h4 class="text-blue mb-3">Notes</h4>
+                @Html.TextAreaFor(m => m.Notes, 10, 100, new { @class = "form-control", disabled = "disabled" })
+            </div>
+        </div>
+    </div>
+</div>

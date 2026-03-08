@@ -1,0 +1,32 @@
+﻿@using Intl.Realty.Firm.Model.Pagination
+
+@model PagerModel
+
+<div class="container-fluid mb-0 p-0 btn-group align-items-center dashboard-table-footer">
+    <div class="col-md-4 col-sm-12 px-3 align-items-center justify-content-start">
+        <p class="m-0">
+            Showing @Model.StartRecord to @Model.EndRecord of @Model.TotalItems Rows
+        </p>
+    </div>
+    <div class="col-md-4 col-sm-12 px-3 align-items-center justify-content-center">
+        <p class="m-0 text-center">
+            Showing @Model.CurrentPage / @Model.TotalPages Pages
+        </p>
+    </div>
+    <div class="col-md-4 col-sm-12 px-3 d-flex align-items-center justify-content-end">
+        <span class="col-4 pe-2 d-flex justify-content-end">
+            Rows Per Page
+        </span>
+        <span class="col-1 p-0 d-flex justify-content-end">
+            <select class="form-control dashboard-counter" id="pageSelector" asp-items="Model.GetPageSizes()" onchange="ChangePageSize(this)"></select>
+        </span>
+    </div>
+</div>
+
+<script>
+    function ChangePageSize(obj) {
+        var controllerName = "@this.ViewContext.RouteData.Values["controller"]!.ToString()";
+
+        window.location.href = "/" + controllerName + "/@Model.Action" + "?pageSize=" + obj.value + "&SearchText=" + "@Model.SearchText" + "&sortExpression=" + "@Model.SortExpression";
+    }
+</script>

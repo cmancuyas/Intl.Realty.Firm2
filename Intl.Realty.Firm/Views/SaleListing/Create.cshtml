@@ -1,0 +1,462 @@
+﻿@using Intl.Realty.Firm.Model.Model
+@using Intl.Realty.Firm.Model.ViewModel.SaleListingVM
+@using Intl.Realty.Firm.Model.ViewModel.Shared
+@using Newtonsoft.Json
+
+@model CreateSaleListingWithTabMenuViewModel
+
+@{
+    ViewData["Title"] = "Create";
+    Layout = "~/Views/Shared/_LayoutAfterLogin.cshtml";
+}
+<partial name="~/Views/Shared/Modal/_ConfirmSaveModal.cshtml" />
+<partial name="~/Views/Shared/Modal/_ConfirmSubmitModal.cshtml" />
+<partial name="~/Views/Shared/Modal/_ConfirmSuccessModal.cshtml" />
+
+<div class="page-controller mb-5">
+    @*     <a href="@Url.Action("Index","SaleListing")" class="text-decoration-none text-blue d-flex mb-4">
+    <i data-feather="chevron-left"></i><span>Back</span>
+    </a> *@
+    <a href="##" class="back" onClick="history.go(-1); return false;">
+        <i data-feather="chevron-left"></i><span>Back</span>
+    </a>
+    <div class="data-form row justify-content-center">
+        <div class="col-md-8 card w-100 mt-4 p-4">
+            <h1 class="text-blue mb-3">Create Sale Listing</h1>
+            <form id="ListFormId"
+                  asp-action="Create"
+                  asp-controller="SaleListing"
+                  class="mb-5"
+                  method="post"
+                  enctype="multipart/form-data">
+                <input type="hidden" id="ActionTypeHidden" name="actionType" />
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <input type="hidden" id="ActionTypeHidden" name="actionType" />
+                <input asp-for="CreateSaleListingViewModel.DealTransactionNumber" hidden />
+                <input type="hidden" name="SaleListingViewModel.RowVersion"
+                       value="@Convert.ToBase64String(Model.CreateSaleListingViewModel.RowVersion)" />
+                <div class="tab-page">
+                    <!-- Dropdown for Mobile -->
+                    <div class="dropdown d-md-none mb-3">
+                        <button class="btn btn-primary dropdown-toggle"
+                                type="button"
+                                id="tabDropdown"
+                                data-bs-toggle="dropdown"
+                                aria-expanded="false">
+                            @Model.Menus.FirstOrDefault(m => m.IsTrue)?.Description Menu
+                        </button>
+                        <ul class="dropdown-menu" aria-labelledby="tabDropdown">
+                            @foreach (var item in Model.Menus)
+                            {
+                                <li>
+                                    <button class="dropdown-item"
+                                            data-bs-target="#@item.Control"
+                                            data-tab-id="@item.Tab"
+                                            data-route="@item.Control">
+                                        @item.Description
+                                    </button>
+                                </li>
+                            }
+                        </ul>
+                    </div>
+
+                    <!-- Tab for Desktop -->
+                    <ul class="nav nav-tabs" id="saleListingTab" role="tablist" style="border:none">
+                        @foreach (var item in Model.Menus)
+                        {
+                            <li class="nav-item mx-0">
+                                <input type="hidden" id="menuId" name="menuId" value="@item.Id" />
+                                <button class="nav-link @item.IsActive"
+                                        id="@item.Tab"
+                                        data-bs-toggle="tab"
+                                        data-bs-target="#@item.Control"
+                                        type="button"
+                                        role="tab"
+                                        aria-controls="@item.Control"
+                                        aria-selected="@item.IsSelected">
+                                    @item.Description
+                                </button>
+                            </li>
+                        }
+                    </ul>
+
+                </div>
+
+                <div class="tab-content py-5" style="background-color:white;">
+                    <!-- Tab 1: IRF Details - Part 1 -->
+                    <div class="tab-pane active" id="irfDetails1" aria-labelledby="irfDetails1-tab" style="background-color:white;">
+
+                        <!-- 🏠 Property & Deal Info -->
+                        <h4 class="mt-4 text-blue">Property & Deal Information</h4>
+                        <div class="row">
+                            <div class="col-md-6 mt-3">
+                                <label asp-for="CreateSaleListingViewModel.CreateIRFDealSaleListingViewModel.PropertyAddress" class="fw-bolder">Property Address</label>
+                                <input asp-for="CreateSaleListingViewModel.CreateIRFDealSaleListingViewModel.PropertyAddress" class="form-control" />
+                                <span asp-validation-for="CreateSaleListingViewModel.CreateIRFDealSaleListingViewModel.PropertyAddress" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 mt-3">
+                                <label asp-for="CreateSaleListingViewModel.CreatedByFullName" class="fw-bolder">Created By</label>
+                                <input asp-for="CreateSaleListingViewModel.CreatedByFullName" class="form-control" disabled />
+                                <span asp-validation-for="CreateSaleListingViewModel.CreatedByFullName" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <!-- 💰 Financial Details -->
+                        <h4 class="mt-5 text-blue">Financial Details</h4>
+                        <div class="row">
+                            <div class="col-md-6 mt-3">
+                                <label asp-for="CreateSaleListingViewModel.CreateIRFDealSaleListingViewModel.FinalSalePrice" class="fw-bolder">Final Sale Price</label>
+                                <input asp-for="CreateSaleListingViewModel.CreateIRFDealSaleListingViewModel.FinalSalePrice" class="form-control" type="number" min="0"/>
+                                <span asp-validation-for="CreateSaleListingViewModel.CreateIRFDealSaleListingViewModel.FinalSalePrice" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 mt-3">
+                                <label asp-for="CreateSaleListingViewModel.CreateIRFDealSaleListingViewModel.FinalClosingDate" class="fw-bolder">Final Closing Date</label>
+                                <input asp-for="CreateSaleListingViewModel.CreateIRFDealSaleListingViewModel.FinalClosingDate" class="form-control" type="date" />
+                                <span asp-validation-for="CreateSaleListingViewModel.CreateIRFDealSaleListingViewModel.FinalClosingDate" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 mt-3">
+                                <label asp-for="CreateSaleListingViewModel.CreateIRFDealSaleListingViewModel.DepositAmount" class="fw-bolder">Deposit Amount</label>
+                                <input asp-for="CreateSaleListingViewModel.CreateIRFDealSaleListingViewModel.DepositAmount" class="form-control" type="number" min="0"/>
+                                <span asp-validation-for="CreateSaleListingViewModel.CreateIRFDealSaleListingViewModel.DepositAmount" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 mt-3">
+                                <label asp-for="CreateSaleListingViewModel.CreateIRFDealSaleListingViewModel.DepositDate" class="fw-bolder">Deposit Date</label>
+                                <input asp-for="CreateSaleListingViewModel.CreateIRFDealSaleListingViewModel.DepositDate" class="form-control" type="date" />
+                                <span asp-validation-for="CreateSaleListingViewModel.CreateIRFDealSaleListingViewModel.DepositDate" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <!-- 👤 Buyer Info -->
+                        <h4 class="mt-5 text-blue">Buyer Details</h4>
+                        <div class="row">
+                            <div class="col-md-6 mt-3">
+                                <label asp-for="CreateSaleListingViewModel.CreateIRFDealSaleListingViewModel.BuyerDetails.BuyerName" class="fw-bolder">Buyer’s Name</label>
+                                <input asp-for="CreateSaleListingViewModel.CreateIRFDealSaleListingViewModel.BuyerDetails.BuyerName" class="form-control" />
+                                <span asp-validation-for="CreateSaleListingViewModel.CreateIRFDealSaleListingViewModel.BuyerDetails.BuyerName" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <!-- 👤 Seller Info -->
+                        <h4 class="mt-5 text-blue">Seller Details</h4>
+                        <div class="row">
+                            <div class="col-md-6 mt-3">
+                                <label asp-for="CreateSaleListingViewModel.CreateIRFDealSaleListingViewModel.SellerDetails.SellerName" class="fw-bolder">Seller’s Name</label>
+                                <input asp-for="CreateSaleListingViewModel.CreateIRFDealSaleListingViewModel.SellerDetails.SellerName" class="form-control" />
+                                <span asp-validation-for="CreateSaleListingViewModel.CreateIRFDealSaleListingViewModel.SellerDetails.SellerName" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 mt-3">
+                                <label asp-for="CreateSaleListingViewModel.CreateIRFDealSaleListingViewModel.SellerDetails.SellerEmail" class="fw-bolder">Seller’s Email</label>
+                                <input asp-for="CreateSaleListingViewModel.CreateIRFDealSaleListingViewModel.SellerDetails.SellerEmail" class="form-control" />
+                                <span asp-validation-for="CreateSaleListingViewModel.CreateIRFDealSaleListingViewModel.SellerDetails.SellerEmail" class="text-danger"></span>
+                            </div>
+                        </div>
+
+
+                        <!-- 📊 Commission Info -->
+                        <h4 class="mt-5 text-blue">Commission</h4>
+                        <div class="row">
+                            <div class="col-md-6 mt-3">
+                                <div class="form-group">
+                                    <label class="control-label fw-bolder">Total Commission Signage</label>
+                                    <select id="CreateSaleListingViewModel.CreateIRFDealSaleListingViewModel.Commission.ListingCommissionSign" name="CreateSaleListingViewModel.CreateIRFDealSaleListingViewModel.Commission.ListingCommissionSign" class="form-select">
+                                        @{
+                                            @if (Model.CreateSaleListingViewModel.SignageIEnum != null)
+                                            {
+                                                @foreach (var item in Model.CreateSaleListingViewModel.SignageIEnum)
+                                                {
+                                                    int quarter = Convert.ToInt32(item.Value);
+                                                    if (quarter == Model.CreateSaleListingViewModel.DefaultSignage)
+                                                    {
+                                                        <option value="@item.Value" selected>@item.Text</option>
+                                                    }
+                                                    else
+                                                    {
+                                                        <option value="@item.Value">@item.Text</option>
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    </select>
+
+                                    @Html.ValidationMessageFor(m => m.CreateSaleListingViewModel.CreateIRFDealSaleListingViewModel.Commission.ListingCommissionSign, "", new { @class = "text-danger" })
+
+                                </div>
+                            </div>
+                            <div class="col-md-6 mt-3">
+                                <label asp-for="CreateSaleListingViewModel.CreateIRFDealSaleListingViewModel.Commission.ListingCommission" class="fw-bolder">Total Commission</label>
+                                <input asp-for="CreateSaleListingViewModel.CreateIRFDealSaleListingViewModel.Commission.ListingCommission" class="form-control" type="number" min="0" />
+                                <span asp-validation-for="CreateSaleListingViewModel.CreateIRFDealSaleListingViewModel.Commission.ListingCommission" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 mt-3">
+                                <div class="form-group">
+                                    <label class="control-label fw-bolder">Buying Commission Signage</label>
+                                    <select id="CreateSaleListingViewModel.CreateIRFDealSaleListingViewModel.Commission.BuyingCommissionSign" name="CreateSaleListingViewModel.CreateIRFDealSaleListingViewModel.Commission.BuyingCommissionSign" class="form-select">
+                                        @{
+                                            @if (Model.CreateSaleListingViewModel.SignageIEnum != null)
+                                            {
+                                                @foreach (var item in Model.CreateSaleListingViewModel.SignageIEnum)
+                                                {
+                                                    int quarter = Convert.ToInt32(item.Value);
+                                                    if (quarter == Model.CreateSaleListingViewModel.DefaultSignage)
+                                                    {
+                                                        <option value="@item.Value" selected>@item.Text</option>
+                                                    }
+                                                    else
+                                                    {
+                                                        <option value="@item.Value">@item.Text</option>
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    </select>
+
+                                    @Html.ValidationMessageFor(m => m.CreateSaleListingViewModel.CreateIRFDealSaleListingViewModel.Commission.BuyingCommissionSign, "", new { @class = "text-danger" })
+
+                                </div>
+                            </div>
+                            <div class="col-md-6 mt-3">
+                                <label asp-for="CreateSaleListingViewModel.CreateIRFDealSaleListingViewModel.Commission.BuyingCommission" class="fw-bolder">Co-op Commission</label>
+                                <input asp-for="CreateSaleListingViewModel.CreateIRFDealSaleListingViewModel.Commission.BuyingCommission" class="form-control" type="number" min="0" />
+                                <span asp-validation-for="CreateSaleListingViewModel.CreateIRFDealSaleListingViewModel.Commission.BuyingCommission" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tab 2: IRF Details - Part 2 -->
+                    <div class="tab-pane" id="irfDetails2" aria-labelledby="irfDetails2-tab" style="background-color:white;">
+
+                        <!-- 🧑‍💼 Buyer Agent & Brokerage Info -->
+                        <h4 class="mt-4 text-blue">Buyer’s Agent & Brokerage Info</h4>
+                        <div class="row">
+                            <div class="col-md-6 mt-3">
+                                <label asp-for="CreateSaleListingViewModel.CreateIRFDealSaleListingViewModel.BuyerDetails.BuyerAgentName" class="fw-bolder">Buyer's Agent Name</label>
+                                <input asp-for="CreateSaleListingViewModel.CreateIRFDealSaleListingViewModel.BuyerDetails.BuyerAgentName" class="form-control" />
+                                <span asp-validation-for="CreateSaleListingViewModel.CreateIRFDealSaleListingViewModel.BuyerDetails.BuyerAgentName" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 mt-3">
+                                <label asp-for="CreateSaleListingViewModel.CreateIRFDealSaleListingViewModel.BuyerDetails.BuyerBrokerage" class="fw-bolder">Buyer's Brokerage</label>
+                                <input asp-for="CreateSaleListingViewModel.CreateIRFDealSaleListingViewModel.BuyerDetails.BuyerBrokerage" class="form-control" />
+                                <span asp-validation-for="CreateSaleListingViewModel.CreateIRFDealSaleListingViewModel.BuyerDetails.BuyerBrokerage" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 mt-3">
+                                <label asp-for="CreateSaleListingViewModel.CreateIRFDealSaleListingViewModel.BuyerDetails.BuyerBrokerageFax" class="fw-bolder">Buyer's Brokerage Fax</label>
+                                <input asp-for="CreateSaleListingViewModel.CreateIRFDealSaleListingViewModel.BuyerDetails.BuyerBrokerageFax" class="form-control" />
+                                <span asp-validation-for="CreateSaleListingViewModel.CreateIRFDealSaleListingViewModel.BuyerDetails.BuyerBrokerageFax" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 mt-3">
+                                <label asp-for="CreateSaleListingViewModel.CreateIRFDealSaleListingViewModel.BuyerDetails.BuyerBrokeragePhoneNumber" class="fw-bolder">Buyer's Brokerage Phone Number</label>
+                                <input asp-for="CreateSaleListingViewModel.CreateIRFDealSaleListingViewModel.BuyerDetails.BuyerBrokeragePhoneNumber" class="form-control" />
+                                <span asp-validation-for="CreateSaleListingViewModel.CreateIRFDealSaleListingViewModel.BuyerDetails.BuyerBrokeragePhoneNumber" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 mt-3">
+                                <label asp-for="CreateSaleListingViewModel.CreateIRFDealSaleListingViewModel.BuyerDetails.BuyerBrokerageEmail" class="fw-bolder">Buyer's Brokage Email</label>
+                                <input asp-for="CreateSaleListingViewModel.CreateIRFDealSaleListingViewModel.BuyerDetails.BuyerBrokerageEmail" class="form-control" />
+                                <span asp-validation-for="CreateSaleListingViewModel.CreateIRFDealSaleListingViewModel.BuyerDetails.BuyerBrokerageEmail" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <!-- 📜 Buyer Legal Info -->
+                        <h4 class="mt-5 text-blue">Buyer’s Legal Info</h4>
+                        <div class="row">
+                            <div class="col-md-6 mt-3">
+                                <label asp-for="CreateSaleListingViewModel.CreateIRFDealSaleListingViewModel.BuyerDetails.BuyerLawyer" class="fw-bolder">Buyer's Lawyer</label>
+                                <input asp-for="CreateSaleListingViewModel.CreateIRFDealSaleListingViewModel.BuyerDetails.BuyerLawyer" class="form-control" />
+                                <span asp-validation-for="CreateSaleListingViewModel.CreateIRFDealSaleListingViewModel.BuyerDetails.BuyerLawyer" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 mt-3">
+                                <label asp-for="CreateSaleListingViewModel.CreateIRFDealSaleListingViewModel.BuyerDetails.BuyerLawyerAddress" class="fw-bolder">Buyer's Lawyer Address</label>
+                                <input asp-for="CreateSaleListingViewModel.CreateIRFDealSaleListingViewModel.BuyerDetails.BuyerLawyerAddress" class="form-control" />
+                                <span asp-validation-for="CreateSaleListingViewModel.CreateIRFDealSaleListingViewModel.BuyerDetails.BuyerLawyerAddress" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 mt-3">
+                                <label asp-for="CreateSaleListingViewModel.CreateIRFDealSaleListingViewModel.BuyerDetails.BuyerLawyerPhone" class="fw-bolder">Buyer's Lawyer Phone</label>
+                                <input asp-for="CreateSaleListingViewModel.CreateIRFDealSaleListingViewModel.BuyerDetails.BuyerLawyerPhone" class="form-control" />
+                                <span asp-validation-for="CreateSaleListingViewModel.CreateIRFDealSaleListingViewModel.BuyerDetails.BuyerLawyerPhone" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 mt-3">
+                                <label asp-for="CreateSaleListingViewModel.CreateIRFDealSaleListingViewModel.BuyerDetails.BuyerLawyerEmail" class="fw-bolder">Buyer's Lawyer Email</label>
+                                <input asp-for="CreateSaleListingViewModel.CreateIRFDealSaleListingViewModel.BuyerDetails.BuyerLawyerEmail" class="form-control" />
+                                <span asp-validation-for="CreateSaleListingViewModel.CreateIRFDealSaleListingViewModel.BuyerDetails.BuyerLawyerEmail" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <!-- 🧾 Seller's Agent & Brokerage Info -->
+                        <h4 class="mt-5 text-blue">Seller's Agent & Brokerage Info</h4>
+                        <div class="row">
+                            <div class="col-md-6 mt-3">
+                                <label asp-for="CreateSaleListingViewModel.CreateIRFDealSaleListingViewModel.SellerDetails.SellerAgentName" class="fw-bolder">Seller's Agent Name</label>
+                                <input asp-for="CreateSaleListingViewModel.CreateIRFDealSaleListingViewModel.SellerDetails.SellerAgentName" class="form-control" />
+                                <span asp-validation-for="CreateSaleListingViewModel.CreateIRFDealSaleListingViewModel.SellerDetails.SellerAgentName" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 mt-3">
+                                <label asp-for="CreateSaleListingViewModel.CreateIRFDealSaleListingViewModel.SellerDetails.SellerBrokerage" class="fw-bolder">Seller's Brokerage</label>
+                                <input asp-for="CreateSaleListingViewModel.CreateIRFDealSaleListingViewModel.SellerDetails.SellerBrokerage" class="form-control" />
+                                <span asp-validation-for="CreateSaleListingViewModel.CreateIRFDealSaleListingViewModel.SellerDetails.SellerBrokerage" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 mt-3">
+                                <label asp-for="CreateSaleListingViewModel.CreateIRFDealSaleListingViewModel.SellerDetails.SellerBrokerageFax" class="fw-bolder">Seller's Brokerage Fax</label>
+                                <input asp-for="CreateSaleListingViewModel.CreateIRFDealSaleListingViewModel.SellerDetails.SellerBrokerageFax" class="form-control" />
+                                <span asp-validation-for="CreateSaleListingViewModel.CreateIRFDealSaleListingViewModel.SellerDetails.SellerBrokerageFax" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 mt-3">
+                                <label asp-for="CreateSaleListingViewModel.CreateIRFDealSaleListingViewModel.SellerDetails.SellerBrokeragePhoneNumber" class="fw-bolder">Seller's Brokerage Phone Number</label>
+                                <input asp-for="CreateSaleListingViewModel.CreateIRFDealSaleListingViewModel.SellerDetails.SellerBrokeragePhoneNumber" class="form-control" />
+                                <span asp-validation-for="CreateSaleListingViewModel.CreateIRFDealSaleListingViewModel.SellerDetails.SellerBrokeragePhoneNumber" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 mt-3">
+                                <label asp-for="CreateSaleListingViewModel.CreateIRFDealSaleListingViewModel.SellerDetails.SellerBrokerageEmail" class="fw-bolder">Seller's Brokerage Email</label>
+                                <input asp-for="CreateSaleListingViewModel.CreateIRFDealSaleListingViewModel.SellerDetails.SellerBrokerageEmail" class="form-control" />
+                                <span asp-validation-for="CreateSaleListingViewModel.CreateIRFDealSaleListingViewModel.SellerDetails.SellerBrokerageEmail" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <!-- 🧾 Seller & Legal Info -->
+                        <h4 class="mt-5 text-blue">Seller's Legal Info</h4>
+                        <div class="row">
+                            <div class="col-md-6 mt-3">
+                                <label asp-for="CreateSaleListingViewModel.CreateIRFDealSaleListingViewModel.SellerDetails.SellerLawyer" class="fw-bolder">Seller's Lawyer</label>
+                                <input asp-for="CreateSaleListingViewModel.CreateIRFDealSaleListingViewModel.SellerDetails.SellerLawyer" class="form-control" />
+                                <span asp-validation-for="CreateSaleListingViewModel.CreateIRFDealSaleListingViewModel.SellerDetails.SellerLawyer" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 mt-3">
+                                <label asp-for="CreateSaleListingViewModel.CreateIRFDealSaleListingViewModel.SellerDetails.SellerLawyerAddress" class="fw-bolder">Seller's Lawyer Address</label>
+                                <input asp-for="CreateSaleListingViewModel.CreateIRFDealSaleListingViewModel.SellerDetails.SellerLawyerAddress" class="form-control" />
+                                <span asp-validation-for="CreateSaleListingViewModel.CreateIRFDealSaleListingViewModel.SellerDetails.SellerLawyerAddress" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 mt-3">
+                                <label asp-for="CreateSaleListingViewModel.CreateIRFDealSaleListingViewModel.SellerDetails.SellerLawyerPhone" class="fw-bolder">Seller's Lawyer Phone Number</label>
+                                <input asp-for="CreateSaleListingViewModel.CreateIRFDealSaleListingViewModel.SellerDetails.SellerLawyerPhone" class="form-control" />
+                                <span asp-validation-for="CreateSaleListingViewModel.CreateIRFDealSaleListingViewModel.SellerDetails.SellerLawyerPhone" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 mt-3">
+                                <label asp-for="CreateSaleListingViewModel.CreateIRFDealSaleListingViewModel.SellerDetails.SellerLawyerEmail" class="fw-bolder">Seller's Lawyer Email</label>
+                                <input asp-for="CreateSaleListingViewModel.CreateIRFDealSaleListingViewModel.SellerDetails.SellerLawyerEmail" class="form-control" />
+                                <span asp-validation-for="CreateSaleListingViewModel.CreateIRFDealSaleListingViewModel.SellerDetails.SellerLawyerEmail" class="text-danger"></span>
+                            </div>
+
+                        </div>
+                    </div>
+
+
+                    <div class="tab-pane" id="fileUploads" aria-labelledby="fileUploads-tab" style="background-color:white;">
+                        <div class="row d-flex justify-content-center m-0">
+                            <div class="col-md-12">
+                                <h5 class="text-blue mb-4">
+                                    Please match your uploaded file based on the Document Type for Sale Listing.
+                                    <span class="s-required">*</span>
+                                </h5>
+                                <table class="table dataTable" id="tblApplicantFiles" width="100%">
+                                    <thead>
+                                        <tr>
+                                            <th style="width: 30%">Document Type</th>
+                                            <th>Is Required?</th>
+                                            <th>Uploaded Document</th>
+                                        </tr>
+                                    </thead>
+                                    @{
+                                        // Convert to List for proper indexing
+                                        var docAssignments = Model.CreateSaleListingViewModel.DocumentTypeAssignmentList
+                                        .Where(x => !x.IsDeleted
+                                        && x.IsActive
+                                        && x.DocumentType != null
+                                        && !x.DocumentType.IsDeleted
+                                        && x.DocumentType.IsActive)
+                                        .ToList();
+                                    }
+                                    <tbody>
+                                        @for (int i = 0; i < docAssignments.Count; i++)
+                                        {
+                                            var item = docAssignments[i];
+                                            <tr data-document-type-id="@item.DocumentType.Id">
+                                                <td style="width: 30%">
+                                                    @item.DocumentType.Description
+                                                    <input type="hidden"
+                                                           name="CreateSaleListingViewModel.CreateFileUploadListViewModel.CreateFileUploadsViewModel[@i].DocumentTypeId"
+                                                           value="@item.DocumentType.Id" />
+                                                </td>
+                                                <td id="isRequired">
+                                                    @if (item.IsRequired == true)
+                                                    {
+                                                        <label class="status-active">Required</label>
+                                                    }
+                                                    else if (item.IsRequired == false)
+                                                    {
+                                                        <label class="status-inactive pe-cursor">Not Required</label>
+                                                    }
+                                                </td>
+                                                <td>
+                                                    <input type="file"
+                                                           name="CreateSaleListingViewModel.CreateFileUploadListViewModel.CreateFileUploadsViewModel[@i].Files"
+                                                           id="fileListDropDown_@i"
+                                                           class="file"
+                                                           multiple
+                                                           data-show-upload="false"
+                                                           data-allowed-file-extensions='["pdf","doc","docx","xls","xlsx"]'
+                                                           accept="application/all"
+                                                           data-show-caption="true"
+                                                           data-show-preview="false"
+                                                           data-msg-placeholder="Select {files} for upload..." />
+                                                    <!-- Optional debug: <span style="font-size:11px;color:gray;">Index: @i, DocTypeId: @item.DocumentType.Id</span> -->
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tab-pane" id="notes" aria-labelledby="notes-tab" style="background-color:white;">
+                        <div class="col-md-12 mt-4">
+                            <div class="form-group">
+                                <label asp-for="CreateSaleListingViewModel.Notes" class="control-label fw-bolder">Notes</label>
+                                @Html.TextAreaFor(model => model.CreateSaleListingViewModel.Notes, 10, 100, new { @class = "form-control" })
+
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <hr class="my-5" />
+                @{
+                    var buttonModel = new CreateActionButtonsViewModel
+                    {
+                        ControllerName = "SaleListing",
+                        ShowSave = true,
+                        ShowSubmit = true,
+                        ShowCancel = true
+                    };
+                }
+
+                @await Html.PartialAsync("~/Views/Shared/Transaction/_CreateActionButtons.cshtml", buttonModel)
+
+
+            </form>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script src="~/js/viewDataTableUtility.js" asp-append-version="true"></script>
+    <script src="~/js/submitUtility.js" asp-append-version="true"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    @* Submit Handler Initialization *@
+    <script>
+        const documentTypeAssignments = @Html.Raw(JsonConvert.SerializeObject(Model.CreateSaleListingViewModel.DocumentTypeAssignmentList));
+        const isAdminLike = @((User.IsInRole("Admin") || User.IsInRole("SuperAdmin") || User.IsInRole("DealAdmin")).ToString().ToLower());
+
+        $(document).ready(function () {
+            initializeSubmitHandlers({
+                formId: "ListFormId", // 🔁 Matches your <form id="ListFormId">
+                dealStatusDropdownSelector: '[name="CreateSaleListingViewModel.DealStatusId"]',
+                isAdminLike: isAdminLike,
+                fileErrorScrollTargetId: "fileUploads", // 🔁 scroll to this div on file error
+                documentTypeAssignment: documentTypeAssignments
+            });
+        });
+    </script>
+}

@@ -1,0 +1,376 @@
+﻿@using Intl.Realty.Firm.Model.Model
+@using Intl.Realty.Firm.Model.ViewModel.LeaseCoopVM
+@using Intl.Realty.Firm.Model.ViewModel.Shared
+@using Newtonsoft.Json
+
+@model CreateLeaseCoopWithTabMenuViewModel
+
+@{
+    ViewData["Title"] = "Create";
+    Layout = "~/Views/Shared/_LayoutAfterLogin.cshtml";
+}
+<partial name="~/Views/Shared/Modal/_ConfirmSubmitModal.cshtml" />
+<partial name="~/Views/Shared/Modal/_ConfirmSuccessModal.cshtml" />
+<partial name="~/Views/Shared/Modal/_ConfirmSaveModal.cshtml" />
+<div class="page-controller mb-5">
+    @*     <a href="@Url.Action("Index","LeaseCoop")" class="text-decoration-none text-blue d-flex mb-4">
+    <i data-feather="chevron-left"></i><span>Back</span>
+    </a> *@
+    <a href="##" class="back" onClick="history.go(-1); return false;">
+        <i data-feather="chevron-left"></i><span>Back</span>
+    </a>
+    <div class="row justify-content-center">
+        <div class="col-md-12 card b-none mt-4 p-4" style="background: transparent;">
+            <h1 class="text-blue mb-0">Create Lease Co-op</h1>
+            <hr class="my-4" />
+            <form id="ListFormId"
+                  asp-action="Create"
+                  asp-controller="LeaseCoop"
+                  method="post"
+                  enctype="multipart/form-data">
+                <input type="hidden" id="ActionTypeHidden" name="actionType" />
+                <input asp-for="CreateLeaseCoopViewModel.DealTransactionNumber" hidden />
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <input type="hidden" name="CreateLeaseCoopViewModel.RowVersion"
+                       value="@Convert.ToBase64String(Model.CreateLeaseCoopViewModel.RowVersion)" />
+                <div class="tab-page">
+                    <!-- Dropdown for Mobile -->
+                    <div class="dropdown d-md-none mb-3">
+                        <button class="btn btn-primary dropdown-toggle"
+                                type="button"
+                                id="tabDropdown"
+                                data-bs-toggle="dropdown"
+                                aria-expanded="false">
+                            @Model.Menus.FirstOrDefault(m => m.IsTrue)?.Description Menu
+                        </button>
+                        <ul class="dropdown-menu" aria-labelledby="tabDropdown">
+                            @foreach (var item in Model.Menus)
+                            {
+                                <li>
+                                    <button class="dropdown-item"
+                                            data-bs-target="#@item.Control"
+                                            data-tab-id="@item.Tab"
+                                            data-route="@item.Control">
+                                        @item.Description
+                                    </button>
+                                </li>
+                            }
+                        </ul>
+                    </div>
+
+                    <!-- Tab for Desktop -->
+                    <ul class="nav nav-tabs" id="consultantStatusManagementTab" role="tablist" style="border:none">
+                        @foreach (var item in Model.Menus)
+                        {
+                            <li class="nav-item mx-0">
+                                <input type="hidden" id="menuId" name="menuId" value="@item.Id" />
+                                <button class="nav-link @item.IsActive"
+                                        id="@item.Tab"
+                                        data-bs-toggle="tab"
+                                        data-bs-target="#@item.Control"
+                                        type="button"
+                                        role="tab"
+                                        aria-controls="@item.Control"
+                                        aria-selected="@item.IsSelected">
+                                    @item.Description
+                                </button>
+                            </li>
+                        }
+                    </ul>
+
+                </div>
+                <div class="tab-content" style="background-color:white;">
+
+                    <div class="tab-pane active" id="irfDetails1" aria-labelledby="irfDetails1-tab" style="background-color:white;">
+
+                        <!-- Property & Deal Info -->
+                        <h4 class="mt-4 text-blue">Property & Deal Info</h4>
+                        <div class="row">
+                            <div class="col-md-6 mt-3">
+                                <label asp-for="CreateLeaseCoopViewModel.CreateIRFDealLeaseCoopViewModel.PropertyAddress" class="fw-bolder">Property Address</label>
+                                <input asp-for="CreateLeaseCoopViewModel.CreateIRFDealLeaseCoopViewModel.PropertyAddress" class="form-control" />
+                                <span asp-validation-for="CreateLeaseCoopViewModel.CreateIRFDealLeaseCoopViewModel.PropertyAddress" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 mt-3">
+                                <label asp-for="CreateLeaseCoopViewModel.CreatedByFullName" class="fw-bolder">Created By</label>
+                                <input asp-for="CreateLeaseCoopViewModel.CreatedByFullName" disabled class="form-control" />
+                                <span asp-validation-for="CreateLeaseCoopViewModel.CreatedByFullName" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <!-- Financial Details -->
+                        <h4 class="mt-5 text-blue">Financial Details</h4>
+                        <div class="row">
+                            <div class="col-md-6 mt-3">
+                                <label asp-for="CreateLeaseCoopViewModel.CreateIRFDealLeaseCoopViewModel.FinalLeasePrice" class="fw-bolder">Final Lease Price</label>
+                                <input asp-for="CreateLeaseCoopViewModel.CreateIRFDealLeaseCoopViewModel.FinalLeasePrice" class="form-control" type="number" min="0" />
+                                <span asp-validation-for="CreateLeaseCoopViewModel.CreateIRFDealLeaseCoopViewModel.FinalLeasePrice" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 mt-3">
+                                <label asp-for="CreateLeaseCoopViewModel.CreateIRFDealLeaseCoopViewModel.FinalClosingDate" class="fw-bolder">Final Closing Date</label>
+                                <input asp-for="CreateLeaseCoopViewModel.CreateIRFDealLeaseCoopViewModel.FinalClosingDate" class="form-control" type="date" />
+                                <span asp-validation-for="CreateLeaseCoopViewModel.CreateIRFDealLeaseCoopViewModel.FinalClosingDate" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 mt-3">
+                                <label asp-for="CreateLeaseCoopViewModel.CreateIRFDealLeaseCoopViewModel.DepositAmount" class="fw-bolder">Deposit Amount</label>
+                                <input asp-for="CreateLeaseCoopViewModel.CreateIRFDealLeaseCoopViewModel.DepositAmount" class="form-control" type="number" min="0" />
+                                <span asp-validation-for="CreateLeaseCoopViewModel.CreateIRFDealLeaseCoopViewModel.DepositAmount" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 mt-3">
+                                <label asp-for="CreateLeaseCoopViewModel.CreateIRFDealLeaseCoopViewModel.DepositDate" class="fw-bolder">Deposit Date</label>
+                                <input asp-for="CreateLeaseCoopViewModel.CreateIRFDealLeaseCoopViewModel.DepositDate" class="form-control" type="date" />
+                                <span asp-validation-for="CreateLeaseCoopViewModel.CreateIRFDealLeaseCoopViewModel.DepositDate" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <!-- Tenant Details -->
+                        <h4 class="mt-5 text-blue">Tenant Details</h4>
+                        <div class="row">
+                            <div class="col-md-6 mt-3">
+                                <label asp-for="CreateLeaseCoopViewModel.CreateIRFDealLeaseCoopViewModel.TenantDetails.TenantName" class="fw-bolder">Tenant's Name</label>
+                                <input asp-for="CreateLeaseCoopViewModel.CreateIRFDealLeaseCoopViewModel.TenantDetails.TenantName" class="form-control" />
+                                <span asp-validation-for="CreateLeaseCoopViewModel.CreateIRFDealLeaseCoopViewModel.TenantDetails.TenantName" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 mt-3">
+                                <label asp-for="CreateLeaseCoopViewModel.CreateIRFDealLeaseCoopViewModel.TenantDetails.TenantEmailAddress" class="fw-bolder">Tenant's Email</label>
+                                <input asp-for="CreateLeaseCoopViewModel.CreateIRFDealLeaseCoopViewModel.TenantDetails.TenantEmailAddress" class="form-control" />
+                                <span asp-validation-for="CreateLeaseCoopViewModel.CreateIRFDealLeaseCoopViewModel.TenantDetails.TenantEmailAddress" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 mt-3">
+                                <label asp-for="CreateLeaseCoopViewModel.CreateIRFDealLeaseCoopViewModel.TenantDetails.TenantPhoneNumber" class="fw-bolder">Tenant's Phone Number</label>
+                                <input asp-for="CreateLeaseCoopViewModel.CreateIRFDealLeaseCoopViewModel.TenantDetails.TenantPhoneNumber" class="form-control" />
+                                <span asp-validation-for="CreateLeaseCoopViewModel.CreateIRFDealLeaseCoopViewModel.TenantDetails.TenantPhoneNumber" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <!-- Landlord Info -->
+                        <h4 class="mt-5 text-blue">Landlord Info</h4>
+                        <div class="row">
+                            <div class="col-md-6 mt-3">
+                                <label asp-for="CreateLeaseCoopViewModel.CreateIRFDealLeaseCoopViewModel.LandLordDetails.LandLordName" class="fw-bolder">Landlord Name</label>
+                                <input asp-for="CreateLeaseCoopViewModel.CreateIRFDealLeaseCoopViewModel.LandLordDetails.LandLordName" class="form-control" />
+                                <span asp-validation-for="CreateLeaseCoopViewModel.CreateIRFDealLeaseCoopViewModel.LandLordDetails.LandLordName" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 mt-3">
+                                <label asp-for="CreateLeaseCoopViewModel.CreateIRFDealLeaseCoopViewModel.LandLordDetails.LandLordPhoneNumber" class="fw-bolder">Landlord Phone</label>
+                                <input asp-for="CreateLeaseCoopViewModel.CreateIRFDealLeaseCoopViewModel.LandLordDetails.LandLordPhoneNumber" class="form-control" />
+                                <span asp-validation-for="CreateLeaseCoopViewModel.CreateIRFDealLeaseCoopViewModel.LandLordDetails.LandLordPhoneNumber" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 mt-3">
+                                <label asp-for="CreateLeaseCoopViewModel.CreateIRFDealLeaseCoopViewModel.LandLordDetails.LandLordEmailAddress" class="fw-bolder">Landlord Email</label>
+                                <input asp-for="CreateLeaseCoopViewModel.CreateIRFDealLeaseCoopViewModel.LandLordDetails.LandLordEmailAddress" class="form-control" />
+                                <span asp-validation-for="CreateLeaseCoopViewModel.CreateIRFDealLeaseCoopViewModel.LandLordDetails.LandLordEmailAddress" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <!-- Commission -->
+                        <h4 class="mt-5 text-blue">Commission</h4>
+                        <div class="row">
+                            <!-- Co-op Commission Signage -->
+                            <div class="col-md-6 mt-3">
+                                <div class="form-group">
+                                    <label class="control-label fw-bolder">Co-op Commission Signage</label>
+                                    <select id="CreateLeaseCoopViewModel.CreateIRFDealLeaseCoopViewModel.Commission.BuyingCommissionSign"
+                                            name="CreateLeaseCoopViewModel.CreateIRFDealLeaseCoopViewModel.Commission.BuyingCommissionSign"
+                                            class="form-select">
+                                        @if (Model.CreateLeaseCoopViewModel.SignageIEnum != null)
+                                        {
+                                            foreach (var item in Model.CreateLeaseCoopViewModel.SignageIEnum)
+                                            {
+                                                int signageValue = Convert.ToInt32(item.Value);
+                                                if (signageValue == Model.CreateLeaseCoopViewModel.DefaultSignage)
+                                                {
+                                                    <option value="@item.Value" selected>@item.Text</option>
+                                                }
+                                                else
+                                                {
+                                                    <option value="@item.Value">@item.Text</option>
+                                                }
+                                            }
+                                        }
+                                    </select>
+                                    @Html.ValidationMessageFor(m => m.CreateLeaseCoopViewModel.CreateIRFDealLeaseCoopViewModel.Commission.BuyingCommissionSign, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+
+                            <!-- Co-op Commission -->
+                            <div class="col-md-6 mt-3">
+                                <label asp-for="CreateLeaseCoopViewModel.CreateIRFDealLeaseCoopViewModel.Commission.BuyingCommission" class="fw-bolder">Co-op Commission</label>
+                                <input asp-for="CreateLeaseCoopViewModel.CreateIRFDealLeaseCoopViewModel.Commission.BuyingCommission" class="form-control" type="number" min="0" />
+                                <span asp-validation-for="CreateLeaseCoopViewModel.CreateIRFDealLeaseCoopViewModel.Commission.BuyingCommission" class="text-danger"></span>
+                            </div>
+                        </div>
+
+
+                        <!-- Listing Info -->
+                        <h4 class="mt-5 text-blue">Listing Info</h4>
+                        <div class="row">
+                            <div class="col-md-6 mt-3">
+                                <label asp-for="CreateLeaseCoopViewModel.CreateIRFDealLeaseCoopViewModel.ListingInfo.ListingAgentName" class="fw-bolder">Listing Agent Name</label>
+                                <input asp-for="CreateLeaseCoopViewModel.CreateIRFDealLeaseCoopViewModel.ListingInfo.ListingAgentName" class="form-control" />
+                                <span asp-validation-for="CreateLeaseCoopViewModel.CreateIRFDealLeaseCoopViewModel.ListingInfo.ListingAgentName" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 mt-3">
+                                <label asp-for="CreateLeaseCoopViewModel.CreateIRFDealLeaseCoopViewModel.ListingInfo.ListingBrokerage" class="fw-bolder">Listing Brokerage</label>
+                                <input asp-for="CreateLeaseCoopViewModel.CreateIRFDealLeaseCoopViewModel.ListingInfo.ListingBrokerage" class="form-control" />
+                                <span asp-validation-for="CreateLeaseCoopViewModel.CreateIRFDealLeaseCoopViewModel.ListingInfo.ListingBrokerage" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 mt-3">
+                                <label asp-for="CreateLeaseCoopViewModel.CreateIRFDealLeaseCoopViewModel.ListingInfo.ListingBrokerageFax" class="fw-bolder">Listing Brokerage Fax</label>
+                                <input asp-for="CreateLeaseCoopViewModel.CreateIRFDealLeaseCoopViewModel.ListingInfo.ListingBrokerageFax" class="form-control" />
+                                <span asp-validation-for="CreateLeaseCoopViewModel.CreateIRFDealLeaseCoopViewModel.ListingInfo.ListingBrokerageFax" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tab-pane" id="irfDetails2" aria-labelledby="irfDetails2-tab" style="background-color:white;">
+                        <!-- Tenant Agent Info -->
+                        <h4 class="mt-4 text-blue">Tenant's Agent & Brokerage Info</h4>
+                        <div class="row">
+                            <div class="col-md-6 mt-3">
+                                <label asp-for="CreateLeaseCoopViewModel.CreateIRFDealLeaseCoopViewModel.TenantDetails.TenantAgentName" class="fw-bolder">Tenant Agent Name</label>
+                                <input asp-for="CreateLeaseCoopViewModel.CreateIRFDealLeaseCoopViewModel.TenantDetails.TenantAgentName" class="form-control" />
+                                <span asp-validation-for="CreateLeaseCoopViewModel.CreateIRFDealLeaseCoopViewModel.TenantDetails.TenantAgentName" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 mt-3">
+                                <label asp-for="CreateLeaseCoopViewModel.CreateIRFDealLeaseCoopViewModel.TenantDetails.TenantBrokerage" class="fw-bolder">Tenant Brokerage</label>
+                                <input asp-for="CreateLeaseCoopViewModel.CreateIRFDealLeaseCoopViewModel.TenantDetails.TenantBrokerage" class="form-control" />
+                                <span asp-validation-for="CreateLeaseCoopViewModel.CreateIRFDealLeaseCoopViewModel.TenantDetails.TenantBrokerage" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 mt-3">
+                                <label asp-for="CreateLeaseCoopViewModel.CreateIRFDealLeaseCoopViewModel.TenantDetails.TenantBrokerageFax" class="fw-bolder">Tenant Brokerage Fax</label>
+                                <input asp-for="CreateLeaseCoopViewModel.CreateIRFDealLeaseCoopViewModel.TenantDetails.TenantBrokerageFax" class="form-control" />
+                                <span asp-validation-for="CreateLeaseCoopViewModel.CreateIRFDealLeaseCoopViewModel.TenantDetails.TenantBrokerageFax" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tab-pane" id="fileUploads" aria-labelledby="fileUploads-tab" style="background-color:white;">
+                        <div class="row d-flex justify-content-center m-0">
+                            <div class="col-md-12">
+                                <h5 class="text-blue mb-4">
+                                    Please match your uploaded file based on the Document Type for Lease Co-op.
+                                    <span class="s-required">*</span>
+                                </h5>
+                                <table class="table dataTable" id="tblApplicantFiles" width="100%">
+                                    <thead>
+                                        <tr>
+                                            <th style="width: 30%">Document Type</th>
+                                            <th>Is Required?</th>
+                                            <th>Uploaded Document</th>
+                                        </tr>
+                                    </thead>
+                                    @{
+                                        // Convert to List for safe indexing
+                                        var docAssignments = Model.CreateLeaseCoopViewModel.DocumentTypeAssignmentList
+                                        .Where(x => !x.IsDeleted
+                                        && x.IsActive
+                                        && x.DocumentType != null
+                                        && !x.DocumentType.IsDeleted
+                                        && x.DocumentType.IsActive)
+                                        .ToList();
+                                    }
+                                    <tbody>
+                                        @for (int i = 0; i < docAssignments.Count; i++)
+                                        {
+                                            var item = docAssignments[i];
+                                            <tr data-document-type-id="@item.DocumentType.Id">
+                                                <td style="width: 30%">
+                                                    @item.DocumentType.Description
+                                                    <input type="hidden"
+                                                           name="CreateLeaseCoopViewModel.CreateFileUploadListViewModel.CreateFileUploadsViewModel[@i].DocumentTypeId"
+                                                           value="@item.DocumentType.Id" />
+                                                </td>
+                                                <td id="isRequired">
+                                                    @if (item.IsRequired == true)
+                                                    {
+                                                        <label class="status-active">Required</label>
+                                                    }
+                                                    else if (item.IsRequired == false)
+                                                    {
+                                                        <label class="status-inactive pe-cursor">Not Required</label>
+                                                    }
+                                                </td>
+                                                <td>
+                                                    <input type="file"
+                                                           name="CreateLeaseCoopViewModel.CreateFileUploadListViewModel.CreateFileUploadsViewModel[@i].Files"
+                                                           id="fileListDropDown_@i"
+                                                           class="file"
+                                                           multiple
+                                                           data-show-upload="false"
+                                                           data-allowed-file-extensions='["pdf","doc","docx","xls","xlsx"]'
+                                                           accept="application/all"
+                                                           data-show-caption="true"
+                                                           data-show-preview="false"
+                                                           data-msg-placeholder="Select {files} for upload..." />
+                                                    <!-- Optional debug: <span style="font-size:11px;color:gray;">Index: @i, DocTypeId: @item.DocumentType.Id</span> -->
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    
+                    <div class="tab-pane" id="notes" aria-labelledby="notes-tab" style="background-color:white;">
+                        <div class="col-md-12 mt-4">
+                            <div class="form-group">
+                                <label asp-for="CreateLeaseCoopViewModel.Notes" class="control-label fw-bolder">Notes</label>
+                                @Html.TextAreaFor(model => model.CreateLeaseCoopViewModel.Notes, 10, 100, new { @class = "form-control" })
+
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <hr class="my-5" />
+                @{
+                    var buttonModel = new CreateActionButtonsViewModel
+                    {
+                        ControllerName = "LeaseCoop",
+                        ShowSave = true,
+                        ShowSubmit = true,
+                        ShowCancel = true
+                    };
+                }
+
+                @await Html.PartialAsync("~/Views/Shared/Transaction/_CreateActionButtons.cshtml", buttonModel)
+            </form>
+        </div>
+    </div>
+</div>
+
+
+
+@section Scripts {
+    @* ASP.NET Core client-side validation *@
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    @* JS Utilities and Plugins *@
+    <script src="~/js/viewDataTableUtility.js" asp-append-version="true"></script>
+    <script src="~/js/submitUtility.js" asp-append-version="true"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    @* Submit Handler Initialization *@
+    <script>
+        const documentTypeAssignments = @Html.Raw(JsonConvert.SerializeObject(Model.CreateLeaseCoopViewModel.DocumentTypeAssignmentList));
+        const isAdminLike = @((User.IsInRole("Admin") || User.IsInRole("SuperAdmin") || User.IsInRole("DealAdmin")).ToString().ToLower());
+
+        $(document).ready(function () {
+            initializeSubmitHandlers({
+                formId: "ListFormId",
+                dealStatusDropdownSelector: '[name="CreateLeaseCoopViewModel.DealStatusId"]',
+                isAdminLike: isAdminLike,
+                fileErrorScrollTargetId: "fileUploads",
+                documentTypeAssignment: documentTypeAssignments
+            });
+        });
+    </script>
+}
+
+

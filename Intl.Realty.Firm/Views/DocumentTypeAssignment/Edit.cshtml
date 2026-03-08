@@ -1,0 +1,146 @@
+﻿@using Intl.Realty.Firm.Model.ViewModel.DocumentTypeAssignmentVM
+
+@model EditDocumentTypeAssignmentWithTabMenuViewModel
+
+@{
+    ViewData["Title"] = "Edit";
+    Layout = "~/Views/Shared/_LayoutAfterLogin.cshtml";
+}
+
+<div class="page-controller mb-5">
+    <a href="@Url.Action("Index", "DocumentTypeAssignment")" class="text-decoration-none back d-flex mb-4">
+        <i data-feather="chevron-left"></i><span>Back</span>
+    </a>
+
+    <div class="row justify-content-center">
+        <div class="col-md-12 card p-4">
+            <h1 class="text-blue mb-0">Edit Document Type Assignment</h1>
+            <hr class="my-4" />
+            <form asp-action="Edit"
+                  asp-controller="DocumentTypeAssignment"
+                  method="post"
+                  enctype="multipart/form-data">
+                <input type="hidden" asp-for="EditDocumentTypeAssignment.Id" />
+                <div asp-validation-summary="All" class="text-danger"></div>
+
+                <div class="tab-content" style="background-color:white;">
+                    <div class="tab-pane active" id="documentTypeAssignmentDetails" aria-labelledby="documentTypeAssignmentDetails-tab">
+
+                        @* Transaction Type *@
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="control-label fw-bolder" for="TransactionTypeId">Transaction Type</label>
+                                    <select id="TransactionTypeId" name="EditDocumentTypeAssignment.TransactionTypeId" class="form-select">
+                                        @if (Model.EditDocumentTypeAssignment.TransactionTypeList != null)
+                                        {
+                                            @foreach (var item in Model.EditDocumentTypeAssignment.TransactionTypeList)
+                                            {
+                                                @if (item.Id == Model.EditDocumentTypeAssignment.TransactionTypeId)
+                                                {
+                                                    <option value="@item.Id" selected>
+                                                        @item.Description
+                                                    </option>
+                                                }
+                                                else
+                                                {
+                                                    <option value="@item.Id">
+                                                        @item.Description
+                                                    </option>
+                                                }
+                                            }
+                                        }
+                                    </select>
+                                    @Html.ValidationMessageFor(m => m.EditDocumentTypeAssignment.TransactionTypeId, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                        </div>
+                        @* Document Type *@
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="control-label fw-bolder" for="DocumentTypeId">Document Type</label>
+                                    <select id="DocumentTypeId" name="EditDocumentTypeAssignment.DocumentTypeId" class="form-select">
+                                        @if (Model.EditDocumentTypeAssignment.DocumentTypeList != null)
+                                        {
+                                            @foreach (var item in Model.EditDocumentTypeAssignment.DocumentTypeList)
+                                            {
+                                                @if (item.Id == Model.EditDocumentTypeAssignment.DocumentTypeId)
+                                                {
+                                                    <option value="@item.Id" selected>
+                                                        @item.Description
+                                                    </option>
+                                                }
+                                                else
+                                                {
+                                                    <option value="@item.Id">
+                                                        @item.Description
+                                                    </option>
+                                                }
+
+                                            }
+                                        }
+                                    </select>
+                                    @Html.ValidationMessageFor(m => m.EditDocumentTypeAssignment.DocumentTypeId, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                        </div>
+                        @* Required Toggle *@
+                        <div class="row mb-4">
+                            <div class="col-md-12">
+                                <div class="form-check form-switch d-flex align-items-center gap-2">
+                                    <input id="isRequiredCheckbox" class="form-check-input" type="checkbox" asp-for="EditDocumentTypeAssignment.IsRequired" />
+                                    <label id="lblStatus" class="fw-bolder">Required</label>
+                                </div>
+                                @Html.ValidationMessageFor(m => m.EditDocumentTypeAssignment.IsRequired, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                        @* Status Toggle *@
+                        <div class="row mb-4">
+                            <div class="col-md-12">
+                                <div class="form-check form-switch d-flex align-items-center gap-2">
+                                    <input id="isActiveCheckbox" class="form-check-input" type="checkbox" asp-for="EditDocumentTypeAssignment.IsActive" />
+                                    <label id="lblStatus" class="fw-bolder">Active</label>
+                                </div>
+                                @Html.ValidationMessageFor(m => m.EditDocumentTypeAssignment.IsActive, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <hr class="my-5" />
+                <div class="form-group d-flex justify-content-center gap-4">
+                    <input type="button" value="Cancel" class="btn btn-secondary w-15" onclick="window.location.href='@Url.Action("Index", "DocumentTypeAssignment")'" />
+                    <button type="submit" class="btn btn-primary w-15">Submit</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            // Initialize status labels
+            toggleStatusLabels();
+            toggleRequiredStatusLabels();
+            // Event handlers
+            $('#isActiveCheckbox').on('change', toggleStatusLabels);
+            $('#isRequiredCheckbox').on('change', toggleRequiredStatusLabels);
+        });
+
+        function toggleStatusLabels() {
+            const isActive = $('#isActiveCheckbox').is(':checked');
+            $('#lblStatus').css('color', isActive ? '#0d6efd' : '#bfbfbf').text(isActive ? "Active" : "Inactive");
+        }
+        function toggleRequiredStatusLabels() {
+            const isRequired = $('#isRequiredCheckbox').is(':checked');
+            $('#lblStatus').css('color', isRequired ? '#0d6efd' : '#bfbfbf').text(isRequired ? "Required" : "Not Required");
+        }
+    </script>
+}

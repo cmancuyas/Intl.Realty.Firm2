@@ -1,0 +1,84 @@
+﻿@using Intl.Realty.Firm.Model.ViewModel.EmploymentStatusVM
+
+
+@model PreviewEmploymentStatusViewModel
+@{
+    ViewData["Title"] = "Preview";
+    Layout = "~/Views/Shared/_LayoutAfterLogin.cshtml";
+}
+<div>
+    <a href="@Url.Action("Index","EmploymentStatus")" class="text-decoration-none text-blue d-flex mb-4">
+        <i data-feather="chevron-left"></i><span>Back</span>
+    </a>
+    <div class="row">
+        <div class="col-md-12 d-flex justify-content-between align-items-center">
+            <h1 class="text-blue mb-0">Employment Status</h1>
+            <div class="d-flex gap-4">
+                <button type="button" id="btnMultipleDelete"
+                        class="btn btn-danger d-none align-items-center"
+                        data-toggle="tooltip"
+                        data-bs-placement="left"
+                        title="Delete"
+                        onclick="OpenMultipleDeleteModal('EmploymentStatus')">
+                    <i data-feather="trash-2"></i>
+                </button>
+                <a asp-action="Create"
+                   class="btn btn-primary d-flex align-items-center">
+                    <i data-feather="plus" class="w-15px h-auto me-1"></i>Add New
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <hr class="my-4" />
+
+    <div class="preview-page">
+        <div class="row justify-content-center w-100">
+            <div class="col-md-12 card p-5 mx-4 ">
+                <div class="d-flex justify-content-between">
+                    <h2 class="text-blue">@Model.Description</h2>
+                    <button type="button" class="btn btn-secondary w-15" id="EditEmploymentStatusBtn"
+                            onclick="location.href='@Url.Action("Edit", "EmploymentStatus", new { id = Model.Id,})'"
+                            '">
+                        Edit
+                    </button>
+                </div>
+                <hr />
+                <h4 class="text-blue mb-1">Details</h4>
+                <div class="row my-2">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="control-label fw-bolder">Code</label>
+                            <p>@Model.Code</p>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="control-label fw-bolder">Description</label>
+                            <p>@Model.Description</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .blurry {
+        filter: blur(3px);
+    }
+
+    tfoot {
+        display: table-header-group;
+    }
+
+</style>
+
+<script>
+    $(document).ready(function () {
+
+    });
+</script>

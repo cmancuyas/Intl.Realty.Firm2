@@ -1,0 +1,29 @@
+﻿@{
+    ViewData["Title"] = "Email Confirmed";
+}
+
+<div class="row m-0 p-0 page-login">
+    <div class="col-md-6 col-sm-12 page-login-container left-part">
+        <img src="~/files/img/logo-irf-default.jpg" alt="Logo" class="img-fluid logo-login" />
+    </div>
+    <div class="col-md-6 col-sm-12 page-login-container right-part text-center">
+        <h2 class="fw-bolder text-center mb-md-5 mb-4 text-success">
+            Email Confirmed!
+        </h2>
+        <p class="fw-medium text-center w-75 mx-auto">
+            Your email has been successfully confirmed. You can now log in with your credentials.
+        </p>
+        <hr />
+        <div class="container-fluid w-75 px-0">
+            <div class="row justify-content-center">
+                <div class="col-md-12 text-center">
+                    <button type="button" class="btn btn-primary cta mx-2"
+                            onclick="window.location.href='@Url.Action("Login", "Account")'">
+                        Go to Login
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

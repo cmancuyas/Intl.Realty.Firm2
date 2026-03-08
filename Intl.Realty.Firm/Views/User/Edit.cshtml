@@ -1,0 +1,226 @@
+﻿@using Intl.Realty.Firm.Model.ViewModel.UserVM
+
+@model EditUserWithTabMenuViewModel
+
+@{
+    ViewData["Title"] = "Edit";
+    Layout = "~/Views/Shared/_LayoutAfterLogin.cshtml";
+}
+
+<div class="page-controller mb-5">
+    <a href="@Url.Action("Index","User")" class="text-decoration-none back d-flex mb-4">
+        <i data-feather="chevron-left"></i><span>Back</span>
+    </a>
+
+    <div class="row justify-content-center">
+        <div class="col-md-12 card p-4">
+            <h1 class="text-blue mb-0">Edit User</h1>
+            <hr class="my-4" />
+            <form asp-action="Edit"
+                  asp-controller="User"
+                  method="post"
+                  enctype="multipart/form-data">
+                <input type="hidden" asp-for="EditUser.Id" />
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                <div class="tab-page">
+                    <ul class="nav nav-tabs b-none" id="administrationManagementTab" role="tablist">
+                        @*         @foreach (var item in Model.Menus)
+                        {
+                        <li class="nav-item mx-0">
+                        <input type="hidden" id="menuId" name="menuId" value="@item.Id" />
+                        <button class="nav-link @item.IsActive"
+                        id="@item.Tab"
+                        data-bs-toggle="tab"
+                        data-bs-target="#@item.Control"
+                        type="button"
+                        role="tab"
+                        aria-controls="@item.Control"
+                        aria-selected="@item.IsSelected">
+                        @item.Description
+                        </button>
+                        </li>
+                        } *@
+                    </ul>
+                </div>
+
+                <div class="tab-content p-0" style="border-bottom:none;background-color:white;">
+
+                    <div class="tab-pane active" id="editUsers" aria-labelledby="editUsers-tab" style="background-color:white;">
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label asp-for="EditUser.FirstName" class="control-label fw-bolder">First Name</label>
+                                    <input asp-for="EditUser.FirstName" class="form-control" />
+                                    <span asp-validation-for="EditUser.FirstName" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label asp-for="EditUser.LastName" class="control-label fw-bolder">Last Name</label>
+                                    <input asp-for="EditUser.LastName" class="form-control" />
+                                    <span asp-validation-for="EditUser.LastName" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label asp-for="EditUser.Email" class="control-label fw-bolder"></label>
+                                    <input asp-for="EditUser.Email" class="form-control" />
+                                    <span asp-validation-for="EditUser.Email" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            @* Department *@
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="control-label fw-bolder">Department</label>
+                                    <select id="EditUser.DepartmentId" name="EditUser.DepartmentId" class="form-select">
+                                        @{
+                                            @if (Model.EditUser.DepartmentList != null)
+                                            {
+                                                @foreach (var item in Model.EditUser.DepartmentList)
+                                                {
+                                                    if (item.Id == Model.EditUser.DepartmentId)
+                                                    {
+                                                        <option value="@item.Id" selected>@item.Description</option>
+                                                    }
+                                                    else
+                                                    {
+                                                        <option value="@item.Id">@item.Description</option>
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    </select>
+
+                                    @Html.ValidationMessageFor(m => m.EditUser.DepartmentId, "", new { @class = "text-danger" })
+
+                                </div>
+                            </div>
+                            @* EmploymentStatus *@
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="control-label fw-bolder">Employment Status</label>
+                                    <select id="EditUser.EmploymentStatusId" name="EditUser.EmploymentStatusId" class="form-select">
+                                        @{
+                                            @if (Model.EditUser.EmploymentStatusList != null)
+                                            {
+                                                @foreach (var item in Model.EditUser.EmploymentStatusList)
+                                                {
+                                                    if (item.Id == Model.EditUser.EmploymentStatusId)
+                                                    {
+                                                        <option value="@item.Id" selected>@item.Description</option>
+                                                    }
+                                                    else
+                                                    {
+                                                        <option value="@item.Id">@item.Description</option>
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    </select>
+
+                                    @Html.ValidationMessageFor(m => m.EditUser.EmploymentStatusId, "", new { @class = "text-danger" })
+
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="tab-pane active" id="editRoles" aria-labelledby="editRoles-tab" style="background-color:white;">
+                    </div>
+                </div>
+                <div class="row mt-4 mb-4">
+                    <div class="col-md-6">
+                        <div class="form-check form-switch d-flex align-items-center gap-2">
+                            <input id="isEmailConfirmedCheckbox" class="form-check-input" type="checkbox" asp-for="EditUser.EmailConfirmed">
+                            <label id="lblStatusEmailConfirmed" class="fw-bolder">Confirmed</label>
+                        </div>
+                        <span asp-validation-for="EditUser.EmailConfirmed" class="text-danger"></span>
+                    </div>
+                    @* Email Status *@
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="control-label fw-bolder">Email Status</label>
+                            <select id="EditUser.EmailStatusId" name="EditUser.EmailStatusId" class="form-select">
+                                @{
+                                    @if (Model.EditUser.EmailStatusList != null)
+                                    {
+                                        @foreach (var item in Model.EditUser.EmailStatusList)
+                                        {
+                                            if (item.Id == Model.EditUser.EmailStatusId)
+                                            {
+                                                <option value="@item.Id" selected>@item.Description</option>
+                                            }
+                                            else
+                                            {
+                                                <option value="@item.Id">@item.Description</option>
+                                            }
+                                        }
+                                    }
+                                }
+                            </select>
+
+                            @Html.ValidationMessageFor(m => m.EditUser.EmailStatusId, "", new { @class = "text-danger" })
+
+                        </div>
+                    </div>
+                </div>
+                <hr class="my-5" />
+                <div class="form-group d-flex justify-content-center gap-4">
+                    <input type="button" value="Cancel" class="btn btn-secondary w-15" onclick="window.location.href='@Url.Action("Index", "User")'" />
+                    @* <button type="reset" class="btn btn-secondary w-15" onclick="$('.text-danger').hide();">Reset</button> *@
+                    <button type="submit" class="btn btn-primary w-15" onclick="$('.text-danger').show();">Submit</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            $('#isActiveCheckbox').on('click', toggleStatusLabels);
+            $('#isDeletedCheckbox').on('click', toggleStatusLabelSoftDelete);
+            $('#isEmailConfirmedCheckbox').on('click', toggleStatusLabelEmailConfirmed);
+
+            toggleStatusLabels();
+            toggleStatusLabelSoftDelete();
+            toggleStatusLabelEmailConfirmed();
+        });
+
+        function toggleStatusLabels() {
+            if ($('#isActiveCheckbox').is(':checked')) {
+                $('#lblStatus').css('color', '#0d6efd').text("Active");
+            } else {
+                $('#lblStatus').css('color', '#bfbfbf').text("Inactive");
+            }
+        }
+        function toggleStatusLabelSoftDelete() {
+
+            if ($('#isDeletedCheckbox').is(':checked')) {
+                $('#lblStatusSoftDelete').css('color', '#0d6efd').text("IsDeleted");
+            } else {
+                $('#lblStatusSoftDelete').css('color', '#bfbfbf').text("NotDeleted");
+            }
+        }
+        function toggleStatusLabelEmailConfirmed() {
+
+            if ($('#isEmailConfirmedCheckbox').is(':checked')) {
+                $('#lblStatusEmailConfirmed').css('color', '#0d6efd').text("Confirmed");
+            } else {
+                $('#lblStatusEmailConfirmed').css('color', '#bfbfbf').text("Not yet Confirmed");
+            }
+        }
+    </script>
+
+}

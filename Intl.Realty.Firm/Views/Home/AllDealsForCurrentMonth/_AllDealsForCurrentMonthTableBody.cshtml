@@ -1,0 +1,41 @@
+﻿@using Intl.Realty.Firm.Models.Pagination
+
+@model PaginatedDealsViewModel
+@foreach (var item in Model.PaginatedList)
+{
+    <tr>
+        <td>@item.DealTransactionNumber</td>
+        <td>@item.TransactionTypeName</td>
+        <td>@item.PropertyAddress</td>
+        <td>@item.DealStatusName</td>
+        <td>@item.CreatedByFullName</td>
+        <td>@item.CreatedAt</td>
+        <td>@item.FinalClosingDate</td>
+        <td>
+            @{
+                if (item.FileExtensions!.Any())
+                {
+                    var str = item.FileExtensions!.FirstOrDefault();
+                    string[] split = str!.Split('.');
+                    var fileExtension = split[1];
+                    <div class="attachment-icon">@fileExtension</div>
+                }
+                else
+                {
+                    <div class="attachment-icon"></div>
+                }
+            }
+
+
+        </td>
+        <td class="all-deals-ctas">
+            <a class="btn btn-cta all-deal-edit" type="button" asp-action="Edit" asp-controller="@item.TransactionTypeName" asp-route-id="@item.Id">
+                <i data-feather="edit" data-toggle="tooltip" data-bs-placement="left" title="Edit"></i> Edit
+            </a>
+            <a class="btn btn-primary all-deal-preview" type="button" asp-action="Preview" asp-controller="@item.TransactionTypeName" asp-route-id="@item.Id">
+                Preview
+            </a>
+            
+        </td>
+    </tr>
+}

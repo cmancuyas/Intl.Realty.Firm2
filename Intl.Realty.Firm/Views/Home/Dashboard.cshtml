@@ -1,0 +1,40 @@
+﻿@using Intl.Realty.Firm.Model.Model
+@using Intl.Realty.Firm.Model.ViewModel.Home
+@using Microsoft.AspNetCore.Identity
+
+@inject UserManager<ApplicationUser> _userManager;
+
+@model DashboardViewModel
+
+@{
+    ViewData["Title"] = "Dashboard";
+    Layout = "~/Views/Shared/_LayoutAfterLogin.cshtml";
+
+    DashboardViewModel dashboardViewModel = ViewBag.DashboardViewModel;
+}
+
+
+<div id="dashboardContent" class="dashboard-table">
+    @{
+        if (dashboardViewModel != null)
+        {
+            <div id="dashboardContent">
+                @Html.Partial("_DashboardPartial", dashboardViewModel)
+            </div>
+
+        }
+        else
+        {
+            <div id="dashboardContent">
+                @Html.Partial("_DashboardPartial", Model)
+            </div>
+        }
+        
+    }
+    
+</div>
+
+
+
+
+<script src="~/js/loaddealsdata.js"></script>

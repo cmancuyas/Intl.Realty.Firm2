@@ -1,27 +1,41 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+	<PropertyGroup>
+		<TargetFramework>net9.0</TargetFramework>
+		<Nullable>enable</Nullable>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<UserSecretsId>3453b1b2-9be1-4a17-9c68-3c0137f64435</UserSecretsId>
 
-  <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
-    <Nullable>enable</Nullable>
-    <ImplicitUsings>enable</ImplicitUsings>
-  </PropertyGroup>
+		<!-- Speed-up: disable static asset brotli/gzip generation during publish -->
+		<StaticWebAssetsCompressionEnabled>false</StaticWebAssetsCompressionEnabled>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.8">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="EPPlus" />
+		<PackageReference Include="ExcelDataReader" />
+		<PackageReference Include="MailKit" />
+		<PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Design">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+		<PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" />
+		<PackageReference Include="SendGrid" />
+		<PackageReference Include="Serilog.AspNetCore" />
+		<PackageReference Include="Serilog.Sinks.Console" />
+		<PackageReference Include="Serilog.Sinks.File" />
+		<PackageReference Include="YamlDotNet" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\Intl.Realty.Firm.DataAccess\Intl.Realty.Firm.DataAccess.csproj" />
-    <ProjectReference Include="..\Intl.Realty.Firm.Model\Intl.Realty.Firm.Model.csproj" />
-    <ProjectReference Include="..\Intl.Realty.Firm.Utility\Intl.Realty.Firm.Utility.csproj" />
-  </ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\Intl.Realty.Firm.DataAccess\Intl.Realty.Firm.DataAccess.csproj" />
+		<ProjectReference Include="..\Intl.Realty.Firm.Model\Intl.Realty.Firm.Model.csproj" />
+		<ProjectReference Include="..\Intl.Realty.Firm.Utility\Intl.Realty.Firm.Utility.csproj" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Models\" />
-    <Folder Include="Service\" />
-  </ItemGroup>
-
+	<ItemGroup>
+		<Content Update="Views\User\AccessDenied.cshtml">
+			<ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+			<CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+		</Content>
+	</ItemGroup>
 </Project>
