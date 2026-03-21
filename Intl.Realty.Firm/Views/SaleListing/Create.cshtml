@@ -343,41 +343,43 @@
                                     Please match your uploaded file based on the Document Type for Sale Listing.
                                     <span class="s-required">*</span>
                                 </h5>
+
+                                @{
+                                    var docAssignments = Model.CreateSaleListingViewModel.DocumentTypeAssignmentList?
+                                        .Where(x => !x.IsDeleted
+                                            && x.IsActive
+                                            && x.DocumentType != null
+                                            && !x.DocumentType.IsDeleted
+                                            && x.DocumentType.IsActive)
+                                        .ToList() ?? new List<DocumentTypeAssignment>();
+                                }
+
                                 <table class="table dataTable" id="tblApplicantFiles" width="100%">
                                     <thead>
                                         <tr>
-                                            <th style="width: 30%">Document Type</th>
-                                            <th>Is Required?</th>
-                                            <th>Uploaded Document</th>
+                                            <th style="width: 30%;">Document Type</th>
+                                            <th style="width: 20%;">Is Required?</th>
+                                            <th style="width: 50%;">Uploaded Document</th>
                                         </tr>
                                     </thead>
-                                    @{
-                                        // Convert to List for proper indexing
-                                        var docAssignments = Model.CreateSaleListingViewModel.DocumentTypeAssignmentList
-                                        .Where(x => !x.IsDeleted
-                                        && x.IsActive
-                                        && x.DocumentType != null
-                                        && !x.DocumentType.IsDeleted
-                                        && x.DocumentType.IsActive)
-                                        .ToList();
-                                    }
                                     <tbody>
                                         @for (int i = 0; i < docAssignments.Count; i++)
                                         {
                                             var item = docAssignments[i];
-                                            <tr data-document-type-id="@item.DocumentType.Id">
-                                                <td style="width: 30%">
+
+                                            <tr data-document-type-id="@item.DocumentType!.Id">
+                                                <td>
                                                     @item.DocumentType.Description
                                                     <input type="hidden"
                                                            name="CreateSaleListingViewModel.CreateFileUploadListViewModel.CreateFileUploadsViewModel[@i].DocumentTypeId"
                                                            value="@item.DocumentType.Id" />
                                                 </td>
-                                                <td id="isRequired">
-                                                    @if (item.IsRequired == true)
+                                                <td>
+                                                    @if (item.IsRequired)
                                                     {
                                                         <label class="status-active">Required</label>
                                                     }
-                                                    else if (item.IsRequired == false)
+                                                    else
                                                     {
                                                         <label class="status-inactive pe-cursor">Not Required</label>
                                                     }
@@ -390,11 +392,92 @@
                                                            multiple
                                                            data-show-upload="false"
                                                            data-allowed-file-extensions='["pdf","doc","docx","xls","xlsx"]'
-                                                           accept="application/all"
+                                                           accept=".pdf,.doc,.docx,.xls,.xlsx"
                                                            data-show-caption="true"
                                                            data-show-preview="false"
                                                            data-msg-placeholder="Select {files} for upload..." />
-                                                    <!-- Optional debug: <span style="font-size:11px;color:gray;">Index: @i, DocTypeId: @item.DocumentType.Id</span> -->
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+
+                                <hr class="my-4" />
+
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <div>
+                                        <h5 class="text-blue mb-1">Additional Documents</h5>
+                                        <p class="text-muted mb-0">
+                                            You may add other supporting documents not included in the predefined document types.
+                                        </p>
+                                    </div>
+                                    <button type="button" class="btn btn-primary" id="btnAddAdditionalDocumentRow">
+                                        Add Additional Document
+                                    </button>
+                                </div>
+
+                                <table class="table dataTable" id="tblAdditionalDocuments" width="100%">
+                                    <thead>
+                                        <tr>
+                                            <th style="width: 35%;">Document Name</th>
+                                            <th style="width: 45%;">Upload File</th>
+                                            <th style="width: 20%;">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @if (Model.CreateSaleListingViewModel.AdditionalDocuments != null && Model.CreateSaleListingViewModel.AdditionalDocuments.Any())
+                                        {
+                                            @for (int i = 0; i < Model.CreateSaleListingViewModel.AdditionalDocuments.Count; i++)
+                                            {
+                                                <tr>
+                                                    <td>
+                                                        <input type="hidden"
+                                                               name="CreateSaleListingViewModel.AdditionalDocuments[@i].Id"
+                                                               value="@Model.CreateSaleListingViewModel.AdditionalDocuments[i].Id" />
+
+                                                        <input type="text"
+                                                               name="CreateSaleListingViewModel.AdditionalDocuments[@i].DocumentName"
+                                                               value="@Model.CreateSaleListingViewModel.AdditionalDocuments[i].DocumentName"
+                                                               class="form-control"
+                                                               placeholder="Enter document name" />
+                                                    </td>
+                                                    <td>
+                                                        <input type="file"
+                                                               name="CreateSaleListingViewModel.AdditionalDocuments[@i].File"
+                                                               class="form-control additional-document-file"
+                                                               accept=".pdf,.doc,.docx,.xls,.xlsx" />
+                                                    </td>
+                                                    <td>
+                                                        <button type="button" class="btn btn-danger btnRemoveAdditionalDocumentRow">
+                                                            Remove
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <tr>
+                                                <td>
+                                                    <input type="hidden"
+                                                           name="CreateSaleListingViewModel.AdditionalDocuments[0].Id"
+                                                           value="" />
+
+                                                    <input type="text"
+                                                           name="CreateSaleListingViewModel.AdditionalDocuments[0].DocumentName"
+                                                           class="form-control"
+                                                           placeholder="Enter document name" />
+                                                </td>
+                                                <td>
+                                                    <input type="file"
+                                                           name="CreateSaleListingViewModel.AdditionalDocuments[0].File"
+                                                           class="form-control additional-document-file"
+                                                           accept=".pdf,.doc,.docx,.xls,.xlsx" />
+                                                </td>
+                                                <td>
+                                                    <button type="button" class="btn btn-danger btnRemoveAdditionalDocumentRow">
+                                                        Remove
+                                                    </button>
                                                 </td>
                                             </tr>
                                         }
@@ -459,4 +542,64 @@
             });
         });
     </script>
+    <script>
+    $(document).ready(function () {
+
+        function reIndexAdditionalDocumentRows() {
+            $('#tblAdditionalDocuments tbody tr').each(function (index) {
+                $(this).find('input').each(function () {
+                    let currentName = $(this).attr('name');
+                    if (currentName) {
+                        currentName = currentName.replace(/CreateSaleListingViewModel\.AdditionalDocuments\[\d+\]/g, 'CreateSaleListingViewModel.AdditionalDocuments[' + index + ']');
+                        $(this).attr('name', currentName);
+                    }
+                });
+            });
+        }
+
+        $('#btnAddAdditionalDocumentRow').on('click', function () {
+            let rowCount = $('#tblAdditionalDocuments tbody tr').length;
+
+            let newRow = `
+                <tr>
+                    <td>
+                        <input type="hidden"
+                               name="CreateSaleListingViewModel.AdditionalDocuments[${rowCount}].Id"
+                               value="" />
+                        <input type="text"
+                               name="CreateSaleListingViewModel.AdditionalDocuments[${rowCount}].DocumentName"
+                               class="form-control"
+                               placeholder="Enter document name" />
+                    </td>
+                    <td>
+                        <input type="file"
+                               name="CreateSaleListingViewModel.AdditionalDocuments[${rowCount}].File"
+                               class="form-control additional-document-file"
+                               accept=".pdf,.doc,.docx,.xls,.xlsx" />
+                    </td>
+                    <td>
+                        <button type="button" class="btn btn-danger btnRemoveAdditionalDocumentRow">
+                            Remove
+                        </button>
+                    </td>
+                </tr>
+            `;
+
+            $('#tblAdditionalDocuments tbody').append(newRow);
+        });
+
+        $(document).on('click', '.btnRemoveAdditionalDocumentRow', function () {
+            const rowCount = $('#tblAdditionalDocuments tbody tr').length;
+
+            if (rowCount > 1) {
+                $(this).closest('tr').remove();
+                reIndexAdditionalDocumentRows();
+            } else {
+                $(this).closest('tr').find('input[type="text"]').val('');
+                $(this).closest('tr').find('input[type="file"]').val('');
+            }
+        });
+
+    });
+</script>
 }

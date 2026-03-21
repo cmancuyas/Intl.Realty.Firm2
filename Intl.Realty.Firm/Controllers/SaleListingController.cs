@@ -1,6 +1,7 @@
 ﻿using Intl.Realty.Firm.Helper;
 using Intl.Realty.Firm.Model.Model;
 using Intl.Realty.Firm.Model.ViewModel;
+using Intl.Realty.Firm.Model.ViewModel.AdditionalDocumentVM;
 using Intl.Realty.Firm.Model.ViewModel.FileUploadVM;
 using Intl.Realty.Firm.Model.ViewModel.SaleListingVM;
 using Intl.Realty.Firm.Models;
@@ -148,16 +149,52 @@ namespace Intl.Realty.Firm.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(CreateSaleListingWithTabMenuViewModel viewModel, string actionType)
         {
-            viewModel.CreateSaleListingViewModel.DealStatusId = actionType.ToLower() == "submit" ? 1 : 2;
+            actionType = actionType?.ToLower() ?? "save";
+            viewModel.CreateSaleListingViewModel.DealStatusId = actionType == "submit" ? 1 : 2;
 
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (!Guid.TryParse(userId, out Guid parsedUserId))
+                throw new InvalidOperationException("Invalid user ID - cannot convert to GUID.");
+
             var user = await _userManager.FindByIdAsync(userId!);
             string transactionTypeName = _transactionTypeName;
 
             var transactionType = await _unitOfWork.TransactionType.GetAsync(x => x.Description == transactionTypeName);
+            if (transactionType == null)
+            {
+                ModelState.AddModelError(string.Empty, "Transaction type not found.");
+                await PopulateCreateSaleListingViewModelAsync(viewModel, user!);
+                return View(viewModel);
+            }
+
             viewModel.CreateSaleListingViewModel.TransactionType = transactionType;
             viewModel.CreateSaleListingViewModel.TransactionTypeId = transactionType.Id;
-            viewModel.CreateSaleListingViewModel.CreatedByFullName = $"{user.FirstName} {user.LastName}";
+            viewModel.CreateSaleListingViewModel.CreatedByFullName = $"{user!.FirstName} {user.LastName}";
+
+            await PopulateCreateSaleListingViewModelAsync(viewModel, user);
+
+            // submit = enforce validation
+            // save = allow draft behavior
+            if (!ModelState.IsValid && actionType != "save")
+            {
+                return View(viewModel);
+            }
+
+            // Validate additional documents only on submit
+            if (actionType != "save")
+            {
+                var additionalDocumentErrors = ValidateAdditionalDocuments(viewModel.CreateSaleListingViewModel.AdditionalDocuments);
+                if (additionalDocumentErrors.Any())
+                {
+                    foreach (var error in additionalDocumentErrors)
+                    {
+                        ModelState.AddModelError(string.Empty, error);
+                    }
+
+                    await PopulateCreateSaleListingViewModelAsync(viewModel, user);
+                    return View(viewModel);
+                }
+            }
 
             using var transaction = await _unitOfWork.BeginTransactionAsync();
 
@@ -167,35 +204,16 @@ namespace Intl.Realty.Firm.Controllers
 
                 viewModel.CreateSaleListingViewModel.DealTransactionNumber =
                     TransactionHelper.BuildDealTransactionNumber(
-                        viewModel.CreateSaleListingViewModel.TransactionTypeId, nextNumber);
+                        viewModel.CreateSaleListingViewModel.TransactionTypeId,
+                        nextNumber);
 
-                // Prepare document types
-                var docAssignments = await _unitOfWork.DocumentTypeAssignment.GetAllAsync(x => !x.IsDeleted, includeProperties: "TransactionType,DocumentType");
-                var docTypes = await _unitOfWork.DocumentType.GetAllAsync(x => !x.IsDeleted);
-                viewModel.CreateSaleListingViewModel.DocumentTypeList = _documentTransactionService
-                    .GetDocumentTypesFromDocumentTypeAssignment(transactionTypeName, docAssignments.ToList());
-
-                // Set tab menu
-                var menus = CreateDealTransactionTabMenuData.GetCreateDealTransactionTabMenuData();
-                foreach (var menu in menus.Where(x => x.Menu == "IRFDetails1"))
-                {
-                    menu.IsActive = "active";
-                    menu.IsSelected = "true";
-                }
-                viewModel.Menus = menus;
-
-                // 🛑 Validate before proceeding on submit
-                if (actionType.ToLower() == "submit" && !ModelState.IsValid)
-                {
-                    return View(viewModel);
-                }
-
-                // ➕ Create IRF Deal
+                // Create IRF Deal
                 var irfDealModel = viewModel.CreateSaleListingViewModel.CreateIRFDealSaleListingViewModel?.ToIRFDealModel();
+
                 if (irfDealModel != null)
                 {
                     irfDealModel.CreatedAt = DateTime.Now;
-                    irfDealModel.CreatedBy = user.Id;
+                    irfDealModel.CreatedBy = parsedUserId;
                     irfDealModel.IsActive = true;
                     irfDealModel.IsDeleted = false;
 
@@ -204,60 +222,85 @@ namespace Intl.Realty.Firm.Controllers
                 }
 
                 var newIRFDeal = await _unitOfWork.IRFDeal.GetAsync(x => x.Id == irfDealModel!.Id);
+                if (newIRFDeal == null)
+                {
+                    throw new InvalidOperationException("IRF Deal was not created successfully.");
+                }
 
                 // Set SaleListing fields
-                viewModel.CreateSaleListingViewModel.IRFDealId = newIRFDeal!.Id;
-                viewModel.CreateSaleListingViewModel.CreateIRFDealSaleListingViewModel!.CreatedAt = newIRFDeal.CreatedAt;
-                viewModel.CreateSaleListingViewModel.CreateIRFDealSaleListingViewModel.CreatedBy = newIRFDeal.CreatedBy;
-                viewModel.CreateSaleListingViewModel.CreateIRFDealSaleListingViewModel.IsActive = newIRFDeal.IsActive;
-
+                viewModel.CreateSaleListingViewModel.IRFDealId = newIRFDeal.Id;
                 viewModel.CreateSaleListingViewModel.IsActive = true;
                 viewModel.CreateSaleListingViewModel.IsDeleted = false;
-                viewModel.CreateSaleListingViewModel.CreatedBy = user.Id;
+                viewModel.CreateSaleListingViewModel.CreatedBy = parsedUserId;
                 viewModel.CreateSaleListingViewModel.CreatedAt = DateTime.Now;
 
                 var saleListingModel = viewModel.CreateSaleListingViewModel.ToSaleListingModel();
+
                 await _unitOfWork.SaleListing.AddAsync(saleListingModel);
                 await _unitOfWork.SaveChangesAsync();
 
-                // 📂 File uploads (optional)
-                if (viewModel.CreateSaleListingViewModel.CreateFileUploadListViewModel?.CreateFileUploadsViewModel != null)
+                var uploadPath = CreateFilePath(saleListingModel.Id);
+
+                // Standard document uploads
+                var fileUploadVM = viewModel.CreateSaleListingViewModel
+                    .CreateFileUploadListViewModel?
+                    .CreateFileUploadsViewModel;
+
+                if (fileUploadVM != null)
                 {
-                    var uploadPath = CreateFilePath(saleListingModel.Id);
                     await CreateFileUploadData(
-                        viewModel.CreateSaleListingViewModel.CreateFileUploadListViewModel.CreateFileUploadsViewModel,
+                        fileUploadVM,
                         saleListingModel.Id,
                         transactionType.Id,
-                        viewModel.CreateSaleListingViewModel.DocumentTypeList,
+                        viewModel.CreateSaleListingViewModel.DocumentTypeList ?? Enumerable.Empty<DocumentType>(),
                         uploadPath
                     );
                 }
 
-                // 📩 Notification email (submit only)
+                // Additional documents
+                var additionalDocumentVM = viewModel.CreateSaleListingViewModel.AdditionalDocuments;
+                if (additionalDocumentVM != null && additionalDocumentVM.Any())
+                {
+                    await CreateAdditionalDocumentData(
+                        additionalDocumentVM,
+                        saleListingModel.Id,
+                        transactionType.Id,
+                        uploadPath
+                    );
+                }
+
+                // Email notification on submit
                 if (viewModel.CreateSaleListingViewModel.DealStatusId == 1)
                 {
                     var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
                     var dealLink = Url.Action("Login", "Account", new { id = saleListingModel.Id, token }, Request.Scheme);
+
                     var dealAdminEmails = await GetDealAdminEmails();
                     var userRoles = await _userManager.GetRolesAsync(user);
 
-                    // Build recipient lists (avoid duplicate emails/roles)
                     var allRecipientEmails = dealAdminEmails.Select(e => e.Email).ToList();
-                    if (!allRecipientEmails.Contains(user.Email, StringComparer.OrdinalIgnoreCase))
+                    if (!string.IsNullOrWhiteSpace(user.Email) &&
+                        !allRecipientEmails.Contains(user.Email, StringComparer.OrdinalIgnoreCase))
+                    {
                         allRecipientEmails.Add(user.Email);
+                    }
 
                     var allRoleNames = dealAdminEmails.Select(e => e.RoleName).ToList();
                     string creatorRole = userRoles.FirstOrDefault() ?? "Deal Creator";
                     if (!allRoleNames.Contains(creatorRole, StringComparer.OrdinalIgnoreCase))
+                    {
                         allRoleNames.Add(creatorRole);
+                    }
 
-                    // Generate all individualized mail requests
                     var mailRequests = EmailRequest.SendNotificationWhenDealIsSubmitted(
-                        user, allRoleNames, transactionType.Description, allRecipientEmails,
-                        saleListingModel.DealTransactionNumber, dealLink!
+                        user,
+                        allRoleNames,
+                        transactionType.Description,
+                        allRecipientEmails,
+                        saleListingModel.DealTransactionNumber,
+                        dealLink!
                     );
 
-                    // ---- FAIL-SAFE SENDING ----
                     const int maxRetries = 2;
                     const int retryDelayMilliseconds = 2000;
                     var failedEmails = new List<MailRequest>();
@@ -273,12 +316,13 @@ namespace Intl.Realty.Firm.Controllers
                             {
                                 await _emailService.SendEmailAsync(mailRequest);
                                 sent = true;
-                                break; // Success, stop retrying
+                                break;
                             }
                             catch (Exception ex)
                             {
                                 lastException = ex;
                                 _logger.LogWarning(ex, $"Attempt {attempt} to send email to {mailRequest.ToEmail} failed.");
+
                                 if (attempt < maxRetries)
                                     await Task.Delay(retryDelayMilliseconds);
                             }
@@ -286,17 +330,14 @@ namespace Intl.Realty.Firm.Controllers
 
                         if (!sent)
                         {
-                            _logger.LogError(lastException, $"All {maxRetries} attempts to send email to {mailRequest.ToEmail} failed. Email Request: {System.Text.Json.JsonSerializer.Serialize(mailRequest)}");
+                            _logger.LogError(
+                                lastException,
+                                $"All {maxRetries} attempts to send email to {mailRequest.ToEmail} failed. Email Request: {System.Text.Json.JsonSerializer.Serialize(mailRequest)}");
+
                             failedEmails.Add(mailRequest);
-                            // Optionally: notify admin/support here
                         }
                     }
-
-                    // Optionally: handle or alert on failedEmails here
-                    // if (failedEmails.Any()) { /* ... */ }
                 }
-
-
 
                 await transaction.CommitAsync();
                 return RedirectToAction(nameof(Index), new { addSuccess = true });
@@ -304,17 +345,77 @@ namespace Intl.Realty.Firm.Controllers
             catch (DbUpdateConcurrencyException)
             {
                 await transaction.RollbackAsync();
-                ModelState.AddModelError("", "Transaction number was updated by another user. Please try again.");
-                return View("Index", viewModel);
+                ModelState.AddModelError(string.Empty, "Transaction number was updated by another user. Please try again.");
+                await PopulateCreateSaleListingViewModelAsync(viewModel, user!);
+                return View(viewModel);
             }
-            catch
+            catch (Exception)
             {
                 await transaction.RollbackAsync();
                 throw;
             }
         }
+        private async Task PopulateCreateSaleListingViewModelAsync(
+            CreateSaleListingWithTabMenuViewModel viewModel,
+            ApplicationUser user)
+        {
+            string transactionTypeName = _transactionTypeName;
 
+            var transactionType = await _unitOfWork.TransactionType.GetAsync(x => x.Description == transactionTypeName);
+            if (transactionType == null)
+                return;
 
+            viewModel.CreateSaleListingViewModel.TransactionType = transactionType;
+            viewModel.CreateSaleListingViewModel.TransactionTypeId = transactionType.Id;
+            viewModel.CreateSaleListingViewModel.CreatedByFullName = $"{user.FirstName} {user.LastName}";
+
+            var yearValidation = LinqExtensions.AndAlso<DealTransactionNumberRange>(
+                x => x.IsDeleted == false,
+                x => x.Year == DateTime.Now.Year);
+
+            var numberRange = await _unitOfWork.DealTransactionNumberRange.GetAsync(yearValidation);
+            if (numberRange != null)
+            {
+                var paddedTransactionType = transactionType.Id.ToString().PadLeft(2, '0');
+                var currentYear = DateTime.Now.Year.ToString();
+                var currentMonth = DateTime.Now.Month.ToString().PadLeft(2, '0');
+                var currentDay = DateTime.Now.Day.ToString().PadLeft(2, '0');
+                var paddedCurrentNumber = (numberRange.CurrentNumber + 1).ToString().PadLeft(5, '0');
+
+                viewModel.CreateSaleListingViewModel.DealTransactionNumber =
+                    currentYear + currentMonth + currentDay + "-" + paddedTransactionType + "-" + paddedCurrentNumber;
+            }
+
+            var documentTypeAssignmentIEnum = await _unitOfWork.DocumentTypeAssignment
+                .GetAllAsync(x => x.IsDeleted == false, includeProperties: "TransactionType,DocumentType");
+
+            var documentTypeAssignmentList = documentTypeAssignmentIEnum.ToList();
+
+            viewModel.CreateSaleListingViewModel.DocumentTypeAssignmentList =
+                documentTypeAssignmentList.Where(x => x.TransactionType.Id == transactionType.Id).ToList();
+
+            viewModel.CreateSaleListingViewModel.DocumentTypeList = _documentTransactionService
+                .GetDocumentTypesFromDocumentTypeAssignment(
+                    transactionTypeName,
+                    documentTypeAssignmentList);
+
+            viewModel.CreateSaleListingViewModel.SignageIEnum =
+                SelectListConverter.CreateSelectListFromEnum<Signage>();
+
+            viewModel.CreateSaleListingViewModel.DefaultSignage = 1;
+
+            var menus = CreateDealTransactionTabMenuData.GetCreateDealTransactionTabMenuData();
+            string controllerName = "IRFDetails1";
+
+            foreach (var menu in menus.Where(x => x.Menu == controllerName))
+            {
+                menu.IsActive = "active";
+                menu.IsSelected = "true";
+            }
+
+            viewModel.Menus = menus;
+        }
+       
         private async Task<List<InternalEmail>> GetDealAdminEmails()
         {
             List<InternalEmail> internalEmails = new List<InternalEmail>();
@@ -446,60 +547,93 @@ namespace Intl.Realty.Firm.Controllers
         {
             try
             {
-                var model = await _unitOfWork.SaleListing.GetAsync(x => x.Id == id, includeProperties: "TransactionType,IRFDeal,DealStatus");
+                if (id == null || id == 0)
+                {
+                    return NotFoundResultWithMessage("SaleListing", 0);
+                }
+
+                var model = await _unitOfWork.SaleListing.GetAsync(
+                    x => x.Id == id,
+                    includeProperties: "TransactionType,IRFDeal,DealStatus");
 
                 string controllerName = this.ControllerContext.RouteData.Values["controller"]!.ToString()!;
 
                 if (model == null)
                 {
-                    NotFoundViewModel notFoundViewModel = new NotFoundViewModel();
-                    notFoundViewModel.ErrorTitle = ($"{controllerName} not found");
-                    notFoundViewModel.ErrorMessage = ($"{controllerName} with {id} cannot be found!");
-                    notFoundViewModel.ControllerName = controllerName;
-                    notFoundViewModel.ControllerAction = "Index";
+                    NotFoundViewModel notFoundViewModel = new NotFoundViewModel
+                    {
+                        ErrorTitle = $"{controllerName} not found",
+                        ErrorMessage = $"{controllerName} with {id} cannot be found!",
+                        ControllerName = controllerName,
+                        ControllerAction = "Index"
+                    };
 
                     return View("NotFound", notFoundViewModel);
                 }
+
                 EditSaleListingWithTabMenuViewModel viewModel = new EditSaleListingWithTabMenuViewModel();
 
-                // to get current user ID
+                // Get current user
                 var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-                // to get current user info
                 var user = await _userManager.FindByIdAsync(userId!);
 
                 viewModel.EditSaleListingViewModel = model.ToEditSaleListingViewModel();
-
                 viewModel.EditSaleListingViewModel.DealStatus = model.DealStatus;
-
-                viewModel.EditSaleListingViewModel.UpdatedByFullName = user!.FirstName + " " + user.LastName;
-                viewModel.EditSaleListingViewModel.UpdatedBy = user!.Id;
+                viewModel.EditSaleListingViewModel.UpdatedByFullName = $"{user!.FirstName} {user.LastName}";
+                viewModel.EditSaleListingViewModel.UpdatedBy = user.Id;
                 viewModel.EditSaleListingViewModel.UpdatedAt = DateTime.Now;
 
-                var fileUploads = await _unitOfWork.FileUpload.GetAllAsync(x => x.SaleListingId == model.Id && x.IsActive && !x.IsDeleted, includeProperties: "SaleListing,TransactionType,DocumentType");
+                // Load predefined uploaded files
+                var fileUploads = await _unitOfWork.FileUpload.GetAllAsync(
+                    x => x.SaleListingId == model.Id && x.IsActive && !x.IsDeleted,
+                    includeProperties: "SaleListing,TransactionType,DocumentType");
 
                 var fileUploadsWithFiles = FilterFileUploadsWithFilesOnly(fileUploads.ToList());
 
-                viewModel.EditSaleListingViewModel.FileUploads = fileUploads.ToList();
+                // FIX: assign filtered files, not raw files
+                viewModel.EditSaleListingViewModel.FileUploads = fileUploadsWithFiles;
 
-                var documentTypeAssignmentIEnum = await _unitOfWork.DocumentTypeAssignment.GetAllAsync(x => x.IsDeleted == false, includeProperties: "TransactionType,DocumentType");
-                var documentTypeIEnum = await _unitOfWork.DocumentType.GetAllAsync(x => x.IsActive && x.IsDeleted == false);
+                // Load saved additional documents
+                var additionalDocuments = await _unitOfWork.AdditionalDocument.GetAllAsync(
+                    x => x.SaleListingId == model.Id && x.IsActive && !x.IsDeleted,
+                    includeProperties: "SaleListing,TransactionType");
+
+                viewModel.EditSaleListingViewModel.SavedAdditionalDocuments = additionalDocuments.ToList();
+
+                // Load document type assignments
+                var documentTypeAssignmentIEnum = await _unitOfWork.DocumentTypeAssignment.GetAllAsync(
+                    x => x.IsDeleted == false,
+                    includeProperties: "TransactionType,DocumentType");
+
+                var documentTypeIEnum = await _unitOfWork.DocumentType.GetAllAsync(
+                    x => x.IsActive && x.IsDeleted == false);
+
                 var documentTypeAssignmentList = documentTypeAssignmentIEnum.ToList();
 
-                viewModel.EditSaleListingViewModel.DocumentTypeAssignmentList = documentTypeAssignmentList.Where(x => x.TransactionType.Id == model.TransactionType.Id).ToList(); // DocumentTypeAssignmentList
+                viewModel.EditSaleListingViewModel.DocumentTypeAssignmentList =
+                    documentTypeAssignmentList
+                        .Where(x => x.TransactionType.Id == model.TransactionType!.Id)
+                        .ToList();
 
-                var documentTypeList = documentTypeIEnum.ToList();
                 viewModel.EditSaleListingViewModel.DocumentTypeList = _documentTransactionService
-                                                                .GetDocumentTypesFromDocumentTypeAssignment(model.TransactionType!.Description,
-                                                                                                            documentTypeAssignmentList);
-                var dealStatusIEnum = await _unitOfWork.DealStatus.GetAllAsync(x => x.IsActive == true && !x.IsDeleted);
+                    .GetDocumentTypesFromDocumentTypeAssignment(
+                        model.TransactionType!.Description,
+                        documentTypeAssignmentList);
+
+                // Load deal statuses
+                var dealStatusIEnum = await _unitOfWork.DealStatus.GetAllAsync(
+                    x => x.IsActive == true && !x.IsDeleted);
+
                 viewModel.EditSaleListingViewModel.DealStatusList = dealStatusIEnum.ToList();
 
-                viewModel.EditSaleListingViewModel.SignageIEnum = SelectListConverter.CreateSelectListFromEnum<Signage>();
+                // Signage dropdown
+                viewModel.EditSaleListingViewModel.SignageIEnum =
+                    SelectListConverter.CreateSelectListFromEnum<Signage>();
+
                 viewModel.EditSaleListingViewModel.DefaultSignage = 1;
 
+                // Menus
                 var menus = EditDealTransactionTabMenuData.GetEditDealTransactionTabMenuData();
-
                 string menuName = "IRFDetails1";
 
                 foreach (var menu in menus.Where(x => x.Menu == menuName))
@@ -514,8 +648,8 @@ namespace Intl.Realty.Firm.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Failed to update SaleListing");
-                return StatusCode(500, "An error occurred while saving the deal.");
+                _logger.LogError(ex, "Failed to load SaleListing Edit page");
+                return StatusCode(500, "An error occurred while loading the deal.");
             }
         }
 
@@ -526,22 +660,7 @@ namespace Intl.Realty.Firm.Controllers
             if (id == 0)
                 return NotFoundResultWithMessage("SaleListing", id);
 
-            var dealStatusList = await _unitOfWork.DealStatus.GetAllAsync(x => x.IsActive && !x.IsDeleted);
-            viewModel.EditSaleListingViewModel.DealStatusList = dealStatusList.ToList();
-
-            var actionType = Request.Form["actionType"];
-
-            if (!ModelState.IsValid)
-            {
-                if (actionType == "save")
-                {
-                    // Skip validation errors on Save
-                }
-                else
-                {
-                    return View(viewModel); // enforce on Submit
-                }
-            }
+            var actionType = Request.Form["actionType"].ToString().ToLower();
 
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (!Guid.TryParse(userId, out Guid parsedUserId))
@@ -549,7 +668,7 @@ namespace Intl.Realty.Firm.Controllers
 
             var user = await _userManager.FindByIdAsync(userId!);
 
-            // Load SaleListing model (tracked)
+            // Load tracked SaleListing
             var saleListingModel = await _unitOfWork.SaleListing.GetAsync(
                 x => x.Id == id,
                 includeProperties: "IRFDeal,TransactionType,DealStatus",
@@ -558,31 +677,57 @@ namespace Intl.Realty.Firm.Controllers
             if (saleListingModel == null)
                 return NotFoundResultWithMessage("SaleListing", id);
 
+            // Rebuild all data needed by the view
+            await PopulateEditSaleListingViewModelAsync(viewModel, saleListingModel);
+
+            // Existing model validation behavior:
+            // save = allow draft behavior
+            // submit = enforce validation
+            if (!ModelState.IsValid && actionType != "save")
+            {
+                return View(viewModel);
+            }
+
             // Load transaction type
             var transactionType = await _unitOfWork.TransactionType.GetAsync(x => x.Id == saleListingModel.TransactionTypeId);
+            if (transactionType == null)
+            {
+                ModelState.AddModelError(string.Empty, "Transaction type not found.");
+                return View(viewModel);
+            }
+
             viewModel.EditSaleListingViewModel.TransactionType = transactionType;
             viewModel.EditSaleListingViewModel.TransactionTypeId = transactionType.Id;
 
-            // Rebuild document type list
-            var documentTypeAssignments = await _unitOfWork.DocumentTypeAssignment
-                .GetAllAsync(x => x.IsActive && !x.IsDeleted, includeProperties: "TransactionType,DocumentType");
-            //var documentTypes = await _unitOfWork.DocumentType.GetAllAsync(x => !x.IsDeleted);
+            // Validate additional documents only on submit
+            if (actionType != "save")
+            {
+                var additionalDocumentErrors = ValidateAdditionalDocuments(viewModel.EditSaleListingViewModel.AdditionalDocuments);
 
-            viewModel.EditSaleListingViewModel.DocumentTypeList = _documentTransactionService
-                .GetDocumentTypesFromDocumentTypeAssignment(
-                    transactionType.Description,
-                    documentTypeAssignments.ToList());
+                if (additionalDocumentErrors.Any())
+                {
+                    foreach (var error in additionalDocumentErrors)
+                    {
+                        ModelState.AddModelError(string.Empty, error);
+                    }
 
-            // Filter file uploads for view consistency
+                    await PopulateEditSaleListingViewModelAsync(viewModel, saleListingModel);
+                    return View(viewModel);
+                }
+            }
+
+            // Keep view consistency for existing uploads
             saleListingModel.FileUploads = FilterFileUploadsWithFilesOnly(saleListingModel.FileUploads);
 
-            // Begin transaction
             using var transaction = await _unitOfWork.BeginTransactionAsync();
 
             try
             {
-                // Update IRFDeal if present
-                var irfDealDb = await _unitOfWork.IRFDeal.GetAsync(x => x.Id == saleListingModel.IRFDealId, tracked: true);
+                // Update IRFDeal
+                var irfDealDb = await _unitOfWork.IRFDeal.GetAsync(
+                    x => x.Id == saleListingModel.IRFDealId,
+                    tracked: true);
+
                 var editedIRFData = viewModel.EditSaleListingViewModel.EditIRFDealSaleListingViewModel;
 
                 if (irfDealDb != null && editedIRFData != null)
@@ -590,6 +735,7 @@ namespace Intl.Realty.Firm.Controllers
                     irfDealDb.UpdateFromViewModel(editedIRFData, parsedUserId);
                     irfDealDb.UpdatedAt = DateTime.Now;
                     irfDealDb.UpdatedBy = parsedUserId;
+
                     await _unitOfWork.IRFDeal.UpdateAsync(irfDealDb);
                 }
 
@@ -601,14 +747,18 @@ namespace Intl.Realty.Firm.Controllers
                 saleListingModel.UpdatedAt = DateTime.Now;
                 saleListingModel.UpdatedBy = parsedUserId;
 
-                // Add concurrency check
+                // Concurrency token
                 saleListingModel.RowVersion = viewModel.EditSaleListingViewModel.RowVersion;
 
-                await _unitOfWork.SaveChangesAsync(); // All EF-tracked changes saved
+                await _unitOfWork.SaveChangesAsync();
 
-                // Handle file uploads (optional)
+                // Upload path
                 var uploadPath = CreateFilePath(saleListingModel.Id);
-                var fileUploadVM = viewModel.EditSaleListingViewModel.CreateFileUploadListViewModel?.CreateFileUploadsViewModel;
+
+                // Standard document uploads
+                var fileUploadVM = viewModel.EditSaleListingViewModel
+                    .CreateFileUploadListViewModel?
+                    .CreateFileUploadsViewModel;
 
                 if (fileUploadVM != null)
                 {
@@ -616,37 +766,56 @@ namespace Intl.Realty.Firm.Controllers
                         fileUploadVM,
                         saleListingModel.Id,
                         transactionType.Id,
-                        viewModel.EditSaleListingViewModel.DocumentTypeList,
+                        viewModel.EditSaleListingViewModel.DocumentTypeList ?? Enumerable.Empty<DocumentType>(),
                         uploadPath
                     );
                 }
 
-                // ===== EMAIL NOTIFICATION (if submitted) =====
+                // Additional documents
+                var additionalDocumentVM = viewModel.EditSaleListingViewModel.AdditionalDocuments;
+
+                if (additionalDocumentVM != null && additionalDocumentVM.Any())
+                {
+                    await CreateAdditionalDocumentData(
+                        additionalDocumentVM,
+                        saleListingModel.Id,
+                        transactionType.Id,
+                        uploadPath
+                    );
+                }
+
+                // Email notification on submit
                 if (actionType == "submit" && saleListingModel.DealStatusId == 1)
                 {
-                    var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+                    var token = await _userManager.GenerateEmailConfirmationTokenAsync(user!);
                     var dealLink = Url.Action("Login", "Account", new { id = saleListingModel.Id, token }, Request.Scheme);
 
                     var dealAdminEmails = await GetDealAdminEmails();
-                    var userRoles = await _userManager.GetRolesAsync(user);
+                    var userRoles = await _userManager.GetRolesAsync(user!);
 
-                    // Build recipient lists (avoid duplicates)
                     var allRecipientEmails = dealAdminEmails.Select(e => e.Email).ToList();
-                    if (!allRecipientEmails.Contains(user.Email, StringComparer.OrdinalIgnoreCase))
+                    if (!string.IsNullOrWhiteSpace(user?.Email) &&
+                        !allRecipientEmails.Contains(user.Email, StringComparer.OrdinalIgnoreCase))
+                    {
                         allRecipientEmails.Add(user.Email);
+                    }
 
                     var allRoleNames = dealAdminEmails.Select(e => e.RoleName).ToList();
                     string creatorRole = userRoles.FirstOrDefault() ?? "Deal Creator";
                     if (!allRoleNames.Contains(creatorRole, StringComparer.OrdinalIgnoreCase))
+                    {
                         allRoleNames.Add(creatorRole);
+                    }
 
-                    // Generate all individualized mail requests
                     var mailRequests = EmailRequest.SendNotificationWhenDealIsSubmitted(
-                        user, allRoleNames, transactionType.Description, allRecipientEmails,
-                        saleListingModel.DealTransactionNumber, dealLink!
+                        user!,
+                        allRoleNames,
+                        transactionType.Description,
+                        allRecipientEmails,
+                        saleListingModel.DealTransactionNumber,
+                        dealLink!
                     );
 
-                    // ---- FAIL-SAFE SENDING ----
                     const int maxRetries = 2;
                     const int retryDelayMilliseconds = 2000;
                     var failedEmails = new List<MailRequest>();
@@ -662,12 +831,13 @@ namespace Intl.Realty.Firm.Controllers
                             {
                                 await _emailService.SendEmailAsync(mailRequest);
                                 sent = true;
-                                break; // Success
+                                break;
                             }
                             catch (Exception ex)
                             {
                                 lastException = ex;
                                 _logger.LogWarning(ex, $"Attempt {attempt} to send email to {mailRequest.ToEmail} failed.");
+
                                 if (attempt < maxRetries)
                                     await Task.Delay(retryDelayMilliseconds);
                             }
@@ -675,17 +845,14 @@ namespace Intl.Realty.Firm.Controllers
 
                         if (!sent)
                         {
-                            _logger.LogError(lastException, $"All {maxRetries} attempts to send email to {mailRequest.ToEmail} failed. Email Request: {System.Text.Json.JsonSerializer.Serialize(mailRequest)}");
+                            _logger.LogError(
+                                lastException,
+                                $"All {maxRetries} attempts to send email to {mailRequest.ToEmail} failed. Email Request: {System.Text.Json.JsonSerializer.Serialize(mailRequest)}");
+
                             failedEmails.Add(mailRequest);
-                            // Optionally: notify admin/support here
                         }
                     }
-
-                    // Optionally: handle or alert on failedEmails here
-                    // if (failedEmails.Any()) { /* ... */ }
                 }
-
-
 
                 await transaction.CommitAsync();
                 return RedirectToAction(nameof(Index), new { editSuccess = true });
@@ -693,7 +860,12 @@ namespace Intl.Realty.Firm.Controllers
             catch (DbUpdateConcurrencyException)
             {
                 await transaction.RollbackAsync();
-                ModelState.AddModelError(string.Empty, "This record was modified by another user after you loaded it. Please reload and try again.");
+
+                ModelState.AddModelError(
+                    string.Empty,
+                    "This record was modified by another user after you loaded it. Please reload and try again.");
+
+                await PopulateEditSaleListingViewModelAsync(viewModel, saleListingModel);
                 return View(viewModel);
             }
             catch (Exception)
@@ -702,9 +874,152 @@ namespace Intl.Realty.Firm.Controllers
                 throw;
             }
         }
+        private List<string> ValidateAdditionalDocuments(List<AdditionalDocumentInputViewModel>? additionalDocuments)
+        {
+            var errors = new List<string>();
 
+            if (additionalDocuments == null || !additionalDocuments.Any())
+                return errors;
 
+            foreach (var item in additionalDocuments)
+            {
+                if (item == null)
+                    continue;
 
+                bool hasDocumentName = !string.IsNullOrWhiteSpace(item.DocumentName);
+                bool hasFile = item.File != null && item.File.Length > 0;
+
+                if (!hasDocumentName && !hasFile)
+                    continue;
+
+                if (!hasDocumentName)
+                    errors.Add("Document name is required for additional documents.");
+
+                if (!hasFile)
+                    errors.Add($"File is required for '{item.DocumentName}'.");
+            }
+
+            return errors;
+        }
+        private async Task<bool> CreateAdditionalDocumentData(
+            List<AdditionalDocumentInputViewModel> additionalDocuments,
+            int saleListingId,
+            int transactionTypeId,
+            string uploadPath)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var user = await _userManager.FindByIdAsync(userId!);
+
+            if (additionalDocuments == null || !additionalDocuments.Any())
+                return true;
+
+            string additionalDocsPath = Path.Combine(uploadPath, _transactionTypeName, "AdditionalDocuments");
+
+            foreach (var item in additionalDocuments)
+            {
+                if (item == null)
+                    continue;
+
+                bool hasDocumentName = !string.IsNullOrWhiteSpace(item.DocumentName);
+                bool hasFile = item.File != null && item.File.Length > 0;
+
+                if (!hasDocumentName && !hasFile)
+                    continue;
+
+                if (!hasDocumentName)
+                    throw new InvalidOperationException("Document name is required for additional documents.");
+
+                if (!hasFile)
+                    throw new InvalidOperationException($"File is required for additional document '{item.DocumentName}'.");
+
+                var (fileNameWithoutExtension, fileExtension, originalFileName) =
+                    await _fileHandlerService.UploadFile(item.File!, additionalDocsPath);
+
+                var entity = new AdditionalDocument
+                {
+                    DocumentName = item.DocumentName.Trim(),
+                    FileName = fileNameWithoutExtension,
+                    FileExtension = fileExtension,
+                    OriginalFileName = originalFileName,
+                    Directory = additionalDocsPath,
+                    FullPath = Path.Combine(additionalDocsPath, fileNameWithoutExtension + fileExtension),
+                    FileSize = item.File!.Length.ToString(),
+
+                    SaleListingId = saleListingId,
+                    TransactionTypeId = transactionTypeId,
+
+                    IsActive = true,
+                    IsDeleted = false,
+                    CreatedAt = DateTime.Now,
+                    CreatedBy = user!.Id
+                };
+
+                await _unitOfWork.AdditionalDocument.AddAsync(entity);
+            }
+
+            return true;
+        }
+        private async Task PopulateEditSaleListingViewModelAsync(
+            EditSaleListingWithTabMenuViewModel viewModel,
+            SaleListing saleListingModel)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var user = await _userManager.FindByIdAsync(userId!);
+
+            var transactionType = await _unitOfWork.TransactionType.GetAsync(x => x.Id == saleListingModel.TransactionTypeId);
+            viewModel.EditSaleListingViewModel.TransactionType = transactionType;
+            viewModel.EditSaleListingViewModel.TransactionTypeId = transactionType!.Id;
+
+            var documentTypeAssignmentIEnum = await _unitOfWork.DocumentTypeAssignment
+                .GetAllAsync(x => x.IsDeleted == false, includeProperties: "TransactionType,DocumentType");
+
+            var documentTypeAssignmentList = documentTypeAssignmentIEnum.ToList();
+
+            viewModel.EditSaleListingViewModel.DocumentTypeAssignmentList =
+                documentTypeAssignmentList
+                    .Where(x => x.TransactionType.Id == saleListingModel.TransactionTypeId)
+                    .ToList();
+
+            viewModel.EditSaleListingViewModel.DocumentTypeList = _documentTransactionService
+                .GetDocumentTypesFromDocumentTypeAssignment(
+                    transactionType.Description,
+                    documentTypeAssignmentList);
+
+            var dealStatusIEnum = await _unitOfWork.DealStatus.GetAllAsync(x => x.IsActive && !x.IsDeleted);
+            viewModel.EditSaleListingViewModel.DealStatusList = dealStatusIEnum.ToList();
+
+            viewModel.EditSaleListingViewModel.SignageIEnum = SelectListConverter.CreateSelectListFromEnum<Signage>();
+            viewModel.EditSaleListingViewModel.DefaultSignage = 1;
+
+            viewModel.EditSaleListingViewModel.UpdatedByFullName = $"{user!.FirstName} {user.LastName}";
+            viewModel.EditSaleListingViewModel.UpdatedBy = user.Id;
+            viewModel.EditSaleListingViewModel.UpdatedAt = DateTime.Now;
+
+            // Load predefined uploaded files
+            var fileUploads = await _unitOfWork.FileUpload.GetAllAsync(
+                x => x.SaleListingId == saleListingModel.Id && x.IsActive && !x.IsDeleted,
+                includeProperties: "SaleListing,TransactionType,DocumentType");
+
+            viewModel.EditSaleListingViewModel.FileUploads = FilterFileUploadsWithFilesOnly(fileUploads.ToList());
+
+            // Load saved additional documents
+            var additionalDocuments = await _unitOfWork.AdditionalDocument.GetAllAsync(
+                x => x.SaleListingId == saleListingModel.Id && x.IsActive && !x.IsDeleted,
+                includeProperties: "SaleListing,TransactionType");
+
+            viewModel.EditSaleListingViewModel.SavedAdditionalDocuments = additionalDocuments.ToList();
+
+            var menus = EditDealTransactionTabMenuData.GetEditDealTransactionTabMenuData();
+            string menuName = "IRFDetails1";
+
+            foreach (var menu in menus.Where(x => x.Menu == menuName))
+            {
+                menu.IsActive = "active";
+                menu.IsSelected = "true";
+            }
+
+            viewModel.Menus = menus;
+        }
         private IActionResult NotFoundResultWithMessage(string entityName, int id)
         {
             var viewModel = new NotFoundViewModel
@@ -894,6 +1209,79 @@ namespace Intl.Realty.Firm.Controllers
             }
 
             return NotFound();
+        }
+        [HttpGet]
+        public async Task<IActionResult> DownloadAdditionalDocument(int id)
+        {
+            var additionalDocument = await _unitOfWork.AdditionalDocument.GetAsync(x => x.Id == id && !x.IsDeleted);
+            if (additionalDocument == null)
+                return NotFound();
+
+            if (string.IsNullOrWhiteSpace(additionalDocument.Directory) ||
+                string.IsNullOrWhiteSpace(additionalDocument.FileName) ||
+                string.IsNullOrWhiteSpace(additionalDocument.FileExtension))
+            {
+                return NotFound();
+            }
+
+            var result = await _fileHandlerService.DownloadFile(
+                additionalDocument.Directory,
+                additionalDocument.FileName,
+                additionalDocument.FileExtension);
+
+            return File(result.Item1, result.Item2, additionalDocument.OriginalFileName);
+        }
+        [HttpGet]
+        public async Task<IActionResult> PreviewAdditionalDocument(int id)
+        {
+            var additionalDocument = await _unitOfWork.AdditionalDocument.GetAsync(
+                x => x.Id == id && !x.IsDeleted);
+
+            if (additionalDocument == null)
+                return NotFound();
+
+            if (string.IsNullOrWhiteSpace(additionalDocument.FullPath) ||
+                !System.IO.File.Exists(additionalDocument.FullPath))
+            {
+                return NotFound();
+            }
+
+            var extension = additionalDocument.FileExtension?.ToLower();
+            if (extension != ".pdf")
+            {
+                return RedirectToAction(nameof(DownloadAdditionalDocument), new { id });
+            }
+
+            var fs = new FileStream(additionalDocument.FullPath, FileMode.Open, FileAccess.Read);
+            return File(fs, "application/pdf");
+        }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteAdditionalDocumentAjax(int id)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var user = await _userManager.FindByIdAsync(userId!);
+
+            var additionalDocument = await _unitOfWork.AdditionalDocument.GetAsync(x => x.Id == id);
+
+            if (additionalDocument == null)
+            {
+                return Json(new { success = false, message = "Document not found." });
+            }
+
+            additionalDocument.IsDeleted = true;
+            additionalDocument.DeletedAt = DateTime.UtcNow;
+            additionalDocument.DeletedBy = user!.Id;
+
+            await _unitOfWork.AdditionalDocument.UpdateAsync(additionalDocument);
+
+            if (!string.IsNullOrWhiteSpace(additionalDocument.FullPath) &&
+                System.IO.File.Exists(additionalDocument.FullPath))
+            {
+                await _fileHandlerService.DeleteFile(additionalDocument.FullPath);
+            }
+
+            return Json(new { success = true });
         }
         [HttpPost]
         [ValidateAntiForgeryToken]

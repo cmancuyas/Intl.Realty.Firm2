@@ -1,4 +1,5 @@
 ﻿using Intl.Realty.Firm.Model.Model;
+using Intl.Realty.Firm.Model.ViewModel.AdditionalDocumentVM;
 using Intl.Realty.Firm.Model.ViewModel.FileUploadVM;
 using Intl.Realty.Firm.Model.ViewModel.IRFDealVM;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -18,6 +19,8 @@ namespace Intl.Realty.Firm.Model.ViewModel.SaleListingVM
         public EditIRFDealSaleListingViewModel EditIRFDealSaleListingViewModel { get; set; } = new EditIRFDealSaleListingViewModel();
         public CreateFileUploadListViewModel? CreateFileUploadListViewModel { get; set; }
         public List<FileUpload>? FileUploads { get; set; }
+        public List<AdditionalDocumentInputViewModel> AdditionalDocuments { get; set; } = new();
+        public List<AdditionalDocument>? SavedAdditionalDocuments { get; set; } = new List<AdditionalDocument>();
         public string? Notes { get; set; }
         public bool IsActive { get; set; }
         public bool IsDeleted { get; set; }
