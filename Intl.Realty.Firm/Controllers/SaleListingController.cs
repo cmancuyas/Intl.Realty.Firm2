@@ -1052,7 +1052,11 @@ namespace Intl.Realty.Firm.Controllers
         [HttpGet]
         public async Task<IActionResult> Preview(int id)
         {
-            var model = await _unitOfWork.SaleListing.GetAsync(x => x.Id == id, includeProperties: "IRFDeal,TransactionType,DealStatus");
+            var model = await _unitOfWork.SaleListing.GetAsync(
+                x => x.Id == id,
+                includeProperties: "IRFDeal,TransactionType,DealStatus,FileUploads,AdditionalDocuments"
+            );
+
             if (model == null)
             {
                 string controllerName = this.ControllerContext.RouteData.Values["controller"]!.ToString()!;
@@ -1073,14 +1077,10 @@ namespace Intl.Realty.Firm.Controllers
             var listingCommissionSignage = (Signage)model.IRFDeal.ListingCommissionSign;
             viewModel.ListingCommissionSignDescription = listingCommissionSignage.GetDisplayName();
 
-            var fileUploadIEnum = await _unitOfWork.FileUpload.GetAllAsync(x => x.SaleListingId == model.Id && x.IsActive == true && !x.IsDeleted);
-            viewModel.FileUploads = fileUploadIEnum.ToList();
-            var users = _userManager.Users;
-
-            var user = users.Where(x => x.Id == viewModel.CreatedBy).FirstOrDefault();
+            var user = _userManager.Users.FirstOrDefault(x => x.Id == viewModel.CreatedBy);
             if (user != null)
             {
-                viewModel.CreatedByFullName = user!.FirstName + " " + user.LastName;
+                viewModel.CreatedByFullName = user.FirstName + " " + user.LastName;
             }
 
             return View(viewModel);

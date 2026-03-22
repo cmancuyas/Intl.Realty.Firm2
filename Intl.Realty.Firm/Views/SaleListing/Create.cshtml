@@ -425,7 +425,8 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @if (Model.CreateSaleListingViewModel.AdditionalDocuments != null && Model.CreateSaleListingViewModel.AdditionalDocuments.Any())
+                                        @if (Model.CreateSaleListingViewModel.AdditionalDocuments != null &&
+                                                     Model.CreateSaleListingViewModel.AdditionalDocuments.Any())
                                         {
                                             @for (int i = 0; i < Model.CreateSaleListingViewModel.AdditionalDocuments.Count; i++)
                                             {
@@ -487,6 +488,8 @@
                         </div>
                     </div>
 
+
+
                     <div class="tab-pane" id="notes" aria-labelledby="notes-tab" style="background-color:white;">
                         <div class="col-md-12 mt-4">
                             <div class="form-group">
@@ -543,63 +546,80 @@
         });
     </script>
     <script>
-    $(document).ready(function () {
+        $(function () {
+        const tableSelector = '#tblAdditionalDocuments';
+        const addButtonSelector = '#btnAddAdditionalDocumentRow';
 
-        function reIndexAdditionalDocumentRows() {
-            $('#tblAdditionalDocuments tbody tr').each(function (index) {
-                $(this).find('input').each(function () {
-                    let currentName = $(this).attr('name');
-                    if (currentName) {
-                        currentName = currentName.replace(/CreateSaleListingViewModel\.AdditionalDocuments\[\d+\]/g, 'CreateSaleListingViewModel.AdditionalDocuments[' + index + ']');
-                        $(this).attr('name', currentName);
-                    }
-                });
-            });
+        function buildAdditionalDocumentRow(index) {
+        return `
+        <tr>
+        <td>
+        <input type="hidden"
+        name="CreateSaleListingViewModel.AdditionalDocuments[${index}].Id"
+        value="" />
+        <input type="text"
+        name="CreateSaleListingViewModel.AdditionalDocuments[${index}].DocumentName"
+        class="form-control"
+        placeholder="Enter document name" />
+        </td>
+        <td>
+        <input type="file"
+        name="CreateSaleListingViewModel.AdditionalDocuments[${index}].File"
+        class="form-control additional-document-file"
+        accept=".pdf,.doc,.docx,.xls,.xlsx" />
+        </td>
+        <td>
+        <button type="button" class="btn btn-danger btnRemoveAdditionalDocumentRow">
+        Remove
+        </button>
+        </td>
+        </tr>
+        `;
         }
 
-        $('#btnAddAdditionalDocumentRow').on('click', function () {
-            let rowCount = $('#tblAdditionalDocuments tbody tr').length;
+        function reIndexAdditionalDocumentRows() {
+        $(`${tableSelector} tbody tr`).each(function (index) {
+        $(this).find('input').each(function () {
+        const currentName = $(this).attr('name');
+        if (!currentName) return;
 
-            let newRow = `
-                <tr>
-                    <td>
-                        <input type="hidden"
-                               name="CreateSaleListingViewModel.AdditionalDocuments[${rowCount}].Id"
-                               value="" />
-                        <input type="text"
-                               name="CreateSaleListingViewModel.AdditionalDocuments[${rowCount}].DocumentName"
-                               class="form-control"
-                               placeholder="Enter document name" />
-                    </td>
-                    <td>
-                        <input type="file"
-                               name="CreateSaleListingViewModel.AdditionalDocuments[${rowCount}].File"
-                               class="form-control additional-document-file"
-                               accept=".pdf,.doc,.docx,.xls,.xlsx" />
-                    </td>
-                    <td>
-                        <button type="button" class="btn btn-danger btnRemoveAdditionalDocumentRow">
-                            Remove
-                        </button>
-                    </td>
-                </tr>
-            `;
+        const newName = currentName.replace(
+        /CreateSaleListingViewModel\.AdditionalDocuments\[\d+\]/g,
+        `CreateSaleListingViewModel.AdditionalDocuments[${index}]`
+        );
 
-            $('#tblAdditionalDocuments tbody').append(newRow);
+        $(this).attr('name', newName);
+        });
+        });
+        }
+
+        // Prevent double binding
+        $(document)
+        .off('click.additionalDocs', addButtonSelector)
+        .on('click.additionalDocs', addButtonSelector, function (e) {
+        e.preventDefault();
+
+        const rowCount = $(`${tableSelector} tbody tr`).length;
+        $(`${tableSelector} tbody`).append(buildAdditionalDocumentRow(rowCount));
         });
 
-        $(document).on('click', '.btnRemoveAdditionalDocumentRow', function () {
-            const rowCount = $('#tblAdditionalDocuments tbody tr').length;
+        $(document)
+        .off('click.additionalDocs', `${tableSelector} .btnRemoveAdditionalDocumentRow`)
+        .on('click.additionalDocs', `${tableSelector} .btnRemoveAdditionalDocumentRow`, function (e) {
+        e.preventDefault();
 
-            if (rowCount > 1) {
-                $(this).closest('tr').remove();
-                reIndexAdditionalDocumentRows();
-            } else {
-                $(this).closest('tr').find('input[type="text"]').val('');
-                $(this).closest('tr').find('input[type="file"]').val('');
-            }
+        const $rows = $(`${tableSelector} tbody tr`);
+
+        if ($rows.length > 1) {
+        $(this).closest('tr').remove();
+        reIndexAdditionalDocumentRows();
+        } else {
+        const $row = $(this).closest('tr');
+        $row.find('input[type="hidden"]').val('');
+        $row.find('input[type="text"]').val('');
+        $row.find('input[type="file"]').val('');
+        }
         });
-
-    });
-</script>
+        });
+    </script>
 }

@@ -106,7 +106,55 @@
                     </table>
                 </div>
             </div>
-
+            <!-- 📎 Additional Documents Card -->
+            <div class="col-md-10 card p-4 mb-4">
+                <h4 class="text-blue mb-3">Additional Documents</h4>
+                <div class="table-responsive">
+                    <table class="table table-bordered">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Document Name</th>
+                                <th>Original File Name</th>
+                                <th>Extension</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model.SavedAdditionalDocuments != null && Model.SavedAdditionalDocuments.Any())
+                            {
+                                foreach (var file in Model.SavedAdditionalDocuments)
+                                {
+                                    <tr>
+                                        <td>@file.DocumentName</td>
+                                        <td>@file.OriginalFileName</td>
+                                        <td>@file.FileExtension</td>
+                                        <td>
+                                            <a asp-action="DownloadAdditionalDocument"
+                                                   asp-route-id="@file.Id"
+                                                   class="btn btn-secondary btn-sm"
+                                                   target="_blank">
+                                                Download
+                                            </a>
+                                            <a asp-action="PreviewAdditionalDocument"
+                                                   asp-route-id="@file.Id"
+                                                   class="btn btn-secondary btn-sm"
+                                                   target="_blank">
+                                                Preview
+                                            </a>
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td colspan="4">No additional documents found.</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
             <!-- 📝 Notes Card -->
             <div class="col-md-10 card p-4 mb-5">
                 <h4 class="text-blue mb-3">Notes</h4>

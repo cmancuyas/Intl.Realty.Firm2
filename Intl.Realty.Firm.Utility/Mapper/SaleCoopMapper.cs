@@ -36,7 +36,7 @@ namespace Intl.Realty.Firm.Utility.Mapper
 
                 TransactionType = model.TransactionType,
                 EditIRFDealSaleCoopViewModel = model.IRFDeal!.ToEditIRFDealSaleCoopViewModel(),
-                DealStatus = model.DealStatus,  
+                DealStatus = model.DealStatus,
 
                 IsActive = model.IsActive,
                 IsDeleted = model.IsDeleted,
@@ -129,19 +129,19 @@ namespace Intl.Realty.Firm.Utility.Mapper
                     DealTransactionNumber = x.DealTransactionNumber,
                     TransactionType = x.TransactionType!.Description,
                     DateCreated = x.CreatedAt,
-                    DateSubmitted = x.DateSubmitted??DateTime.MinValue,
+                    DateSubmitted = x.DateSubmitted ?? DateTime.MinValue,
                     PropertyAddress = x.IRFDeal!.PropertyAddress ?? "",
-                    FinalSalePrice = x.IRFDeal.FinalSalePrice??0,
-                    FinalClosingDate = x.IRFDeal.FinalClosingDate??DateTime.UtcNow,
+                    FinalSalePrice = x.IRFDeal.FinalSalePrice ?? 0,
+                    FinalClosingDate = x.IRFDeal.FinalClosingDate ?? DateTime.UtcNow,
                     DepositAmount = x.IRFDeal.DepositAmount ?? 0,
-                    DepositDate = x.IRFDeal.DepositDate??DateTime.UtcNow,
-                    BuyerName = x.IRFDeal.BuyerName??"",
+                    DepositDate = x.IRFDeal.DepositDate ?? DateTime.UtcNow,
+                    BuyerName = x.IRFDeal.BuyerName ?? "",
                     LandLordName = x.IRFDeal.LandLordName ?? "",
-                    ListingCommissionSign = x.IRFDeal.ListingCommissionSign??1,
+                    ListingCommissionSign = x.IRFDeal.ListingCommissionSign ?? 1,
                     ListingCommission = x.IRFDeal.ListingCommission ?? 0,
-                    BuyingCommissionSign= x.IRFDeal.BuyingCommissionSign ?? 1,
+                    BuyingCommissionSign = x.IRFDeal.BuyingCommissionSign ?? 1,
                     BuyingCommission = x.IRFDeal.BuyingCommission ?? 0,
-                    ListingAgentName = x.IRFDeal.ListingAgentName??"",
+                    ListingAgentName = x.IRFDeal.ListingAgentName ?? "",
                     ListingBrokerage = x.IRFDeal.ListingBrokerage ?? "",
                     ListingBrokerageFax = x.IRFDeal.ListingBrokerageFax ?? "",
                     BuyerAgentName = x.IRFDeal.BuyerAgentName ?? "",
@@ -172,8 +172,13 @@ namespace Intl.Realty.Firm.Utility.Mapper
                 TransactionType = model.TransactionType!,
                 IRFDeal = model.IRFDeal!,
                 DealStatus = model.DealStatus!,
-                FileUploads = model.FileUploads!,
-                
+                FileUploads = model.FileUploads?
+                    .Where(x => x.IsActive && !x.IsDeleted)
+                    .ToList(),
+                SavedAdditionalDocuments = model.AdditionalDocuments?
+                    .Where(x => x.IsActive && !x.IsDeleted)
+                    .ToList()
+                    ?? new List<AdditionalDocument>(),
                 CreatedByFullName = model.CreatedByFullName,
                 UpdatedByFullName = model.UpdatedByFullName,
                 DeletedByFullName = model.DeletedByFullName,
@@ -211,7 +216,7 @@ namespace Intl.Realty.Firm.Utility.Mapper
                     IRFDeal = x.IRFDeal,
                     DealStatus = x.DealStatus,
                     FileUploads = x.FileUploads,
-                    
+
                     IsActive = x.IsActive,
                     IsDeleted = x.IsDeleted,
                     CreatedAt = x.CreatedAt,
@@ -239,9 +244,9 @@ namespace Intl.Realty.Firm.Utility.Mapper
             viewModel.TransactionTypeId = model.TransactionTypeId;
             viewModel.TransactionTypeName = model.TransactionType!.Description;
             viewModel.BridgeId = model.Id;
-            viewModel.PropertyAddress = model.IRFDeal!.PropertyAddress??"";
+            viewModel.PropertyAddress = model.IRFDeal!.PropertyAddress ?? "";
             viewModel.DealStatusName = model.DealStatus!.Description;
-            viewModel.FinalClosingDate = model.IRFDeal.FinalClosingDate??DateTime.UtcNow;
+            viewModel.FinalClosingDate = model.IRFDeal.FinalClosingDate ?? DateTime.UtcNow;
             viewModel.CreatedAt = model.CreatedAt;
             viewModel.FileExtensions = model.FileUploads!.Select(x => x.FileExtension).ToList();
             viewModel.CreatedByFullName = createdByUser.FirstName + " " + createdByUser.LastName;

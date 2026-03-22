@@ -394,13 +394,13 @@
                                                                     <div class="d-flex flex-wrap gap-2">
                                                                         <a asp-action="Download"
                                                                                asp-route-id="@fileUpload.Id"
-                                                                               class="btn btn-secondary btn-sm"
+                                                                               class="btn btn-secondary"
                                                                                target="_blank">
                                                                             Download
                                                                         </a>
 
                                                                         <button type="button"
-                                                                                class="btn btn-danger btn-sm btn-delete-file"
+                                                                                class="btn btn-danger btn-delete-file"
                                                                                 data-file-id="@fileUpload.Id">
                                                                             Delete
                                                                         </button>
@@ -408,7 +408,7 @@
                                                                         <a asp-action="PreviewFile"
                                                                                asp-controller="SaleListing"
                                                                                asp-route-id="@fileUpload.Id"
-                                                                               class="btn btn-secondary btn-sm"
+                                                                               class="btn btn-secondary"
                                                                                target="_blank">
                                                                             Preview
                                                                         </a>
@@ -441,10 +441,10 @@
                                             </thead>
                                             <tbody id="additionalDocumentTableBody">
                                                 @if (Model.EditSaleListingViewModel.SavedAdditionalDocuments != null
-                                                                                                                                                                                && Model.EditSaleListingViewModel.SavedAdditionalDocuments.Any())
+                                                 && Model.EditSaleListingViewModel.SavedAdditionalDocuments.Any())
                                                 {
                                                     @foreach (var item in Model.EditSaleListingViewModel.SavedAdditionalDocuments
-                                                                                                                                                                                                .Where(x => x.IsActive && !x.IsDeleted))
+                                                      .Where(x => x.IsActive && !x.IsDeleted))
                                                     {
                                                         <tr class="border-bottom">
                                                             <td class="ps-3 py-3">@item.DocumentName</td>
@@ -453,20 +453,20 @@
                                                                 <div class="d-flex flex-wrap gap-2">
                                                                     <a asp-action="DownloadAdditionalDocument"
                                                                            asp-route-id="@item.Id"
-                                                                           class="btn btn-secondary btn-sm"
+                                                                           class="btn btn-secondary"
                                                                            target="_blank">
                                                                         Download
                                                                     </a>
 
                                                                     <button type="button"
-                                                                            class="btn btn-danger btn-sm btn-delete-additional-document"
+                                                                            class="btn btn-danger btn-delete-additional-document"
                                                                             data-id="@item.Id">
                                                                         Delete
                                                                     </button>
 
                                                                     <a asp-action="PreviewAdditionalDocument"
                                                                            asp-route-id="@item.Id"
-                                                                           class="btn btn-secondary btn-sm"
+                                                                           class="btn btn-secondary"
                                                                            target="_blank">
                                                                         Preview
                                                                     </a>
@@ -704,163 +704,163 @@
 
     @* Submit Handler Init *@
     <script>
-        const documentTypeAssignments = @Html.Raw(JsonConvert.SerializeObject(Model.EditSaleListingViewModel.DocumentTypeAssignmentList));
-        const isAdminLike = @((User.IsInRole("Admin") || User.IsInRole("SuperAdmin") || User.IsInRole("DealAdmin")).ToString().ToLower());
+    const documentTypeAssignments = @Html.Raw(JsonConvert.SerializeObject(Model.EditSaleListingViewModel.DocumentTypeAssignmentList));
+    const isAdminLike = @((User.IsInRole("Admin") || User.IsInRole("SuperAdmin") || User.IsInRole("DealAdmin")).ToString().ToLower());
 
-        $(document).ready(function () {
-        initializeSubmitHandlers({
-        formId: "ListFormId", // 🔁 Actual form ID in the DOM
-        dealStatusDropdownSelector: '[name="EditSaleListingViewModel.DealStatusId"]', // 🔁 Matches Razor binding
-        isAdminLike: isAdminLike,
-        fileErrorScrollTargetId: "fileUploads", // 🔁 Scroll target for validation
-        documentTypeAssignment: documentTypeAssignments
-        });
-        $('.btn-delete-file').on('click', function (e) {
-        e.preventDefault();
-        var $btn = $(this);
-        var fileId = $btn.data('file-id');
-        Swal.fire({
-        title: 'Are you sure?',
-        text: "This will permanently delete the file.",
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#d33',
-        cancelButtonColor: '#aaa',
-        confirmButtonText: 'Yes, delete it!'
-        }).then((result) => {
-        if (result.isConfirmed) {
-        $.ajax({
-        url: '/SaleListing/DeleteFileAjax/' + fileId,
-        type: 'POST',
-        headers: {
-        'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
-        },
-        success: function (res) {
-        if (res.success) {
-        Swal.fire('Deleted!', 'File has been deleted.', 'success').then(() => {
-        location.reload();
-        });
-        } else {
-        Swal.fire('Error!', 'Could not delete the file.', 'error');
-        }
-        }
-        });
-        }
-        });
-        });
-        });
-    </script>
+    $(document).ready(function() {
+    	initializeSubmitHandlers({
+    		formId: "ListFormId", // 🔁 Actual form ID in the DOM
+    		dealStatusDropdownSelector: '[name="EditSaleListingViewModel.DealStatusId"]', // 🔁 Matches Razor binding
+    		isAdminLike: isAdminLike,
+    		fileErrorScrollTargetId: "fileUploads", // 🔁 Scroll target for validation
+    		documentTypeAssignment: documentTypeAssignments
+    	});
+    	$('.btn-delete-file').on('click', function(e) {
+    		e.preventDefault();
+    		var $btn = $(this);
+    		var fileId = $btn.data('file-id');
+    		Swal.fire({
+    			title: 'Are you sure?',
+    			text: "This will permanently delete the file.",
+    			icon: 'warning',
+    			showCancelButton: true,
+    			confirmButtonColor: '#d33',
+    			cancelButtonColor: '#aaa',
+    			confirmButtonText: 'Yes, delete it!'
+    		}).then((result) => {
+    			if (result.isConfirmed) {
+    				$.ajax({
+    					url: '/SaleListing/DeleteFileAjax/' + fileId,
+    					type: 'POST',
+    					headers: {
+    						'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
+    					},
+    					success: function(res) {
+    						if (res.success) {
+    							Swal.fire('Deleted!', 'File has been deleted.', 'success').then(() => {
+    								location.reload();
+    							});
+    						} else {
+    							Swal.fire('Error!', 'Could not delete the file.', 'error');
+    						}
+    					}
+    				});
+    			}
+    		});
+    	});
+    }); 
+</script>
 
-    <script>
-        $(document).ready(function () {
+<script>
+    $(document).ready(function() {
 
-        function reIndexAdditionalDocumentRows() {
-        $('#tblAdditionalDocuments tbody tr').each(function (index) {
-        $(this).find('input').each(function () {
-        let currentName = $(this).attr('name');
-        if (currentName) {
-        currentName = currentName.replace(
-        /EditSaleListingViewModel\.AdditionalDocuments\[\d+\]/g,
-        'EditSaleListingViewModel.AdditionalDocuments[' + index + ']'
-        );
-        $(this).attr('name', currentName);
-        }
-        });
-        });
-        }
+    	function reIndexAdditionalDocumentRows() {
+    		$('#tblAdditionalDocuments tbody tr').each(function(index) {
+    			$(this).find('input').each(function() {
+    				let currentName = $(this).attr('name');
+    				if (currentName) {
+    					currentName = currentName.replace(
+    						/EditSaleListingViewModel\.AdditionalDocuments\[\d+\]/g,
+    						'EditSaleListingViewModel.AdditionalDocuments[' + index + ']'
+    					);
+    					$(this).attr('name', currentName);
+    				}
+    			});
+    		});
+    	}
 
-        function buildAdditionalDocumentRow(rowCount) {
-        return `
-        <tr>
-        <td>
-        <input type="hidden"
-        name="EditSaleListingViewModel.AdditionalDocuments[${rowCount}].Id"
-        value="" />
-        <input type="text"
-        name="EditSaleListingViewModel.AdditionalDocuments[${rowCount}].DocumentName"
-        class="form-control"
-        placeholder="Enter document name" />
-        </td>
-        <td>
-        <input type="file"
-        name="EditSaleListingViewModel.AdditionalDocuments[${rowCount}].File"
-        class="form-control additional-document-file"
-        accept=".pdf,.doc,.docx,.xls,.xlsx" />
-        </td>
-        <td>
-        <button type="button" class="btn btn-danger btnRemoveAdditionalDocumentRow">
-        Remove
-        </button>
-        </td>
-        </tr>
-        `;
-        }
+    	function buildAdditionalDocumentRow(rowCount) {
+    		return `
+                <tr>
+                    <td>
+                        <input type="hidden"
+                        name="EditSaleListingViewModel.AdditionalDocuments[${rowCount}].Id"
+                        value="" />
+                        <input type="text"
+                        name="EditSaleListingViewModel.AdditionalDocuments[${rowCount}].DocumentName"
+                        class="form-control"
+                        placeholder="Enter document name" />
+                    </td>
+                    <td>
+                        <input type="file"
+                        name="EditSaleListingViewModel.AdditionalDocuments[${rowCount}].File"
+                        class="form-control additional-document-file"
+                        accept=".pdf,.doc,.docx,.xls,.xlsx" />
+                    </td>
+                    <td>
+                        <button type="button" class="btn btn-danger btnRemoveAdditionalDocumentRow">
+                        Remove
+                        </button>
+                    </td>
+                </tr>
+                `;
+    		}
 
-        $(document)
-        .off('click', '#btnAddAdditionalDocumentRow')
-        .on('click', '#btnAddAdditionalDocumentRow', function (e) {
-        e.preventDefault();
+    		$(document)
+    			.off('click', '#btnAddAdditionalDocumentRow')
+    			.on('click', '#btnAddAdditionalDocumentRow', function(e) {
+    				e.preventDefault();
 
-        let rowCount = $('#tblAdditionalDocuments tbody tr').length;
-        $('#tblAdditionalDocuments tbody').append(buildAdditionalDocumentRow(rowCount));
-        });
+    				let rowCount = $('#tblAdditionalDocuments tbody tr').length;
+    				$('#tblAdditionalDocuments tbody').append(buildAdditionalDocumentRow(rowCount));
+    			});
 
-        $(document)
-        .off('click', '.btnRemoveAdditionalDocumentRow')
-        .on('click', '.btnRemoveAdditionalDocumentRow', function (e) {
-        e.preventDefault();
+    		$(document)
+    			.off('click', '.btnRemoveAdditionalDocumentRow')
+    			.on('click', '.btnRemoveAdditionalDocumentRow', function(e) {
+    				e.preventDefault();
 
-        const rowCount = $('#tblAdditionalDocuments tbody tr').length;
+    				const rowCount = $('#tblAdditionalDocuments tbody tr').length;
 
-        if (rowCount > 1) {
-        $(this).closest('tr').remove();
-        reIndexAdditionalDocumentRows();
-        } else {
-        $(this).closest('tr').find('input[type="text"]').val('');
-        $(this).closest('tr').find('input[type="file"]').val('');
-        }
-        });
+    				if (rowCount > 1) {
+    					$(this).closest('tr').remove();
+    					reIndexAdditionalDocumentRows();
+    				} else {
+    					$(this).closest('tr').find('input[type="text"]').val('');
+    					$(this).closest('tr').find('input[type="file"]').val('');
+    				}
+    			});
 
-        $(document)
-        .off('click', '.btn-delete-additional-document')
-        .on('click', '.btn-delete-additional-document', function (e) {
-        e.preventDefault();
+    		$(document)
+    			.off('click', '.btn-delete-additional-document')
+    			.on('click', '.btn-delete-additional-document', function(e) {
+    				e.preventDefault();
 
-        const id = $(this).data('id');
+    				const id = $(this).data('id');
 
-        Swal.fire({
-        title: 'Are you sure?',
-        text: "This will permanently delete the additional document.",
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#d33',
-        cancelButtonColor: '#aaa',
-        confirmButtonText: 'Yes, delete it!'
-        }).then((result) => {
-        if (result.isConfirmed) {
-        $.ajax({
-        url: '/SaleListing/DeleteAdditionalDocumentAjax/' + id,
-        type: 'POST',
-        headers: {
-        'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
-        },
-        success: function (res) {
-        if (res.success) {
-        Swal.fire('Deleted!', 'Additional document has been deleted.', 'success')
-        .then(() => {
-        location.reload();
-        });
-        } else {
-        Swal.fire('Error!', res.message || 'Could not delete the additional document.', 'error');
-        }
-        },
-        error: function () {
-        Swal.fire('Error!', 'An error occurred while deleting the additional document.', 'error');
-        }
-        });
-        }
-        });
-        });
-        });
-    </script>
+    				Swal.fire({
+    					title: 'Are you sure?',
+    					text: "This will permanently delete the additional document.",
+    					icon: 'warning',
+    					showCancelButton: true,
+    					confirmButtonColor: '#d33',
+    					cancelButtonColor: '#aaa',
+    					confirmButtonText: 'Yes, delete it!'
+    				}).then((result) => {
+    					if (result.isConfirmed) {
+    						$.ajax({
+    							url: '/SaleListing/DeleteAdditionalDocumentAjax/' + id,
+    							type: 'POST',
+    							headers: {
+    								'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
+    							},
+    							success: function(res) {
+    								if (res.success) {
+    									Swal.fire('Deleted!', 'Additional document has been deleted.', 'success')
+    										.then(() => {
+    											location.reload();
+    										});
+    								} else {
+    									Swal.fire('Error!', res.message || 'Could not delete the additional document.', 'error');
+    								}
+    							},
+    							error: function() {
+    								Swal.fire('Error!', 'An error occurred while deleting the additional document.', 'error');
+    							}
+    						});
+    					}
+    				});
+    			});
+    	}); 
+</script>
 }

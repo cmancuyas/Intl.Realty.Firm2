@@ -180,7 +180,13 @@ namespace Intl.Realty.Firm.Utility.Mapper
                 TransactionType = model.TransactionType!,
                 IRFDeal = model.IRFDeal!,
                 DealStatus = model.DealStatus!,
-                FileUploads = model.FileUploads!,
+                FileUploads = model.FileUploads?
+                    .Where(x => x.IsActive && !x.IsDeleted)
+                    .ToList() ?? new List<FileUpload>(),
+                SavedAdditionalDocuments = model.AdditionalDocuments?
+                    .Where(x => x.IsActive && !x.IsDeleted)
+                    .ToList() ?? new List<AdditionalDocument>(),
+
 
                 CreatedByFullName = model.CreatedByFullName,
                 UpdatedByFullName = model.UpdatedByFullName,
