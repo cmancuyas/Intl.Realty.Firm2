@@ -249,9 +249,10 @@
                         <div class="row d-flex justify-content-center m-0">
                             <div class="col-md-12">
                                 <h5 class="text-blue mb-4">
-                                    Please match your uploaded file based on the Document Type for Lease Co-op.
+                                    Please match your uploaded file based on the Document Type for Lease Coop.
                                     <span class="s-required">*</span>
                                 </h5>
+
                                 <table class="table dataTable" id="tblApplicantFiles" width="100%">
                                     <thead>
                                         <tr>
@@ -261,14 +262,13 @@
                                         </tr>
                                     </thead>
                                     @{
-                                        // Convert to List for safe indexing
                                         var docAssignments = Model.CreateLeaseCoopViewModel.DocumentTypeAssignmentList
-                                        .Where(x => !x.IsDeleted
-                                        && x.IsActive
-                                        && x.DocumentType != null
-                                        && !x.DocumentType.IsDeleted
-                                        && x.DocumentType.IsActive)
-                                        .ToList();
+                                            .Where(x => !x.IsDeleted
+                                                        && x.IsActive
+                                                        && x.DocumentType != null
+                                                        && !x.DocumentType.IsDeleted
+                                                        && x.DocumentType.IsActive)
+                                            .ToList();
                                     }
                                     <tbody>
                                         @for (int i = 0; i < docAssignments.Count; i++)
@@ -286,7 +286,7 @@
                                                     {
                                                         <label class="status-active">Required</label>
                                                     }
-                                                    else if (item.IsRequired == false)
+                                                    else
                                                     {
                                                         <label class="status-inactive pe-cursor">Not Required</label>
                                                     }
@@ -303,7 +303,88 @@
                                                            data-show-caption="true"
                                                            data-show-preview="false"
                                                            data-msg-placeholder="Select {files} for upload..." />
-                                                    <!-- Optional debug: <span style="font-size:11px;color:gray;">Index: @i, DocTypeId: @item.DocumentType.Id</span> -->
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+
+                                <hr class="my-4" />
+
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <div>
+                                        <h5 class="text-blue mb-1">Additional Documents</h5>
+                                        <p class="text-muted mb-0">
+                                            You may add other supporting documents not included in the predefined document types.
+                                        </p>
+                                    </div>
+                                    <button type="button" class="btn btn-primary" id="btnAddAdditionalDocumentRow">
+                                        Add Additional Document
+                                    </button>
+                                </div>
+
+                                <table class="table dataTable" id="tblAdditionalDocuments" width="100%">
+                                    <thead>
+                                        <tr>
+                                            <th style="width:35%;">Document Name</th>
+                                            <th style="width:45%;">Upload File</th>
+                                            <th style="width:20%;">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @if (Model.CreateLeaseCoopViewModel.AdditionalDocuments != null &&
+                                                                 Model.CreateLeaseCoopViewModel.AdditionalDocuments.Any())
+                                        {
+                                            @for (int i = 0; i < Model.CreateLeaseCoopViewModel.AdditionalDocuments.Count; i++)
+                                            {
+                                                <tr>
+                                                    <td>
+                                                        <input type="hidden"
+                                                               name="CreateLeaseCoopViewModel.AdditionalDocuments[@i].Id"
+                                                               value="@Model.CreateLeaseCoopViewModel.AdditionalDocuments[i].Id" />
+
+                                                        <input type="text"
+                                                               name="CreateLeaseCoopViewModel.AdditionalDocuments[@i].DocumentName"
+                                                               value="@Model.CreateLeaseCoopViewModel.AdditionalDocuments[i].DocumentName"
+                                                               class="form-control"
+                                                               placeholder="Enter document name" />
+                                                    </td>
+                                                    <td>
+                                                        <input type="file"
+                                                               name="CreateLeaseCoopViewModel.AdditionalDocuments[@i].File"
+                                                               class="form-control additional-document-file"
+                                                               accept=".pdf,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png" />
+                                                    </td>
+                                                    <td class="text-center align-middle">
+                                                        <button type="button" class="btn btn-danger btnRemoveAdditionalDocumentRow">
+                                                            Remove
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <tr>
+                                                <td>
+                                                    <input type="hidden"
+                                                           name="CreateLeaseCoopViewModel.AdditionalDocuments[0].Id"
+                                                           value="" />
+                                                    <input type="text"
+                                                           name="CreateLeaseCoopViewModel.AdditionalDocuments[0].DocumentName"
+                                                           class="form-control"
+                                                           placeholder="Enter document name" />
+                                                </td>
+                                                <td>
+                                                    <input type="file"
+                                                           name="CreateLeaseCoopViewModel.AdditionalDocuments[0].File"
+                                                           class="form-control additional-document-file"
+                                                           accept=".pdf,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png" />
+                                                </td>
+                                                <td class="text-center align-middle">
+                                                    <button type="button" class="btn btn-danger btnRemoveAdditionalDocumentRow">
+                                                        Remove
+                                                    </button>
                                                 </td>
                                             </tr>
                                         }
@@ -371,6 +452,82 @@
             });
         });
     </script>
+
+    <script>
+    $(function () {
+        const tableSelector = '#tblAdditionalDocuments';
+        const addButtonSelector = '#btnAddAdditionalDocumentRow';
+
+        function buildAdditionalDocumentRow(index) {
+            return `
+            <tr>
+                <td>
+                    <input type="hidden"
+                           name="CreateLeaseCoopViewModel.AdditionalDocuments[${index}].Id"
+                           value="" />
+                    <input type="text"
+                           name="CreateLeaseCoopViewModel.AdditionalDocuments[${index}].DocumentName"
+                           class="form-control"
+                           placeholder="Enter document name" />
+                </td>
+                <td>
+                    <input type="file"
+                           name="CreateLeaseCoopViewModel.AdditionalDocuments[${index}].File"
+                           class="form-control additional-document-file"
+                           accept=".pdf,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png" />
+                </td>
+                <td class="text-center align-middle">
+                    <button type="button" class="btn btn-danger btnRemoveAdditionalDocumentRow">
+                        Remove
+                    </button>
+                </td>
+            </tr>
+            `;
+        }
+
+        function reIndexRows() {
+            $(`${tableSelector} tbody tr`).each(function (index) {
+                $(this).find('input').each(function () {
+                    const currentName = $(this).attr('name');
+                    if (!currentName) return;
+
+                    $(this).attr(
+                        'name',
+                        currentName.replace(
+                            /CreateLeaseCoopViewModel\.AdditionalDocuments\[\d+\]/g,
+                            `CreateLeaseCoopViewModel.AdditionalDocuments[${index}]`
+                        )
+                    );
+                });
+            });
+        }
+
+        $(document)
+            .off('click.additionalDocs', addButtonSelector)
+            .on('click.additionalDocs', addButtonSelector, function (e) {
+                e.preventDefault();
+                const rowCount = $(`${tableSelector} tbody tr`).length;
+                $(`${tableSelector} tbody`).append(buildAdditionalDocumentRow(rowCount));
+            });
+
+        $(document)
+            .off('click.additionalDocs', `${tableSelector} .btnRemoveAdditionalDocumentRow`)
+            .on('click.additionalDocs', `${tableSelector} .btnRemoveAdditionalDocumentRow`, function (e) {
+                e.preventDefault();
+
+                const $rows = $(`${tableSelector} tbody tr`);
+                if ($rows.length > 1) {
+                    $(this).closest('tr').remove();
+                    reIndexRows();
+                } else {
+                    const $row = $(this).closest('tr');
+                    $row.find('input[type="hidden"]').val('');
+                    $row.find('input[type="text"]').val('');
+                    $row.find('input[type="file"]').val('');
+                }
+            });
+    });
+</script>
 }
 
 
