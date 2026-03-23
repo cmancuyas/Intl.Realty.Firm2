@@ -689,6 +689,21 @@
         .file-upload-table .btn {
             min-width: 82px;
         }
+
+        /* ===== FIX HEADER COLOR CONFLICT ===== */
+
+        .file-upload-table thead th {
+            background-color: #203d57 !important;
+            color: #ffffff !important;
+            font-weight: 600;
+            border-color: #203d57 !important;
+        }
+
+        .file-upload-table thead.bg-blue th {
+            background-color: #203d57 !important;
+            color: #ffffff !important;
+        }
+
 </style>
 
 @section Scripts {
