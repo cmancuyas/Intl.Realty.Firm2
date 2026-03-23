@@ -170,12 +170,12 @@ namespace Intl.Realty.Firm.Utility.Mapper
                 IRFDeal = model.IRFDeal!,
                 DealStatus = model.DealStatus!,
                 FileUploads = model.FileUploads?
-            .Where(x => x.IsActive && !x.IsDeleted)
-            .ToList(),
+                .Where(x => x.IsActive && !x.IsDeleted)
+                .ToList(),
 
                 SavedAdditionalDocuments = model.AdditionalDocuments?
-            .Where(x => x.IsActive && !x.IsDeleted)
-            .ToList(),
+                .Where(x => x.IsActive && !x.IsDeleted)
+                .ToList(),
 
                 CreatedByFullName = model.CreatedByFullName,
                 UpdatedByFullName = model.UpdatedByFullName,

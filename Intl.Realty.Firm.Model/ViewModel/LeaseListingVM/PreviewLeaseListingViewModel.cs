@@ -16,6 +16,7 @@ namespace Intl.Realty.Firm.Model.ViewModel.LeaseListingVM
         public DateTime? DateSubmitted { get; set; }
         public string? Notes { get; set; }
         public List<FileUpload>? FileUploads { get; set; }
+        public List<AdditionalDocument>? SavedAdditionalDocuments { get; set; } = new();
         public int DealStatusId { get; set; }
         public DealStatus DealStatus { get; set; } = new DealStatus();
         public string CreatedByFullName { get; set; } = string.Empty;
