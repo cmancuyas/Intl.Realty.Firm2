@@ -505,49 +505,47 @@
         border-collapse: collapse;
     }
 
-        .file-upload-table th,
-        .file-upload-table td {
-            vertical-align: middle;
-            border: 1px solid #dee2e6;
-        }
+    .file-upload-table th,
+    .file-upload-table td {
+        vertical-align: middle;
+        border: 1px solid #dee2e6;
+    }
 
-            .file-upload-table td.text-break {
-                word-break: break-word;
-                overflow-wrap: anywhere;
-            }
+    .file-upload-table td.text-break {
+        word-break: break-word;
+        overflow-wrap: anywhere;
+    }
 
-        /* ✅ Button consistency */
-        .file-upload-table .btn {
-            min-width: 82px;
-            margin-right: 4px;
-        }
+    .file-upload-table .btn {
+        min-width: 82px;
+        margin-right: 4px;
+    }
 
-        /* ✅ Header styling (VERY IMPORTANT – fixes your earlier issue) */
-        .file-upload-table thead th {
-            background-color: #203d57 !important;
-            color: #fff !important;
-            font-weight: 600;
-            border-color: #203d57 !important;
-        }
+    .file-upload-table thead th {
+        background-color: #203d57 !important;
+        color: #fff !important;
+        font-weight: 600;
+        border-color: #203d57 !important;
+    }
 
-        /* Optional: ensure bg-blue still works if used */
-        .file-upload-table thead.bg-blue th {
-            background-color: #203d57 !important;
-            color: #fff !important;
-        }
+    #tblAdditionalDocuments td.text-center.align-middle {
+        vertical-align: middle !important;
+    }
+
+    #tblAdditionalDocuments .btnRemoveAdditionalDocumentRow {
+        min-width: 82px;
+    }
 </style>
+
 @section Scripts {
-    @* ASP.NET Core client-side validation *@
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
 
-    @* JS Utilities and Plugins *@
     <script src="~/js/viewDataTableUtility.js" asp-append-version="true"></script>
     <script src="~/js/submitUtility.js" asp-append-version="true"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-    @* Submit Handler Initialization *@
     <script>
         const documentTypeAssignments = @Html.Raw(JsonConvert.SerializeObject(Model.CreateLeaseListingViewModel.DocumentTypeAssignmentList));
         const isAdminLike = @((User.IsInRole("Admin") || User.IsInRole("SuperAdmin") || User.IsInRole("DealAdmin")).ToString().ToLower());
@@ -562,72 +560,81 @@
             });
         });
     </script>
-    <script>
-    $(document).ready(function () {
 
-        function reIndexAdditionalDocumentRows() {
-            $('#tblAdditionalDocuments tbody tr').each(function (index) {
-                $(this).find('input').each(function () {
-                    let currentName = $(this).attr('name');
-                    if (currentName) {
-                        currentName = currentName.replace(
-                            /CreateLeaseListingViewModel\.AdditionalDocuments\[\d+\]/g,
-                            'CreateLeaseListingViewModel.AdditionalDocuments[' + index + ']'
+    <script>
+        $(function () {
+            const tableSelector = '#tblAdditionalDocuments';
+            const addButtonSelector = '#btnAddAdditionalDocumentRow';
+
+            function buildAdditionalDocumentRow(index) {
+                return `
+                    <tr>
+                        <td>
+                            <input type="hidden"
+                                   name="CreateLeaseListingViewModel.AdditionalDocuments[${index}].Id"
+                                   value="" />
+                            <input type="text"
+                                   name="CreateLeaseListingViewModel.AdditionalDocuments[${index}].DocumentName"
+                                   class="form-control"
+                                   placeholder="Enter document name" />
+                        </td>
+                        <td>
+                            <input type="file"
+                                   name="CreateLeaseListingViewModel.AdditionalDocuments[${index}].File"
+                                   class="form-control additional-document-file"
+                                   accept=".pdf,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png" />
+                        </td>
+                        <td class="text-center align-middle">
+                            <button type="button" class="btn btn-danger btnRemoveAdditionalDocumentRow">
+                                Remove
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            }
+
+            function reIndexRows() {
+                $(`${tableSelector} tbody tr`).each(function (index) {
+                    $(this).find('input').each(function () {
+                        const currentName = $(this).attr('name');
+                        if (!currentName) return;
+
+                        $(this).attr(
+                            'name',
+                            currentName.replace(
+                                /CreateLeaseListingViewModel\.AdditionalDocuments\[\d+\]/g,
+                                `CreateLeaseListingViewModel.AdditionalDocuments[${index}]`
+                            )
                         );
-                        $(this).attr('name', currentName);
+                    });
+                });
+            }
+
+            $(document)
+                .off('click.additionalDocs', addButtonSelector)
+                .on('click.additionalDocs', addButtonSelector, function (e) {
+                    e.preventDefault();
+                    const rowCount = $(`${tableSelector} tbody tr`).length;
+                    $(`${tableSelector} tbody`).append(buildAdditionalDocumentRow(rowCount));
+                });
+
+            $(document)
+                .off('click.additionalDocs', `${tableSelector} .btnRemoveAdditionalDocumentRow`)
+                .on('click.additionalDocs', `${tableSelector} .btnRemoveAdditionalDocumentRow`, function (e) {
+                    e.preventDefault();
+
+                    const $rows = $(`${tableSelector} tbody tr`);
+
+                    if ($rows.length > 1) {
+                        $(this).closest('tr').remove();
+                        reIndexRows();
+                    } else {
+                        const $row = $(this).closest('tr');
+                        $row.find('input[type="hidden"]').val('');
+                        $row.find('input[type="text"]').val('');
+                        $row.find('input[type="file"]').val('');
                     }
                 });
-            });
-        }
-
-        function buildAdditionalDocumentRow(rowCount) {
-            return `
-                <tr>
-                    <td>
-                        <input type="text"
-                               name="CreateLeaseListingViewModel.AdditionalDocuments[${rowCount}].DocumentName"
-                               class="form-control"
-                               placeholder="Enter document name" />
-                    </td>
-                    <td>
-                        <input type="file"
-                               name="CreateLeaseListingViewModel.AdditionalDocuments[${rowCount}].File"
-                               class="form-control additional-document-file"
-                               accept=".pdf,.doc,.docx,.xls,.xlsx" />
-                    </td>
-                    <td>
-                        <button type="button" class="btn btn-danger btnRemoveAdditionalDocumentRow">
-                            Remove
-                        </button>
-                    </td>
-                </tr>
-            `;
-        }
-
-        $(document)
-            .off('click', '#btnAddAdditionalDocumentRow')
-            .on('click', '#btnAddAdditionalDocumentRow', function (e) {
-                e.preventDefault();
-
-                let rowCount = $('#tblAdditionalDocuments tbody tr').length;
-                $('#tblAdditionalDocuments tbody').append(buildAdditionalDocumentRow(rowCount));
-            });
-
-        $(document)
-            .off('click', '.btnRemoveAdditionalDocumentRow')
-            .on('click', '.btnRemoveAdditionalDocumentRow', function (e) {
-                e.preventDefault();
-
-                const rowCount = $('#tblAdditionalDocuments tbody tr').length;
-
-                if (rowCount > 1) {
-                    $(this).closest('tr').remove();
-                    reIndexAdditionalDocumentRows();
-                } else {
-                    $(this).closest('tr').find('input[type="text"]').val('');
-                    $(this).closest('tr').find('input[type="file"]').val('');
-                }
-            });
-    });
-</script>
+        });
+    </script>
 }

@@ -26,6 +26,7 @@ namespace Intl.Realty.Firm.Model.Model
         public virtual TransactionType? TransactionType { get; set; }
         public virtual DealStatus? DealStatus { get; set; }
         public string? Notes { get; set; }
+        public bool? HasRejectedOffers { get; set; }
         public string CreatedByFullName { get; set; } = string.Empty;
         public string? UpdatedByFullName { get; set; } = string.Empty;
         public string? DeletedByFullName { get; set; } = string.Empty;

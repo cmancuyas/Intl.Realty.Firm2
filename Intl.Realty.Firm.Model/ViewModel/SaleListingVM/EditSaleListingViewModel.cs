@@ -22,6 +22,7 @@ namespace Intl.Realty.Firm.Model.ViewModel.SaleListingVM
         public List<AdditionalDocumentInputViewModel> AdditionalDocuments { get; set; } = new();
         public List<AdditionalDocument>? SavedAdditionalDocuments { get; set; } = new List<AdditionalDocument>();
         public string? Notes { get; set; }
+        public bool? HasRejectedOffers { get; set; }
         public bool IsActive { get; set; }
         public bool IsDeleted { get; set; }
         public Guid? UpdatedBy { get; set; }
