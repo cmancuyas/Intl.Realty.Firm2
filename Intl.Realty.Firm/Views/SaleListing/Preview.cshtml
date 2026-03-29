@@ -78,11 +78,13 @@
             <div class="col-md-10 card p-4 mb-4">
                 <h4 class="text-blue mb-3">Associated Documents</h4>
                 <div class="table-responsive">
-                    <table class="table table-bordered">
+                    <table class="table table-bordered file-upload-table">
                         <thead class="table-light">
                             <tr>
-                                <th>File Name</th>
-                                <th>Extension</th>
+                                <th style="width: 45%;">File Name</th>
+                                <th style="width: 15%;">Extension</th>
+                                <th style="width: 20%;">Preview</th>
+                                <th style="width: 20%;">Download</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -91,55 +93,25 @@
                                 foreach (var file in Model.FileUploads)
                                 {
                                     <tr>
-                                        <td>@file.FileName</td>
+                                        <td class="text-break">
+                                            @(string.IsNullOrWhiteSpace(file.OriginalFileName)
+                                                ? file.FileName
+                                                : file.OriginalFileName)
+                                        </td>
                                         <td>@file.FileExtension</td>
-                                    </tr>
-                                }
-                            }
-                            else
-                            {
-                                <tr>
-                                    <td colspan="2">No associated files found.</td>
-                                </tr>
-                            }
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-            <!-- 📎 Additional Documents Card -->
-            <div class="col-md-10 card p-4 mb-4">
-                <h4 class="text-blue mb-3">Additional Documents</h4>
-                <div class="table-responsive">
-                    <table class="table table-bordered">
-                        <thead class="table-light">
-                            <tr>
-                                <th>Document Name</th>
-                                <th>Original File Name</th>
-                                <th>Extension</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @if (Model.SavedAdditionalDocuments != null && Model.SavedAdditionalDocuments.Any())
-                            {
-                                foreach (var file in Model.SavedAdditionalDocuments)
-                                {
-                                    <tr>
-                                        <td>@file.DocumentName</td>
-                                        <td>@file.OriginalFileName</td>
-                                        <td>@file.FileExtension</td>
-                                        <td>
-                                            <a asp-action="DownloadAdditionalDocument"
+                                        <td class="text-center">
+                                            <a asp-action="PreviewFileUpload"
                                                    asp-route-id="@file.Id"
-                                                   class="btn btn-secondary btn-sm"
-                                                   target="_blank">
-                                                Download
-                                            </a>
-                                            <a asp-action="PreviewAdditionalDocument"
-                                                   asp-route-id="@file.Id"
-                                                   class="btn btn-secondary btn-sm"
-                                                   target="_blank">
+                                                   target="_blank"
+                                                   class="btn btn-secondary">
                                                 Preview
+                                            </a>
+                                        </td>
+                                        <td class="text-center">
+                                            <a asp-action="DownloadFileUpload"
+                                                   asp-route-id="@file.Id"
+                                                   class="btn btn-secondary">
+                                                Download
                                             </a>
                                         </td>
                                     </tr>
@@ -148,13 +120,64 @@
                             else
                             {
                                 <tr>
-                                    <td colspan="4">No additional documents found.</td>
+                                    <td colspan="4" class="text-center">No associated files found.</td>
                                 </tr>
                             }
                         </tbody>
                     </table>
                 </div>
             </div>
+
+            <!-- 📎 Additional Documents Card -->
+            <div class="col-md-10 card p-4 mb-4">
+                <h4 class="text-blue mb-3">Additional Documents</h4>
+                <div class="table-responsive">
+                    <table class="table table-bordered file-upload-table">
+                        <thead class="table-light">
+                            <tr>
+                                <th style="width: 30%;">Document Name</th>
+                                <th style="width: 30%;">File Name</th>
+                                <th style="width: 20%;">Preview</th>
+                                <th style="width: 20%;">Download</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model.SavedAdditionalDocuments != null && Model.SavedAdditionalDocuments.Any())
+                            {
+                                foreach (var file in Model.SavedAdditionalDocuments)
+                                {
+                                    <tr>
+                                        <td class="text-break">@file.DocumentName</td>
+                                        <td class="text-break">@file.OriginalFileName</td>
+                                        <td class="text-center">
+                                            <a asp-action="PreviewAdditionalDocument"
+                                                   asp-route-id="@file.Id"
+                                                   class="btn btn-secondary"
+                                                   target="_blank">
+                                                Preview
+                                            </a>
+                                        </td>
+                                        <td class="text-center">
+                                            <a asp-action="DownloadAdditionalDocument"
+                                                   asp-route-id="@file.Id"
+                                                   class="btn btn-secondary">
+                                                Download
+                                            </a>
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td colspan="4" class="text-center">No additional documents found.</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
             <!-- 📝 Notes Card -->
             <div class="col-md-10 card p-4 mb-5">
                 <h4 class="text-blue mb-3">Notes</h4>
@@ -163,3 +186,23 @@
         </div>
     </div>
 </div>
+<style>
+    .file-upload-table {
+        table-layout: fixed;
+        width: 100%;
+    }
+
+        .file-upload-table th,
+        .file-upload-table td {
+            vertical-align: middle;
+        }
+
+            .file-upload-table td.text-break {
+                word-break: break-word;
+                overflow-wrap: anywhere;
+            }
+
+        .file-upload-table .btn {
+            min-width: 82px;
+        }
+</style>
