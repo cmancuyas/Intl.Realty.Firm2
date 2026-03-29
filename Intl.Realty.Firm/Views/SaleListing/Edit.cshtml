@@ -703,6 +703,9 @@
             color: #fff !important;
             font-weight: 600;
         }
+        #tblAdditionalDocuments td.text-center.align-middle {
+            vertical-align: middle !important;
+        }
 </style>
 @section Scripts {
     @* Load ASP.NET Core validation partial *@
@@ -800,9 +803,9 @@
                         class="form-control additional-document-file"
                         accept=".pdf,.doc,.docx,.xls,.xlsx" />
                     </td>
-                    <td>
+                    <td class="text-center align-middle">
                         <button type="button" class="btn btn-danger btnRemoveAdditionalDocumentRow">
-                        Remove
+                            Remove
                         </button>
                     </td>
                 </tr>
