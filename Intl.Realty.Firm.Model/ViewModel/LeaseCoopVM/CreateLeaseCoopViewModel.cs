@@ -1,4 +1,5 @@
 ﻿using Intl.Realty.Firm.Model.Model;
+using Intl.Realty.Firm.Model.ViewModel.AdditionalDocumentVM;
 using Intl.Realty.Firm.Model.ViewModel.FileUploadVM;
 using Intl.Realty.Firm.Model.ViewModel.IRFDealVM;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -13,6 +14,7 @@ namespace Intl.Realty.Firm.Model.ViewModel.LeaseCoopVM
         public int IRFDealId { get; set; }
         public CreateIRFDealLeaseCoopViewModel CreateIRFDealLeaseCoopViewModel { get; set; } = new CreateIRFDealLeaseCoopViewModel();
         public CreateFileUploadListViewModel CreateFileUploadListViewModel { get; set; } = new CreateFileUploadListViewModel();
+        public List<AdditionalDocumentInputViewModel> AdditionalDocuments { get; set; } = new();
         public int DealStatusId { get; set; }
         public DateTime? DateSubmitted { get; set; }
         public string? Notes { get; set; }

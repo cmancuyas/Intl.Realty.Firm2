@@ -34,6 +34,7 @@ namespace Intl.Realty.Firm.DataAccess
         public DbSet<ProfileImage> ProfileImages { get; set; }
         public DbSet<AgentReferral> AgentReferrals { get; set; }
         public DbSet<EmailStatus> EmailStatuses { get; set; }
+        public DbSet<AdditionalDocument> AdditionalDocuments { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -50,6 +51,37 @@ namespace Intl.Realty.Firm.DataAccess
                 .WithOne(p => p.User)
                 .HasForeignKey<ApplicationUser>(u => u.ProfileImageId)
                 .OnDelete(DeleteBehavior.SetNull); // or Cascade depending on logic
+
+
+            modelBuilder.Entity<AdditionalDocument>()
+            .HasOne(ad => ad.SaleListing)
+            .WithMany(sl => sl.AdditionalDocuments)
+            .HasForeignKey(ad => ad.SaleListingId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<AdditionalDocument>()
+                .HasOne(ad => ad.SaleCoop)
+                .WithMany(sc => sc.AdditionalDocuments)
+                .HasForeignKey(ad => ad.SaleCoopId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<AdditionalDocument>()
+                .HasOne(ad => ad.LeaseListing)
+                .WithMany(ll => ll.AdditionalDocuments)
+                .HasForeignKey(ad => ad.LeaseListingId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<AdditionalDocument>()
+                .HasOne(ad => ad.LeaseCoop)
+                .WithMany(lc => lc.AdditionalDocuments)
+                .HasForeignKey(ad => ad.LeaseCoopId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<AdditionalDocument>()
+                .HasOne(ad => ad.TransactionType)
+                .WithMany()
+                .HasForeignKey(ad => ad.TransactionTypeId)
+                .OnDelete(DeleteBehavior.Restrict);
 
             // Location Module
             modelBuilder.ApplyConfiguration(new SaleListingConfig());
