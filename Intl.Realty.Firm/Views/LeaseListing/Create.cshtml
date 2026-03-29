@@ -312,44 +312,49 @@
                                 </h5>
 
                                 <div class="table-responsive">
-                                    <table class="table file-upload-table" id="tblApplicantFiles" width="100%">
-                                        <thead class="bg-blue">
+                                    <table class="table dataTable file-upload-table" id="tblApplicantFiles" width="100%">
+                                        <thead>
                                             <tr>
-                                                <th style="width: 30%">Document Type</th>
-                                                <th style="width: 18%">Is Required?</th>
-                                                <th>Uploaded Document</th>
+                                                <th style="width:30%">Document Type</th>
+                                                <th style="width:15%">Is Required?</th>
+                                                <th style="width:55%">Uploaded Document</th>
                                             </tr>
                                         </thead>
+
                                         @{
                                             var docAssignments = Model.CreateLeaseListingViewModel.DocumentTypeAssignmentList
-                                            .Where(x => !x.IsDeleted
-                                            && x.IsActive
-                                            && x.DocumentType != null
-                                            && !x.DocumentType.IsDeleted
-                                            && x.DocumentType.IsActive)
-                                            .ToList();
+                                                .Where(x => !x.IsDeleted
+                                                    && x.IsActive
+                                                    && x.DocumentType != null
+                                                    && !x.DocumentType.IsDeleted
+                                                    && x.DocumentType.IsActive)
+                                                .ToList();
                                         }
+
                                         <tbody>
                                             @for (int i = 0; i < docAssignments.Count; i++)
                                             {
                                                 var item = docAssignments[i];
+
                                                 <tr data-document-type-id="@item.DocumentType.Id">
-                                                    <td class="text-break" style="width: 30%">
+                                                    <td class="text-break" style="width:30%">
                                                         @item.DocumentType.Description
                                                         <input type="hidden"
                                                                name="CreateLeaseListingViewModel.CreateFileUploadListViewModel.CreateFileUploadsViewModel[@i].DocumentTypeId"
                                                                value="@item.DocumentType.Id" />
                                                     </td>
+
                                                     <td id="isRequired">
-                                                        @if (item.IsRequired == true)
+                                                        @if (item.IsRequired)
                                                         {
                                                             <label class="status-active">Required</label>
                                                         }
-                                                        else if (item.IsRequired == false)
+                                                        else
                                                         {
                                                             <label class="status-inactive pe-cursor">Not Required</label>
                                                         }
                                                     </td>
+
                                                     <td>
                                                         <input type="file"
                                                                name="CreateLeaseListingViewModel.CreateFileUploadListViewModel.CreateFileUploadsViewModel[@i].Files"
@@ -384,34 +389,42 @@
                                 </div>
 
                                 <div class="table-responsive">
-                                    <table class="table file-upload-table" id="tblAdditionalDocuments" width="100%">
-                                        <thead class="bg-blue">
+                                    <table class="table dataTable file-upload-table" id="tblAdditionalDocuments" width="100%">
+                                        <thead>
                                             <tr>
-                                                <th style="width: 35%">Document Name</th>
-                                                <th style="width: 45%">Upload File</th>
-                                                <th style="width: 20%">Action</th>
+                                                <th style="width:35%">Document Name</th>
+                                                <th style="width:45%">Upload File</th>
+                                                <th style="width:20%">Action</th>
                                             </tr>
                                         </thead>
+
                                         <tbody>
-                                            @if (Model.CreateLeaseListingViewModel.AdditionalDocuments != null && Model.CreateLeaseListingViewModel.AdditionalDocuments.Any())
+                                            @if (Model.CreateLeaseListingViewModel.AdditionalDocuments != null &&
+                                                                         Model.CreateLeaseListingViewModel.AdditionalDocuments.Any())
                                             {
                                                 @for (int i = 0; i < Model.CreateLeaseListingViewModel.AdditionalDocuments.Count; i++)
                                                 {
                                                     <tr>
                                                         <td>
+                                                            <input type="hidden"
+                                                                   name="CreateLeaseListingViewModel.AdditionalDocuments[@i].Id"
+                                                                   value="@Model.CreateLeaseListingViewModel.AdditionalDocuments[i].Id" />
+
                                                             <input type="text"
                                                                    name="CreateLeaseListingViewModel.AdditionalDocuments[@i].DocumentName"
                                                                    value="@Model.CreateLeaseListingViewModel.AdditionalDocuments[i].DocumentName"
                                                                    class="form-control"
                                                                    placeholder="Enter document name" />
                                                         </td>
+
                                                         <td>
                                                             <input type="file"
                                                                    name="CreateLeaseListingViewModel.AdditionalDocuments[@i].File"
                                                                    class="form-control additional-document-file"
-                                                                   accept=".pdf,.doc,.docx,.xls,.xlsx" />
+                                                                   accept=".pdf,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png" />
                                                         </td>
-                                                        <td>
+
+                                                        <td class="text-center align-middle">
                                                             <button type="button" class="btn btn-danger btnRemoveAdditionalDocumentRow">
                                                                 Remove
                                                             </button>
@@ -423,18 +436,24 @@
                                             {
                                                 <tr>
                                                     <td>
+                                                        <input type="hidden"
+                                                               name="CreateLeaseListingViewModel.AdditionalDocuments[0].Id"
+                                                               value="" />
+
                                                         <input type="text"
                                                                name="CreateLeaseListingViewModel.AdditionalDocuments[0].DocumentName"
                                                                class="form-control"
                                                                placeholder="Enter document name" />
                                                     </td>
+
                                                     <td>
                                                         <input type="file"
                                                                name="CreateLeaseListingViewModel.AdditionalDocuments[0].File"
                                                                class="form-control additional-document-file"
-                                                               accept=".pdf,.doc,.docx,.xls,.xlsx" />
+                                                               accept=".pdf,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png" />
                                                     </td>
-                                                    <td>
+
+                                                    <td class="text-center align-middle">
                                                         <button type="button" class="btn btn-danger btnRemoveAdditionalDocumentRow">
                                                             Remove
                                                         </button>
@@ -442,6 +461,7 @@
                                                 </tr>
                                             }
                                         </tbody>
+
                                     </table>
                                 </div>
                             </div>
@@ -482,11 +502,13 @@
     .file-upload-table {
         table-layout: fixed;
         width: 100%;
+        border-collapse: collapse;
     }
 
         .file-upload-table th,
         .file-upload-table td {
             vertical-align: middle;
+            border: 1px solid #dee2e6;
         }
 
             .file-upload-table td.text-break {
@@ -494,32 +516,24 @@
                 overflow-wrap: anywhere;
             }
 
-        /* ===== HEADER FIX ===== */
+        /* ✅ Button consistency */
+        .file-upload-table .btn {
+            min-width: 82px;
+            margin-right: 4px;
+        }
+
+        /* ✅ Header styling (VERY IMPORTANT – fixes your earlier issue) */
         .file-upload-table thead th {
             background-color: #203d57 !important;
-            color: #ffffff !important;
+            color: #fff !important;
             font-weight: 600;
             border-color: #203d57 !important;
         }
 
+        /* Optional: ensure bg-blue still works if used */
         .file-upload-table thead.bg-blue th {
             background-color: #203d57 !important;
-            color: #ffffff !important;
-        }
-
-        /* ===== BUTTON SIZE FIX ===== */
-        .file-upload-table .btn {
-            min-width: 90px;
-            height: 34px;
-            padding: 4px 10px;
-            font-size: 13px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .file-upload-table td .d-flex {
-            gap: 6px;
+            color: #fff !important;
         }
 </style>
 @section Scripts {

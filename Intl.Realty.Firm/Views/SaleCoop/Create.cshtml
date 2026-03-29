@@ -302,7 +302,6 @@
 
                         </div>
                     </div>
-
                     <div class="tab-pane" id="fileUploads" aria-labelledby="fileUploads-tab" style="background-color:white;">
                         <div class="row d-flex justify-content-center m-0">
                             <div class="col-md-12">
@@ -311,29 +310,29 @@
                                     <span class="s-required">*</span>
                                 </h5>
 
-                                <table class="table dataTable" id="tblApplicantFiles" width="100%">
+                                <table class="table dataTable file-upload-table" id="tblApplicantFiles" width="100%">
                                     <thead>
                                         <tr>
-                                            <th style="width: 30%">Document Type</th>
-                                            <th>Is Required?</th>
-                                            <th>Uploaded Document</th>
+                                            <th style="width:30%;">Document Type</th>
+                                            <th style="width:15%;">Is Required?</th>
+                                            <th style="width:55%;">Uploaded Document</th>
                                         </tr>
                                     </thead>
                                     @{
                                         var docAssignments = Model.CreateSaleCoopViewModel.DocumentTypeAssignmentList
-                                        .Where(x => !x.IsDeleted
-                                                    && x.IsActive
-                                                    && x.DocumentType != null
-                                                    && !x.DocumentType.IsDeleted
-                                                    && x.DocumentType.IsActive)
-                                        .ToList();
+                                            .Where(x => !x.IsDeleted
+                                                        && x.IsActive
+                                                        && x.DocumentType != null
+                                                        && !x.DocumentType.IsDeleted
+                                                        && x.DocumentType.IsActive)
+                                            .ToList();
                                     }
                                     <tbody>
                                         @for (int i = 0; i < docAssignments.Count; i++)
                                         {
                                             var item = docAssignments[i];
                                             <tr data-document-type-id="@item.DocumentType.Id">
-                                                <td style="width: 30%">
+                                                <td style="width:30%">
                                                     @item.DocumentType.Description
                                                     <input type="hidden"
                                                            name="CreateSaleCoopViewModel.CreateFileUploadListViewModel.CreateFileUploadsViewModel[@i].DocumentTypeId"
@@ -381,7 +380,7 @@
                                     </button>
                                 </div>
 
-                                <table class="table dataTable" id="tblAdditionalDocuments" width="100%">
+                                <table class="table dataTable file-upload-table" id="tblAdditionalDocuments" width="100%">
                                     <thead>
                                         <tr>
                                             <th style="width:35%;">Document Name</th>
@@ -413,7 +412,7 @@
                                                                class="form-control additional-document-file"
                                                                accept=".pdf,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png" />
                                                     </td>
-                                                    <td>
+                                                    <td class="text-center align-middle">
                                                         <button type="button" class="btn btn-danger btnRemoveAdditionalDocumentRow">
                                                             Remove
                                                         </button>
@@ -439,7 +438,7 @@
                                                            class="form-control additional-document-file"
                                                            accept=".pdf,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png" />
                                                 </td>
-                                                <td>
+                                                <td class="text-center align-middle">
                                                     <button type="button" class="btn btn-danger btnRemoveAdditionalDocumentRow">
                                                         Remove
                                                     </button>
@@ -490,7 +489,36 @@
         </div>
     </div>
 </div>
+<style>
+    .file-upload-table {
+        table-layout: fixed;
+        width: 100%;
+        border-collapse: collapse;
+    }
 
+        .file-upload-table th,
+        .file-upload-table td {
+            vertical-align: middle;
+            border: 1px solid #dee2e6;
+        }
+
+            .file-upload-table td.text-break {
+                word-break: break-word;
+                overflow-wrap: anywhere;
+            }
+
+        .file-upload-table .btn {
+            min-width: 82px;
+            margin-right: 4px;
+        }
+
+        .file-upload-table thead th {
+            background-color: #203d57 !important;
+            color: #fff !important;
+            font-weight: 600;
+            border-color: #203d57 !important;
+        }
+</style>
 @section Scripts {
     @* ASP.NET Core client-side validation *@
     @{
