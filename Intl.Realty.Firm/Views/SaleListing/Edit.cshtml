@@ -365,54 +365,55 @@
                     <div class="tab-pane" id="viewFileUploads" aria-labelledby="viewFileUploads-tab" style="background-color:white;">
                         <div class="row">
                             <div class="col-md-12">
-                                <div class="form-submit-tab mt-3 bg-white" style="display: block !important">
+                                <div class="form-submit-tab mt-3 bg-white" style="display:block !important">
 
-                                    <!-- Predefined Document Uploads -->
-                                    <div class="table-responsive mb-4">
-                                        <table class="table align-middle mb-0 file-upload-table">
-                                            <thead class="bg-blue">
+                                    <div class="table-responsive">
+                                        <table class="table table-bordered file-upload-table">
+                                            <thead>
                                                 <tr>
-                                                    <th class="text-white ps-3 p-2" style="width: 35%;">Document Type</th>
-                                                    <th class="text-white ps-3 p-2" style="width: 40%;">Filename</th>
-                                                    <th class="text-white ps-3 p-2" style="width: 25%;">Action</th>
+                                                    <th class="ps-3 p-2" style="width:30%;">Document Type</th>
+                                                    <th class="ps-3 p-2" style="width:35%;">Filename</th>
+                                                    <th class="ps-3 p-2 text-center" style="width:35%;">Action</th>
                                                 </tr>
                                             </thead>
                                             <tbody id="fileTableBody">
-                                                @if (Model.EditSaleListingViewModel.FileUploads != null && Model.EditSaleListingViewModel.FileUploads.Any())
+                                                @if (Model.EditSaleListingViewModel.FileUploads != null &&
+                                                                                 Model.EditSaleListingViewModel.FileUploads.Any(x => x.IsActive && !x.IsDeleted))
                                                 {
-                                                    @foreach (var fileUpload in Model.EditSaleListingViewModel.FileUploads)
+                                                    foreach (var fileUpload in Model.EditSaleListingViewModel.FileUploads
+                                                        .Where(x => x.IsActive && !x.IsDeleted))
                                                     {
                                                         var docType = Model.EditSaleListingViewModel.DocumentTypeList?
                                                             .FirstOrDefault(dt => dt.Id == fileUpload.DocumentTypeId && !dt.IsDeleted);
 
                                                         if (docType != null)
                                                         {
-                                                            <tr class="border-bottom">
-                                                                <td class="ps-3 py-3">@docType.Description</td>
-                                                                <td class="ps-3 py-3 text-break">@fileUpload.OriginalFileName</td>
-                                                                <td class="ps-3 py-3">
-                                                                    <div class="d-flex flex-wrap gap-2">
-                                                                        <a asp-action="Download"
-                                                                               asp-route-id="@fileUpload.Id"
-                                                                               class="btn btn-secondary"
-                                                                               target="_blank">
-                                                                            Download
-                                                                        </a>
-
-                                                                        <button type="button"
-                                                                                class="btn btn-danger btn-delete-file"
-                                                                                data-file-id="@fileUpload.Id">
-                                                                            Delete
-                                                                        </button>
-
-                                                                        <a asp-action="PreviewFile"
-                                                                               asp-controller="SaleListing"
-                                                                               asp-route-id="@fileUpload.Id"
-                                                                               class="btn btn-secondary"
-                                                                               target="_blank">
-                                                                            Preview
-                                                                        </a>
-                                                                    </div>
+                                                            <tr>
+                                                                <td class="p-2">@docType.Description</td>
+                                                                <td class="p-2 text-break">
+                                                                    @(string.IsNullOrWhiteSpace(fileUpload.OriginalFileName)
+                                                                        ? fileUpload.FileName
+                                                                        : fileUpload.OriginalFileName)
+                                                                </td>
+                                                                <td class="p-2 text-center">
+                                                                    <a asp-action="Download"
+                                                                           asp-route-id="@fileUpload.Id"
+                                                                           class="btn btn-secondary"
+                                                                           target="_blank">
+                                                                        Download
+                                                                    </a>
+                                                                    <button type="button"
+                                                                            class="btn btn-danger btn-delete-file"
+                                                                            data-file-id="@fileUpload.Id">
+                                                                        Delete
+                                                                    </button>
+                                                                    <a asp-action="PreviewFile"
+                                                                           asp-controller="SaleListing"
+                                                                           asp-route-id="@fileUpload.Id"
+                                                                           class="btn btn-secondary"
+                                                                           target="_blank">
+                                                                        Preview
+                                                                    </a>
                                                                 </td>
                                                             </tr>
                                                         }
@@ -421,56 +422,50 @@
                                                 else
                                                 {
                                                     <tr>
-                                                        <td colspan="3" class="text-center p-3">No uploaded predefined documents found.</td>
+                                                        <td colspan="3" class="text-center">No associated files found.</td>
                                                     </tr>
                                                 }
                                             </tbody>
                                         </table>
                                     </div>
 
-                                    <h5 class="text-blue mb-3">Saved Additional Documents</h5>
-
-                                    <div class="table-responsive">
-                                        <table class="table align-middle mb-0 file-upload-table">
-                                            <thead class="bg-blue">
+                                    <div class="table-responsive mt-4">
+                                        <table class="table table-bordered file-upload-table" id="tblSavedAdditionalDocuments">
+                                            <thead>
                                                 <tr>
-                                                    <th class="text-white ps-3 p-2" style="width: 35%;">Document Name</th>
-                                                    <th class="text-white ps-3 p-2" style="width: 40%;">Filename</th>
-                                                    <th class="text-white ps-3 p-2" style="width: 25%;">Action</th>
+                                                    <th class="ps-3 p-2" style="width:30%;">Document Name</th>
+                                                    <th class="ps-3 p-2" style="width:35%;">Filename</th>
+                                                    <th class="ps-3 p-2 text-center" style="width:35%;">Action</th>
                                                 </tr>
                                             </thead>
                                             <tbody id="additionalDocumentTableBody">
-                                                @if (Model.EditSaleListingViewModel.SavedAdditionalDocuments != null
-                                                 && Model.EditSaleListingViewModel.SavedAdditionalDocuments.Any())
+                                                @if (Model.EditSaleListingViewModel.SavedAdditionalDocuments != null &&
+                                                                                 Model.EditSaleListingViewModel.SavedAdditionalDocuments.Any(x => x.IsActive && !x.IsDeleted))
                                                 {
-                                                    @foreach (var item in Model.EditSaleListingViewModel.SavedAdditionalDocuments
-                                                      .Where(x => x.IsActive && !x.IsDeleted))
+                                                    foreach (var item in Model.EditSaleListingViewModel.SavedAdditionalDocuments
+                                                        .Where(x => x.IsActive && !x.IsDeleted))
                                                     {
-                                                        <tr class="border-bottom">
-                                                            <td class="ps-3 py-3">@item.DocumentName</td>
-                                                            <td class="ps-3 py-3 text-break">@item.OriginalFileName</td>
-                                                            <td class="ps-3 py-3">
-                                                                <div class="d-flex flex-wrap gap-2">
-                                                                    <a asp-action="DownloadAdditionalDocument"
-                                                                           asp-route-id="@item.Id"
-                                                                           class="btn btn-secondary"
-                                                                           target="_blank">
-                                                                        Download
-                                                                    </a>
-
-                                                                    <button type="button"
-                                                                            class="btn btn-danger btn-delete-additional-document"
-                                                                            data-id="@item.Id">
-                                                                        Delete
-                                                                    </button>
-
-                                                                    <a asp-action="PreviewAdditionalDocument"
-                                                                           asp-route-id="@item.Id"
-                                                                           class="btn btn-secondary"
-                                                                           target="_blank">
-                                                                        Preview
-                                                                    </a>
-                                                                </div>
+                                                        <tr id="additionalDocumentRow_@item.Id">
+                                                            <td class="p-2 text-break">@item.DocumentName</td>
+                                                            <td class="p-2 text-break">@item.OriginalFileName</td>
+                                                            <td class="p-2 text-center">
+                                                                <a asp-action="DownloadAdditionalDocument"
+                                                                       asp-route-id="@item.Id"
+                                                                       class="btn btn-secondary"
+                                                                       target="_blank">
+                                                                    Download
+                                                                </a>
+                                                                <button type="button"
+                                                                        class="btn btn-danger btn-delete-additional-document"
+                                                                        data-id="@item.Id">
+                                                                    Delete
+                                                                </button>
+                                                                <a asp-action="PreviewAdditionalDocument"
+                                                                       asp-route-id="@item.Id"
+                                                                       class="btn btn-secondary"
+                                                                       target="_blank">
+                                                                    Preview
+                                                                </a>
                                                             </td>
                                                         </tr>
                                                     }
@@ -478,7 +473,7 @@
                                                 else
                                                 {
                                                     <tr>
-                                                        <td colspan="3" class="text-center p-3">No additional documents uploaded yet.</td>
+                                                        <td colspan="3" class="text-center">No additional documents found.</td>
                                                     </tr>
                                                 }
                                             </tbody>
@@ -508,26 +503,35 @@
                                         .ToList();
                                 }
 
-                                <table class="table dataTable" id="tblApplicantFiles" width="100%">
+                                <table class="table dataTable file-upload-table" id="tblApplicantFiles" width="100%">
                                     <thead>
                                         <tr>
-                                            <th style="width: 30%">Document Type</th>
-                                            <th>Is Required?</th>
-                                            <th>Uploaded Document</th>
+                                            <th style="width:30%;">Document Type</th>
+                                            <th style="width:15%;">Is Required?</th>
+                                            <th style="width:55%;">Uploaded Document</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         @for (int i = 0; i < docAssignments.Count; i++)
                                         {
                                             var item = docAssignments[i];
+                                            var alreadyUploaded = Model.EditSaleListingViewModel.FileUploads != null &&
+                                                                  Model.EditSaleListingViewModel.FileUploads.Any(f =>
+                                                                      f.DocumentTypeId == item.DocumentType.Id &&
+                                                                      f.IsActive && !f.IsDeleted);
+
                                             <tr data-document-type-id="@item.DocumentType.Id">
-                                                <td style="width: 30%">
+                                                <td style="width:30%">
                                                     @item.DocumentType.Description
+                                                    @if (alreadyUploaded)
+                                                    {
+                                                        <span class="badge bg-success ms-1">File Uploaded</span>
+                                                    }
                                                     <input type="hidden"
                                                            name="EditSaleListingViewModel.CreateFileUploadListViewModel.CreateFileUploadsViewModel[@i].DocumentTypeId"
                                                            value="@item.DocumentType.Id" />
                                                 </td>
-                                                <td>
+                                                <td id="isRequired">
                                                     @if (item.IsRequired == true)
                                                     {
                                                         <label class="status-active">Required</label>
@@ -569,16 +573,17 @@
                                     </button>
                                 </div>
 
-                                <table class="table dataTable" id="tblAdditionalDocuments" width="100%">
+                                <table class="table dataTable file-upload-table" id="tblAdditionalDocuments" width="100%">
                                     <thead>
                                         <tr>
-                                            <th style="width: 35%">Document Name</th>
-                                            <th style="width: 45%">Upload File</th>
-                                            <th style="width: 20%">Action</th>
+                                            <th style="width:35%;">Document Name</th>
+                                            <th style="width:45%;">Upload File</th>
+                                            <th style="width:20%;">Action</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @if (Model.EditSaleListingViewModel.AdditionalDocuments != null && Model.EditSaleListingViewModel.AdditionalDocuments.Any())
+                                        @if (Model.EditSaleListingViewModel.AdditionalDocuments != null &&
+                                                                 Model.EditSaleListingViewModel.AdditionalDocuments.Any())
                                         {
                                             @for (int i = 0; i < Model.EditSaleListingViewModel.AdditionalDocuments.Count; i++)
                                             {
@@ -598,9 +603,9 @@
                                                         <input type="file"
                                                                name="EditSaleListingViewModel.AdditionalDocuments[@i].File"
                                                                class="form-control additional-document-file"
-                                                               accept=".pdf,.doc,.docx,.xls,.xlsx" />
+                                                               accept=".pdf,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png" />
                                                     </td>
-                                                    <td>
+                                                    <td class="text-center align-middle">
                                                         <button type="button" class="btn btn-danger btnRemoveAdditionalDocumentRow">
                                                             Remove
                                                         </button>
@@ -625,9 +630,9 @@
                                                     <input type="file"
                                                            name="EditSaleListingViewModel.AdditionalDocuments[0].File"
                                                            class="form-control additional-document-file"
-                                                           accept=".pdf,.doc,.docx,.xls,.xlsx" />
+                                                           accept=".pdf,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png" />
                                                 </td>
-                                                <td>
+                                                <td class="text-center align-middle">
                                                     <button type="button" class="btn btn-danger btnRemoveAdditionalDocumentRow">
                                                         Remove
                                                     </button>
@@ -674,11 +679,13 @@
     .file-upload-table {
         table-layout: fixed;
         width: 100%;
+        border-collapse: collapse;
     }
 
         .file-upload-table th,
         .file-upload-table td {
             vertical-align: middle;
+            border: 1px solid #dee2e6;
         }
 
             .file-upload-table td.text-break {
@@ -688,24 +695,15 @@
 
         .file-upload-table .btn {
             min-width: 82px;
+            margin-right: 4px;
         }
-
-        /* ===== FIX HEADER COLOR CONFLICT ===== */
 
         .file-upload-table thead th {
             background-color: #203d57 !important;
-            color: #ffffff !important;
+            color: #fff !important;
             font-weight: 600;
-            border-color: #203d57 !important;
         }
-
-        .file-upload-table thead.bg-blue th {
-            background-color: #203d57 !important;
-            color: #ffffff !important;
-        }
-
 </style>
-
 @section Scripts {
     @* Load ASP.NET Core validation partial *@
     @{
