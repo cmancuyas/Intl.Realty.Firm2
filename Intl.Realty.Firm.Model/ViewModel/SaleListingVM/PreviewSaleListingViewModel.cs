@@ -15,6 +15,7 @@ namespace Intl.Realty.Firm.Model.ViewModel.SaleListingVM
         public IRFDeal IRFDeal { get; set; } = new IRFDeal();
         public DateTime? DateSubmitted { get; set; }
         public string? Notes { get; set; }
+        public bool? HasRejectedOffers { get; set; }
         public List<FileUpload>? FileUploads { get; set; }
         public List<AdditionalDocument>? SavedAdditionalDocuments { get; set; } = new List<AdditionalDocument>();
         public int DealStatusId { get; set; }

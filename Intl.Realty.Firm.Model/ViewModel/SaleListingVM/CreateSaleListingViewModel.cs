@@ -19,6 +19,7 @@ namespace Intl.Realty.Firm.Model.ViewModel.SaleListingVM
         public int DealStatusId { get; set; }
         public DateTime? DateSubmitted { get; set; }
         public string? Notes { get; set; }
+        public bool? HasRejectedOffers { get; set; }
         public bool IsActive { get; set; }
         public bool IsDeleted { get; set; }
         public Guid CreatedBy { get; set; }

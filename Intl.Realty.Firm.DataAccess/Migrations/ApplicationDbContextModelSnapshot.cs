@@ -22,6 +22,102 @@ namespace Intl.Realty.Firm.DataAccess.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("Intl.Realty.Firm.Model.Model.AdditionalDocument", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("CreatedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("DeletedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Directory")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("DocumentName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FileExtension")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FileName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FileSize")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FullPath")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<int?>("LeaseCoopId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("LeaseListingId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("OriginalFileName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<byte[]>("RowVersion")
+                        .IsConcurrencyToken()
+                        .IsRequired()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("rowversion");
+
+                    b.Property<int?>("SaleCoopId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("SaleListingId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TransactionTypeId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("UpdatedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("LeaseCoopId");
+
+                    b.HasIndex("LeaseListingId");
+
+                    b.HasIndex("SaleCoopId");
+
+                    b.HasIndex("SaleListingId");
+
+                    b.HasIndex("TransactionTypeId");
+
+                    b.ToTable("AdditionalDocuments");
+                });
+
             modelBuilder.Entity("Intl.Realty.Firm.Model.Model.AgentReferral", b =>
                 {
                     b.Property<int>("Id")
@@ -251,7 +347,7 @@ namespace Intl.Realty.Firm.DataAccess.Migrations
                         {
                             Id = new Guid("74b7ddfa-9c71-4b95-84e2-9b5fcdef884c"),
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "9b136909-faf0-4b69-b00b-72a68fc2fa61",
+                            ConcurrencyStamp = "ab6e838b-e82f-400a-887a-04487116e467",
                             Email = "superadmin@internationalrealtyfirm.com",
                             EmailConfirmed = true,
                             EmailStatusId = 0,
@@ -261,10 +357,10 @@ namespace Intl.Realty.Firm.DataAccess.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "SUPERADMIN@INTERNATIONALREALTYFIRM.COM",
                             NormalizedUserName = "SUPERADMIN@INTERNATIONALREALTYFIRM.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAELoqS2fbtZszsAVuRywOqwl4AG1PPZb15G2xXwKaqnfB787VLLyAMPH+llH5vc5IRQ==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEFS3efoGX8Qgj79s1tkDyuTTy1zfVQpSsvG44Xf9CBRqnrloift/s+ku5p1lacNgdQ==",
                             PhoneNumberConfirmed = false,
-                            RegistrationDate = new DateTime(2025, 7, 27, 17, 15, 49, 24, DateTimeKind.Local).AddTicks(9252),
-                            SecurityStamp = "85f9f089-dfa0-4f38-8686-6c436d74aa53",
+                            RegistrationDate = new DateTime(2026, 3, 30, 5, 28, 34, 606, DateTimeKind.Local).AddTicks(811),
+                            SecurityStamp = "01c827a6-e446-4603-82b5-0d43d5150373",
                             TwoFactorEnabled = false,
                             UserAgreement = false,
                             UserName = "superadmin@internationalrealtyfirm.com"
@@ -519,7 +615,7 @@ namespace Intl.Realty.Firm.DataAccess.Migrations
                             IsDeleted = false,
                             NumberRange = "1000000",
                             RowVersion = new byte[0],
-                            Year = 2025
+                            Year = 2026
                         },
                         new
                         {
@@ -531,7 +627,7 @@ namespace Intl.Realty.Firm.DataAccess.Migrations
                             IsDeleted = false,
                             NumberRange = "1000000",
                             RowVersion = new byte[0],
-                            Year = 2026
+                            Year = 2027
                         },
                         new
                         {
@@ -543,7 +639,7 @@ namespace Intl.Realty.Firm.DataAccess.Migrations
                             IsDeleted = false,
                             NumberRange = "1000000",
                             RowVersion = new byte[0],
-                            Year = 2027
+                            Year = 2028
                         },
                         new
                         {
@@ -555,7 +651,7 @@ namespace Intl.Realty.Firm.DataAccess.Migrations
                             IsDeleted = false,
                             NumberRange = "1000000",
                             RowVersion = new byte[0],
-                            Year = 2028
+                            Year = 2029
                         });
                 });
 
@@ -994,6 +1090,38 @@ namespace Intl.Realty.Firm.DataAccess.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("EmailStatuses");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Code = "1",
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreatedBy = new Guid("00000000-0000-0000-0000-000000000000"),
+                            Description = "Active",
+                            IsActive = true,
+                            IsDeleted = false
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Code = "2",
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreatedBy = new Guid("00000000-0000-0000-0000-000000000000"),
+                            Description = "Rejected",
+                            IsActive = true,
+                            IsDeleted = false
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Code = "3",
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreatedBy = new Guid("00000000-0000-0000-0000-000000000000"),
+                            Description = "Cancelled",
+                            IsActive = true,
+                            IsDeleted = false
+                        });
                 });
 
             modelBuilder.Entity("Intl.Realty.Firm.Model.Model.EmploymentStatus", b =>
@@ -1204,11 +1332,13 @@ namespace Intl.Realty.Firm.DataAccess.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("BuyerName")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<decimal>("BuyingCommissionPercentage")
+                    b.Property<decimal?>("BuyingCommission")
                         .HasColumnType("decimal(18,2)");
+
+                    b.Property<int?>("BuyingCommissionSign")
+                        .HasColumnType("int");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
@@ -1222,13 +1352,13 @@ namespace Intl.Realty.Firm.DataAccess.Migrations
                     b.Property<Guid?>("DeletedBy")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<decimal>("DepositAmount")
+                    b.Property<decimal?>("DepositAmount")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<DateTime>("DepositDate")
+                    b.Property<DateTime?>("DepositDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime>("FinalClosingDate")
+                    b.Property<DateTime?>("FinalClosingDate")
                         .HasColumnType("datetime2");
 
                     b.Property<decimal?>("FinalLeasePrice")
@@ -1247,7 +1377,6 @@ namespace Intl.Realty.Firm.DataAccess.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("LandLordName")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("LandLordPhoneNumber")
@@ -1262,11 +1391,13 @@ namespace Intl.Realty.Firm.DataAccess.Migrations
                     b.Property<string>("ListingBrokerageFax")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<decimal>("ListingCommissionPercentage")
+                    b.Property<decimal?>("ListingCommission")
                         .HasColumnType("decimal(18,2)");
 
+                    b.Property<int?>("ListingCommissionSign")
+                        .HasColumnType("int");
+
                     b.Property<string>("PropertyAddress")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("SellerAgentName")
@@ -1761,6 +1892,9 @@ namespace Intl.Realty.Firm.DataAccess.Migrations
                     b.Property<string>("DeletedByFullName")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<bool?>("HasRejectedOffers")
+                        .HasColumnType("bit");
+
                     b.Property<int>("IRFDealId")
                         .HasColumnType("int");
 
@@ -1997,6 +2131,45 @@ namespace Intl.Realty.Firm.DataAccess.Migrations
                     b.HasKey("UserId", "LoginProvider", "Name");
 
                     b.ToTable("AspNetUserTokens", (string)null);
+                });
+
+            modelBuilder.Entity("Intl.Realty.Firm.Model.Model.AdditionalDocument", b =>
+                {
+                    b.HasOne("Intl.Realty.Firm.Model.Model.LeaseCoop", "LeaseCoop")
+                        .WithMany("AdditionalDocuments")
+                        .HasForeignKey("LeaseCoopId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("Intl.Realty.Firm.Model.Model.LeaseListing", "LeaseListing")
+                        .WithMany("AdditionalDocuments")
+                        .HasForeignKey("LeaseListingId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("Intl.Realty.Firm.Model.Model.SaleCoop", "SaleCoop")
+                        .WithMany("AdditionalDocuments")
+                        .HasForeignKey("SaleCoopId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("Intl.Realty.Firm.Model.Model.SaleListing", "SaleListing")
+                        .WithMany("AdditionalDocuments")
+                        .HasForeignKey("SaleListingId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("Intl.Realty.Firm.Model.Model.TransactionType", "TransactionType")
+                        .WithMany()
+                        .HasForeignKey("TransactionTypeId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("LeaseCoop");
+
+                    b.Navigation("LeaseListing");
+
+                    b.Navigation("SaleCoop");
+
+                    b.Navigation("SaleListing");
+
+                    b.Navigation("TransactionType");
                 });
 
             modelBuilder.Entity("Intl.Realty.Firm.Model.Model.ApplicationUser", b =>
@@ -2276,11 +2449,15 @@ namespace Intl.Realty.Firm.DataAccess.Migrations
 
             modelBuilder.Entity("Intl.Realty.Firm.Model.Model.LeaseCoop", b =>
                 {
+                    b.Navigation("AdditionalDocuments");
+
                     b.Navigation("FileUploads");
                 });
 
             modelBuilder.Entity("Intl.Realty.Firm.Model.Model.LeaseListing", b =>
                 {
+                    b.Navigation("AdditionalDocuments");
+
                     b.Navigation("FileUploads");
                 });
 
@@ -2291,11 +2468,15 @@ namespace Intl.Realty.Firm.DataAccess.Migrations
 
             modelBuilder.Entity("Intl.Realty.Firm.Model.Model.SaleCoop", b =>
                 {
+                    b.Navigation("AdditionalDocuments");
+
                     b.Navigation("FileUploads");
                 });
 
             modelBuilder.Entity("Intl.Realty.Firm.Model.Model.SaleListing", b =>
                 {
+                    b.Navigation("AdditionalDocuments");
+
                     b.Navigation("FileUploads");
                 });
 #pragma warning restore 612, 618
