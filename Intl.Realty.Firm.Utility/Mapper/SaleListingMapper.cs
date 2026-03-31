@@ -34,6 +34,7 @@ namespace Intl.Realty.Firm.Utility.Mapper
                 RowVersion = model.RowVersion,
 
                 Notes = model.Notes,
+                HasRejectedOffers = model.HasRejectedOffers,
 
                 TransactionType = model.TransactionType,
                 EditIRFDealSaleListingViewModel = model.IRFDeal!.ToEditIRFDealSaleListingViewModel(),
@@ -96,6 +97,7 @@ namespace Intl.Realty.Firm.Utility.Mapper
                 DealTransactionNumber = viewModel.DealTransactionNumber,
                 CreatedByFullName = viewModel.CreatedByFullName,
                 Notes = viewModel.Notes,
+                HasRejectedOffers = viewModel.HasRejectedOffers,
                 RowVersion = viewModel.RowVersion,
 
                 IsActive = viewModel.IsActive,

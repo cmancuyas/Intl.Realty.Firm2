@@ -742,6 +742,7 @@ namespace Intl.Realty.Firm.Controllers
                 // Update SaleListing
                 saleListingModel.DealStatusId = viewModel.EditSaleListingViewModel.DealStatusId;
                 saleListingModel.Notes = viewModel.EditSaleListingViewModel.Notes;
+                saleListingModel.HasRejectedOffers = viewModel.EditSaleListingViewModel.HasRejectedOffers;
                 saleListingModel.DateSubmitted = DateTime.Now;
                 saleListingModel.IsActive = true;
                 saleListingModel.UpdatedAt = DateTime.Now;
