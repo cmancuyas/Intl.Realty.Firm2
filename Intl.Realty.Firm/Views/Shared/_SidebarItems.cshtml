@@ -137,6 +137,42 @@
                         </li>
                     </ul>
                 </li>
+                <li class="informationPackageManagementSubNavItem sub-nav-item">
+                    <ul class="list-unstyled">
+                        <li>
+                            <a class="sub-nav-link" asp-controller="IRFMortgage" asp-action="Index">
+                                <span>IRF Mortgage Program</span>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+                <li class="informationPackageManagementSubNavItem sub-nav-item">
+                    <ul class="list-unstyled">
+                        <li>
+                            <a class="sub-nav-link" asp-controller="IRFLead" asp-action="Index">
+                                <span>IRF Leads</span>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+                <li class="informationPackageManagementSubNavItem sub-nav-item">
+                    <ul class="list-unstyled">
+                        <li>
+                            <a class="sub-nav-link" asp-controller="IRFBrandedWebsite" asp-action="Index">
+                                <span>IRF Branded Website</span>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+                <li class="informationPackageManagementSubNavItem sub-nav-item">
+                    <ul class="list-unstyled">
+                        <li>
+                            <a class="sub-nav-link" href="~/files/img/pdfs/Powerhouse-IRF-Referral-Program.pdf" target="_blank" rel="noopener noreferrer">
+                                <span>Powerhouse IRF Referral</span>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
 
                 @* Training (expandable)  *@
                 <li id="trainingNavItem" class="nav-item mx-2 mt-2 mb-1 rounded pe-cursor">
@@ -163,41 +199,6 @@
                             </a>
                         </li>
                     </ul>
-                </li>
-
-                @* IRF Programs  *@
-                <li id="irfProgramManagementNavItem" class="nav-item mx-2 mt-2 mb-1 rounded pe-cursor">
-                    <a id="irfProgramManagementNavLink" class="nav-link text-decoration-none d-flex align-items-center gap-3 ms-2 me-2 fw-bolder">
-                        <i data-feather="bookmark" data-toggle="tooltip" data-bs-placement="right" title="IrfProgramManagement"></i>
-                        <span class="flex-grow-1">IRF Programs</span>
-                        <i data-feather="chevron-right" class="caret w-15px"></i>
-                    </a>
-                </li>
-                <li class="irfProgramManagementSubNavItem sub-nav-item">
-                    <ul class="list-unstyled">
-                        <li>
-                            <a class="sub-nav-link" asp-controller="IRFMortgage" asp-action="Index">
-                                <span>IRF Mortgage Program</span>
-                            </a>
-                        </li>
-                    </ul>
-                </li>
-                <li class="irfProgramManagementSubNavItem sub-nav-item">
-                    <ul class="list-unstyled">
-                        <li>
-                            <a class="sub-nav-link" asp-controller="IRFLead" asp-action="Index">
-                                <span>IRF Leads</span>
-                            </a>
-                        </li>
-                    </ul>
-                </li>
-
-                @* IRF Branded Website  *@
-                <li id="irfBrandedWebsiteNavItem" class="nav-item mx-2 mt-2 mb-1 rounded">
-                    <a class="nav-link text-decoration-none d-flex align-items-center gap-3 ms-2 me-2 fw-bolder" asp-controller="IRFBrandedWebsite" asp-action="Index">
-                        <i data-feather="globe" data-toggle="tooltip" data-bs-placement="right" title="IRFBrandedWebsite"></i>
-                        <span>IRF Branded Website</span>
-                    </a>
                 </li>
 
                 @* Refer an Agent  *@
