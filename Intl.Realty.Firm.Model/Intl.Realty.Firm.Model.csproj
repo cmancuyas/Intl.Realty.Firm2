@@ -13,5 +13,11 @@
     <PackageReference Include="Microsoft.AspNetCore.Authentication.Abstractions" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.ViewFeatures" />
+    <PackageReference Include="Newtonsoft.Json" />
+    <PackageReference Include="System.Text.Encodings.Web" />
+    <PackageReference Include="System.Text.RegularExpressions" />
+    <PackageReference Include="Microsoft.NETCore.Platforms" />
+    <PackageReference Include="System.Net.Http" />
+    <PackageReference Include="System.Security.Cryptography.Xml" />
   </ItemGroup>
 </Project>
