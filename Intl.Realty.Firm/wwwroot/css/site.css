@@ -147,11 +147,8 @@ body {
 }
 
 .left-part {
-    background: url('../files/img/irc-splash.jpg') no-repeat;
-    background-image: image-set(
-        url('../files/img/irc-splash.webp') type('image/webp'),
-        url('../files/img/irc-splash.jpg') type('image/jpeg')
-    );
+    background: url('../files/img/irc-splash.jpg') no-repeat 70% 100%;
+    background-image: image-set( url('../files/img/irc-splash.webp') type('image/webp'), url('../files/img/irc-splash.jpg') type('image/jpeg') );
     background-size: cover;
 }
 
