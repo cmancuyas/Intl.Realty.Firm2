@@ -842,8 +842,8 @@ namespace Intl.Realty.Firm.Utility.Mapper
 
             // Listing
             entity.ListingAgentName = viewModel.ListingInfo.ListingAgentName;
-            entity.BuyerBrokerageFax = viewModel.ListingInfo.ListingBrokerageFax;
-            entity.BuyerBrokerage = viewModel.ListingInfo.ListingBrokerage;
+            entity.ListingBrokerageFax = viewModel.ListingInfo.ListingBrokerageFax;
+            entity.ListingBrokerage = viewModel.ListingInfo.ListingBrokerage;
 
 
             // 💼 Commission (only BuyingCommission is used for LeaseCoop)
