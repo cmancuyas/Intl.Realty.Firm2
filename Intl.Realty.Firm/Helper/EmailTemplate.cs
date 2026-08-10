@@ -38,8 +38,6 @@ namespace Intl.Realty.Firm.Helper
 
         public static string UserResetPasswordTemplate(ApplicationUser user, string resetPasswordLink)
         {
-            var encodedResetLink = System.Web.HttpUtility.UrlEncode(resetPasswordLink);
-
             return $@"
     <!DOCTYPE html>
     <html lang='en'>
@@ -108,11 +106,12 @@ namespace Intl.Realty.Firm.Helper
         <div class='container'>
             <img src='https://d15k2d11r6t6rl.cloudfront.net/pub/r388/l239mmxz/pwn/3tk/6kt/315.png' width='150' alt='Reset Password' />
             <div class='header'>Reset Your Password</div>
-            <p class='text'>Dear {user.FirstName},</p>
+            <p class='text'>Dear {WebUtility.HtmlEncode(user.FirstName)},</p>
             <p class='text'>
                 We received a request to reset your password. Click the button below to reset it.
                 If you did not request this, you can safely ignore this email.
             </p>
+            <p class='text'>This link expires in 24 hours.</p>
 
             <!-- Ensuring button is clickable -->
             <div class='button-container'>

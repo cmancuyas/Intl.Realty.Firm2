@@ -5,6 +5,7 @@ using Intl.Realty.Firm.Repository.IRepository;
 using Intl.Realty.Firm.Security;
 using Intl.Realty.Firm.Service.IService;
 using Intl.Realty.Firm.Service;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Identity;
@@ -62,9 +63,17 @@ builder.Services.AddIdentity<ApplicationUser, ApplicationRole>(options =>
 .AddDefaultTokenProviders()
 .AddTokenProvider<CustomEmailConfirmationTokenProvider<ApplicationUser>>("CustomEmailConfirmation");
 
+// Persist data-protection keys so password-reset / email tokens survive app pool recycles
+// (critical on shared hosting such as SmarterASP.NET).
+var dataProtectionKeysPath = Path.Combine(builder.Environment.ContentRootPath, "DataProtection-Keys");
+Directory.CreateDirectory(dataProtectionKeysPath);
+builder.Services.AddDataProtection()
+    .PersistKeysToFileSystem(new DirectoryInfo(dataProtectionKeysPath))
+    .SetApplicationName("Intl.Realty.Firm");
+
 // Token lifespan configs
 builder.Services.Configure<DataProtectionTokenProviderOptions>(options =>
-    options.TokenLifespan = TimeSpan.FromHours(5));
+    options.TokenLifespan = TimeSpan.FromHours(24));
 builder.Services.Configure<CustomEmailConfirmationTokenProviderOptions>(options =>
     options.TokenLifespan = TimeSpan.FromDays(3));
 
