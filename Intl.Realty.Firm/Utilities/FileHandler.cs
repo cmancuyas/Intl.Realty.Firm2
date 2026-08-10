@@ -21,11 +21,15 @@
 
         public static string GetStaticContentDirectory(string directory)
         {
-            if (directory == null)
+            if (string.IsNullOrWhiteSpace(directory))
             {
-                directory = "Uploads\\StaticContent\\"; //Set Default upload path if directory is empty
+                directory = Path.Combine("Uploads", "StaticContent");
             }
-            var result = Path.Combine(Directory.GetCurrentDirectory(), directory);
+
+            var result = Path.IsPathRooted(directory)
+                ? directory
+                : Path.Combine(Directory.GetCurrentDirectory(), directory);
+
             if (!Directory.Exists(result))
             {
                 Directory.CreateDirectory(result);

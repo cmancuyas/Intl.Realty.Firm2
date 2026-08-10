@@ -179,6 +179,17 @@ function initializeSubmitHandlers({
         resetSubmitButton();
     });
 
+    // Default actionType so Enter-key / unexpected submits never post a null value.
+    if (!$('#ActionTypeHidden').val()) {
+        $('#ActionTypeHidden').val('save');
+    }
+
+    $form.on('submit', () => {
+        if (!$('#ActionTypeHidden').val()) {
+            $('#ActionTypeHidden').val('save');
+        }
+    });
+
     $('#btnSave').on('click', () => {
         $('#ActionTypeHidden').val('save');
         $('#confirmSaveModal').modal('show');
@@ -229,11 +240,12 @@ function initializeSubmitHandlers({
         $('#confirmSubmitModal').modal('show');
     });
 
-    // ✅ Confirm Save
     // ✅ Confirm Save (always set DealStatusId to 2)
     $(document).on('click', '#btnConfirmSave', () => {
         if (isSubmitting) return;
         isSubmitting = true;
+
+        $('#ActionTypeHidden').val('save');
 
         $('#btnSave')
             .prop('disabled', true)
@@ -258,6 +270,8 @@ function initializeSubmitHandlers({
     $(document).on('click', '#btnConfirmSubmit', () => {
         if (isSubmitting) return;
         isSubmitting = true;
+
+        $('#ActionTypeHidden').val('submit');
 
         $("#submitSpinner").show();
         $('#btnSubmit')

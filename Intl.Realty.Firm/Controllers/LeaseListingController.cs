@@ -150,14 +150,36 @@ namespace Intl.Realty.Firm.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(CreateLeaseListingWithTabMenuViewModel viewModel, string actionType)
         {
+            actionType = TransactionHelper.NormalizeActionType(actionType);
+
+            if (viewModel?.CreateLeaseListingViewModel == null)
+            {
+                _logger.LogError("Create LeaseListing POST received a null view model.");
+                return BadRequest("Invalid create request.");
+            }
+
             // Set DealStatusId
-            viewModel.CreateLeaseListingViewModel.DealStatusId = actionType.ToLower() == "submit" ? 1 : 2;
+            viewModel.CreateLeaseListingViewModel.DealStatusId = TransactionHelper.IsSubmitAction(actionType) ? 1 : 2;
 
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var user = await _userManager.FindByIdAsync(userId!);
+            if (user == null)
+            {
+                _logger.LogError("Create LeaseListing POST: current user was not found. UserId={UserId}", userId);
+                return Unauthorized();
+            }
+
             var transactionTypeName = _transactionTypeName;
 
             var transactionType = await _unitOfWork.TransactionType.GetAsync(x => x.Description == transactionTypeName);
+            if (transactionType == null)
+            {
+                _logger.LogError("Create LeaseListing POST: transaction type '{TransactionTypeName}' was not found.", transactionTypeName);
+                ModelState.AddModelError(string.Empty, "Transaction type not found.");
+                SetTabMenus(viewModel, "IRFDetails1");
+                return View("Index", viewModel);
+            }
+
             viewModel.CreateLeaseListingViewModel.TransactionType = transactionType;
             viewModel.CreateLeaseListingViewModel.TransactionTypeId = transactionType.Id;
             viewModel.CreateLeaseListingViewModel.CreatedByFullName = $"{user.FirstName} {user.LastName}";
@@ -184,7 +206,7 @@ namespace Intl.Realty.Firm.Controllers
                 SetTabMenus(viewModel, "IRFDetails1");
 
                 // 🛑 Stop if validation fails on "Submit"
-                if (actionType.ToLower() == "submit" && !ModelState.IsValid)
+                if (TransactionHelper.IsSubmitAction(actionType) && !ModelState.IsValid)
                 {
                     var notification = _notificationService.Notify(
                         "Please review the form for errors. All required fields must be filled correctly.",
@@ -200,7 +222,15 @@ namespace Intl.Realty.Firm.Controllers
                 var irfDealModel = viewModel.CreateLeaseListingViewModel
                     .CreateIRFDealLeaseListingViewModel?.ToIRFDealModel();
 
-                irfDealModel!.CreatedAt = DateTime.Now;
+                if (irfDealModel == null)
+                {
+                    _logger.LogError("Create LeaseListing POST: IRF deal model could not be created from the view model.");
+                    ModelState.AddModelError(string.Empty, "IRF deal details are required.");
+                    await transaction.RollbackAsync();
+                    return View("Index", viewModel);
+                }
+
+                irfDealModel.CreatedAt = DateTime.Now;
                 irfDealModel.CreatedBy = user.Id;
                 irfDealModel.IsActive = true;
                 irfDealModel.IsDeleted = false;
@@ -209,11 +239,19 @@ namespace Intl.Realty.Firm.Controllers
                 await _unitOfWork.SaveChangesAsync();
 
                 var newIRFDeal = await _unitOfWork.IRFDeal.GetAsync(x => x.Id == irfDealModel.Id);
-                viewModel.CreateLeaseListingViewModel.IRFDealId = newIRFDeal!.Id;
+                if (newIRFDeal == null)
+                {
+                    throw new InvalidOperationException("IRF Deal was not created successfully.");
+                }
 
-                viewModel.CreateLeaseListingViewModel.CreateIRFDealLeaseListingViewModel!.CreatedAt = newIRFDeal.CreatedAt;
-                viewModel.CreateLeaseListingViewModel.CreateIRFDealLeaseListingViewModel.CreatedBy = newIRFDeal.CreatedBy;
-                viewModel.CreateLeaseListingViewModel.CreateIRFDealLeaseListingViewModel.IsActive = newIRFDeal.IsActive;
+                viewModel.CreateLeaseListingViewModel.IRFDealId = newIRFDeal.Id;
+
+                if (viewModel.CreateLeaseListingViewModel.CreateIRFDealLeaseListingViewModel != null)
+                {
+                    viewModel.CreateLeaseListingViewModel.CreateIRFDealLeaseListingViewModel.CreatedAt = newIRFDeal.CreatedAt;
+                    viewModel.CreateLeaseListingViewModel.CreateIRFDealLeaseListingViewModel.CreatedBy = newIRFDeal.CreatedBy;
+                    viewModel.CreateLeaseListingViewModel.CreateIRFDealLeaseListingViewModel.IsActive = newIRFDeal.IsActive;
+                }
 
                 // 🔐 Set base properties
                 viewModel.CreateLeaseListingViewModel.IsActive = true;
@@ -225,15 +263,18 @@ namespace Intl.Realty.Firm.Controllers
                 await _unitOfWork.LeaseListing.AddAsync(leaseListingModel);
                 await _unitOfWork.SaveChangesAsync();
 
+                var uploadPath = await CreateFilePathAsync(leaseListingModel.Id);
+
                 // 📂 File Uploads
-                if (viewModel.CreateLeaseListingViewModel.CreateFileUploadListViewModel?.CreateFileUploadsViewModel != null)
+                var fileUploadVM = viewModel.CreateLeaseListingViewModel.CreateFileUploadListViewModel?.CreateFileUploadsViewModel;
+                if (fileUploadVM != null)
                 {
-                    var uploadPath = CreateFilePath(leaseListingModel.Id);
+                    _logger.LogInformation("Upload request received for LeaseListing Create. LeaseListingId={LeaseListingId}", leaseListingModel.Id);
                     await CreateFileUploadData(
-                        viewModel.CreateLeaseListingViewModel.CreateFileUploadListViewModel.CreateFileUploadsViewModel,
+                        fileUploadVM,
                         leaseListingModel.Id,
                         transactionType.Id,
-                        viewModel.CreateLeaseListingViewModel.DocumentTypeList,
+                        viewModel.CreateLeaseListingViewModel.DocumentTypeList ?? Enumerable.Empty<DocumentType>(),
                         uploadPath
                     );
                 }
@@ -241,13 +282,11 @@ namespace Intl.Realty.Firm.Controllers
                 if (viewModel.CreateLeaseListingViewModel.AdditionalDocuments != null &&
                     viewModel.CreateLeaseListingViewModel.AdditionalDocuments.Any())
                 {
-                    var additionalDocumentPath = CreateFilePath(leaseListingModel.Id);
-
                     await CreateAdditionalDocumentData(
                         viewModel.CreateLeaseListingViewModel.AdditionalDocuments,
                         leaseListingModel.Id,
                         transactionType.Id,
-                        additionalDocumentPath
+                        uploadPath
                     );
                 }
 
@@ -264,7 +303,8 @@ namespace Intl.Realty.Firm.Controllers
 
                     // Build recipient lists (avoid duplicates)
                     var allRecipientEmails = dealAdminEmails.Select(e => e.Email).ToList();
-                    if (!allRecipientEmails.Contains(user.Email, StringComparer.OrdinalIgnoreCase))
+                    if (!string.IsNullOrWhiteSpace(user.Email) &&
+                        !allRecipientEmails.Contains(user.Email, StringComparer.OrdinalIgnoreCase))
                         allRecipientEmails.Add(user.Email);
 
                     var allRoleNames = dealAdminEmails.Select(e => e.RoleName).ToList();
@@ -322,9 +362,10 @@ namespace Intl.Realty.Firm.Controllers
                 ModelState.AddModelError("", "Transaction number was updated by another user. Please try again.");
                 return View("Index", viewModel);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 await transaction.RollbackAsync();
+                _logger.LogError(ex, "Create LeaseListing failed.");
                 throw;
             }
         }
@@ -361,41 +402,61 @@ namespace Intl.Realty.Firm.Controllers
 
             return RedirectToAction("Edit", new { id = dealId });
         }
-        private string CreateFilePath(int leaseListingId)
+        private async Task<string> CreateFilePathAsync(int leaseListingId)
         {
-            // to get current user ID
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrWhiteSpace(userId))
+                throw new InvalidOperationException("User is not authenticated.");
 
-            // to get current user info
-            var user = _userManager.FindByIdAsync(userId!);
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+                throw new InvalidOperationException("Current user could not be found.");
 
-            var uploadPath = string.Empty;
             var defaultPathFromConfig = _configurationService.GetDefaultUploadPathFromConfig();
-            if (defaultPathFromConfig != null)
-            {
-                uploadPath = defaultPathFromConfig;
-            }
-            else
-            {
-                uploadPath = _backupFileDirectory;
-            }
-            var userIdPath = user!.Id.ToString() + "\\";
+            var uploadPath = !string.IsNullOrWhiteSpace(defaultPathFromConfig)
+                ? defaultPathFromConfig
+                : _backupFileDirectory;
 
-            uploadPath = Path.Combine(uploadPath, userIdPath + leaseListingId + "\\");
-
+            uploadPath = Path.Combine(uploadPath, user.Id.ToString(), leaseListingId.ToString());
+            TransactionHelper.EnsureDirectoryExists(uploadPath);
             return uploadPath;
         }
+
         private async Task<bool> CreateFileUploadData(
-                                    List<CreateFileUploadViewModel> createFileUploadsViewModel,
+                                    List<CreateFileUploadViewModel>? createFileUploadsViewModel,
                                     int leaseListingModelId,
                                     int transactionTypeId,
                                     IEnumerable<DocumentType> documentTypeList,
                                     string uploadPath)
         {
+            _logger.LogInformation(
+                "Upload request received. LeaseListingId={LeaseListingId}, TransactionTypeId={TransactionTypeId}",
+                leaseListingModelId,
+                transactionTypeId);
+
+            if (createFileUploadsViewModel == null ||
+                !createFileUploadsViewModel.Any(vm => TransactionHelper.HasUploadableFiles(vm?.Files)))
+            {
+                _logger.LogWarning(
+                    "No files submitted. LeaseListingId={LeaseListingId}, TransactionTypeId={TransactionTypeId}",
+                    leaseListingModelId,
+                    transactionTypeId);
+                return true;
+            }
+
             // Get current user info
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var user = await _userManager.FindByIdAsync(userId!);
+            if (user == null)
+            {
+                _logger.LogError(
+                    "Upload skipped: current user not found. LeaseListingId={LeaseListingId}, UserId={UserId}",
+                    leaseListingModelId,
+                    userId);
+                return true;
+            }
 
+            documentTypeList ??= Enumerable.Empty<DocumentType>();
             int index = 0;
 
             foreach (var createFileUploadViewModel in createFileUploadsViewModel)
@@ -407,47 +468,74 @@ namespace Intl.Realty.Firm.Controllers
                 var docType = documentTypeList.FirstOrDefault(x => x.Id == createFileUploadViewModel.DocumentTypeId);
                 if (docType == null)
                 {
-                    _logger.LogWarning($"[UPLOAD] Skipped: DocumentTypeId={createFileUploadViewModel.DocumentTypeId} not found for TransactionTypeId={transactionTypeId}");
+                    _logger.LogWarning(
+                        "[UPLOAD] Skipped: DocumentTypeId={DocumentTypeId} not found for TransactionTypeId={TransactionTypeId}",
+                        createFileUploadViewModel.DocumentTypeId,
+                        transactionTypeId);
                     continue;
                 }
 
                 // Build upload path for this doc type
-                var docTypeFolder = string.IsNullOrWhiteSpace(docType.Description) ? "Unknown" : docType.Description.Trim();
+                var docTypeFolder = TransactionHelper.SanitizePathSegment(docType.Description);
                 string currentUploadPath = Path.Combine(uploadPath, _transactionTypeName, docTypeFolder);
+                TransactionHelper.EnsureDirectoryExists(currentUploadPath);
 
                 // Upload each file
                 var files = createFileUploadViewModel.Files;
-                if (files == null || !files.Any())
+                if (!TransactionHelper.HasUploadableFiles(files))
                 {
-                    _logger.LogInformation($"[UPLOAD] Index={index}, No files to save for DocumentTypeId={docType.Id} ('{docType.Description}')");
+                    _logger.LogInformation(
+                        "[UPLOAD] Index={Index}, No files to save for DocumentTypeId={DocumentTypeId} ('{DocumentType}')",
+                        index,
+                        docType.Id,
+                        docType.Description);
                     index++;
                     continue;
                 }
 
-                foreach (var file in files)
+                foreach (var file in files!)
                 {
-                    _logger.LogWarning($"[DEBUG-SAVE] Index={index}, Saving File='{file.FileName}', For DocumentTypeId={docType.Id} ('{docType.Description}')");
+                    if (file == null || file.Length <= 0)
+                        continue;
 
-                    var (fileNameWithoutExtension, fileExtension, originalFileName) = await _fileHandlerService.UploadFile(file, currentUploadPath);
-
-                    // Always create a new FileUpload object inside the loop!
-                    var createFileUpload = new FileUpload
+                    try
                     {
-                        FileName = fileNameWithoutExtension,
-                        FileExtension = fileExtension,
-                        OriginalFileName = originalFileName,
-                        Directory = currentUploadPath,
-                        FullPath = Path.Combine(currentUploadPath, fileNameWithoutExtension + fileExtension),
-                        FileSize = file.Length.ToString(),
-                        IsActive = true,
-                        CreatedAt = DateTime.Now,
-                        CreatedBy = user!.Id,
-                        LeaseListingId = leaseListingModelId,
-                        TransactionTypeId = transactionTypeId,
-                        DocumentTypeId = docType.Id
-                    };
+                        var (fileNameWithoutExtension, fileExtension, originalFileName) =
+                            await _fileHandlerService.UploadFile(file, currentUploadPath);
 
-                    await _unitOfWork.FileUpload.AddAsync(createFileUpload);
+                        var createFileUpload = new FileUpload
+                        {
+                            FileName = fileNameWithoutExtension,
+                            FileExtension = fileExtension,
+                            OriginalFileName = originalFileName,
+                            Directory = currentUploadPath,
+                            FullPath = Path.Combine(currentUploadPath, fileNameWithoutExtension + fileExtension),
+                            FileSize = file.Length.ToString(),
+                            IsActive = true,
+                            CreatedAt = DateTime.Now,
+                            CreatedBy = user.Id,
+                            LeaseListingId = leaseListingModelId,
+                            TransactionTypeId = transactionTypeId,
+                            DocumentTypeId = docType.Id
+                        };
+
+                        await _unitOfWork.FileUpload.AddAsync(createFileUpload);
+                        _logger.LogInformation(
+                            "File uploaded successfully. LeaseListingId={LeaseListingId}, DocumentTypeId={DocumentTypeId}, FileName={FileName}",
+                            leaseListingModelId,
+                            docType.Id,
+                            originalFileName);
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError(
+                            ex,
+                            "Upload failed. LeaseListingId={LeaseListingId}, DocumentTypeId={DocumentTypeId}, FileName={FileName}",
+                            leaseListingModelId,
+                            docType.Id,
+                            file.FileName);
+                        throw;
+                    }
                 }
                 index++;
             }
@@ -557,14 +645,31 @@ namespace Intl.Realty.Firm.Controllers
             if (id == 0)
                 return NotFoundResultWithMessage("LeaseListing", id);
 
+            if (viewModel?.EditLeaseListingViewModel == null)
+            {
+                _logger.LogError("Edit LeaseListing POST received a null view model. Id={Id}", id);
+                return BadRequest("Invalid edit request.");
+            }
+
             var dealStatusList = await _unitOfWork.DealStatus.GetAllAsync(x => x.IsActive && !x.IsDeleted);
             viewModel.EditLeaseListingViewModel.DealStatusList = dealStatusList.ToList();
 
-            var actionType = Request.Form["actionType"];
+            var actionType = TransactionHelper.NormalizeActionType(Request.Form["actionType"]);
+
+            // Load LeaseListing model (tracked) early so DealStatus can be restored for view re-renders
+            var LeaseListingModel = await _unitOfWork.LeaseListing.GetAsync(
+                x => x.Id == id,
+                includeProperties: "IRFDeal,TransactionType,DealStatus",
+                tracked: true);
+
+            if (LeaseListingModel == null)
+                return NotFoundResultWithMessage("LeaseListing", id);
+
+            EnsureEditDealStatus(viewModel, LeaseListingModel);
 
             if (!ModelState.IsValid)
             {
-                if (actionType == "save")
+                if (TransactionHelper.IsSaveAction(actionType))
                 {
                     // Skip validation errors on Save
                 }
@@ -579,18 +684,22 @@ namespace Intl.Realty.Firm.Controllers
                 throw new InvalidOperationException("Invalid user ID - cannot convert to GUID.");
 
             var user = await _userManager.FindByIdAsync(userId!);
-
-            // Load LeaseListing model (tracked)
-            var LeaseListingModel = await _unitOfWork.LeaseListing.GetAsync(
-                x => x.Id == id,
-                includeProperties: "IRFDeal,TransactionType,DealStatus",
-                tracked: true);
-
-            if (LeaseListingModel == null)
-                return NotFoundResultWithMessage("LeaseListing", id);
+            if (user == null)
+            {
+                _logger.LogError("Edit LeaseListing POST: current user was not found. UserId={UserId}", userId);
+                return Unauthorized();
+            }
 
             // Load transaction type
             var transactionType = await _unitOfWork.TransactionType.GetAsync(x => x.Id == LeaseListingModel.TransactionTypeId);
+            if (transactionType == null)
+            {
+                _logger.LogError("Edit LeaseListing POST: transaction type Id={TransactionTypeId} was not found.", LeaseListingModel.TransactionTypeId);
+                ModelState.AddModelError(string.Empty, "Transaction type not found.");
+                EnsureEditDealStatus(viewModel, LeaseListingModel);
+                return View(viewModel);
+            }
+
             viewModel.EditLeaseListingViewModel.TransactionType = transactionType;
             viewModel.EditLeaseListingViewModel.TransactionTypeId = transactionType.Id;
 
@@ -638,16 +747,17 @@ namespace Intl.Realty.Firm.Controllers
                 await _unitOfWork.SaveChangesAsync(); // All EF-tracked changes saved
 
                 // Handle file uploads (optional)
-                var uploadPath = CreateFilePath(LeaseListingModel.Id);
+                var uploadPath = await CreateFilePathAsync(LeaseListingModel.Id);
                 var fileUploadVM = viewModel.EditLeaseListingViewModel.CreateFileUploadListViewModel?.CreateFileUploadsViewModel;
 
                 if (fileUploadVM != null)
                 {
+                    _logger.LogInformation("Upload request received for LeaseListing Edit. LeaseListingId={LeaseListingId}", LeaseListingModel.Id);
                     await CreateFileUploadData(
                         fileUploadVM,
                         LeaseListingModel.Id,
                         transactionType.Id,
-                        viewModel.EditLeaseListingViewModel.DocumentTypeList,
+                        viewModel.EditLeaseListingViewModel.DocumentTypeList ?? Enumerable.Empty<DocumentType>(),
                         uploadPath
                     );
                 }
@@ -657,18 +767,16 @@ namespace Intl.Realty.Firm.Controllers
                     viewModel.EditLeaseListingViewModel.AdditionalDocuments != null &&
                     viewModel.EditLeaseListingViewModel.AdditionalDocuments.Any())
                 {
-                    var additionalDocumentPath = CreateFilePath(LeaseListingModel.Id);
-
                     await CreateAdditionalDocumentData(
                         viewModel.EditLeaseListingViewModel.AdditionalDocuments,
                         LeaseListingModel.Id,
                         transactionType.Id,
-                        additionalDocumentPath
+                        uploadPath
                     );
                 }
 
                 // ===== EMAIL NOTIFICATION (if submitted) =====
-                if (actionType == "submit" && LeaseListingModel.DealStatusId == 1)
+                if (TransactionHelper.IsSubmitAction(actionType) && LeaseListingModel.DealStatusId == 1)
                 {
                     var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
                     var dealLink = Url.Action("Login", "Account", new { id = LeaseListingModel.Id, token }, Request.Scheme);
@@ -678,7 +786,8 @@ namespace Intl.Realty.Firm.Controllers
 
                     // Build recipient lists (avoid duplicates)
                     var allRecipientEmails = dealAdminEmails.Select(e => e.Email).ToList();
-                    if (!allRecipientEmails.Contains(user.Email, StringComparer.OrdinalIgnoreCase))
+                    if (!string.IsNullOrWhiteSpace(user.Email) &&
+                        !allRecipientEmails.Contains(user.Email, StringComparer.OrdinalIgnoreCase))
                         allRecipientEmails.Add(user.Email);
 
                     var allRoleNames = dealAdminEmails.Select(e => e.RoleName).ToList();
@@ -738,12 +847,25 @@ namespace Intl.Realty.Firm.Controllers
             {
                 await transaction.RollbackAsync();
                 ModelState.AddModelError(string.Empty, "This record was modified by another user after you loaded it. Please reload and try again.");
+                EnsureEditDealStatus(viewModel, LeaseListingModel);
                 return View(viewModel);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 await transaction.RollbackAsync();
+                _logger.LogError(ex, "Edit LeaseListing failed. Id={Id}", id);
                 throw;
+            }
+        }
+
+        private static void EnsureEditDealStatus(EditLeaseListingWithTabMenuViewModel viewModel, LeaseListing leaseListingModel)
+        {
+            if (viewModel.EditLeaseListingViewModel == null)
+                return;
+
+            if (viewModel.EditLeaseListingViewModel.DealStatus == null && leaseListingModel.DealStatus != null)
+            {
+                viewModel.EditLeaseListingViewModel.DealStatus = leaseListingModel.DealStatus;
             }
         }
 
@@ -934,16 +1056,38 @@ namespace Intl.Realty.Firm.Controllers
         #region Additional Documents
 
         private async Task<bool> CreateAdditionalDocumentData(
-            List<AdditionalDocumentInputViewModel> additionalDocuments,
+            List<AdditionalDocumentInputViewModel>? additionalDocuments,
             int leaseListingId,
             int transactionTypeId,
             string uploadPath)
         {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var user = await _userManager.FindByIdAsync(userId!);
+            _logger.LogInformation(
+                "Upload request received for additional documents. LeaseListingId={LeaseListingId}, TransactionTypeId={TransactionTypeId}",
+                leaseListingId,
+                transactionTypeId);
 
             if (additionalDocuments == null || !additionalDocuments.Any())
+            {
+                _logger.LogWarning(
+                    "No files submitted for additional documents. LeaseListingId={LeaseListingId}",
+                    leaseListingId);
                 return true;
+            }
+
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var user = await _userManager.FindByIdAsync(userId!);
+            if (user == null)
+            {
+                _logger.LogError(
+                    "Additional document upload skipped: current user not found. LeaseListingId={LeaseListingId}, UserId={UserId}",
+                    leaseListingId,
+                    userId);
+                return true;
+            }
+
+            var additionalDocsFolder = TransactionHelper.SanitizePathSegment("AdditionalDocuments");
+            string currentUploadPath = Path.Combine(uploadPath, _transactionTypeName, additionalDocsFolder);
+            TransactionHelper.EnsureDirectoryExists(currentUploadPath);
 
             foreach (var item in additionalDocuments)
             {
@@ -957,31 +1101,53 @@ namespace Intl.Realty.Firm.Controllers
                     continue;
 
                 if (!hasDocumentName || !hasFile)
-                    continue;
-
-                string currentUploadPath = Path.Combine(uploadPath, _transactionTypeName, "AdditionalDocuments");
-
-                var (fileNameWithoutExtension, fileExtension, originalFileName) =
-                    await _fileHandlerService.UploadFile(item.File!, currentUploadPath);
-
-                var additionalDocument = new AdditionalDocument
                 {
-                    DocumentName = item.DocumentName!.Trim(),
-                    FileName = fileNameWithoutExtension,
-                    FileExtension = fileExtension,
-                    OriginalFileName = originalFileName,
-                    Directory = currentUploadPath,
-                    FullPath = Path.Combine(currentUploadPath, fileNameWithoutExtension + fileExtension),
-                    FileSize = item.File!.Length.ToString(),
-                    TransactionTypeId = transactionTypeId,
-                    IsActive = true,
-                    IsDeleted = false,
-                    CreatedAt = DateTime.Now,
-                    CreatedBy = user!.Id,
-                    LeaseListingId = leaseListingId
-                };
+                    _logger.LogWarning(
+                        "Skipping incomplete additional document. LeaseListingId={LeaseListingId}, HasDocumentName={HasDocumentName}, HasFile={HasFile}",
+                        leaseListingId,
+                        hasDocumentName,
+                        hasFile);
+                    continue;
+                }
 
-                await _unitOfWork.AdditionalDocument.AddAsync(additionalDocument);
+                try
+                {
+                    var (fileNameWithoutExtension, fileExtension, originalFileName) =
+                        await _fileHandlerService.UploadFile(item.File!, currentUploadPath);
+
+                    var additionalDocument = new AdditionalDocument
+                    {
+                        DocumentName = item.DocumentName!.Trim(),
+                        FileName = fileNameWithoutExtension,
+                        FileExtension = fileExtension,
+                        OriginalFileName = originalFileName,
+                        Directory = currentUploadPath,
+                        FullPath = Path.Combine(currentUploadPath, fileNameWithoutExtension + fileExtension),
+                        FileSize = item.File!.Length.ToString(),
+                        TransactionTypeId = transactionTypeId,
+                        IsActive = true,
+                        IsDeleted = false,
+                        CreatedAt = DateTime.Now,
+                        CreatedBy = user.Id,
+                        LeaseListingId = leaseListingId
+                    };
+
+                    await _unitOfWork.AdditionalDocument.AddAsync(additionalDocument);
+                    _logger.LogInformation(
+                        "File uploaded successfully. LeaseListingId={LeaseListingId}, DocumentName={DocumentName}, FileName={FileName}",
+                        leaseListingId,
+                        additionalDocument.DocumentName,
+                        originalFileName);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(
+                        ex,
+                        "Upload failed for additional document. LeaseListingId={LeaseListingId}, DocumentName={DocumentName}",
+                        leaseListingId,
+                        item.DocumentName);
+                    throw;
+                }
             }
 
             return true;

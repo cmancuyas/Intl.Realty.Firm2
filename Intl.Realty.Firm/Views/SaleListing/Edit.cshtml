@@ -39,7 +39,7 @@
                   asp-controller="SaleListing"
                   method="post"
                   enctype="multipart/form-data">
-                <input type="hidden" id="ActionTypeHidden" name="actionType" />
+                <input type="hidden" id="ActionTypeHidden" name="actionType" value="save" />
 
                 <input type="hidden" name="EditSaleListingViewModel.RowVersion"
                        value="@Convert.ToBase64String(Model.EditSaleListingViewModel.RowVersion)" />

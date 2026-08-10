@@ -29,9 +29,8 @@
                   class="mb-5"
                   method="post"
                   enctype="multipart/form-data">
-                <input type="hidden" id="ActionTypeHidden" name="actionType" />
+                <input type="hidden" id="ActionTypeHidden" name="actionType" value="save" />
                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                <input type="hidden" id="ActionTypeHidden" name="actionType" />
                 <input asp-for="CreateSaleListingViewModel.DealTransactionNumber" hidden />
                 <input type="hidden" name="SaleListingViewModel.RowVersion"
                        value="@Convert.ToBase64String(Model.CreateSaleListingViewModel.RowVersion)" />

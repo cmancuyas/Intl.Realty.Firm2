@@ -28,7 +28,7 @@
                   asp-controller="LeaseListing"
                   method="post"
                   enctype="multipart/form-data">
-                <input type="hidden" id="ActionTypeHidden" name="actionType" />
+                <input type="hidden" id="ActionTypeHidden" name="actionType" value="save" />
                 <input asp-for="CreateLeaseListingViewModel.DealTransactionNumber" hidden />
                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                 <input type="hidden" name="CreateLeaseListingViewModel.RowVersion"

@@ -150,13 +150,35 @@ namespace Intl.Realty.Firm.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(CreateSaleCoopWithTabMenuViewModel viewModel, string actionType)
         {
-            viewModel.CreateSaleCoopViewModel.DealStatusId = actionType.ToLower() == "submit" ? 1 : 2;
+            actionType = TransactionHelper.NormalizeActionType(actionType);
+
+            if (viewModel == null || viewModel.CreateSaleCoopViewModel == null)
+            {
+                _logger.LogError("Create SaleCoop POST received a null view model.");
+                return BadRequest("Invalid create request.");
+            }
+
+            viewModel.CreateSaleCoopViewModel.DealStatusId = TransactionHelper.IsSubmitAction(actionType) ? 1 : 2;
 
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var user = await _userManager.FindByIdAsync(userId!);
+            if (user == null)
+            {
+                _logger.LogError("Create SaleCoop POST failed: authenticated user could not be found. UserId={UserId}", userId);
+                return Unauthorized();
+            }
+
             string transactionTypeName = _transactionTypeName;
 
             var transactionType = await _unitOfWork.TransactionType.GetAsync(x => x.Description == transactionTypeName);
+            if (transactionType == null)
+            {
+                _logger.LogError("Create SaleCoop POST failed: transaction type '{TransactionTypeName}' was not found.", transactionTypeName);
+                ModelState.AddModelError(string.Empty, "Transaction type could not be found. Contact the administrator.");
+                viewModel.Menus ??= CreateDealTransactionTabMenuData.GetCreateDealTransactionTabMenuData();
+                return View(viewModel);
+            }
+
             viewModel.CreateSaleCoopViewModel.TransactionType = transactionType;
             viewModel.CreateSaleCoopViewModel.TransactionTypeId = transactionType.Id;
             viewModel.CreateSaleCoopViewModel.CreatedByFullName = $"{user.FirstName} {user.LastName}";
@@ -188,7 +210,7 @@ namespace Intl.Realty.Firm.Controllers
                     return m;
                 }).ToList();
 
-                if (actionType.ToLower() == "submit" && !ModelState.IsValid)
+                if (TransactionHelper.IsSubmitAction(actionType) && !ModelState.IsValid)
                 {
                     var notification = _notificationService.Notify(
                         "Please review the form for errors. All required fields must be filled correctly.",
@@ -200,8 +222,23 @@ namespace Intl.Realty.Firm.Controllers
                 }
 
                 // IRF Deal creation
-                var irfDeal = viewModel.CreateSaleCoopViewModel.CreateIRFDealSaleCoopViewModel?.ToIRFDealModel();
-                irfDeal!.CreatedAt = DateTime.Now;
+                var createIrfDealVm = viewModel.CreateSaleCoopViewModel.CreateIRFDealSaleCoopViewModel;
+                if (createIrfDealVm == null)
+                {
+                    _logger.LogError("Create SaleCoop POST failed: CreateIRFDealSaleCoopViewModel is null.");
+                    ModelState.AddModelError(string.Empty, "IRF Deal details are required.");
+                    return View(viewModel);
+                }
+
+                var irfDeal = createIrfDealVm.ToIRFDealModel();
+                if (irfDeal == null)
+                {
+                    _logger.LogError("Create SaleCoop POST failed: ToIRFDealModel returned null.");
+                    ModelState.AddModelError(string.Empty, "Unable to create IRF Deal from the submitted data.");
+                    return View(viewModel);
+                }
+
+                irfDeal.CreatedAt = DateTime.Now;
                 irfDeal.CreatedBy = user.Id;
                 irfDeal.IsActive = true;
                 irfDeal.IsDeleted = false;
@@ -227,7 +264,11 @@ namespace Intl.Realty.Firm.Controllers
 
                 if (viewModel.CreateSaleCoopViewModel.CreateFileUploadListViewModel?.CreateFileUploadsViewModel != null)
                 {
-                    var uploadPath = CreateFilePath(saleCoopModel.Id);
+                    _logger.LogInformation(
+                        "Upload request received for Create SaleCoop. SaleCoopId={SaleCoopId}, TransactionTypeId={TransactionTypeId}",
+                        saleCoopModel.Id,
+                        transactionType.Id);
+                    var uploadPath = await CreateFilePathAsync(saleCoopModel.Id);
                     await CreateFileUploadData(
                         viewModel.CreateSaleCoopViewModel.CreateFileUploadListViewModel.CreateFileUploadsViewModel,
                         saleCoopModel.Id,
@@ -238,8 +279,8 @@ namespace Intl.Realty.Firm.Controllers
                 }
                 if (viewModel.CreateSaleCoopViewModel.AdditionalDocuments != null &&
                     viewModel.CreateSaleCoopViewModel.AdditionalDocuments.Any())
-                                {
-                                    var additionalDocumentPath = CreateFilePath(saleCoopModel.Id);
+                {
+                    var additionalDocumentPath = await CreateFilePathAsync(saleCoopModel.Id);
 
                     await CreateAdditionalDocumentData(
                         viewModel.CreateSaleCoopViewModel.AdditionalDocuments,
@@ -323,9 +364,10 @@ namespace Intl.Realty.Firm.Controllers
                 ModelState.AddModelError("", "Transaction number was updated by another user. Please try again.");
                 return View("Index", viewModel);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 await transaction.RollbackAsync();
+                _logger.LogError(ex, "Create SaleCoop POST failed unexpectedly.");
                 throw;
             }
         }
@@ -362,28 +404,23 @@ namespace Intl.Realty.Firm.Controllers
 
             return RedirectToAction("Edit", new { id = dealId });
         }
-        private string CreateFilePath(int saleCoopId)
+        private async Task<string> CreateFilePathAsync(int saleCoopId)
         {
-            // to get current user ID
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrWhiteSpace(userId))
+                throw new InvalidOperationException("User is not authenticated.");
 
-            // to get current user info
-            var user = _userManager.FindByIdAsync(userId!);
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+                throw new InvalidOperationException("Current user could not be found.");
 
-            var uploadPath = string.Empty;
             var defaultPathFromConfig = _configurationService.GetDefaultUploadPathFromConfig();
-            if (defaultPathFromConfig != null)
-            {
-                uploadPath = defaultPathFromConfig;
-            }
-            else
-            {
-                uploadPath = _backupFileDirectory;
-            }
-            var userIdPath = user!.Id.ToString() + "\\";
+            var uploadPath = !string.IsNullOrWhiteSpace(defaultPathFromConfig)
+                ? defaultPathFromConfig
+                : _backupFileDirectory;
 
-            uploadPath = Path.Combine(uploadPath, userIdPath + saleCoopId + "\\");
-
+            uploadPath = Path.Combine(uploadPath, user.Id.ToString(), saleCoopId.ToString());
+            TransactionHelper.EnsureDirectoryExists(uploadPath);
             return uploadPath;
         }
         private async Task<bool> CreateFileUploadData(
@@ -393,19 +430,39 @@ namespace Intl.Realty.Firm.Controllers
                                  IEnumerable<DocumentType> documentTypeList,
                                  string uploadPath)
         {
-            // 1. Get current user info
+            _logger.LogInformation(
+                "Upload request received. SaleCoopId={SaleCoopId}, TransactionTypeId={TransactionTypeId}",
+                saleCoopModelId,
+                transactionTypeId);
+
+            if (createFileUploadsViewModel == null ||
+                !createFileUploadsViewModel.Any(vm => vm != null && TransactionHelper.HasUploadableFiles(vm.Files)))
+            {
+                _logger.LogWarning(
+                    "No files submitted. SaleCoopId={SaleCoopId}, TransactionTypeId={TransactionTypeId}",
+                    saleCoopModelId,
+                    transactionTypeId);
+                return true;
+            }
+
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var user = await _userManager.FindByIdAsync(userId!);
+            if (user == null)
+            {
+                _logger.LogError(
+                    "Upload skipped: current user could not be found. SaleCoopId={SaleCoopId}, UserId={UserId}",
+                    saleCoopModelId,
+                    userId);
+                return true;
+            }
 
             int index = 0;
 
-            // 2. Loop through each VM (each expected to be one document type)
             foreach (var createFileUploadViewModel in createFileUploadsViewModel)
             {
                 if (createFileUploadViewModel == null)
                     continue;
 
-                // 2a. Find the DocumentType in the provided list
                 var docType = documentTypeList.FirstOrDefault(x => x.Id == createFileUploadViewModel.DocumentTypeId);
                 if (docType == null)
                 {
@@ -413,44 +470,70 @@ namespace Intl.Realty.Firm.Controllers
                     continue;
                 }
 
-                // 2b. Build upload path for this doc type
-                var docTypeFolder = string.IsNullOrWhiteSpace(docType.Description) ? "Unknown" : docType.Description.Trim();
+                var docTypeFolder = TransactionHelper.SanitizePathSegment(docType.Description);
                 string currentUploadPath = Path.Combine(uploadPath, _transactionTypeName, docTypeFolder);
+                TransactionHelper.EnsureDirectoryExists(currentUploadPath);
 
-                // 2c. Loop through each file for this doc type
                 var files = createFileUploadViewModel.Files;
-                if (files == null || !files.Any())
+                if (!TransactionHelper.HasUploadableFiles(files))
                 {
                     _logger.LogInformation($"[UPLOAD] Index={index}, No files to save for DocumentTypeId={docType.Id} ('{docType.Description}')");
                     index++;
                     continue;
                 }
 
-                foreach (var file in files)
+                foreach (var file in files!)
                 {
-                    // Log before saving
-                    _logger.LogWarning($"[DEBUG-SAVE] Index={index}, Saving File='{file.FileName}', For DocumentTypeId={docType.Id} ('{docType.Description}')");
+                    if (file == null || file.Length == 0)
+                        continue;
 
-                    var (fileNameWithoutExtension, fileExtension, originalFileName) = await _fileHandlerService.UploadFile(file, currentUploadPath);
-
-                    // Always create a new FileUpload object inside the loop!
-                    var createFileUpload = new FileUpload
+                    try
                     {
-                        FileName = fileNameWithoutExtension,
-                        FileExtension = fileExtension,
-                        OriginalFileName = originalFileName,
-                        Directory = currentUploadPath,
-                        FullPath = Path.Combine(currentUploadPath, fileNameWithoutExtension + fileExtension),
-                        FileSize = file.Length.ToString(),
-                        IsActive = true,
-                        CreatedAt = DateTime.Now,
-                        CreatedBy = user!.Id,
-                        SaleCoopId = saleCoopModelId,
-                        TransactionTypeId = transactionTypeId,
-                        DocumentTypeId = docType.Id
-                    };
+                        _logger.LogInformation(
+                            "Uploading file. Index={Index}, FileName={FileName}, DocumentTypeId={DocumentTypeId}, Path={Path}",
+                            index,
+                            file.FileName,
+                            docType.Id,
+                            currentUploadPath);
 
-                    await _unitOfWork.FileUpload.AddAsync(createFileUpload);
+                        var (fileNameWithoutExtension, fileExtension, originalFileName) =
+                            await _fileHandlerService.UploadFile(file, currentUploadPath);
+
+                        var createFileUpload = new FileUpload
+                        {
+                            FileName = fileNameWithoutExtension,
+                            FileExtension = fileExtension,
+                            OriginalFileName = originalFileName,
+                            Directory = currentUploadPath,
+                            FullPath = Path.Combine(currentUploadPath, fileNameWithoutExtension + fileExtension),
+                            FileSize = file.Length.ToString(),
+                            IsActive = true,
+                            CreatedAt = DateTime.Now,
+                            CreatedBy = user.Id,
+                            SaleCoopId = saleCoopModelId,
+                            TransactionTypeId = transactionTypeId,
+                            DocumentTypeId = docType.Id
+                        };
+
+                        await _unitOfWork.FileUpload.AddAsync(createFileUpload);
+
+                        _logger.LogInformation(
+                            "File uploaded successfully. Index={Index}, FileName={FileName}, DocumentTypeId={DocumentTypeId}",
+                            index,
+                            originalFileName,
+                            docType.Id);
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError(
+                            ex,
+                            "Upload failed. Index={Index}, FileName={FileName}, DocumentTypeId={DocumentTypeId}, Path={Path}",
+                            index,
+                            file.FileName,
+                            docType.Id,
+                            currentUploadPath);
+                        throw;
+                    }
                 }
                 index++;
             }
@@ -550,14 +633,32 @@ namespace Intl.Realty.Firm.Controllers
             if (id == 0)
                 return NotFoundResultWithMessage("SaleCoop", id);
 
+            if (viewModel == null || viewModel.EditSaleCoopViewModel == null)
+            {
+                _logger.LogError("Edit SaleCoop POST received a null view model. SaleCoopId={SaleCoopId}", id);
+                return BadRequest("Invalid edit request.");
+            }
+
             var dealStatusList = await _unitOfWork.DealStatus.GetAllAsync(x => x.IsActive && !x.IsDeleted);
             viewModel.EditSaleCoopViewModel.DealStatusList = dealStatusList.ToList();
 
-            var actionType = Request.Form["actionType"];
+            var actionType = TransactionHelper.NormalizeActionType(Request.Form["actionType"]);
+
+            // Load SaleCoop model early so DealStatus can be restored on validation/error returns
+            var SaleCoopModel = await _unitOfWork.SaleCoop.GetAsync(
+                x => x.Id == id,
+                includeProperties: "IRFDeal,TransactionType,DealStatus",
+                tracked: true);
+
+            if (SaleCoopModel == null)
+                return NotFoundResultWithMessage("SaleCoop", id);
+
+            if (viewModel.EditSaleCoopViewModel.DealStatus == null && SaleCoopModel.DealStatus != null)
+                viewModel.EditSaleCoopViewModel.DealStatus = SaleCoopModel.DealStatus;
 
             if (!ModelState.IsValid)
             {
-                if (actionType == "save")
+                if (TransactionHelper.IsSaveAction(actionType))
                 {
                     // Skip validation errors on Save
                 }
@@ -572,18 +673,23 @@ namespace Intl.Realty.Firm.Controllers
                 throw new InvalidOperationException("Invalid user ID - cannot convert to GUID.");
 
             var user = await _userManager.FindByIdAsync(userId!);
-
-            // Load SaleCoop model (tracked)
-            var SaleCoopModel = await _unitOfWork.SaleCoop.GetAsync(
-                x => x.Id == id,
-                includeProperties: "IRFDeal,TransactionType,DealStatus",
-                tracked: true);
-
-            if (SaleCoopModel == null)
-                return NotFoundResultWithMessage("SaleCoop", id);
+            if (user == null)
+            {
+                _logger.LogError("Edit SaleCoop POST failed: authenticated user could not be found. UserId={UserId}", userId);
+                return Unauthorized();
+            }
 
             // Load transaction type
             var transactionType = await _unitOfWork.TransactionType.GetAsync(x => x.Id == SaleCoopModel.TransactionTypeId);
+            if (transactionType == null)
+            {
+                _logger.LogError(
+                    "Edit SaleCoop POST failed: transaction type Id={TransactionTypeId} was not found.",
+                    SaleCoopModel.TransactionTypeId);
+                ModelState.AddModelError(string.Empty, "Transaction type could not be found. Contact the administrator.");
+                return View(viewModel);
+            }
+
             viewModel.EditSaleCoopViewModel.TransactionType = transactionType;
             viewModel.EditSaleCoopViewModel.TransactionTypeId = transactionType.Id;
 
@@ -631,11 +737,15 @@ namespace Intl.Realty.Firm.Controllers
                 await _unitOfWork.SaveChangesAsync(); // All EF-tracked changes saved
 
                 // Handle file uploads (optional)
-                var uploadPath = CreateFilePath(SaleCoopModel.Id);
+                var uploadPath = await CreateFilePathAsync(SaleCoopModel.Id);
                 var fileUploadVM = viewModel.EditSaleCoopViewModel.CreateFileUploadListViewModel?.CreateFileUploadsViewModel;
 
                 if (fileUploadVM != null)
                 {
+                    _logger.LogInformation(
+                        "Upload request received for Edit SaleCoop. SaleCoopId={SaleCoopId}, TransactionTypeId={TransactionTypeId}",
+                        SaleCoopModel.Id,
+                        transactionType.Id);
                     await CreateFileUploadData(
                         fileUploadVM,
                         SaleCoopModel.Id,
@@ -657,7 +767,7 @@ namespace Intl.Realty.Firm.Controllers
                 }
 
                 // ===== EMAIL NOTIFICATION (if submitted) =====
-                if (actionType == "submit" && SaleCoopModel.DealStatusId == 1)
+                if (TransactionHelper.IsSubmitAction(actionType) && SaleCoopModel.DealStatusId == 1)
                 {
                     var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
                     var dealLink = Url.Action("Login", "Account", new { id = SaleCoopModel.Id, token }, Request.Scheme);
@@ -728,12 +838,15 @@ namespace Intl.Realty.Firm.Controllers
             catch (DbUpdateConcurrencyException)
             {
                 await transaction.RollbackAsync();
+                if (viewModel.EditSaleCoopViewModel.DealStatus == null && SaleCoopModel.DealStatus != null)
+                    viewModel.EditSaleCoopViewModel.DealStatus = SaleCoopModel.DealStatus;
                 ModelState.AddModelError(string.Empty, "This record was modified by another user after you loaded it. Please reload and try again.");
                 return View(viewModel);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 await transaction.RollbackAsync();
+                _logger.LogError(ex, "Edit SaleCoop POST failed unexpectedly. SaleCoopId={SaleCoopId}", id);
                 throw;
             }
         }
@@ -932,11 +1045,34 @@ namespace Intl.Realty.Firm.Controllers
             int transactionTypeId,
             string uploadPath)
         {
+            _logger.LogInformation(
+                "Upload request received for additional documents. SaleCoopId={SaleCoopId}, TransactionTypeId={TransactionTypeId}",
+                saleCoopId,
+                transactionTypeId);
+
+            if (additionalDocuments == null ||
+                !additionalDocuments.Any(d => d != null && d.File != null && d.File.Length > 0))
+            {
+                _logger.LogWarning(
+                    "No files submitted for additional documents. SaleCoopId={SaleCoopId}",
+                    saleCoopId);
+                return true;
+            }
+
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var user = await _userManager.FindByIdAsync(userId!);
-
-            if (additionalDocuments == null || !additionalDocuments.Any())
+            if (user == null)
+            {
+                _logger.LogError(
+                    "Additional document upload skipped: current user could not be found. SaleCoopId={SaleCoopId}, UserId={UserId}",
+                    saleCoopId,
+                    userId);
                 return true;
+            }
+
+            var additionalDocsFolder = TransactionHelper.SanitizePathSegment("AdditionalDocuments");
+            string currentUploadPath = Path.Combine(uploadPath, _transactionTypeName, additionalDocsFolder);
+            TransactionHelper.EnsureDirectoryExists(currentUploadPath);
 
             foreach (var item in additionalDocuments)
             {
@@ -944,7 +1080,8 @@ namespace Intl.Realty.Firm.Controllers
                     continue;
 
                 var hasDocumentName = !string.IsNullOrWhiteSpace(item.DocumentName);
-                var hasFile = item.File != null && item.File.Length > 0;
+                var file = item.File;
+                var hasFile = file != null && file.Length > 0;
 
                 if (!hasDocumentName && !hasFile)
                     continue;
@@ -952,29 +1089,51 @@ namespace Intl.Realty.Firm.Controllers
                 if (!hasDocumentName || !hasFile)
                     continue;
 
-                string currentUploadPath = Path.Combine(uploadPath, _transactionTypeName, "AdditionalDocuments");
-
-                var (fileNameWithoutExtension, fileExtension, originalFileName) =
-                    await _fileHandlerService.UploadFile(item.File!, currentUploadPath);
-
-                var additionalDocument = new AdditionalDocument
+                try
                 {
-                    DocumentName = item.DocumentName!.Trim(),
-                    FileName = fileNameWithoutExtension,
-                    FileExtension = fileExtension,
-                    OriginalFileName = originalFileName,
-                    Directory = currentUploadPath,
-                    FullPath = Path.Combine(currentUploadPath, fileNameWithoutExtension + fileExtension),
-                    FileSize = item.File!.Length.ToString(),
-                    TransactionTypeId = transactionTypeId,
-                    IsActive = true,
-                    IsDeleted = false,
-                    CreatedAt = DateTime.Now,
-                    CreatedBy = user!.Id,
-                    SaleCoopId = saleCoopId
-                };
+                    _logger.LogInformation(
+                        "Uploading additional document. DocumentName={DocumentName}, FileName={FileName}, Path={Path}",
+                        item.DocumentName,
+                        file!.FileName,
+                        currentUploadPath);
 
-                await _unitOfWork.AdditionalDocument.AddAsync(additionalDocument);
+                    var (fileNameWithoutExtension, fileExtension, originalFileName) =
+                        await _fileHandlerService.UploadFile(file, currentUploadPath);
+
+                    var additionalDocument = new AdditionalDocument
+                    {
+                        DocumentName = item.DocumentName!.Trim(),
+                        FileName = fileNameWithoutExtension,
+                        FileExtension = fileExtension,
+                        OriginalFileName = originalFileName,
+                        Directory = currentUploadPath,
+                        FullPath = Path.Combine(currentUploadPath, fileNameWithoutExtension + fileExtension),
+                        FileSize = file.Length.ToString(),
+                        TransactionTypeId = transactionTypeId,
+                        IsActive = true,
+                        IsDeleted = false,
+                        CreatedAt = DateTime.Now,
+                        CreatedBy = user.Id,
+                        SaleCoopId = saleCoopId
+                    };
+
+                    await _unitOfWork.AdditionalDocument.AddAsync(additionalDocument);
+
+                    _logger.LogInformation(
+                        "File uploaded successfully. DocumentName={DocumentName}, OriginalFileName={OriginalFileName}",
+                        item.DocumentName,
+                        originalFileName);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(
+                        ex,
+                        "Upload failed for additional document. DocumentName={DocumentName}, FileName={FileName}, Path={Path}",
+                        item.DocumentName,
+                        file!.FileName,
+                        currentUploadPath);
+                    throw;
+                }
             }
 
             return true;

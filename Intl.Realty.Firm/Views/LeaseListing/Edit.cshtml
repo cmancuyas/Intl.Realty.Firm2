@@ -39,7 +39,7 @@
                   asp-controller="LeaseListing"
                   method="post"
                   enctype="multipart/form-data">
-                <input type="hidden" id="ActionTypeHidden" name="actionType" />
+                <input type="hidden" id="ActionTypeHidden" name="actionType" value="save" />
                 <input type="hidden" name="EditLeaseListingViewModel.RowVersion"
                        value="@Convert.ToBase64String(Model.EditLeaseListingViewModel.RowVersion)" />
                 <input type="hidden" asp-for="EditLeaseListingViewModel.Id" />
