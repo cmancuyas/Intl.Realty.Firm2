@@ -8,6 +8,7 @@ namespace Intl.Realty.Firm.Service
 {
     public class EmailService : IEmailService
     {
+        private const int MaxSendAttempts = 3;
         private readonly EmailSettings _mailSettings;
         private readonly IConfigurationService _configurationService;
         private readonly ILogger<EmailService> _logger;
@@ -24,70 +25,103 @@ namespace Intl.Realty.Firm.Service
 
         public async Task SendEmailAsync(MailRequest mailRequest)
         {
-            var emailAddress = _configurationService.GetEmail();
-            var password = _configurationService.GetPassword(); 
-            var host = _configurationService.GetHost();
-            var displayName = _configurationService.GetDisplayName();
-            var port = _configurationService.GetPort();
+            if (mailRequest == null)
+                throw new ArgumentNullException(nameof(mailRequest));
+
+            if (string.IsNullOrWhiteSpace(mailRequest.ToEmail))
+                throw new InvalidOperationException("Email recipient (ToEmail) is required.");
+
+            var emailAddress = _configurationService.GetEmail()?.Trim();
+            var password = _configurationService.GetPassword()?.Trim();
+            var host = _configurationService.GetHost()?.Trim();
+            var displayName = _configurationService.GetDisplayName()?.Trim();
+            var portText = _configurationService.GetPort()?.Trim();
+
+            if (string.IsNullOrWhiteSpace(host) ||
+                string.IsNullOrWhiteSpace(emailAddress) ||
+                string.IsNullOrWhiteSpace(password) ||
+                string.IsNullOrWhiteSpace(portText) ||
+                !int.TryParse(portText, out var port))
+            {
+                throw new InvalidOperationException(
+                    "Email settings are incomplete. Host, Port, Email, and Password must be configured.");
+            }
 
             var emailToSend = new MimeMessage();
-            emailToSend.From.Add(new MailboxAddress(displayName, emailAddress));
+            emailToSend.From.Add(new MailboxAddress(
+                string.IsNullOrWhiteSpace(displayName) ? emailAddress : displayName,
+                emailAddress));
 
             foreach (var address in mailRequest.ToEmail
                          .Split(',', StringSplitOptions.RemoveEmptyEntries)
-                         .Select(e => e.Trim()))
+                         .Select(e => e.Trim())
+                         .Where(e => !string.IsNullOrWhiteSpace(e)))
             {
                 emailToSend.To.Add(MailboxAddress.Parse(address));
+            }
+
+            if (!emailToSend.To.Any())
+                throw new InvalidOperationException("No valid recipient addresses were provided.");
+
+            if (!string.IsNullOrWhiteSpace(mailRequest.ReplyToEmail))
+            {
+                emailToSend.ReplyTo.Add(MailboxAddress.Parse(mailRequest.ReplyToEmail.Trim()));
             }
 
             if (!string.IsNullOrWhiteSpace(mailRequest.CcEmail))
             {
                 foreach (var cc in mailRequest.CcEmail
                              .Split(',', StringSplitOptions.RemoveEmptyEntries)
-                             .Select(e => e.Trim()))
+                             .Select(e => e.Trim())
+                             .Where(e => !string.IsNullOrWhiteSpace(e)))
                 {
                     emailToSend.Cc.Add(MailboxAddress.Parse(cc));
                 }
             }
 
-            emailToSend.Subject = mailRequest.Subject;
+            emailToSend.Subject = mailRequest.Subject ?? string.Empty;
             emailToSend.Body = new TextPart(MimeKit.Text.TextFormat.Html)
             {
-                Text = mailRequest.Body
+                Text = mailRequest.Body ?? string.Empty
             };
 
-            try
+            Exception? lastException = null;
+
+            for (var attempt = 1; attempt <= MaxSendAttempts; attempt++)
             {
-                using var emailClient = new SmtpClient();
-
-                _logger.LogInformation("Preparing to send email...");
-                _logger.LogInformation("SMTP Host: {Host}, Port: {Port}", host, port);
-                _logger.LogInformation("To: {To}", mailRequest.ToEmail);
-
-                if (!string.IsNullOrWhiteSpace(password) && password.Length >= 5)
+                try
                 {
-                    _logger.LogInformation("Using partial API key: {Key}", password.Substring(0, 5));
+                    using var emailClient = new SmtpClient();
+                    emailClient.Timeout = 30000;
+
+                    _logger.LogInformation(
+                        "Preparing to send email (attempt {Attempt}/{MaxAttempts}). SMTP Host: {Host}, Port: {Port}, To: {To}",
+                        attempt, MaxSendAttempts, host, port, mailRequest.ToEmail);
+
+                    await emailClient.ConnectAsync(host, port, MailKit.Security.SecureSocketOptions.StartTls);
+                    await emailClient.AuthenticateAsync("apikey", password);
+                    await emailClient.SendAsync(emailToSend);
+                    await emailClient.DisconnectAsync(true);
+
+                    _logger.LogInformation("Email successfully sent to {Recipient}", mailRequest.ToEmail);
+                    return;
                 }
-                else
+                catch (Exception ex)
                 {
-                    _logger.LogWarning("Email password is missing or too short to log safely.");
+                    lastException = ex;
+                    _logger.LogWarning(ex,
+                        "Email send attempt {Attempt}/{MaxAttempts} failed for {Recipient}",
+                        attempt, MaxSendAttempts, mailRequest.ToEmail);
+
+                    if (attempt < MaxSendAttempts)
+                        await Task.Delay(TimeSpan.FromSeconds(attempt * 2));
                 }
-
-                await emailClient.ConnectAsync(host, Convert.ToInt32(port), MailKit.Security.SecureSocketOptions.StartTls);
-                await emailClient.AuthenticateAsync("apikey", password);
-
-                _logger.LogInformation("Sending email to {Recipient}", mailRequest.ToEmail);
-                await emailClient.SendAsync(emailToSend);
-                await emailClient.DisconnectAsync(true);
-
-                _logger.LogInformation("✅ Email successfully sent to {Recipient}", mailRequest.ToEmail);
             }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "❌ Error sending email to {Recipient}", mailRequest.ToEmail);
-                throw;
-            }
+
+            _logger.LogError(lastException, "All email send attempts failed for {Recipient}", mailRequest.ToEmail);
+            throw new InvalidOperationException(
+                $"Failed to send email to {mailRequest.ToEmail} after {MaxSendAttempts} attempts.",
+                lastException);
         }
-
     }
 }

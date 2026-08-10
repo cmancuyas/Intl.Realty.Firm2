@@ -142,12 +142,21 @@ namespace Intl.Realty.Firm.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> SubmitLoginIssue(SupportViewModel model, string? token)
         {
-            _logger.LogInformation("📨 SubmitLoginIssue triggered. Email: {Email}", model.Email);
+            if (model == null)
+            {
+                ModelState.AddModelError(string.Empty, "Invalid support request.");
+                return View("LoginIssueSupport", new SupportViewModel());
+            }
+
+            model.Email = model.Email?.Trim() ?? string.Empty;
+            model.Description = model.Description?.Trim() ?? string.Empty;
+
+            _logger.LogInformation("SubmitLoginIssue triggered. Email: {Email}", model.Email);
 
             if (!ModelState.IsValid)
             {
                 _logger.LogWarning(
-                    "❌ ModelState invalid. Errors: {Errors}",
+                    "SubmitLoginIssue ModelState invalid. Errors: {Errors}",
                     string.Join(" | ",
                         ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage))
                 );
@@ -155,11 +164,12 @@ namespace Intl.Realty.Firm.Controllers
                 return View("LoginIssueSupport", model);
             }
 
-            // ✅ reCAPTCHA v3 validation
-            if (!await _googleCaptchaService.VerifyToken(token, expectedAction: "login_issue", minScore: 0.5))
+            // Support users already struggling to log in; use a slightly lower threshold
+            // and always require a fresh token from the client.
+            if (!await _googleCaptchaService.VerifyToken(token, expectedAction: "login_issue", minScore: 0.3))
             {
-                _logger.LogWarning("❌ reCAPTCHA failed for LoginIssueSupport. Email: {Email}", model.Email);
-                ModelState.AddModelError(string.Empty, "Captcha verification failed. Please try again.");
+                _logger.LogWarning("reCAPTCHA failed for LoginIssueSupport. Email: {Email}", model.Email);
+                ModelState.AddModelError(string.Empty, "Captcha verification failed. Please refresh the page and try again.");
                 return View("LoginIssueSupport", model);
             }
 
@@ -170,8 +180,8 @@ namespace Intl.Realty.Firm.Controllers
 
                 if (!recipients.Any())
                 {
-                    _logger.LogWarning("❗ No recipients configured in GetSupportEmail()");
-                    ModelState.AddModelError(string.Empty, "Support email is not configured.");
+                    _logger.LogWarning("No recipients configured in GetSupportEmail()");
+                    ModelState.AddModelError(string.Empty, "Support email is not configured. Please email support@irfconnect.com directly.");
                     return View("LoginIssueSupport", model);
                 }
 
@@ -183,17 +193,18 @@ namespace Intl.Realty.Firm.Controllers
 
                 await _emailService.SendEmailAsync(mailRequest);
 
-                _logger.LogInformation("✅ Login issue email sent for {Email}", model.Email);
+                _logger.LogInformation("Login issue email sent for {Email}", model.Email);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "❌ Error sending login issue email for {Email}", model.Email);
-                ModelState.AddModelError(string.Empty, "There was a problem sending your request. Please try again later.");
+                _logger.LogError(ex, "Error sending login issue email for {Email}", model.Email);
+                ModelState.AddModelError(string.Empty,
+                    "There was a problem sending your request. Please try again later, or email support@irfconnect.com directly.");
                 return View("LoginIssueSupport", model);
             }
 
-            // ✅ Show message on Login page
-            TempData["SuccessMessage"] = "Your login issue has been submitted successfully. Our support team will contact you shortly.";
+            TempData["SuccessMessage"] =
+                "Your login issue has been submitted successfully. Our support team will contact you shortly.";
 
             return RedirectToAction("Login", "Account");
         }
@@ -549,7 +560,8 @@ namespace Intl.Realty.Firm.Controllers
                 return View(viewModel);
             }
 
-            // -------- Try to send email, but do not block role assignment on failure --------
+            // -------- Send confirmation email (retry handled inside EmailService) --------
+            var confirmationEmailSent = false;
             try
             {
                 var token = await _userManager.GenerateEmailConfirmationTokenAsync(applicationUser);
@@ -560,15 +572,20 @@ namespace Intl.Realty.Firm.Controllers
                     new { userId = applicationUser.Id, token = encodedToken },
                     protocol: GetPublicRequestScheme());
 
-                var mailRequest = EmailRequest.CreateRegistrationVerification(viewModel, confirmationLink!);
-                await _emailService.SendEmailAsync(mailRequest);
+                if (string.IsNullOrWhiteSpace(confirmationLink))
+                {
+                    throw new InvalidOperationException("Unable to generate email confirmation link.");
+                }
 
-                _logger.LogInformation("Registration: confirmation email queued for {Email}.", applicationUser.Email);
+                var mailRequest = EmailRequest.CreateRegistrationVerification(viewModel, confirmationLink);
+                await _emailService.SendEmailAsync(mailRequest);
+                confirmationEmailSent = true;
+
+                _logger.LogInformation("Registration: confirmation email sent to {Email}.", applicationUser.Email);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Registration: failed to send confirmation email to {Email}. Continuing.", applicationUser.Email);
-                // Intentionally swallow exception — we still proceed to add role and succeed the flow
+                _logger.LogError(ex, "Registration: failed to send confirmation email to {Email}.", applicationUser.Email);
             }
 
             // -------- Always attempt to add Agent role (safety) --------
@@ -603,7 +620,15 @@ namespace Intl.Realty.Firm.Controllers
                 await _signInManager.SignInAsync(applicationUser, isPersistent: false);
             }
 
-            return View("RegistrationSuccessful");
+            TempData["RegisteredEmail"] = applicationUser.Email;
+            TempData["ConfirmationEmailSent"] = confirmationEmailSent;
+            if (!confirmationEmailSent)
+            {
+                TempData["EmailWarning"] =
+                    "Your account was created, but we could not send the confirmation email. Please use Resend below, or contact support.";
+            }
+
+            return RedirectToAction(nameof(RegistrationSuccessful));
         }
 
         // Helper to repopulate team leaders for the dropdown
@@ -624,6 +649,74 @@ namespace Intl.Realty.Firm.Controllers
         public IActionResult RegistrationSuccessful()
         {
             return View();
+        }
+
+        /// <summary>
+        /// Resends the registration confirmation email. Works even when EmailConfirmed is already true,
+        /// so users who never received the original message can still get a usable link.
+        /// </summary>
+        [HttpPost]
+        [AllowAnonymous]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ResendRegistrationEmail(string email)
+        {
+            email = email?.Trim() ?? string.Empty;
+            TempData["RegisteredEmail"] = email;
+
+            if (string.IsNullOrWhiteSpace(email))
+            {
+                TempData["ConfirmationEmailSent"] = false;
+                TempData["EmailWarning"] = "Email address is required to resend the confirmation message.";
+                return RedirectToAction(nameof(RegistrationSuccessful));
+            }
+
+            var user = await _userManager.FindByEmailAsync(email);
+            if (user == null)
+            {
+                // Avoid account enumeration: show a generic success-style message.
+                TempData["ConfirmationEmailSent"] = true;
+                TempData["EmailWarning"] = null;
+                TempData["SuccessMessage"] = "If an account exists for that email, a confirmation message has been sent.";
+                return RedirectToAction(nameof(RegistrationSuccessful));
+            }
+
+            try
+            {
+                var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+                var encodedToken = EncodeTokenForEmail(token);
+                var confirmationLink = Url.Action(
+                    "ConfirmEmail",
+                    "Account",
+                    new { userId = user.Id, token = encodedToken },
+                    protocol: GetPublicRequestScheme());
+
+                if (string.IsNullOrWhiteSpace(confirmationLink))
+                    throw new InvalidOperationException("Unable to generate email confirmation link.");
+
+                var registerVm = new RegisterViewModel
+                {
+                    Email = user.Email ?? email,
+                    FirstName = user.FirstName ?? string.Empty,
+                    LastName = user.LastName ?? string.Empty
+                };
+
+                var mailRequest = EmailRequest.CreateRegistrationVerification(registerVm, confirmationLink);
+                await _emailService.SendEmailAsync(mailRequest);
+
+                TempData["ConfirmationEmailSent"] = true;
+                TempData["EmailWarning"] = null;
+                TempData["SuccessMessage"] = "Confirmation email sent. Please check your inbox and spam folder.";
+                _logger.LogInformation("ResendRegistrationEmail: confirmation email sent to {Email}.", email);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "ResendRegistrationEmail: failed for {Email}.", email);
+                TempData["ConfirmationEmailSent"] = false;
+                TempData["EmailWarning"] =
+                    "We could not send the confirmation email right now. Please try again in a few minutes, or contact support.";
+            }
+
+            return RedirectToAction(nameof(RegistrationSuccessful));
         }
 
         [HttpGet]

@@ -9,31 +9,59 @@ namespace Intl.Realty.Firm.Helper
     {
         public static string UserEmailConfirmationTemplate(ApplicationUser user, string confirmationLink)
         {
-            return $@"
-        <p>Hello {user.FirstName},</p>
-        <p>Thank you for registering with us! Please confirm your email by clicking the link below:</p>
-        <p><a href=""{confirmationLink}"">Confirm Email</a></p>
-        <p>If you did not sign up, you can safely ignore this email.</p>
-        <p>— The Intl Realty Firm Team</p>";
+            return BuildConfirmationEmailHtml(
+                user.FirstName ?? "User",
+                confirmationLink,
+                "Confirm Your Email",
+                "Thank you for registering with International Realty Firm. Please confirm your email by clicking the button below.");
         }
 
         public static string UserRegistrationTemplate(RegisterViewModel registerViewModel, string confirmationLink)
         {
-            string template =
-                    @$"<html>
-                     <meta charset=""utf-8"">
-                    <body>
-                    <p>Good day <strong>{registerViewModel.FirstName},</strong></p>
-                    <p><span style=""background-color:transparent;color:#000000;font-family:Arial,sans-serif;font-size:11pt;""><span style=""font-style:normal;font-variant:normal;font-weight:400;text-decoration:none;vertical-align:baseline;white-space:pre-wrap;"">We have received your user <strong>registration request</strong> for the INTL Realty Firm.&nbsp;</span></span></p>
-                    <p><span style=""background-color:transparent;color:#000000;font-family:Arial,sans-serif;font-size:11pt;""><span style=""font-style:normal;font-variant:normal;font-weight:400;text-decoration:none;vertical-align:baseline;white-space:pre-wrap;"">Confirm your email by clicking on the link below.&nbsp;</span></span></p>
-                    <p><strong>{confirmationLink}</strong>
-                    <p>&nbsp;</p>
-                    <p>
-                        <meta charset=""utf-8""><span style=""background-color:transparent;color:#000000;font-family:Arial,sans-serif;font-size:11pt;""><span style=""font-style:normal;font-variant:normal;font-weight:400;text-decoration:none;vertical-align:baseline;white-space:pre-wrap;"">Thank you.&nbsp;</span></span>
-                    </p>
-                    </body>
-                    </html>";
-            return template;
+            return BuildConfirmationEmailHtml(
+                registerViewModel.FirstName ?? "User",
+                confirmationLink,
+                "Confirm Your Registration",
+                "We have received your registration request for International Realty Firm. Please confirm your email by clicking the button below.");
+        }
+
+        private static string BuildConfirmationEmailHtml(
+            string firstName,
+            string confirmationLink,
+            string heading,
+            string introText)
+        {
+            var safeName = WebUtility.HtmlEncode(firstName);
+            var safeLink = WebUtility.HtmlEncode(confirmationLink);
+
+            return $@"
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+    <meta charset='UTF-8'>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+    <title>{WebUtility.HtmlEncode(heading)}</title>
+</head>
+<body style='background-color:#f7fafc;padding:20px;font-family:Arial,sans-serif;'>
+    <div style='max-width:600px;margin:0 auto;padding:24px;background:#ffffff;border-radius:8px;'>
+        <h2 style='color:#333;margin-top:0;'>{WebUtility.HtmlEncode(heading)}</h2>
+        <p style='color:#555;font-size:16px;'>Dear {safeName},</p>
+        <p style='color:#555;font-size:16px;'>{WebUtility.HtmlEncode(introText)}</p>
+        <p style='text-align:center;margin:28px 0;'>
+            <a href='{confirmationLink}'
+               style='background-color:#0d6efd;color:#ffffff;padding:12px 24px;font-size:16px;font-weight:bold;text-decoration:none;border-radius:5px;display:inline-block;'
+               target='_blank' rel='noopener'>
+                Confirm Email
+            </a>
+        </p>
+        <p style='color:#555;font-size:14px;'>If the button does not work, copy and paste this link into your browser:</p>
+        <p style='color:#555;font-size:14px;word-break:break-all;'><a href='{confirmationLink}' target='_blank' rel='noopener'>{safeLink}</a></p>
+        <hr style='border:none;border-top:1px solid #eee;margin:24px 0;' />
+        <p style='color:#777;font-size:13px;'>If you did not sign up, you can safely ignore this email.</p>
+        <p style='color:#777;font-size:13px;'>Questions? Contact support@internationalrealtyfirm.com</p>
+    </div>
+</body>
+</html>";
         }
 
         public static string UserResetPasswordTemplate(ApplicationUser user, string resetPasswordLink)

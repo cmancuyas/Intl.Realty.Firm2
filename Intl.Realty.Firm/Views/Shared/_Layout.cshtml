@@ -88,22 +88,34 @@
                     });
                 }
 
-                // Initial token + refresh every ~110s
+                // Warm up an initial token; always refresh again on submit (tokens expire ~2 minutes).
                 refreshToken();
                 setInterval(refreshToken, 110000);
 
-                // Ensure token exists before submit
+                // Always refresh token immediately before submit (v3 tokens expire ~2 minutes).
                 let isSubmitting = false;
                 form.addEventListener("submit", async function (e) {
                     if (isSubmitting) return;
 
-                    if (!tokenField.value) {
-                        e.preventDefault();
+                    e.preventDefault();
+
+                    const submitBtn = form.querySelector('button[type="submit"], input[type="submit"]');
+                    if (submitBtn) submitBtn.disabled = true;
+
+                    try {
                         await refreshToken();
-                        if (tokenField.value) {
-                            isSubmitting = true;
-                            form.submit();
+                        if (!tokenField.value) {
+                            alert("Captcha could not be verified. Please refresh the page and try again.");
+                            if (submitBtn) submitBtn.disabled = false;
+                            return;
                         }
+
+                        isSubmitting = true;
+                        form.submit();
+                    } catch (err) {
+                        console.error("reCAPTCHA submit error:", err);
+                        alert("Captcha could not be verified. Please refresh the page and try again.");
+                        if (submitBtn) submitBtn.disabled = false;
                     }
                 });
             });
