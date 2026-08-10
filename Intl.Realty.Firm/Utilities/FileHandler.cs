@@ -47,5 +47,39 @@
             var result = Path.GetFileNameWithoutExtension(fileName);
             return result;
         }
+
+        /// <summary>
+        /// Resolves a stored relative/absolute path to an existing file on disk.
+        /// Prefers Directory + FileName + Extension (same as uploads), then FullPath variants.
+        /// </summary>
+        public static string? ResolveExistingFilePath(
+            string? fullPath,
+            string? directory,
+            string? fileName,
+            string? fileExtension)
+        {
+            var candidates = new List<string>();
+
+            if (!string.IsNullOrWhiteSpace(directory) && !string.IsNullOrWhiteSpace(fileName))
+            {
+                var combinedName = fileName + (fileExtension ?? string.Empty);
+                candidates.Add(GetFilePath(directory, combinedName));
+            }
+
+            if (!string.IsNullOrWhiteSpace(fullPath))
+            {
+                candidates.Add(fullPath);
+                if (!Path.IsPathRooted(fullPath))
+                    candidates.Add(Path.Combine(Directory.GetCurrentDirectory(), fullPath));
+            }
+
+            foreach (var candidate in candidates.Distinct(StringComparer.OrdinalIgnoreCase))
+            {
+                if (File.Exists(candidate))
+                    return candidate;
+            }
+
+            return null;
+        }
     }
 }

@@ -1356,19 +1356,22 @@ namespace Intl.Realty.Firm.Controllers
             if (additionalDocument == null)
                 return NotFound();
 
-            if (string.IsNullOrWhiteSpace(additionalDocument.FullPath) ||
-                !System.IO.File.Exists(additionalDocument.FullPath))
-            {
-                return NotFound();
-            }
+            var resolvedPath = FileHandler.ResolveExistingFilePath(
+                additionalDocument.FullPath,
+                additionalDocument.Directory,
+                additionalDocument.FileName,
+                additionalDocument.FileExtension);
 
-            var extension = additionalDocument.FileExtension?.ToLower();
+            if (resolvedPath == null)
+                return NotFound();
+
+            var extension = (additionalDocument.FileExtension ?? Path.GetExtension(resolvedPath))?.ToLowerInvariant();
             if (extension != ".pdf")
             {
                 return RedirectToAction(nameof(DownloadAdditionalDocument), new { id });
             }
 
-            var fs = new FileStream(additionalDocument.FullPath, FileMode.Open, FileAccess.Read);
+            var fs = new FileStream(resolvedPath, FileMode.Open, FileAccess.Read);
             return File(fs, "application/pdf");
         }
         [HttpPost]
@@ -1419,17 +1422,28 @@ namespace Intl.Realty.Firm.Controllers
             return Json(new { success = false });
         }
 
+        [HttpGet]
         public async Task<IActionResult> PreviewFile(int id)
         {
-            var fileUpload = await _unitOfWork.FileUpload.GetAsync(x => x.Id == id);
+            var fileUpload = await _unitOfWork.FileUpload.GetAsync(x => x.Id == id && !x.IsDeleted);
+            if (fileUpload == null)
+                return NotFound();
 
-            if (fileUpload != null)
-            {
-                FileStream fs = new FileStream(fileUpload.FullPath, FileMode.Open, FileAccess.Read);
-                return File(fs, "application/pdf");
+            var resolvedPath = FileHandler.ResolveExistingFilePath(
+                fileUpload.FullPath,
+                fileUpload.Directory,
+                fileUpload.FileName,
+                fileUpload.FileExtension);
 
-            }
-            return NotFound();
+            if (resolvedPath == null)
+                return NotFound();
+
+            var extension = (fileUpload.FileExtension ?? Path.GetExtension(resolvedPath))?.ToLowerInvariant();
+            if (extension != ".pdf")
+                return RedirectToAction(nameof(Download), new { id });
+
+            var fs = new FileStream(resolvedPath, FileMode.Open, FileAccess.Read);
+            return File(fs, "application/pdf");
         }
         public async Task<JsonResult> GetFileDetails(int id)
         {

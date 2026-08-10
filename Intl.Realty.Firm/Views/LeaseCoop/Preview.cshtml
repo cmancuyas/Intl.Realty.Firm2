@@ -95,7 +95,8 @@
                                         <td class="text-break">@(string.IsNullOrWhiteSpace(file.OriginalFileName) ? file.FileName : file.OriginalFileName)</td>
                                         <td>@file.FileExtension</td>
                                         <td class="text-center">
-                                            <a asp-action="PreviewFileUpload"
+                                            <a asp-action="PreviewFile"
+                                                   asp-controller="LeaseCoop"
                                                    asp-route-id="@file.Id"
                                                    target="_blank"
                                                    class="btn btn-secondary">
@@ -103,7 +104,8 @@
                                             </a>
                                         </td>
                                         <td class="text-center">
-                                            <a asp-action="DownloadFileUpload"
+                                            <a asp-action="Download"
+                                                   asp-controller="LeaseCoop"
                                                    asp-route-id="@file.Id"
                                                    class="btn btn-secondary">
                                                 Download
@@ -144,6 +146,7 @@
                                         <td class="text-break">@doc.OriginalFileName</td>
                                         <td class="text-center">
                                             <a asp-action="PreviewAdditionalDocument"
+                                                   asp-controller="LeaseCoop"
                                                    asp-route-id="@doc.Id"
                                                    target="_blank"
                                                    class="btn btn-secondary">
@@ -152,6 +155,7 @@
                                         </td>
                                         <td class="text-center">
                                             <a asp-action="DownloadAdditionalDocument"
+                                                   asp-controller="LeaseCoop"
                                                    asp-route-id="@doc.Id"
                                                    class="btn btn-secondary">
                                                 Download

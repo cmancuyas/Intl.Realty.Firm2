@@ -1217,31 +1217,26 @@ namespace Intl.Realty.Firm.Controllers
         [HttpGet]
         public async Task<IActionResult> PreviewAdditionalDocument(int id)
         {
-            var additionalDocument = await _unitOfWork.AdditionalDocument.GetAsync(x => x.Id == id);
+            var additionalDocument = await _unitOfWork.AdditionalDocument.GetAsync(x => x.Id == id && !x.IsDeleted);
 
-            if (additionalDocument == null || string.IsNullOrWhiteSpace(additionalDocument.FullPath))
+            if (additionalDocument == null)
                 return NotFound();
 
-            if (!System.IO.File.Exists(additionalDocument.FullPath))
+            var resolvedPath = FileHandler.ResolveExistingFilePath(
+                additionalDocument.FullPath,
+                additionalDocument.Directory,
+                additionalDocument.FileName,
+                additionalDocument.FileExtension);
+
+            if (resolvedPath == null)
                 return NotFound();
 
-            var extension = Path.GetExtension(additionalDocument.FullPath)?.ToLowerInvariant();
+            var extension = (additionalDocument.FileExtension ?? Path.GetExtension(resolvedPath))?.ToLowerInvariant();
+            if (extension != ".pdf")
+                return RedirectToAction(nameof(DownloadAdditionalDocument), new { id });
 
-            var contentType = extension switch
-            {
-                ".pdf" => "application/pdf",
-                ".doc" => "application/msword",
-                ".docx" => "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-                ".xls" => "application/vnd.ms-excel",
-                ".xlsx" => "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                ".jpg" => "image/jpeg",
-                ".jpeg" => "image/jpeg",
-                ".png" => "image/png",
-                _ => "application/octet-stream"
-            };
-
-            var fs = new FileStream(additionalDocument.FullPath, FileMode.Open, FileAccess.Read);
-            return File(fs, contentType);
+            var fs = new FileStream(resolvedPath, FileMode.Open, FileAccess.Read);
+            return File(fs, "application/pdf");
         }
 
         [HttpGet]
@@ -1290,17 +1285,28 @@ namespace Intl.Realty.Firm.Controllers
             return Json(new { success = false });
         }
 
+        [HttpGet]
         public async Task<IActionResult> PreviewFile(int id)
         {
-            var fileUpload = await _unitOfWork.FileUpload.GetAsync(x => x.Id == id);
+            var fileUpload = await _unitOfWork.FileUpload.GetAsync(x => x.Id == id && !x.IsDeleted);
+            if (fileUpload == null)
+                return NotFound();
 
-            if (fileUpload != null)
-            {
-                FileStream fs = new FileStream(fileUpload.FullPath, FileMode.Open, FileAccess.Read);
-                return File(fs, "application/pdf");
+            var resolvedPath = FileHandler.ResolveExistingFilePath(
+                fileUpload.FullPath,
+                fileUpload.Directory,
+                fileUpload.FileName,
+                fileUpload.FileExtension);
 
-            }
-            return NotFound();
+            if (resolvedPath == null)
+                return NotFound();
+
+            var extension = (fileUpload.FileExtension ?? Path.GetExtension(resolvedPath))?.ToLowerInvariant();
+            if (extension != ".pdf")
+                return RedirectToAction(nameof(Download), new { id });
+
+            var fs = new FileStream(resolvedPath, FileMode.Open, FileAccess.Read);
+            return File(fs, "application/pdf");
         }
         public async Task<JsonResult> GetFileDetails(int id)
         {

@@ -100,7 +100,8 @@
                                         </td>
                                         <td>@file.FileExtension</td>
                                         <td class="text-center">
-                                            <a asp-action="PreviewFileUpload"
+                                            <a asp-action="PreviewFile"
+                                                   asp-controller="SaleListing"
                                                    asp-route-id="@file.Id"
                                                    target="_blank"
                                                    class="btn btn-secondary">
@@ -108,7 +109,8 @@
                                             </a>
                                         </td>
                                         <td class="text-center">
-                                            <a asp-action="DownloadFileUpload"
+                                            <a asp-action="Download"
+                                                   asp-controller="SaleListing"
                                                    asp-route-id="@file.Id"
                                                    class="btn btn-secondary">
                                                 Download
@@ -151,6 +153,7 @@
                                         <td class="text-break">@file.OriginalFileName</td>
                                         <td class="text-center">
                                             <a asp-action="PreviewAdditionalDocument"
+                                                   asp-controller="SaleListing"
                                                    asp-route-id="@file.Id"
                                                    class="btn btn-secondary"
                                                    target="_blank">
@@ -159,6 +162,7 @@
                                         </td>
                                         <td class="text-center">
                                             <a asp-action="DownloadAdditionalDocument"
+                                                   asp-controller="SaleListing"
                                                    asp-route-id="@file.Id"
                                                    class="btn btn-secondary">
                                                 Download

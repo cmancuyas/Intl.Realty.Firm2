@@ -99,7 +99,8 @@
                                         <td>@file.FileExtension</td>
 
                                         <td class="text-center">
-                                            <a asp-action="PreviewFileUpload"
+                                            <a asp-action="PreviewFile"
+                                                   asp-controller="SaleCoop"
                                                    asp-route-id="@file.Id"
                                                    target="_blank"
                                                    class="btn btn-secondary">
@@ -108,7 +109,8 @@
                                         </td>
 
                                         <td class="text-center">
-                                            <a asp-action="DownloadFileUpload"
+                                            <a asp-action="Download"
+                                                   asp-controller="SaleCoop"
                                                    asp-route-id="@file.Id"
                                                    class="btn btn-secondary">
                                                 Download
@@ -154,6 +156,7 @@
 
                                         <td class="text-center">
                                             <a asp-action="PreviewAdditionalDocument"
+                                                   asp-controller="SaleCoop"
                                                    asp-route-id="@file.Id"
                                                    class="btn btn-secondary"
                                                    target="_blank">
@@ -163,6 +166,7 @@
 
                                         <td class="text-center">
                                             <a asp-action="DownloadAdditionalDocument"
+                                                   asp-controller="SaleCoop"
                                                    asp-route-id="@file.Id"
                                                    class="btn btn-secondary">
                                                 Download
