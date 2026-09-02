@@ -1,6 +1,21 @@
 ﻿@using Intl.Realty.Firm.Models
 @using Microsoft.Extensions.Options
 @inject IOptions<GoogleCaptchaConfig> GoogleCaptchaConfig
+@{
+    var title = ViewData["Title"]?.ToString() ?? "";
+    var isAuthPage =
+        title == "Login" ||
+        title == "Register" ||
+        title == "Login Issue Support" ||
+        title == "Forgot Password" ||
+        title == "Reset Password" ||
+        title == "User Agreement" ||
+        title == "Data Privacy Statement";
+    var enableRecaptcha =
+        title == "Login" ||
+        title == "Register" ||
+        title == "Login Issue Support";
+}
 
 <!DOCTYPE html>
 <html lang="en">
@@ -29,14 +44,9 @@
     <script src="~/lib/jquery/jquery.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     <script src="~/js/feather.min.js" asp-append-version="true"></script>
-    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-
-    @{
-        var title = ViewData["Title"]?.ToString() ?? "";
-        var enableRecaptcha =
-        title == "Login" ||
-        title == "Register" ||
-        title == "Login Issue Support";
+    @if (!isAuthPage)
+    {
+        <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     }
 
     @* ✅ Load reCAPTCHA v3 only when needed *@
@@ -127,6 +137,8 @@
             feather.replace();
         });
     </script>
+    @if (!isAuthPage)
+    {
     <script type="module">
         import {onLCP, onINP, onCLS} from 'https://unpkg.com/web-vitals@4?module';
 
@@ -145,6 +157,7 @@
         onINP(send);
         onCLS(send);
     </script>
+    }
 
     @await RenderSectionAsync("Scripts", required: false)
 </body>
