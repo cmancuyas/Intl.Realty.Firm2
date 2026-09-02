@@ -21,6 +21,7 @@ using Intl.Realty.Firm.Models;
 using Serilog;
 using Microsoft.Extensions.FileProviders;
 using OfficeOpenXml;
+using Microsoft.AspNetCore.HttpOverrides;
 
 Log.Logger = new LoggerConfiguration()
     .MinimumLevel.Debug()
@@ -167,6 +168,13 @@ builder.WebHost.ConfigureKestrel(c =>
     c.Limits.KeepAliveTimeout = TimeSpan.FromMinutes(100);
 });
 
+// IIS in-process on SmarterASP sets Request.Scheme directly. Only honor X-Forwarded-Proto
+// from known proxies (default KnownNetworks/KnownProxies); do not trust arbitrary client headers.
+builder.Services.Configure<ForwardedHeadersOptions>(options =>
+{
+    options.ForwardedHeaders = ForwardedHeaders.XForwardedProto;
+});
+
 // Email settings
 builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
 
@@ -187,6 +195,34 @@ else
 {
     app.UseExceptionHandler("/Error");
     app.UseHsts();
+}
+
+app.UseForwardedHeaders();
+
+app.Use(async (context, next) =>
+{
+    context.Response.Headers["X-Content-Type-Options"] = "nosniff";
+    context.Response.Headers["Referrer-Policy"] = "strict-origin-when-cross-origin";
+    context.Response.Headers["X-Frame-Options"] = "SAMEORIGIN";
+    await next();
+});
+
+if (!app.Environment.IsDevelopment())
+{
+    app.Use(async (context, next) =>
+    {
+        var host = context.Request.Host.Host;
+        if (host.StartsWith("www.", StringComparison.OrdinalIgnoreCase))
+        {
+            var canonicalHost = host[4..];
+            var scheme = context.Request.Scheme;
+            var newUrl = $"{scheme}://{canonicalHost}{context.Request.PathBase}{context.Request.Path}{context.Request.QueryString}";
+            context.Response.Redirect(newUrl, permanent: true);
+            return;
+        }
+
+        await next();
+    });
 }
 
 // Handle status codes (e.g., 404, 403)

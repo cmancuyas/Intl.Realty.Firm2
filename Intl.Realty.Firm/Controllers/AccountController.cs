@@ -441,6 +441,20 @@ namespace Intl.Realty.Firm.Controllers
         }
         [HttpGet]
         [AllowAnonymous]
+        public IActionResult PrivacyPolicy()
+        {
+            return View();
+        }
+
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult UserAgreement()
+        {
+            return View();
+        }
+
+        [HttpGet]
+        [AllowAnonymous]
         public async Task<IActionResult> Register()
         {
             var teamLeaders = await _userManager.GetUsersInRoleAsync("TeamLeader");
@@ -527,6 +541,7 @@ namespace Intl.Realty.Firm.Controllers
             {
                 UserName = viewModel.Email,
                 Email = viewModel.Email,
+                PhoneNumber = viewModel.Phone?.Trim(),
                 FirstName = viewModel.FirstName,
                 LastName = viewModel.LastName,
                 DepartmentId = viewModel.DepartmentId == 0 ? 1 : viewModel.DepartmentId,
