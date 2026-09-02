@@ -8,8 +8,10 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.WebUtilities;
 using System.Net;
 using System.Security.Claims;
+using System.Text;
 
 namespace Intl.Realty.Firm.Controllers
 {
@@ -140,12 +142,21 @@ namespace Intl.Realty.Firm.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> SubmitLoginIssue(SupportViewModel model, string? token)
         {
-            _logger.LogInformation("📨 SubmitLoginIssue triggered. Email: {Email}", model.Email);
+            if (model == null)
+            {
+                ModelState.AddModelError(string.Empty, "Invalid support request.");
+                return View("LoginIssueSupport", new SupportViewModel());
+            }
+
+            model.Email = model.Email?.Trim() ?? string.Empty;
+            model.Description = model.Description?.Trim() ?? string.Empty;
+
+            _logger.LogInformation("SubmitLoginIssue triggered. Email: {Email}", model.Email);
 
             if (!ModelState.IsValid)
             {
                 _logger.LogWarning(
-                    "❌ ModelState invalid. Errors: {Errors}",
+                    "SubmitLoginIssue ModelState invalid. Errors: {Errors}",
                     string.Join(" | ",
                         ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage))
                 );
@@ -153,11 +164,12 @@ namespace Intl.Realty.Firm.Controllers
                 return View("LoginIssueSupport", model);
             }
 
-            // ✅ reCAPTCHA v3 validation
-            if (!await _googleCaptchaService.VerifyToken(token, expectedAction: "login_issue", minScore: 0.5))
+            // Support users already struggling to log in; use a slightly lower threshold
+            // and always require a fresh token from the client.
+            if (!await _googleCaptchaService.VerifyToken(token, expectedAction: "login_issue", minScore: 0.3))
             {
-                _logger.LogWarning("❌ reCAPTCHA failed for LoginIssueSupport. Email: {Email}", model.Email);
-                ModelState.AddModelError(string.Empty, "Captcha verification failed. Please try again.");
+                _logger.LogWarning("reCAPTCHA failed for LoginIssueSupport. Email: {Email}", model.Email);
+                ModelState.AddModelError(string.Empty, "Captcha verification failed. Please refresh the page and try again.");
                 return View("LoginIssueSupport", model);
             }
 
@@ -168,8 +180,8 @@ namespace Intl.Realty.Firm.Controllers
 
                 if (!recipients.Any())
                 {
-                    _logger.LogWarning("❗ No recipients configured in GetSupportEmail()");
-                    ModelState.AddModelError(string.Empty, "Support email is not configured.");
+                    _logger.LogWarning("No recipients configured in GetSupportEmail()");
+                    ModelState.AddModelError(string.Empty, "Support email is not configured. Please email support@irfconnect.com directly.");
                     return View("LoginIssueSupport", model);
                 }
 
@@ -181,17 +193,18 @@ namespace Intl.Realty.Firm.Controllers
 
                 await _emailService.SendEmailAsync(mailRequest);
 
-                _logger.LogInformation("✅ Login issue email sent for {Email}", model.Email);
+                _logger.LogInformation("Login issue email sent for {Email}", model.Email);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "❌ Error sending login issue email for {Email}", model.Email);
-                ModelState.AddModelError(string.Empty, "There was a problem sending your request. Please try again later.");
+                _logger.LogError(ex, "Error sending login issue email for {Email}", model.Email);
+                ModelState.AddModelError(string.Empty,
+                    "There was a problem sending your request. Please try again later, or email support@irfconnect.com directly.");
                 return View("LoginIssueSupport", model);
             }
 
-            // ✅ Show message on Login page
-            TempData["SuccessMessage"] = "Your login issue has been submitted successfully. Our support team will contact you shortly.";
+            TempData["SuccessMessage"] =
+                "Your login issue has been submitted successfully. Our support team will contact you shortly.";
 
             return RedirectToAction("Login", "Account");
         }
@@ -207,6 +220,7 @@ namespace Intl.Realty.Firm.Controllers
 
         [HttpPost]
         [AllowAnonymous]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> ForgotPassword(ForgotPasswordViewModel viewModel)
         {
             if (!ModelState.IsValid)
@@ -214,43 +228,59 @@ namespace Intl.Realty.Firm.Controllers
                 return View(viewModel);
             }
 
-            var user = await _userManager.FindByEmailAsync(viewModel.Email);
+            var email = viewModel.Email?.Trim() ?? string.Empty;
+            viewModel.Email = email;
+
+            var user = await _userManager.FindByEmailAsync(email);
 
             // If user doesn't exist, redirect silently to avoid user enumeration
             if (user == null)
             {
-                _logger.LogWarning("Password reset attempted for non-existent email: {Email}", viewModel.Email);
+                _logger.LogWarning("Password reset attempted for non-existent email: {Email}", email);
                 return RedirectToAction("ForgotPasswordConfirmation");
             }
 
             // If email is not confirmed, show custom view or error
             if (!await _userManager.IsEmailConfirmedAsync(user))
             {
-                _logger.LogWarning("Password reset attempted for unconfirmed email: {Email}", viewModel.Email);
+                _logger.LogWarning("Password reset attempted for unconfirmed email: {Email}", email);
 
-                // You could return a view with the option to resend confirmation
                 return View("EmailNotConfirmed", new ResendConfirmationViewModel
                 {
-                    Email = viewModel.Email
+                    Email = email
                 });
             }
 
-            // Generate reset token
+            // Generate reset token and Base64Url-encode it (Identity UI pattern).
+            // Prevents +/= corruption by email clients and avoids double UrlEncode bugs.
             var token = await _userManager.GeneratePasswordResetTokenAsync(user);
-            var encodedToken = WebUtility.UrlEncode(token);
+            var encodedToken = EncodeTokenForEmail(token);
 
-            var passwordResetLink = Url.Action("ResetPassword", "Account",
-                new { email = viewModel.Email, token = encodedToken }, Request.Scheme);
+            var passwordResetLink = Url.Action(
+                "ResetPassword",
+                "Account",
+                new { email, token = encodedToken },
+                protocol: GetPublicRequestScheme());
+
+            if (string.IsNullOrWhiteSpace(passwordResetLink))
+            {
+                _logger.LogError("Failed to generate password reset link for {Email}", email);
+                ModelState.AddModelError(string.Empty, "Unable to generate a password reset link. Please try again later.");
+                return View(viewModel);
+            }
 
             try
             {
                 var mailRequest = EmailRequest.CreateResetPasswordEmailRequest(user, passwordResetLink);
                 await _emailService.SendEmailAsync(mailRequest);
-                _logger.LogInformation("Password reset email sent to user: {Email}", viewModel.Email);
+                _logger.LogInformation("Password reset email sent to user: {Email}", email);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Failed to send password reset email to {Email}", viewModel.Email);
+                _logger.LogError(ex, "Failed to send password reset email to {Email}", email);
+                ModelState.AddModelError(string.Empty,
+                    "We could not send the password reset email right now. Please try again in a few minutes, or contact support.");
+                return View(viewModel);
             }
 
             return RedirectToAction("ForgotPasswordConfirmation");
@@ -266,12 +296,15 @@ namespace Intl.Realty.Firm.Controllers
         }
         [HttpPost]
         [AllowAnonymous]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> ResendEmailConfirmation(ResendConfirmationViewModel model)
         {
             if (!ModelState.IsValid)
             {
                 return View("EmailNotConfirmed", model);
             }
+
+            model.Email = model.Email?.Trim() ?? string.Empty;
 
             var user = await _userManager.FindByEmailAsync(model.Email);
             if (user == null || await _userManager.IsEmailConfirmedAsync(user))
@@ -280,13 +313,27 @@ namespace Intl.Realty.Firm.Controllers
             }
 
             var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-            var encodedToken = WebUtility.UrlEncode(token);
+            var encodedToken = EncodeTokenForEmail(token);
 
-            var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = user.Id, token = encodedToken }, protocol: Request.Scheme);
-            var mailRequest = EmailRequest.CreateEmailConfirmationRequest(user, callbackUrl);
-            await _emailService.SendEmailAsync(mailRequest);
+            var callbackUrl = Url.Action(
+                "ConfirmEmail",
+                "Account",
+                new { userId = user.Id, token = encodedToken },
+                protocol: GetPublicRequestScheme());
 
-            _logger.LogInformation("Confirmation email resent to: {Email}", user.Email);
+            try
+            {
+                var mailRequest = EmailRequest.CreateEmailConfirmationRequest(user, callbackUrl!);
+                await _emailService.SendEmailAsync(mailRequest);
+                _logger.LogInformation("Confirmation email resent to: {Email}", user.Email);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to resend confirmation email to {Email}", model.Email);
+                ModelState.AddModelError(string.Empty,
+                    "We could not send the confirmation email right now. Please try again later.");
+                return View("EmailNotConfirmed", model);
+            }
 
             return RedirectToAction("ResendConfirmEmailSent");
         }
@@ -314,7 +361,7 @@ namespace Intl.Realty.Firm.Controllers
 
             var model = new ResetPasswordViewModel
             {
-                Email = email,
+                Email = email.Trim(),
                 Token = token
             };
 
@@ -329,8 +376,10 @@ namespace Intl.Realty.Firm.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return View(model); // ✅ Ensure validation errors are returned
+                return View(model);
             }
+
+            model.Email = model.Email?.Trim() ?? string.Empty;
 
             var user = await _userManager.FindByEmailAsync(model.Email);
             if (user == null)
@@ -339,23 +388,36 @@ namespace Intl.Realty.Firm.Controllers
                 return RedirectToAction("ForgotPassword");
             }
 
-            // ✅ Decode the token safely
-            var decodedToken = WebUtility.UrlDecode(model.Token);
-            _logger.LogInformation("Decoded Token for {Email}: {Token}", model.Email, decodedToken); // ✅ Debugging
-
+            var decodedToken = DecodeTokenFromEmail(model.Token);
             var resetResult = await _userManager.ResetPasswordAsync(user, decodedToken, model.Password);
+
+            // Backward compatibility: older emails used UrlEncode instead of Base64Url.
+            if (!resetResult.Succeeded)
+            {
+                var legacyToken = WebUtility.UrlDecode(model.Token);
+                if (!string.Equals(legacyToken, decodedToken, StringComparison.Ordinal))
+                {
+                    resetResult = await _userManager.ResetPasswordAsync(user, legacyToken, model.Password);
+                }
+            }
 
             if (!resetResult.Succeeded)
             {
-                _logger.LogError("Password reset failed for user: {Email}. Errors: {Errors}",
+                _logger.LogWarning("Password reset failed for user: {Email}. Errors: {Errors}",
                     model.Email, string.Join(", ", resetResult.Errors.Select(e => e.Description)));
 
                 foreach (var error in resetResult.Errors)
                 {
                     ModelState.AddModelError(string.Empty, error.Description);
                 }
+
+                ModelState.AddModelError(string.Empty,
+                    "If this reset link has expired, request a new one from the Forgot Password page.");
                 return View(model);
             }
+
+            // Invalidate any other outstanding reset tokens after success.
+            await _userManager.UpdateSecurityStampAsync(user);
 
             TempData["SuccessMessage"] = "Your password has been reset successfully. Please log in.";
             return RedirectToAction("Login");
@@ -377,6 +439,20 @@ namespace Intl.Realty.Firm.Controllers
                 return Json($"Email {email} is already in use");
             }
         }
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult PrivacyPolicy()
+        {
+            return View();
+        }
+
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult UserAgreement()
+        {
+            return View();
+        }
+
         [HttpGet]
         [AllowAnonymous]
         public async Task<IActionResult> Register()
@@ -465,6 +541,7 @@ namespace Intl.Realty.Firm.Controllers
             {
                 UserName = viewModel.Email,
                 Email = viewModel.Email,
+                PhoneNumber = viewModel.Phone?.Trim(),
                 FirstName = viewModel.FirstName,
                 LastName = viewModel.LastName,
                 DepartmentId = viewModel.DepartmentId == 0 ? 1 : viewModel.DepartmentId,
@@ -498,25 +575,32 @@ namespace Intl.Realty.Firm.Controllers
                 return View(viewModel);
             }
 
-            // -------- Try to send email, but do not block role assignment on failure --------
+            // -------- Send confirmation email (retry handled inside EmailService) --------
+            var confirmationEmailSent = false;
             try
             {
                 var token = await _userManager.GenerateEmailConfirmationTokenAsync(applicationUser);
+                var encodedToken = EncodeTokenForEmail(token);
                 var confirmationLink = Url.Action(
                     "ConfirmEmail",
                     "Account",
-                    new { userId = applicationUser.Id, token },
-                    protocol: Request.Scheme);
+                    new { userId = applicationUser.Id, token = encodedToken },
+                    protocol: GetPublicRequestScheme());
 
-                var mailRequest = EmailRequest.CreateRegistrationVerification(viewModel, confirmationLink!);
+                if (string.IsNullOrWhiteSpace(confirmationLink))
+                {
+                    throw new InvalidOperationException("Unable to generate email confirmation link.");
+                }
+
+                var mailRequest = EmailRequest.CreateRegistrationVerification(viewModel, confirmationLink);
                 await _emailService.SendEmailAsync(mailRequest);
+                confirmationEmailSent = true;
 
-                _logger.LogInformation("Registration: confirmation email queued for {Email}.", applicationUser.Email);
+                _logger.LogInformation("Registration: confirmation email sent to {Email}.", applicationUser.Email);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Registration: failed to send confirmation email to {Email}. Continuing.", applicationUser.Email);
-                // Intentionally swallow exception — we still proceed to add role and succeed the flow
+                _logger.LogError(ex, "Registration: failed to send confirmation email to {Email}.", applicationUser.Email);
             }
 
             // -------- Always attempt to add Agent role (safety) --------
@@ -551,7 +635,15 @@ namespace Intl.Realty.Firm.Controllers
                 await _signInManager.SignInAsync(applicationUser, isPersistent: false);
             }
 
-            return View("RegistrationSuccessful");
+            TempData["RegisteredEmail"] = applicationUser.Email;
+            TempData["ConfirmationEmailSent"] = confirmationEmailSent;
+            if (!confirmationEmailSent)
+            {
+                TempData["EmailWarning"] =
+                    "Your account was created, but we could not send the confirmation email. Please use Resend below, or contact support.";
+            }
+
+            return RedirectToAction(nameof(RegistrationSuccessful));
         }
 
         // Helper to repopulate team leaders for the dropdown
@@ -572,6 +664,74 @@ namespace Intl.Realty.Firm.Controllers
         public IActionResult RegistrationSuccessful()
         {
             return View();
+        }
+
+        /// <summary>
+        /// Resends the registration confirmation email. Works even when EmailConfirmed is already true,
+        /// so users who never received the original message can still get a usable link.
+        /// </summary>
+        [HttpPost]
+        [AllowAnonymous]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ResendRegistrationEmail(string email)
+        {
+            email = email?.Trim() ?? string.Empty;
+            TempData["RegisteredEmail"] = email;
+
+            if (string.IsNullOrWhiteSpace(email))
+            {
+                TempData["ConfirmationEmailSent"] = false;
+                TempData["EmailWarning"] = "Email address is required to resend the confirmation message.";
+                return RedirectToAction(nameof(RegistrationSuccessful));
+            }
+
+            var user = await _userManager.FindByEmailAsync(email);
+            if (user == null)
+            {
+                // Avoid account enumeration: show a generic success-style message.
+                TempData["ConfirmationEmailSent"] = true;
+                TempData["EmailWarning"] = null;
+                TempData["SuccessMessage"] = "If an account exists for that email, a confirmation message has been sent.";
+                return RedirectToAction(nameof(RegistrationSuccessful));
+            }
+
+            try
+            {
+                var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+                var encodedToken = EncodeTokenForEmail(token);
+                var confirmationLink = Url.Action(
+                    "ConfirmEmail",
+                    "Account",
+                    new { userId = user.Id, token = encodedToken },
+                    protocol: GetPublicRequestScheme());
+
+                if (string.IsNullOrWhiteSpace(confirmationLink))
+                    throw new InvalidOperationException("Unable to generate email confirmation link.");
+
+                var registerVm = new RegisterViewModel
+                {
+                    Email = user.Email ?? email,
+                    FirstName = user.FirstName ?? string.Empty,
+                    LastName = user.LastName ?? string.Empty
+                };
+
+                var mailRequest = EmailRequest.CreateRegistrationVerification(registerVm, confirmationLink);
+                await _emailService.SendEmailAsync(mailRequest);
+
+                TempData["ConfirmationEmailSent"] = true;
+                TempData["EmailWarning"] = null;
+                TempData["SuccessMessage"] = "Confirmation email sent. Please check your inbox and spam folder.";
+                _logger.LogInformation("ResendRegistrationEmail: confirmation email sent to {Email}.", email);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "ResendRegistrationEmail: failed for {Email}.", email);
+                TempData["ConfirmationEmailSent"] = false;
+                TempData["EmailWarning"] =
+                    "We could not send the confirmation email right now. Please try again in a few minutes, or contact support.";
+            }
+
+            return RedirectToAction(nameof(RegistrationSuccessful));
         }
 
         [HttpGet]
@@ -597,10 +757,19 @@ namespace Intl.Realty.Firm.Controllers
                 return View("ConfirmEmailAlreadyConfirmed");
             }
 
-            // Optional: decode the token (ASP.NET Core usually handles this automatically)
-            token = WebUtility.UrlDecode(token);
+            // Decode Base64Url token (new emails) with UrlDecode fallback for older links.
+            token = DecodeTokenFromEmail(token);
 
             var result = await _userManager.ConfirmEmailAsync(user, token);
+            if (!result.Succeeded)
+            {
+                var legacyToken = WebUtility.UrlDecode(token);
+                if (!string.Equals(legacyToken, token, StringComparison.Ordinal))
+                {
+                    result = await _userManager.ConfirmEmailAsync(user, legacyToken);
+                }
+            }
+
             if (result.Succeeded)
             {
                 _logger.LogInformation("ConfirmEmail: Email successfully confirmed for user {Email}.", user.Email);
@@ -742,6 +911,46 @@ namespace Intl.Realty.Firm.Controllers
                 }
             }
             return new string(res);
+        }
+
+        /// <summary>
+        /// Prefer https for emailed links on shared hosting where SSL terminates before the app.
+        /// </summary>
+        private string GetPublicRequestScheme()
+        {
+            var forwardedProto = Request.Headers["X-Forwarded-Proto"].FirstOrDefault();
+            if (!string.IsNullOrWhiteSpace(forwardedProto))
+                return forwardedProto.Split(',')[0].Trim();
+
+            var host = Request.Host.Host;
+            if (string.Equals(host, "localhost", StringComparison.OrdinalIgnoreCase) ||
+                host.StartsWith("127.0.0.1", StringComparison.OrdinalIgnoreCase))
+            {
+                return Request.Scheme;
+            }
+
+            return "https";
+        }
+
+        private static string EncodeTokenForEmail(string token)
+        {
+            return WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(token));
+        }
+
+        private static string DecodeTokenFromEmail(string token)
+        {
+            if (string.IsNullOrWhiteSpace(token))
+                return token;
+
+            try
+            {
+                return Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(token));
+            }
+            catch (Exception)
+            {
+                // Older emails may still use UrlEncode / raw Identity tokens.
+                return WebUtility.UrlDecode(token);
+            }
         }
     }
 }

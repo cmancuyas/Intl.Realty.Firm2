@@ -7,20 +7,36 @@ namespace Intl.Realty.Firm.Model.ViewModel.SaleCoopVM
     {
         [Key]
         public int Id { get; set; }
+
         [Required]
         public string DealTransactionNumber { get; set; } = string.Empty;
+
         public int TransactionTypeId { get; set; }
+
         public TransactionType TransactionType { get; set; } = new TransactionType();
+
         public int IRFDealId { get; set; }
+
         public IRFDeal IRFDeal { get; set; } = new IRFDeal();
+
         public DateTime? DateSubmitted { get; set; }
+
         public string? Notes { get; set; }
+
         public List<FileUpload>? FileUploads { get; set; }
+
+        public List<AdditionalDocument>? SavedAdditionalDocuments { get; set; } = new List<AdditionalDocument>();
+
         public int DealStatusId { get; set; }
+
         public DealStatus DealStatus { get; set; } = new DealStatus();
+
         public string CreatedByFullName { get; set; } = string.Empty;
+
         public string? UpdatedByFullName { get; set; }
+
         public string? DeletedByFullName { get; set; }
+
         public string? BuyingCommissionSignDescription { get; set; }
     }
 }

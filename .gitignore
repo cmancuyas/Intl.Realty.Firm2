@@ -362,3 +362,4 @@ MigrationBackup/
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
 /Intl.Realty.Firm/Uploads/Documents
+/Intl.Realty.Firm/DataProtection-Keys/

@@ -23,8 +23,7 @@
         { itemId: '#administratorNavItem', subNavClass: '.administratorSubNavItem', caret: '#administratorNavLink .caret' },
         { itemId: '#transactionManagementNavItem', subNavClass: '.transactionManagementSubNavItem', caret: '#transactionManagementNavLink .caret' },
         { itemId: '#informationPackageManagementNavItem', subNavClass: '.informationPackageManagementSubNavItem', caret: '#informationPackageManagementNavLink .caret' },
-        { itemId: '#irfProgramManagementNavItem', subNavClass: '.irfProgramManagementSubNavItem', caret: '#irfProgramPackageManagementNavLink .caret' },
-        { itemId: '#irfBrandedWebsiteNavItem', subNavClass: '.irfBrandedWebsiteSubNavItem', caret: '#irfBrandedWebsiteNavLink .caret' },
+        { itemId: '#trainingNavItem', subNavClass: '.trainingSubNavItem', caret: '#trainingNavLink .caret' },
         { itemId: '#purchaseIRFStocksNavItem', subNavClass: '.purchaseIRFStocksSubNavItem', caret: '#purchaseIRFStocksNavLink .caret' },
         { itemId: '#referAnAgentNavItem', subNavClass: '.referAnAgentSubNavItem', caret: '#referAnAgentNavLink .caret' },
     ];
@@ -102,27 +101,22 @@ function setActiveMenuItem($) {
             id: 'informationPackageManagementNavItem',
             links: [
                 "BusinessCard",
-                "CommissionAdvance"
+                "CommissionAdvance",
+                "IRFMortgage",
+                "IRFLead",
+                "IRFBrandedWebsite"
             ],
             subNavClass: 'informationPackageManagementSubNavItem',
             caretId: 'informationPackageManagementNavLink'
         },
         {
-            id: 'irfProgramManagementNavItem',
+            id: 'trainingNavItem',
             links: [
-                "IRFMortgage",
-                "IRFLead"
+                "Training",
+                "ScheduleB"
             ],
-            subNavClass: 'irfProgramManagementSubNavItem',
-            caretId: 'irfProgramManagementNavLink'
-        },
-        {
-            id: 'irfBrandedWebsiteNavItem',
-            links: [
-                "IRFBrandedWebsite"
-            ],
-            subNavClass: 'irfBrandedWebsiteSubNavItem',
-            caretId: 'irfBrandedWebsiteNavLink'
+            subNavClass: 'trainingSubNavItem',
+            caretId: 'trainingNavLink'
         },
         {
             id: 'purchaseIRFStocksNavItem',
@@ -202,8 +196,7 @@ function toggleAllCarets() {
     $('#administratorNavLink .caret').toggleClass('down');
     $('#transactionManagementNavLink .caret').toggleClass('down');
     $('#informationPackageManagementNavLink .caret').toggleClass('down');
-    $('#irfProgramManagementNavLink .caret').toggleClass('down');
-    $('#irfBrandedWebsiteNavLink .caret').toggleClass('down');
+    $('#trainingNavLink .caret').toggleClass('down');
     $('#purchaseIRFStocksNavLink .caret').toggleClass('down');
     $('#referAnAgentNavLink .caret').toggleClass('down');
 

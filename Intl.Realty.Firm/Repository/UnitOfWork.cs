@@ -28,6 +28,7 @@ namespace Intl.Realty.Firm.Repository
         public IProfileImageRepository ProfileImage { get; private set; }
         public IAgentReferralRepository AgentReferral { get; private set; }
         public IEmailStatusRepository EmailStatus { get; private set; }
+        public IAdditionalDocumentRepository AdditionalDocument { get; private set; }
 
         public UnitOfWork(ApplicationDbContext db)
         {
@@ -53,6 +54,8 @@ namespace Intl.Realty.Firm.Repository
             ProfileImage = new ProfileImageRepository(_db);
             AgentReferral = new AgentReferralRepository(_db);
             EmailStatus = new EmailStatusRepository(_db);
+            AdditionalDocument = new AdditionalDocumentRepository(_db);
+            AdditionalDocument = new AdditionalDocumentRepository(_db);
         }
         public async Task SaveChangesAsync()
         {

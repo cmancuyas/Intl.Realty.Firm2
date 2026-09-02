@@ -18,11 +18,18 @@
             <div class="col-md-8 col-sm-12 page-registration-container right-part">
                 <div class="d-flex flex-column w-80">
                     <div class="w-100">
+                        <p class="text-muted small mb-3 mb-md-4">
+                            <strong>International Realty Firm, Inc.</strong>
+                        </p>
                         <div asp-validation-summary="All" class="text-danger"></div>
                         <div id="formAlert" class="alert alert-danger d-none" role="alert"></div>
 
-                        <div class="mb-5">
-                            <h3 class="page-title fw-bolder mb-0">Please enter your details</h3>
+                        <div class="mb-4">
+                            <h3 class="page-title fw-bolder mb-2">Create your IRF Connect account</h3>
+                            <p class="text-muted mb-0">
+                                IRF Connect is the account portal for International Realty Firm agents and authorized users.
+                                We collect your name, email, and contact number to create your account and reach you about account-related matters.
+                            </p>
                         </div>
 
                         <!-- Full Name -->
@@ -77,12 +84,19 @@
                             @Html.CheckBoxFor(m => m.UserAgreement, new { @class = "form-check-input", id = "UserAgreement" })
                             <label class="form-check-label" for="UserAgreement">
                                 <span class="text-danger">
-                                    By creating an account, you agree to our <a href="#" class="text-danger">User Agreement</a>
-                                    and the <a href="#" class="text-danger">Data Privacy Statement</a>.
+                                    By creating an account, you agree to our
+                                    <a asp-controller="Account" asp-action="UserAgreement" target="_blank" rel="noopener noreferrer" class="text-danger">User Agreement</a>
+                                    and the
+                                    <a asp-controller="Account" asp-action="PrivacyPolicy" target="_blank" rel="noopener noreferrer" class="text-danger">Data Privacy Statement</a>.
                                 </span>
                             </label>
                             @Html.ValidationMessageFor(m => m.UserAgreement, "", new { @class = "text-danger d-block mt-1" })
                         </div>
+
+                        <p class="text-muted small mt-3 mb-0">
+                            Need help? Contact
+                            <a href="mailto:support@irfconnect.com">support@irfconnect.com</a>.
+                        </p>
 
                         <!-- Buttons -->
                         <div class="row mt-5">

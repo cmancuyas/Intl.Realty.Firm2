@@ -34,6 +34,7 @@ namespace Intl.Realty.Firm.Utility.Mapper
                 RowVersion = model.RowVersion,
 
                 Notes = model.Notes,
+                HasRejectedOffers = model.HasRejectedOffers,
 
                 TransactionType = model.TransactionType,
                 EditIRFDealSaleListingViewModel = model.IRFDeal!.ToEditIRFDealSaleListingViewModel(),
@@ -96,6 +97,7 @@ namespace Intl.Realty.Firm.Utility.Mapper
                 DealTransactionNumber = viewModel.DealTransactionNumber,
                 CreatedByFullName = viewModel.CreatedByFullName,
                 Notes = viewModel.Notes,
+                HasRejectedOffers = viewModel.HasRejectedOffers,
                 RowVersion = viewModel.RowVersion,
 
                 IsActive = viewModel.IsActive,
@@ -180,7 +182,13 @@ namespace Intl.Realty.Firm.Utility.Mapper
                 TransactionType = model.TransactionType!,
                 IRFDeal = model.IRFDeal!,
                 DealStatus = model.DealStatus!,
-                FileUploads = model.FileUploads!,
+                FileUploads = model.FileUploads?
+                    .Where(x => x.IsActive && !x.IsDeleted)
+                    .ToList() ?? new List<FileUpload>(),
+                SavedAdditionalDocuments = model.AdditionalDocuments?
+                    .Where(x => x.IsActive && !x.IsDeleted)
+                    .ToList() ?? new List<AdditionalDocument>(),
+
 
                 CreatedByFullName = model.CreatedByFullName,
                 UpdatedByFullName = model.UpdatedByFullName,

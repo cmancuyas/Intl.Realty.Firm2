@@ -1,27 +1,47 @@
 ﻿using Intl.Realty.Firm.Service.IService;
 using Intl.Realty.Firm.Utilities;
 using Microsoft.AspNetCore.StaticFiles;
+using Microsoft.Extensions.Logging;
 
 namespace Intl.Realty.Firm.Service
 {
     public class FileHandlerService : IFileHandlerService
     {
+        private readonly ILogger<FileHandlerService> _logger;
+
+        public FileHandlerService(ILogger<FileHandlerService> logger)
+        {
+            _logger = logger;
+        }
+
         public Task<bool> CheckIfFileExists(string fullPath)
         {
-            if (File.Exists(fullPath))
-            {
-                return Task.FromResult(true);
-            }
-            return Task.FromResult(false);
+            if (string.IsNullOrWhiteSpace(fullPath))
+                return Task.FromResult(false);
+
+            return Task.FromResult(File.Exists(fullPath) || File.Exists(Path.Combine(Directory.GetCurrentDirectory(), fullPath)));
         }
 
         public Task<bool> DeleteFile(string fullPath)
         {
-            if (File.Exists(fullPath))
+            if (string.IsNullOrWhiteSpace(fullPath))
+                return Task.FromResult(false);
+
+            var candidates = new[]
             {
-                File.Delete(fullPath);
-                return Task.FromResult(true);
+                fullPath,
+                Path.IsPathRooted(fullPath) ? fullPath : Path.Combine(Directory.GetCurrentDirectory(), fullPath)
+            }.Distinct(StringComparer.OrdinalIgnoreCase);
+
+            foreach (var path in candidates)
+            {
+                if (File.Exists(path))
+                {
+                    File.Delete(path);
+                    return Task.FromResult(true);
+                }
             }
+
             return Task.FromResult(false);
         }
 
@@ -44,7 +64,8 @@ namespace Intl.Realty.Firm.Service
             }
             catch (Exception ex)
             {
-                throw ex;
+                _logger.LogError(ex, "Download failed for directory {Directory}, file {FileName}{Extension}", directory, fileName, fileExtension);
+                throw;
             }
         }
 
@@ -54,36 +75,39 @@ namespace Intl.Realty.Firm.Service
             string fileExtension = string.Empty;
             string originalFileName = string.Empty;
 
+            _logger.LogInformation("Upload request received for directory {Directory}", directory);
+
             try
             {
-                if (iFormFile != null && iFormFile?.Length > 0)
+                if (iFormFile == null || iFormFile.Length <= 0)
                 {
-                    (fileNameWithoutExtension, fileExtension, originalFileName) = await UploadFileToDirectory(iFormFile, directory);
+                    _logger.LogWarning("No files submitted");
+                    return (fileNameWithoutExtension, fileExtension, originalFileName);
                 }
+
+                (fileNameWithoutExtension, fileExtension, originalFileName) = await UploadFileToDirectory(iFormFile, directory);
+                _logger.LogInformation("File uploaded successfully: {OriginalFileName} -> {StoredFileName}{Extension}",
+                    originalFileName, fileNameWithoutExtension, fileExtension);
                 return (fileNameWithoutExtension, fileExtension, originalFileName);
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "Upload failed for file {FileName} into directory {Directory}", iFormFile?.FileName, directory);
                 throw new Exception("File could not be uploaded", ex);
             }
         }
+
         private async Task<(string, string, string)> UploadFileToDirectory(IFormFile iFormFile, string directory)
         {
-            string fileNameWithoutExtension = string.Empty;
-            string fileExtension = string.Empty;
-            string originalFileName = string.Empty;
-
             FileInfo fileInfo = new FileInfo(iFormFile.FileName);
 
-            fileExtension = fileInfo.Extension;
-
-            originalFileName = iFormFile.FileName;
-
+            var fileExtension = fileInfo.Extension;
+            var originalFileName = iFormFile.FileName;
             var originalFileNameWithoutExtension = FileHandler.GetFileNameWithoutExtension(originalFileName);
+            var safeOriginalName = TransactionHelper.SanitizePathSegment(originalFileNameWithoutExtension, "file");
 
-            var fullFileName = originalFileNameWithoutExtension + "_" + DateTime.Now.Ticks.ToString() + fileExtension;
-
-            fileNameWithoutExtension = FileHandler.GetFileNameWithoutExtension(fullFileName);
+            var fullFileName = safeOriginalName + "_" + DateTime.Now.Ticks.ToString() + fileExtension;
+            var fileNameWithoutExtension = FileHandler.GetFileNameWithoutExtension(fullFileName);
 
             var filePath = FileHandler.GetFilePath(directory, fullFileName);
 
@@ -91,6 +115,7 @@ namespace Intl.Realty.Firm.Service
             {
                 await iFormFile.CopyToAsync(fileStream);
             }
+
             return (fileNameWithoutExtension, fileExtension, originalFileName);
         }
     }

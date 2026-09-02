@@ -208,7 +208,12 @@ namespace Intl.Realty.Firm.Utility.Mapper
                     BuyingCommissionSign = model.BuyingCommissionSign??1,
                     BuyingCommission = model.BuyingCommission ?? 0
                 },
-
+                ListingInfo = new()
+                {
+                    ListingAgentName = model.ListingAgentName ?? string.Empty,
+                    ListingBrokerage = model.ListingBrokerage ?? string.Empty,
+                    ListingBrokerageFax = model.ListingBrokerageFax ?? string.Empty
+                },
                 // ✅ Status
                 IsActive = model.IsActive,
                 IsDeleted = model.IsDeleted,
@@ -623,6 +628,10 @@ namespace Intl.Realty.Firm.Utility.Mapper
                 BuyingCommissionSign = viewModel.Commission.BuyingCommissionSign,
                 BuyingCommission = viewModel.Commission.BuyingCommission,
 
+                ListingAgentName = viewModel.ListingInfo.ListingAgentName,
+                ListingBrokerage = viewModel.ListingInfo.ListingBrokerage,
+                ListingBrokerageFax = viewModel.ListingInfo.ListingBrokerageFax,
+
                 // ListingInfo is ignored here as it's not required in LeaseCoop
 
                 // ✅ Audit
@@ -833,8 +842,8 @@ namespace Intl.Realty.Firm.Utility.Mapper
 
             // Listing
             entity.ListingAgentName = viewModel.ListingInfo.ListingAgentName;
-            entity.BuyerBrokerageFax = viewModel.ListingInfo.ListingBrokerageFax;
-            entity.BuyerBrokerage = viewModel.ListingInfo.ListingBrokerage;
+            entity.ListingBrokerageFax = viewModel.ListingInfo.ListingBrokerageFax;
+            entity.ListingBrokerage = viewModel.ListingInfo.ListingBrokerage;
 
 
             // 💼 Commission (only BuyingCommission is used for LeaseCoop)

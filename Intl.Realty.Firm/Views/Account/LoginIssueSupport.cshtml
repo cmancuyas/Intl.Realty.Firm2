@@ -80,9 +80,9 @@
             const spinner = document.getElementById("spinner");
             const btnText = document.getElementById("btnText");
 
-            btn.disabled = true;
-            spinner.classList.remove("d-none");
-            btnText.textContent = "Submitting...";
+            if (btn) btn.disabled = true;
+            if (spinner) spinner.classList.remove("d-none");
+            if (btnText) btnText.textContent = "Submitting...";
         });
 
         feather.replace();
