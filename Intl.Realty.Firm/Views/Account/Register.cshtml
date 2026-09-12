@@ -6,6 +6,10 @@
     Layout = "_Layout";
 }
 
+@section Head {
+    <meta name="robots" content="noindex,nofollow" />
+}
+
 <div>
     <form asp-action="Register" asp-controller="Account" method="post" novalidate>
         @Html.AntiForgeryToken()
@@ -21,6 +25,7 @@
                         <p class="text-muted small mb-3 mb-md-4">
                             <strong>International Realty Firm, Inc.</strong>
                         </p>
+
                         <div asp-validation-summary="All" class="text-danger"></div>
                         <div id="formAlert" class="alert alert-danger d-none" role="alert"></div>
 
@@ -29,6 +34,10 @@
                             <p class="text-muted mb-0">
                                 IRF Connect is the account portal for International Realty Firm agents and authorized users.
                                 We collect your name, email, and contact number to create your account and reach you about account-related matters.
+                            </p>
+                            <br />
+                            <p class="text-muted mb-0">
+                                Official Registration Portal of International Realty Firm, Inc. This registration page is intended for licensed real estate agents, employees, and authorized business users of International Realty Firm.
                             </p>
                         </div>
 
@@ -97,6 +106,13 @@
                             Need help? Contact
                             <a href="mailto:support@irfconnect.com">support@irfconnect.com</a>.
                         </p>
+                        <p class="text-muted small mt-3 mb-0">
+                            International Realty Firm, Inc.
+                            Official Agent Portal
+
+                            For registration concerns:
+                            support@irfconnect.com
+                        </p>
 
                         <!-- Buttons -->
                         <div class="row mt-5">
@@ -129,7 +145,7 @@
     @await Html.PartialAsync("_ValidationScriptsPartial")
 
     <script>
-        $(document).ready(function () {
+        $(document).ready(function() {
             feather.replace();
             togglePassword();
             setupUserAgreementCheckbox();
@@ -143,7 +159,7 @@
             const $userAgreement = $('#UserAgreement');
             const $alert = $('#formAlert');
 
-            $form.on('submit', function (e) {
+            $form.on('submit', function(e) {
                 $alert.addClass('d-none').text('');
                 $spinner.addClass('d-none');
                 $text.text('Sign Up');
@@ -169,14 +185,14 @@
         });
 
         function togglePassword() {
-            $('#togglePassword').on('change', function () {
+            $('#togglePassword').on('change', function() {
                 const type = this.checked ? 'text' : 'password';
                 $('#Password, #ConfirmPassword').attr('type', type);
             });
         }
 
         function setupUserAgreementCheckbox() {
-            $('#UserAgreement').on('change', function () {
+            $('#UserAgreement').on('change', function() {
                 $(this).val(this.checked ? "true" : "false");
             });
         }
