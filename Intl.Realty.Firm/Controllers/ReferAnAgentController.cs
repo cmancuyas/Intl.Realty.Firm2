@@ -11,6 +11,7 @@ using System.Security.Claims;
 namespace Intl.Realty.Firm.Controllers
 {
     [Authorize]
+    [Route("ReferAnAgent")]
     public class ReferAnAgentController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;
@@ -33,12 +34,19 @@ namespace Intl.Realty.Firm.Controllers
             _emailService = emailService;
         }
 
+        // Short marketing URL: /ReferAnAgent
+        [HttpGet("")]
+        [HttpGet("Index")]
         public IActionResult Index()
         {
+            // Prefer the shorter URL when someone hits /ReferAnAgent/Index
+            if (HttpContext.Request.Path.Equals("/ReferAnAgent/Index", StringComparison.OrdinalIgnoreCase))
+                return RedirectPermanent("/ReferAnAgent");
+
             return View();
         }
 
-        [HttpPost]
+        [HttpPost("SendEmail")]
         public async Task<IActionResult> SendEmail([FromBody] ReferAnAgentViewModel viewModel)
         {
             if (!ModelState.IsValid)
