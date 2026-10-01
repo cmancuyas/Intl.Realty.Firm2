@@ -66,8 +66,9 @@ namespace Intl.Realty.Firm.Controllers
             var referral = new AgentReferral
             {
                 ReferrerName = viewModel.Name,
-                ReferrerPhone = viewModel.TelephoneNumber,
+                ReferrerPhone = string.Empty,
                 ReferredAgentName = viewModel.ReferredAgentName,
+                ReferredAgentPhone = viewModel.ReferredAgentPhone,
                 Notes = viewModel.Notes,
                 SubmittedByUserId = Guid.Parse(userId),
                 SubmittedAt = DateTime.UtcNow,

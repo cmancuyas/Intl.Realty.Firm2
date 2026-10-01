@@ -153,6 +153,9 @@ namespace Intl.Realty.Firm.DataAccess.Migrations
                     b.Property<string>("ReferredAgentName")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("ReferredAgentPhone")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("ReferrerName")
                         .IsRequired()
                         .HasMaxLength(100)
