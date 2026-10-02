@@ -248,8 +248,8 @@ namespace Intl.Realty.Firm.Helper
                     <p>The following agent has been referred:</p>
                     <ul>
                         <li><strong>Referrer Name:</strong> {referAnAgentViewModel.Name}</li>
-                        <li><strong>Referrer Phone:</strong> {referAnAgentViewModel.TelephoneNumber}</li>
                         <li><strong>Referred Agent Name:</strong> {referAnAgentViewModel.ReferredAgentName ?? "<em>Not provided</em>"}</li>
+                        <li><strong>Referred Agent Phone:</strong> {referAnAgentViewModel.ReferredAgentPhone ?? "<em>Not provided</em>"}</li>
                         <li><strong>Notes:</strong> {(!string.IsNullOrWhiteSpace(referAnAgentViewModel.Notes) ? referAnAgentViewModel.Notes : "<em>None</em>")}</li>
                     </ul>
 

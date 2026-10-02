@@ -22,15 +22,15 @@
                     </div>
 
                     <div class="mb-3">
-                        <label asp-for="TelephoneNumber" class="form-label fw-semibold">Your Phone Number</label>
-                        <input asp-for="TelephoneNumber" class="form-control" placeholder="Enter your phone number" required />
-                        <span asp-validation-for="TelephoneNumber" class="text-danger fst-italic"></span>
+                        <label asp-for="ReferredAgentName" class="form-label fw-semibold">Referred Agent's Name</label>
+                        <input asp-for="ReferredAgentName" class="form-control" placeholder="Enter referred agent's name" required />
+                        <span asp-validation-for="ReferredAgentName" class="text-danger fst-italic"></span>
                     </div>
 
                     <div class="mb-3">
-                        <label asp-for="ReferredAgentName" class="form-label fw-semibold">Referred Agent's Name</label>
-                        <input asp-for="ReferredAgentName" class="form-control" placeholder="Enter referred agent's name" />
-                        <span asp-validation-for="ReferredAgentName" class="text-danger fst-italic"></span>
+                        <label asp-for="ReferredAgentPhone" class="form-label fw-semibold">Referred Agent's Phone Number</label>
+                        <input asp-for="ReferredAgentPhone" class="form-control" placeholder="Enter referred agent's phone number" required />
+                        <span asp-validation-for="ReferredAgentPhone" class="text-danger fst-italic"></span>
                     </div>
 
                     <div class="mb-3">
@@ -59,17 +59,17 @@
         function sendEmail() {
             const formData = {
                 Name: $("#Name").val().trim(),
-                TelephoneNumber: $("#TelephoneNumber").val().trim(),
                 ReferredAgentName: $("#ReferredAgentName").val().trim(),
+                ReferredAgentPhone: $("#ReferredAgentPhone").val().trim(),
                 Notes: $("#Notes").val().trim()
             };
 
             // Basic validation
-            if (!formData.Name || !formData.TelephoneNumber) {
+            if (!formData.Name || !formData.ReferredAgentName || !formData.ReferredAgentPhone) {
                 Swal.fire({
                     icon: 'error',
                     title: 'Missing Info',
-                    text: 'Please fill in your name and phone number.',
+                    text: "Please fill in your name, the referred agent's name, and phone number.",
                 });
                 return;
             }
