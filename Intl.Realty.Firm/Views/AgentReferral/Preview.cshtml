@@ -52,6 +52,13 @@
                         <p>@Model.ReferredAgentName</p>
                     </div>
                     <div class="col-md-6">
+                        <label class="form-label fw-semibold">Referred Agent Phone</label>
+                        <p>@Model.ReferredAgentPhone</p>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
                         <label class="form-label fw-semibold">Submitted At</label>
                         <p>@Model.SubmittedAt.ToLocalTime().ToString("f")</p>
                     </div>
