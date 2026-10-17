@@ -98,30 +98,66 @@ namespace Intl.Realty.Firm.Service
                         "Preparing to send email (attempt {Attempt}/{MaxAttempts}). SMTP Host: {Host}, Port: {Port}, To: {To}",
                         attempt, MaxSendAttempts, host, port, mailRequest.ToEmail);
 
-                    await emailClient.ConnectAsync(host, port, MailKit.Security.SecureSocketOptions.StartTls);
+                    await emailClient.ConnectAsync(
+                        host,
+                        port,
+                        MailKit.Security.SecureSocketOptions.StartTls);
+
                     await emailClient.AuthenticateAsync("apikey", password);
                     await emailClient.SendAsync(emailToSend);
                     await emailClient.DisconnectAsync(true);
 
-                    _logger.LogInformation("Email successfully sent to {Recipient}", mailRequest.ToEmail);
+                    _logger.LogInformation(
+                        "Email successfully sent to {Recipient}",
+                        mailRequest.ToEmail);
+
                     return;
                 }
                 catch (Exception ex)
                 {
                     lastException = ex;
-                    _logger.LogWarning(ex,
+
+                    _logger.LogWarning(
+                        ex,
                         "Email send attempt {Attempt}/{MaxAttempts} failed for {Recipient}",
-                        attempt, MaxSendAttempts, mailRequest.ToEmail);
+                        attempt,
+                        MaxSendAttempts,
+                        mailRequest.ToEmail);
 
                     if (attempt < MaxSendAttempts)
-                        await Task.Delay(TimeSpan.FromSeconds(attempt * 2));
+                    {
+                        await Task.Delay(
+                            TimeSpan.FromSeconds(attempt * 2));
+                    }
                 }
             }
 
-            _logger.LogError(lastException, "All email send attempts failed for {Recipient}", mailRequest.ToEmail);
-            throw new InvalidOperationException(
-                $"Failed to send email to {mailRequest.ToEmail} after {MaxSendAttempts} attempts.",
-                lastException);
+            // Only execute after ALL retries are exhausted
+
+            _logger.LogError(
+                lastException,
+                "All email send attempts failed for {Recipient}",
+                mailRequest.ToEmail);
+
+            string userMessage = lastException switch
+            {
+                MailKit.Security.AuthenticationException =>
+                    "Email authentication failed. Please verify the SMTP credentials.",
+
+                MailKit.Net.Smtp.SmtpCommandException smtpEx =>
+                    $"SMTP server rejected the request. Status: {smtpEx.StatusCode}.",
+
+                System.Net.Sockets.SocketException =>
+                    "Unable to connect to the SMTP server. Please verify the host and port.",
+
+                TimeoutException =>
+                    "The SMTP server did not respond in time.",
+
+                _ =>
+                    $"Email delivery failed. {lastException?.GetBaseException()?.Message}"
+            };
+
+            throw new InvalidOperationException(userMessage, lastException);
         }
     }
 }
