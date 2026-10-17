@@ -101,6 +101,7 @@ function setActiveMenuItem($) {
             id: 'informationPackageManagementNavItem',
             links: [
                 "BusinessCard",
+                "PreferredPartner",
                 "CommissionAdvance",
                 "IRFMortgage",
                 "IRFLead",
