@@ -111,7 +111,7 @@
 
         feather.replace();
         $('[data-toggle="tooltip"]').tooltip();
-
+        debugger;
         BindDataTable();
 
         // AddSearchBoxPerColumn();
@@ -140,7 +140,8 @@
     }); // End of document ready
 
 
-    function BindDataTable() {
+        function BindDataTable() {
+
         let debounceTimer;
 
         // Destroy previous DataTable if exists
@@ -149,13 +150,15 @@
         }
 
         table = $("#modelTable").DataTable({
-            "preDrawCallback": function (settings) {
+
+            preDrawCallback: function () {
                 $('#modelTable tbody').hide();
             },
 
-            "drawCallback": function () {
+            drawCallback: function () {
                 $('#modelTable tbody td').addClass("blurry");
                 $('#modelTable tbody').fadeIn(800);
+
                 setTimeout(function () {
                     $('#modelTable tbody td').removeClass("blurry");
                 }, 400);
@@ -164,20 +167,33 @@
             // Design Assets
             stateSave: true,
             autoWidth: true,
+
             // ServerSide Setups
             processing: true,
             serverSide: true,
-            lengthMenu: [[5, 10, 25, 50, 100, -1], [5, 10, 25, 50, 100, "All"]],
+
+            lengthMenu: [
+                [5, 10, 25, 50, 100, -1],
+                [5, 10, 25, 50, 100, "All"]
+            ],
+
             pageLength: 10,
             pagingType: "full_numbers",
-            // Searching Setups
-            searching: { regex: true },
-            "language": {
-                "infoFiltered": "",
-                "processing": '<div class="lds-ellipsis"><div></div><div></div><div></div><div></div></div>'
+
+            // Search
+            searching: {
+                regex: true
             },
-            // Custom Export Buttons
+
+            language: {
+                infoFiltered: "",
+                processing:
+                    '<div class="lds-ellipsis"><div></div><div></div><div></div><div></div></div>'
+            },
+
+            // Export Buttons
             dom: 'lBfrtip',
+
             buttons: [
                 {
                     text: 'Excel',
@@ -193,83 +209,94 @@
                 }
             ],
 
-            // Ajax Filter
+            // Ajax
             ajax: {
                 url: "/AgentReferral/GetAgentReferralList",
                 type: "POST",
                 contentType: "application/json",
                 dataType: "json",
-                data: function (data) {
-                    return JSON.stringify(data);
+                data: function (d) {
+                    return JSON.stringify(d);
                 }
             },
 
-            // Columns Setups
+            // Columns
             columns: [
                 {
-                    targets: 0,
                     data: null,
-                    className: 'text-center',
-                    sortable: false,
-                    searchable: false,
+                    className: "text-center",
                     orderable: false,
-                    render: function (data, type, full, meta) {
-
-                        return '<input type="checkbox" class="row-checkbox no-sort no-search" name="selectedRows" id="selectedRows" value="' + full.id + '">';
-                    },
+                    searchable: false,
+                    render: function (data, type, full) {
+                        return '<input type="checkbox" class="row-checkbox no-sort no-search" name="selectedRows" value="' + full.id + '">';
+                    }
                 },
-                { data: "referrerName", title:"Referrer Name" },
-                { data: "referrerPhone", title:"Referrer Phone"  },
-                { data: "referredAgentName", title:"Referred Agent Name"  },
-                { data: "referredAgentPhone", title:"Referred Agent Phone"  },
 
+                {
+                    data: "referrerName",
+                    title: "Referrer Name"
+                },
 
-                // { data: "email", title: "Email" }
+                {
+                    data: "referrerPhone",
+                    title: "Referrer Phone"
+                },
 
-                // {
-                //     data: "createdAt",
-                //     render: function (data, type, row) {
-                //         if (type === "display" || type === "filter") {
-                //             return moment(data).format("ddd MM/DD/YYYY HH:mm:ss");
-                //         }
-                //         return data;
-                //     }
-                // }
+                {
+                    data: "referredAgentName",
+                    title: "Referred Agent Name"
+                },
+
+                {
+                    data: "referredAgentPhone",
+                    title: "Referred Agent Phone"
+                },
+
+                {
+                    data: null,
+                    title: "Action",
+                    orderable: false,
+                    searchable: false,
+                    render: function (data, type, full) {
+                        return "#'>Preview</a>";
+                    }
+                }
             ],
 
             // Column Definitions
             columnDefs: [
-                { targets: "no-sort", orderable: false },
-                { targets: "no-search", searchable: false },
                 {
                     targets: "trim",
-                    render: function (data, type, full, meta) {
-                        if (type === "display") {
-                            data = strtrunc(data, 10);
-                        }
+                    render: function (data, type) {
+
+                        if (data == null)
+                            return "";
+
+                        if (type === "display")
+                            return strtrunc(data, 10);
+
                         return data;
                     }
                 },
-                { targets: "date-type", type: "date-eu" },
-
                 {
-                    targets: 4,
-                    data: null,
-                    defaultContent: "<a class='btn btn-secondary' role='button' href='#' onclick='preview(this)'>Preview</a>",
-                    orderable: false
-                },
+                    targets: "date-type",
+                    type: "date-eu"
+                }
             ]
         });
 
-        // Apply debounced search
-        $('#search-input').on('input', function () {
-            clearTimeout(debounceTimer);
-            debounceTimer = setTimeout(function () {
-                table.search($('#search-input').val()).draw();
-            }, 300); // 300ms debounce delay
-        });
-    }
+        // Debounced Search
+        $('#search-input')
+            .off('input')
+            .on('input', function () {
 
+                clearTimeout(debounceTimer);
+
+                debounceTimer = setTimeout(function () {
+                    table.search($('#search-input').val()).draw();
+                }, 300);
+            });
+    }
 
 
     function strtrunc(str, num) {
