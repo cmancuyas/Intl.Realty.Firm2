@@ -257,10 +257,18 @@
                     title: "Action",
                     orderable: false,
                     searchable: false,
+                    className: "text-center",
                     render: function (data, type, full) {
-                        return "#'>Preview</a>";
+
+                        return `
+                            <a class="btn btn-secondary btn-sm"
+                               href="javascript:void(0);"
+                               onclick="preview(this)">
+                                Preview
+                            </a>`;
                     }
                 }
+
             ],
 
             // Column Definitions
