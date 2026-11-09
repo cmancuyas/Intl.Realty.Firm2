@@ -1,4 +1,4 @@
-﻿using Intl.Realty.Firm.DataAccess;
+using Intl.Realty.Firm.DataAccess;
 using Intl.Realty.Firm.Models.Auxiliary;
 using Intl.Realty.Firm.Repository;
 using Intl.Realty.Firm.Repository.IRepository;
@@ -26,7 +26,8 @@ using Microsoft.AspNetCore.HttpOverrides;
 Log.Logger = new LoggerConfiguration()
     .MinimumLevel.Debug()
     .WriteTo.Console()
-    .WriteTo.File("Logs/log-.txt", rollingInterval: RollingInterval.Day)
+    // Absolute path: under IIS the working directory is C:\Windows\System32\inetsrv.
+    .WriteTo.File(Path.Combine(AppContext.BaseDirectory, "Logs", "log-.txt"), rollingInterval: RollingInterval.Day)
     .CreateLogger();
 
 var builder = WebApplication.CreateBuilder(args);
@@ -185,6 +186,13 @@ Log.Information("📧 Email Host: {Host}, Port: {Port}, User: {User}, Password E
 
 // -------------------- Build App --------------------
 var app = builder.Build();
+
+// Fix: Under IIS in-process hosting, Directory.GetCurrentDirectory() resolves to
+// C:\Windows\System32\inetsrv, which the AppPool identity cannot write to.
+// Setting ContentRootPath here ensures all file/directory operations use the
+// application's real root (e.g. D:\web\irfconnect\) on both localhost and production.
+Intl.Realty.Firm.Utilities.TransactionHelper.ContentRootPath = builder.Environment.ContentRootPath;
+Directory.SetCurrentDirectory(builder.Environment.ContentRootPath);
 
 // -------------------- Middleware --------------------
 if (app.Environment.IsDevelopment())

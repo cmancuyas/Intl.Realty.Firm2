@@ -1,4 +1,4 @@
-﻿namespace Intl.Realty.Firm.Utilities
+namespace Intl.Realty.Firm.Utilities
 {
     public class FileHandler
     {
@@ -15,7 +15,9 @@
 
         public static string GetCurrentDirectory()
         {
-            var result = Directory.GetCurrentDirectory();
+            // Prefer the application content root (set at startup) over the process
+            // working directory, which points to C:\Windows\System32\inetsrv under IIS.
+            var result = TransactionHelper.ContentRootPath ?? Directory.GetCurrentDirectory();
             return result;
         }
 
@@ -28,7 +30,7 @@
 
             var result = Path.IsPathRooted(directory)
                 ? directory
-                : Path.Combine(Directory.GetCurrentDirectory(), directory);
+                : Path.Combine(TransactionHelper.ContentRootPath ?? AppContext.BaseDirectory, directory);
 
             if (!Directory.Exists(result))
             {
@@ -70,7 +72,7 @@
             {
                 candidates.Add(fullPath);
                 if (!Path.IsPathRooted(fullPath))
-                    candidates.Add(Path.Combine(Directory.GetCurrentDirectory(), fullPath));
+                    candidates.Add(Path.Combine(TransactionHelper.ContentRootPath ?? AppContext.BaseDirectory, fullPath));
             }
 
             foreach (var candidate in candidates.Distinct(StringComparer.OrdinalIgnoreCase))

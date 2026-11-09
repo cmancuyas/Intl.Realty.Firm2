@@ -1,4 +1,4 @@
-﻿using System.Text.RegularExpressions;
+using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Http;
 
 namespace Intl.Realty.Firm.Utilities
@@ -7,6 +7,14 @@ namespace Intl.Realty.Firm.Utilities
     {
         public const string ActionSave = "save";
         public const string ActionSubmit = "submit";
+
+        /// <summary>
+        /// Set once at startup from builder.Environment.ContentRootPath so that
+        /// all relative-path resolution uses the application root instead of
+        /// Directory.GetCurrentDirectory() (which points to C:\Windows\System32\inetsrv
+        /// under IIS in-process hosting and causes UnauthorizedAccessException).
+        /// </summary>
+        public static string? ContentRootPath { get; set; }
 
         public static string BuildDealTransactionNumber(int transactionTypeId, int nextNumber)
         {
@@ -65,7 +73,7 @@ namespace Intl.Realty.Firm.Utilities
 
             var absolutePath = Path.IsPathRooted(absoluteOrRelativeDirectory)
                 ? absoluteOrRelativeDirectory
-                : Path.Combine(Directory.GetCurrentDirectory(), absoluteOrRelativeDirectory);
+                : Path.Combine(ContentRootPath ?? AppContext.BaseDirectory, absoluteOrRelativeDirectory);
 
             if (!Directory.Exists(absolutePath))
                 Directory.CreateDirectory(absolutePath);

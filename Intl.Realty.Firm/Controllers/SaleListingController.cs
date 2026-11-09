@@ -1,4 +1,4 @@
-﻿using Intl.Realty.Firm.Helper;
+using Intl.Realty.Firm.Helper;
 using Intl.Realty.Firm.Model.Model;
 using Intl.Realty.Firm.Model.ViewModel;
 using Intl.Realty.Firm.Model.ViewModel.AdditionalDocumentVM;
@@ -628,66 +628,55 @@ namespace Intl.Realty.Firm.Controllers
 
                 EditSaleListingWithTabMenuViewModel viewModel = new EditSaleListingWithTabMenuViewModel();
 
-                // Get current user
                 var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
                 var user = await _userManager.FindByIdAsync(userId!);
 
                 viewModel.EditSaleListingViewModel = model.ToEditSaleListingViewModel();
                 viewModel.EditSaleListingViewModel.DealStatus = model.DealStatus;
-                viewModel.EditSaleListingViewModel.UpdatedByFullName = $"{user!.FirstName} {user.LastName}";
-                viewModel.EditSaleListingViewModel.UpdatedBy = user.Id;
+                viewModel.EditSaleListingViewModel.UpdatedByFullName = $"{user?.FirstName} {user?.LastName}";
+                viewModel.EditSaleListingViewModel.UpdatedBy = user?.Id ?? Guid.Empty;
                 viewModel.EditSaleListingViewModel.UpdatedAt = DateTime.Now;
 
-                // Load predefined uploaded files
+                // Async file checking (fixes production deadlock)
                 var fileUploads = await _unitOfWork.FileUpload.GetAllAsync(
                     x => x.SaleListingId == model.Id && x.IsActive && !x.IsDeleted,
                     includeProperties: "SaleListing,TransactionType,DocumentType");
 
                 var fileUploadsWithFiles = FilterFileUploadsWithFilesOnly(fileUploads.ToList());
-
-                // FIX: assign filtered files, not raw files
                 viewModel.EditSaleListingViewModel.FileUploads = fileUploadsWithFiles;
 
-                // Load saved additional documents
                 var additionalDocuments = await _unitOfWork.AdditionalDocument.GetAllAsync(
                     x => x.SaleListingId == model.Id && x.IsActive && !x.IsDeleted,
                     includeProperties: "SaleListing,TransactionType");
 
                 viewModel.EditSaleListingViewModel.SavedAdditionalDocuments = additionalDocuments.ToList();
 
-                // Load document type assignments
                 var documentTypeAssignmentIEnum = await _unitOfWork.DocumentTypeAssignment.GetAllAsync(
                     x => x.IsDeleted == false,
                     includeProperties: "TransactionType,DocumentType");
 
-                var documentTypeIEnum = await _unitOfWork.DocumentType.GetAllAsync(
-                    x => x.IsActive && x.IsDeleted == false);
-
                 var documentTypeAssignmentList = documentTypeAssignmentIEnum.ToList();
 
-                viewModel.EditSaleListingViewModel.DocumentTypeAssignmentList =
-                    documentTypeAssignmentList
-                        .Where(x => x.TransactionType.Id == model.TransactionType!.Id)
-                        .ToList();
+                if (model.TransactionType != null)
+                {
+                    viewModel.EditSaleListingViewModel.DocumentTypeAssignmentList =
+                        documentTypeAssignmentList
+                            .Where(x => x.TransactionType != null && x.TransactionType.Id == model.TransactionType.Id)
+                            .ToList();
 
-                viewModel.EditSaleListingViewModel.DocumentTypeList = _documentTransactionService
-                    .GetDocumentTypesFromDocumentTypeAssignment(
-                        model.TransactionType!.Description,
-                        documentTypeAssignmentList);
+                    viewModel.EditSaleListingViewModel.DocumentTypeList = _documentTransactionService
+                        .GetDocumentTypesFromDocumentTypeAssignment(
+                            model.TransactionType.Description,
+                            documentTypeAssignmentList);
+                }
 
-                // Load deal statuses
                 var dealStatusIEnum = await _unitOfWork.DealStatus.GetAllAsync(
                     x => x.IsActive == true && !x.IsDeleted);
 
                 viewModel.EditSaleListingViewModel.DealStatusList = dealStatusIEnum.ToList();
-
-                // Signage dropdown
-                viewModel.EditSaleListingViewModel.SignageIEnum =
-                    SelectListConverter.CreateSelectListFromEnum<Signage>();
-
+                viewModel.EditSaleListingViewModel.SignageIEnum = SelectListConverter.CreateSelectListFromEnum<Signage>();
                 viewModel.EditSaleListingViewModel.DefaultSignage = 1;
 
-                // Menus
                 var menus = EditDealTransactionTabMenuData.GetEditDealTransactionTabMenuData();
                 string menuName = "IRFDetails1";
 
@@ -703,7 +692,7 @@ namespace Intl.Realty.Firm.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Failed to load SaleListing Edit page");
+                _logger.LogError(ex, "Failed to load SaleListing Edit page for ID {Id}", id);
                 return StatusCode(500, "An error occurred while loading the deal.");
             }
         }
@@ -1018,10 +1007,23 @@ namespace Intl.Realty.Firm.Controllers
                     continue;
 
                 if (!hasDocumentName)
-                    throw new InvalidOperationException("Document name is required for additional documents.");
+                {
+                    // Skip rows where only the file was set but the name is missing
+                    // (common on draft saves where the user has not filled in the row yet).
+                    _logger.LogWarning(
+                        "Skipping additional document row for SaleListing {SaleListingId}: file present but document name is missing.",
+                        saleListingId);
+                    continue;
+                }
 
                 if (!hasFile)
-                    throw new InvalidOperationException($"File is required for additional document '{item.DocumentName}'.");
+                {
+                    // Skip rows where a name was entered but no file was chosen yet.
+                    _logger.LogWarning(
+                        "Skipping additional document row '{DocumentName}' for SaleListing {SaleListingId}: document name present but no file attached.",
+                        item.DocumentName, saleListingId);
+                    continue;
+                }
 
                 try
                 {

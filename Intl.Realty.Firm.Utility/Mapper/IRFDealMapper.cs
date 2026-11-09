@@ -1,4 +1,4 @@
-﻿using Intl.Realty.Firm.Model.Model;
+using Intl.Realty.Firm.Model.Model;
 using Intl.Realty.Firm.Model.ViewModel.IRFDealVM;
 
 namespace Intl.Realty.Firm.Utility.Mapper
@@ -823,9 +823,9 @@ namespace Intl.Realty.Firm.Utility.Mapper
         {
             entity.PropertyAddress = viewModel.PropertyAddress;
             entity.FinalLeasePrice = viewModel.FinalLeasePrice;
-            entity.FinalClosingDate = viewModel.FinalClosingDate;
+            entity.FinalClosingDate = ToSqlSafeDate(viewModel.FinalClosingDate);
             entity.DepositAmount = viewModel.DepositAmount;
-            entity.DepositDate = viewModel.DepositDate;
+            entity.DepositDate = ToSqlSafeDate(viewModel.DepositDate);
 
             // 👤 Tenant
             entity.TenantName = viewModel.TenantDetails.TenantName;
@@ -853,7 +853,7 @@ namespace Intl.Realty.Firm.Utility.Mapper
             // ❌ Listing Info not included for LeaseCoop by requirement
 
             // ✅ Audit
-            entity.IsActive = viewModel.IsActive;
+            // IsActive is not posted by the Edit forms; keep the stored value.
             entity.IsDeleted = viewModel.IsDeleted;
             entity.UpdatedBy = updatedBy;
             entity.UpdatedAt = DateTime.UtcNow;
@@ -864,9 +864,9 @@ namespace Intl.Realty.Firm.Utility.Mapper
             // 🏠 Deal Info
             entity.PropertyAddress = viewModel.PropertyAddress;
             entity.FinalLeasePrice = viewModel.FinalLeasePrice;
-            entity.FinalClosingDate = viewModel.FinalClosingDate;
+            entity.FinalClosingDate = ToSqlSafeDate(viewModel.FinalClosingDate);
             entity.DepositAmount = viewModel.DepositAmount;
-            entity.DepositDate = viewModel.DepositDate;
+            entity.DepositDate = ToSqlSafeDate(viewModel.DepositDate);
 
             // 👤 Tenant
             entity.TenantName = viewModel.TenantDetails.TenantName;
@@ -893,7 +893,7 @@ namespace Intl.Realty.Firm.Utility.Mapper
             entity.ListingCommission = viewModel.Commission.ListingCommission;
 
             // ✅ Audit
-            entity.IsActive = viewModel.IsActive;
+            // IsActive is not posted by the Edit forms; keep the stored value.
             entity.IsDeleted = viewModel.IsDeleted;
             entity.UpdatedBy = updatedBy;
             entity.UpdatedAt = DateTime.UtcNow;
@@ -904,9 +904,9 @@ namespace Intl.Realty.Firm.Utility.Mapper
             // 🏠 Deal Info
             entity.PropertyAddress = viewModel.PropertyAddress;
             entity.FinalSalePrice = viewModel.FinalSalePrice;
-            entity.FinalClosingDate = viewModel.FinalClosingDate;
+            entity.FinalClosingDate = ToSqlSafeDate(viewModel.FinalClosingDate);
             entity.DepositAmount = viewModel.DepositAmount;
-            entity.DepositDate = viewModel.DepositDate;
+            entity.DepositDate = ToSqlSafeDate(viewModel.DepositDate);
 
             // 👤 Buyer
             entity.BuyerName = viewModel.BuyerDetails.BuyerName;
@@ -937,7 +937,7 @@ namespace Intl.Realty.Firm.Utility.Mapper
             entity.BuyingCommission = viewModel.Commission.BuyingCommission;
 
             // ✅ Audit
-            entity.IsActive = viewModel.IsActive;
+            // IsActive is not posted by the Edit forms; keep the stored value.
             entity.IsDeleted = viewModel.IsDeleted;
             entity.UpdatedBy = updatedBy;
             entity.UpdatedAt = DateTime.UtcNow;
@@ -947,9 +947,9 @@ namespace Intl.Realty.Firm.Utility.Mapper
         {
             entity.PropertyAddress = viewModel.PropertyAddress;
             entity.FinalSalePrice = viewModel.FinalSalePrice;
-            entity.FinalClosingDate = viewModel.FinalClosingDate;
+            entity.FinalClosingDate = ToSqlSafeDate(viewModel.FinalClosingDate);
             entity.DepositAmount = viewModel.DepositAmount;
-            entity.DepositDate = viewModel.DepositDate;
+            entity.DepositDate = ToSqlSafeDate(viewModel.DepositDate);
             entity.BuyerName = viewModel.BuyerDetails.BuyerName;
             entity.ListingCommissionSign = viewModel.Commission.ListingCommissionSign;
             entity.ListingCommission = viewModel.Commission.ListingCommission;
@@ -978,11 +978,17 @@ namespace Intl.Realty.Firm.Utility.Mapper
             entity.SellerLawyerEmail = viewModel.SellerDetails.SellerLawyerEmail;
             entity.SellerLawyerPhone = viewModel.SellerDetails.SellerLawyerPhone;
 
-            entity.IsActive = viewModel.IsActive;
+            // IsActive is not posted by the Edit forms; keep the stored value.
             entity.IsDeleted = viewModel.IsDeleted;
             entity.UpdatedBy = updatedBy;
             entity.UpdatedAt = DateTime.UtcNow;
         }
 
+        // SQL Server datetime can't store dates before 1753-01-01; an unposted DateTime
+        // binds as 0001-01-01 and causes SqlTypeException on save, so treat it as empty.
+        private static readonly DateTime SqlMinDate = new DateTime(1753, 1, 1);
+
+        private static DateTime? ToSqlSafeDate(DateTime? value) =>
+            value.HasValue && value.Value > SqlMinDate ? value : null;
     }
 }

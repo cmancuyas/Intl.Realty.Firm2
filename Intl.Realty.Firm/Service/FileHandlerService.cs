@@ -1,4 +1,4 @@
-﻿using Intl.Realty.Firm.Service.IService;
+using Intl.Realty.Firm.Service.IService;
 using Intl.Realty.Firm.Utilities;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Extensions.Logging;
@@ -19,7 +19,7 @@ namespace Intl.Realty.Firm.Service
             if (string.IsNullOrWhiteSpace(fullPath))
                 return Task.FromResult(false);
 
-            return Task.FromResult(File.Exists(fullPath) || File.Exists(Path.Combine(Directory.GetCurrentDirectory(), fullPath)));
+            return Task.FromResult(File.Exists(fullPath) || File.Exists(Path.Combine(TransactionHelper.ContentRootPath ?? AppContext.BaseDirectory, fullPath)));
         }
 
         public Task<bool> DeleteFile(string fullPath)
@@ -30,7 +30,7 @@ namespace Intl.Realty.Firm.Service
             var candidates = new[]
             {
                 fullPath,
-                Path.IsPathRooted(fullPath) ? fullPath : Path.Combine(Directory.GetCurrentDirectory(), fullPath)
+                Path.IsPathRooted(fullPath) ? fullPath : Path.Combine(TransactionHelper.ContentRootPath ?? AppContext.BaseDirectory, fullPath)
             }.Distinct(StringComparer.OrdinalIgnoreCase);
 
             foreach (var path in candidates)
